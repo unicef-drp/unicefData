@@ -1,0 +1,8 @@
+# Core dependencies
+requests>=2.28.0
+pandas>=1.5.0
+
+# Optional dependencies for enhanced functionality
+openpyxl>=3.0.0  # For Excel file support
+xlrd>=2.0.0      # For reading Excel files
+pyyaml>=6.0      # For YAML configuration files

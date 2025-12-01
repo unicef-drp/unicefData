@@ -1,0 +1,16 @@
+=========================================================
+🟦 SDG 2025 RUN LOG
+Start time:  2025-07-04 21:06:14 
+Log file:  D:\jazevedo\GitHub\unicefData\09_others\091_logs\log_run_20250704_210614.txt 
+=========================================================
+
+
+--- Executing:  012_run  [ 01_data/012_codes/012_run.R ] ---
+⚠ WARNING in 012_run : cannot open file '01_data/012_codes/012_run.R': No such file or directory 
+
+--- Executing:  022_run  [ 02_benchmarking/022_codes/022_run.R ] ---
+⚠ WARNING in 022_run : cannot open file '02_benchmarking/022_codes/022_run.R': No such file or directory 
+
+=========================================================
+✅ SDG 2025 Run completed at:  2025-07-04 21:06:14 
+=========================================================

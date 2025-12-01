@@ -1,0 +1,22 @@
+Package: unicefdata
+Title: Download SDG Indicators from UNICEF Data Warehouse
+Version: 0.1.0
+Authors@R: 
+    person("Joao Pedro", "Azevedo", , 
+           role = c("aut", "cre"), 
+           email = "azevedo.joaopedro@gmail.com"),
+    person("Garen", "Avanesian", , role = "aut")
+Description: A client to fetch SDMX CSV series from UNICEF’s Data Warehouse, 
+  with caching, diagnostics and sanity checks.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+  httr,
+  readr,
+  dplyr,
+  magrittr
+Suggests:
+  testthat
+URL: https://github.com/unicef-drp/unicefData
+BugReports: https://github.com/unicef-drp/unicefData/issues
