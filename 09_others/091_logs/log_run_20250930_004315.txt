@@ -1,0 +1,22 @@
+=========================================================
+🟦 SDG 2025 RUN LOG
+Start time:  2025-09-30 00:43:16 
+Log file:  D:\jazevedo\GitHub\09_others\091_logs\log_run_20250930_004315.txt 
+=========================================================
+
+
+--- Executing:  012_run  [ 01_data_prep/012_codes/012_run.R ] ---
+⚠ WARNING in 012_run : cannot open file '01_data_prep/012_codes/012_run.R': No such file or directory 
+
+--- Executing:  022_run  [ 02_benchmarking/022_codes/022_run.R ] ---
+⚠ WARNING in 022_run : cannot open file '02_benchmarking/022_codes/022_run.R': No such file or directory 
+
+--- Executing:  032_run  [ 03_data_analytics/032_codes/032_run.R ] ---
+⚠ WARNING in 032_run : cannot open file '03_data_analytics/032_codes/032_run.R': No such file or directory 
+
+--- Executing:  042_run  [ 04_country_briefs/042_codes/042_run.R ] ---
+⚠ WARNING in 042_run : cannot open file '04_country_briefs/042_codes/042_run.R': No such file or directory 
+
+=========================================================
+✅ SDG 2025 Run completed at:  2025-09-30 00:43:16 
+=========================================================

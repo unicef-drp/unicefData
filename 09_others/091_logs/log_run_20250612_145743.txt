@@ -1,0 +1,16 @@
+=========================================================
+🟦 SDG 2025 RUN LOG
+Start time:  2025-06-12 14:57:43 
+Log file:  D:\jazevedo\GitHub\09_others\091_logs\log_run_20250612_145743.txt 
+=========================================================
+
+
+--- Executing:  012_run.R  [ D:/jazevedo/GitHub/mytasks/PROD-SDG-REP-2025/01_data/012_codes ] ---
+⚠ WARNING in 012_run.R : cannot open file 'D:/jazevedo/GitHub/mytasks/PROD-SDG-REP-2025/01_data/012_codes': Permission denied 
+
+--- Executing:  022_run.R  [ D:/jazevedo/GitHub/mytasks/PROD-SDG-REP-2025/02_benchmarking/022_codes ] ---
+⚠ WARNING in 022_run.R : cannot open file 'D:/jazevedo/GitHub/mytasks/PROD-SDG-REP-2025/02_benchmarking/022_codes': Permission denied 
+
+=========================================================
+✅ SDG 2025 Run completed at:  2025-06-12 14:57:43 
+=========================================================
