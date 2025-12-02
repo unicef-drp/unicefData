@@ -31,11 +31,17 @@ if (!requireNamespace("yaml", quietly = TRUE)) {
 #' @param path Path to cache directory
 #' @export
 set_metadata_cache <- function(path = NULL) {
+
   if (is.null(path)) {
     path <- file.path(getwd(), "metadata")
   }
   if (!dir.exists(path)) {
     dir.create(path, recursive = TRUE)
+  }
+  # Create current/ subdirectory for active metadata (matches Python structure)
+  current_dir <- file.path(path, "current")
+  if (!dir.exists(current_dir)) {
+    dir.create(current_dir, recursive = TRUE)
   }
   .metadata_config$CACHE_DIR <- path
   invisible(path)
@@ -49,6 +55,13 @@ get_metadata_cache <- function() {
     set_metadata_cache()
   }
   .metadata_config$CACHE_DIR
+}
+
+#' Get current metadata directory
+#' @return Path to current/ subdirectory
+#' @export
+get_current_dir <- function() {
+  file.path(get_metadata_cache(), "current")
 }
 
 # ============================================================================
@@ -806,15 +819,18 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
 }
 
 .save_yaml <- function(filename, data) {
-  cache_dir <- get_metadata_cache()
-  filepath <- file.path(cache_dir, filename)
+  current_dir <- get_current_dir()
+  if (!dir.exists(current_dir)) {
+    dir.create(current_dir, recursive = TRUE)
+  }
+  filepath <- file.path(current_dir, filename)
   yaml::write_yaml(data, filepath)
   invisible(filepath)
 }
 
 .load_yaml <- function(filename) {
-  cache_dir <- get_metadata_cache()
-  filepath <- file.path(cache_dir, filename)
+  current_dir <- get_current_dir()
+  filepath <- file.path(current_dir, filename)
   if (!file.exists(filepath)) {
     return(list())
   }
@@ -830,6 +846,7 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
 
 .create_vintage <- function(vintage_date, results, verbose = TRUE) {
   cache_dir <- get_metadata_cache()
+  current_dir <- get_current_dir()
   
   # Create vintages directory structure
   vintage_dir <- file.path(cache_dir, "vintages", vintage_date)
@@ -837,9 +854,9 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
     dir.create(vintage_dir, recursive = TRUE)
   }
   
-  # Copy current YAML files to vintage
+  # Copy current YAML files to vintage (from current/ subdirectory)
   for (filename in c("dataflows.yaml", "codelists.yaml", "indicators.yaml")) {
-    src <- file.path(cache_dir, filename)
+    src <- file.path(current_dir, filename)
     if (file.exists(src)) {
       dst <- file.path(vintage_dir, filename)
       file.copy(src, dst, overwrite = TRUE)
