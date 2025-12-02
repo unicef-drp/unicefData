@@ -1,28 +1,18 @@
 # ============================================================================
 # Comprehensive test suite for unicefdata R package
 # Tests all major functionality and saves results to CSV files
+# Uses get_unicef() for consistent output with Python package
 # ============================================================================
-
-# Load required packages
-suppressPackageStartupMessages({
-  library(httr)
-  library(readr)
-  library(dplyr)
-  library(xml2)
-  library(memoise)
-  library(countrycode)
-  library(yaml)
-})
 
 # Set working directory
 setwd("D:/jazevedo/GitHub/unicefData")
 
-# Source the R functions
-source("R/utils.R")
-source("R/flows.R")
-source("R/codelist.R")
-source("R/get_sdmx.R")
+# Source the main get_unicef function (which loads dependencies)
+source("R/get_unicef.R")
+
+# Also source metadata functions for metadata tests
 source("R/metadata.R")
+source("R/flows.R")
 
 # Output directory
 OUTPUT_DIR <- "R/test_output"
@@ -46,8 +36,9 @@ test_list_flows <- function() {
   
   log_msg(sprintf("  Found %d dataflows", nrow(flows)))
   
-  # Save to CSV
-  write.csv(flows, file.path(OUTPUT_DIR, "test_dataflows.csv"), row.names = FALSE)
+  # Save to CSV with UTF-8 encoding
+  write.csv(flows, file.path(OUTPUT_DIR, "test_dataflows.csv"), 
+            row.names = FALSE, fileEncoding = "UTF-8")
   log_msg("  Saved to test_dataflows.csv")
   
   return(nrow(flows) > 50)
@@ -56,23 +47,18 @@ test_list_flows <- function() {
 test_child_mortality <- function() {
   log_msg("Testing child mortality (CME_MRY0T4)...")
   
-  df <- get_sdmx(
-    flow = "GLOBAL_DATAFLOW",
-    key = "CME_MRY0T4",
-    start_period = 2015,
-    end_period = 2023
+  df <- get_unicef(
+    indicator = "CME_MRY0T4",
+    countries = c("USA", "GBR", "FRA", "DEU", "JPN"),
+    start_year = 2015,
+    end_year = 2023
   )
   
   log_msg(sprintf("  Retrieved %d observations", nrow(df)))
   
   if (!is.null(df) && nrow(df) > 0) {
-    # Filter to specific countries (using iso3 column)
-    countries <- c("USA", "GBR", "FRA", "DEU", "JPN")
-    df <- df[df$iso3 %in% countries, ]
-    
-    log_msg(sprintf("  After filtering: %d observations", nrow(df)))
-    log_msg(sprintf("  Countries: %s", paste(unique(df$iso3), collapse = ", ")))
-    log_msg(sprintf("  Years: %s", paste(sort(unique(df$period)), collapse = ", ")))
+    log_msg(sprintf("  Countries: %s", paste(unique(df$country_code), collapse = ", ")))
+    log_msg(sprintf("  Years: %s", paste(sort(unique(df$year)), collapse = ", ")))
     
     write.csv(df, file.path(OUTPUT_DIR, "test_mortality.csv"), row.names = FALSE)
     log_msg("  Saved to test_mortality.csv")
@@ -85,21 +71,17 @@ test_child_mortality <- function() {
 test_stunting <- function() {
   log_msg("Testing stunting (NT_ANT_HAZ_NE2)...")
   
-  df <- get_sdmx(
-    flow = "GLOBAL_DATAFLOW",
-    key = "NT_ANT_HAZ_NE2",
-    start_period = 2010,
-    end_period = 2023
+  df <- get_unicef(
+    indicator = "NT_ANT_HAZ_NE2",
+    countries = c("IND", "BGD", "PAK", "NPL", "ETH"),
+    start_year = 2010,
+    end_year = 2023,
+    ignore_duplicates = TRUE  # Allow duplicate removal for this dataset
   )
   
   log_msg(sprintf("  Retrieved %d observations", nrow(df)))
   
   if (!is.null(df) && nrow(df) > 0) {
-    # Filter to specific countries (using iso3 column)
-    countries <- c("IND", "BGD", "PAK", "NPL", "ETH")
-    df <- df[df$iso3 %in% countries, ]
-    
-    log_msg(sprintf("  After filtering: %d observations", nrow(df)))
     write.csv(df, file.path(OUTPUT_DIR, "test_stunting.csv"), row.names = FALSE)
     log_msg("  Saved to test_stunting.csv")
     return(nrow(df) > 0)
@@ -111,21 +93,16 @@ test_stunting <- function() {
 test_immunization <- function() {
   log_msg("Testing immunization (IM_DTP3)...")
   
-  df <- get_sdmx(
-    flow = "GLOBAL_DATAFLOW",
-    key = "IM_DTP3",
-    start_period = 2015,
-    end_period = 2023
+  df <- get_unicef(
+    indicator = "IM_DTP3",
+    countries = c("NGA", "COD", "BRA", "IDN", "MEX"),
+    start_year = 2015,
+    end_year = 2023
   )
   
   log_msg(sprintf("  Retrieved %d observations", nrow(df)))
   
   if (!is.null(df) && nrow(df) > 0) {
-    # Filter to specific countries (using iso3 column)
-    countries <- c("NGA", "COD", "BRA", "IDN", "MEX")
-    df <- df[df$iso3 %in% countries, ]
-    
-    log_msg(sprintf("  After filtering: %d observations", nrow(df)))
     write.csv(df, file.path(OUTPUT_DIR, "test_immunization.csv"), row.names = FALSE)
     log_msg("  Saved to test_immunization.csv")
     return(nrow(df) > 0)
@@ -155,35 +132,24 @@ test_metadata_sync <- function() {
 test_multiple_indicators <- function() {
   log_msg("Testing multiple indicators...")
   
-  indicators <- c("CME_MRY0T4", "CME_MRY0")
-  all_data <- list()
+  # Use get_unicef with multiple indicators
+  df <- get_unicef(
+    indicator = c("CME_MRY0T4", "CME_MRY0"),
+    countries = c("BRA", "IND", "CHN"),
+    start_year = 2020,
+    end_year = 2023,
+    ignore_duplicates = TRUE  # Allow duplicate removal for combined datasets
+  )
   
-  for (ind in indicators) {
-    tryCatch({
-      df <- get_sdmx(
-        flow = "GLOBAL_DATAFLOW",
-        key = ind,
-        start_period = 2020,
-        end_period = 2023
-      )
-      
-      if (!is.null(df) && nrow(df) > 0) {
-        # Filter to specific countries (using iso3 column)
-        countries <- c("BRA", "IND", "CHN")
-        df <- df[df$iso3 %in% countries, ]
-        df$indicator_code <- ind
-        all_data[[ind]] <- df
-        log_msg(sprintf("  %s: %d observations", ind, nrow(df)))
-      }
-    }, error = function(e) {
-      log_msg(sprintf("  %s: ERROR - %s", ind, e$message))
-    })
-  }
-  
-  if (length(all_data) > 0) {
-    combined <- do.call(rbind, all_data)
-    write.csv(combined, file.path(OUTPUT_DIR, "test_multiple_indicators.csv"), row.names = FALSE)
-    log_msg(sprintf("  Saved %d total observations", nrow(combined)))
+  if (!is.null(df) && nrow(df) > 0) {
+    # Log per indicator
+    for (ind in unique(df$indicator_code)) {
+      n <- sum(df$indicator_code == ind)
+      log_msg(sprintf("  %s: %d observations", ind, n))
+    }
+    
+    write.csv(df, file.path(OUTPUT_DIR, "test_multiple_indicators.csv"), row.names = FALSE)
+    log_msg(sprintf("  Saved %d total observations", nrow(df)))
     return(TRUE)
   }
   
@@ -228,8 +194,8 @@ run_all_tests <- function() {
   
   passed_count <- 0
   for (r in results) {
-    icon <- if (r$status == "PASS") "✓" else "✗"
-    cat(sprintf("%s %s: %s\n", icon, r$name, r$status))
+    icon <- if (r$status == "PASS") "PASS" else "FAIL"
+    cat(sprintf("[%s] %s\n", icon, r$name))
     if (!is.null(r$error)) {
       cat(sprintf("   Error: %s\n", r$error))
     }

@@ -10,7 +10,7 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unicef_api import UNICEFSDMXClient, COMMON_INDICATORS, list_vintages
+from unicef_api import get_unicef, list_dataflows, COMMON_INDICATORS, list_vintages
 from unicef_api.metadata import sync_metadata, MetadataSync
 
 # Output directory
@@ -44,10 +44,10 @@ def test_list_dataflows():
 def test_child_mortality():
     """Test fetching child mortality data (CME_MRY0T4)"""
     log("Testing child mortality (CME_MRY0T4)...")
-    client = UNICEFSDMXClient()
     
-    df = client.fetch_indicator(
-        indicator_code='CME_MRY0T4',
+    # Use get_unicef() for consistent column names with R
+    df = get_unicef(
+        indicator='CME_MRY0T4',
         countries=['USA', 'GBR', 'FRA', 'DEU', 'JPN'],
         start_year=2015,
         end_year=2023
@@ -55,8 +55,8 @@ def test_child_mortality():
     
     log(f"  Retrieved {len(df)} observations")
     if len(df) > 0:
-        log(f"  Countries: {df['country_code'].unique().tolist()}")
-        log(f"  Years: {sorted(df['year'].unique().tolist())}")
+        log(f"  Countries: {df['iso3'].unique().tolist()}")
+        log(f"  Years: {sorted(df['period'].unique().tolist())}")
     
     df.to_csv(os.path.join(OUTPUT_DIR, 'test_mortality.csv'), index=False)
     log(f"  Saved to test_mortality.csv")
@@ -66,10 +66,10 @@ def test_child_mortality():
 def test_stunting():
     """Test fetching stunting data (NT_ANT_HAZ_NE2)"""
     log("Testing stunting (NT_ANT_HAZ_NE2)...")
-    client = UNICEFSDMXClient()
     
-    df = client.fetch_indicator(
-        indicator_code='NT_ANT_HAZ_NE2',
+    # Use get_unicef() for consistent column names with R
+    df = get_unicef(
+        indicator='NT_ANT_HAZ_NE2',
         countries=['IND', 'BGD', 'PAK', 'NPL', 'ETH'],
         start_year=2010,
         end_year=2023
@@ -85,10 +85,10 @@ def test_stunting():
 def test_immunization():
     """Test fetching immunization data (IM_DTP3)"""
     log("Testing immunization (IM_DTP3)...")
-    client = UNICEFSDMXClient()
     
-    df = client.fetch_indicator(
-        indicator_code='IM_DTP3',
+    # Use get_unicef() for consistent column names with R
+    df = get_unicef(
+        indicator='IM_DTP3',
         countries=['NGA', 'COD', 'BRA', 'IDN', 'MEX'],
         start_year=2015,
         end_year=2023
@@ -120,20 +120,19 @@ def test_metadata_sync():
 def test_multiple_indicators():
     """Test fetching multiple indicators at once"""
     log("Testing multiple indicators...")
-    client = UNICEFSDMXClient()
     
     indicators = ['CME_MRY0T4', 'CME_MRY0']  # Under-5 and infant mortality
     all_data = []
     
     for ind in indicators:
         try:
-            df = client.fetch_indicator(
-                indicator_code=ind,
+            # Use get_unicef() for consistent column names with R
+            df = get_unicef(
+                indicator=ind,
                 countries=['BRA', 'IND', 'CHN'],
                 start_year=2020,
                 end_year=2023
             )
-            df['indicator'] = ind
             all_data.append(df)
             log(f"  {ind}: {len(df)} observations")
         except Exception as e:
