@@ -129,8 +129,7 @@ sync_metadata <- function(cache_dir = NULL, verbose = TRUE) {
   results$vintage_date <- vintage_date
   .create_vintage(vintage_date, results, verbose = verbose)
   
-  # 5. Save sync summary
-  .save_yaml("sync_summary.yaml", results)
+  # Note: sync_history.yaml is updated by .create_vintage() -> .update_sync_history()
   
   if (verbose) {
     message(sprintf("\n✅ Sync complete: %d dataflows, %d codelists, %d indicators",
@@ -404,11 +403,27 @@ load_indicators <- function() {
   .load_yaml("indicators.yaml")
 }
 
-#' Load last sync summary
-#' @return List with sync summary
+#' Load sync history
+#' @return List with sync history (matches Python structure)
+#' @export
+load_sync_history <- function() {
+  cache_dir <- get_metadata_cache()
+  history_file <- file.path(cache_dir, "sync_history.yaml")
+  if (!file.exists(history_file)) {
+    return(list(vintages = list()))
+  }
+  yaml::read_yaml(history_file)
+}
+
+#' Load last sync summary (deprecated, use load_sync_history)
+#' @return List with sync summary from latest vintage
 #' @export
 load_sync_summary <- function() {
-  .load_yaml("sync_summary.yaml")
+  history <- load_sync_history()
+  if (length(history$vintages) > 0) {
+    return(history$vintages[[1]])
+  }
+  list()
 }
 
 #' Get metadata for a specific dataflow
@@ -742,21 +757,27 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   }
   cache_dir <- get_metadata_cache()
   
-  summary_file <- file.path(cache_dir, "sync_summary.yaml")
+  # Use sync_history.yaml to check freshness (matches Python structure)
+  history_file <- file.path(cache_dir, "sync_history.yaml")
   
   needs_sync <- TRUE
   
-  if (file.exists(summary_file)) {
-    summary <- yaml::read_yaml(summary_file)
-    synced_at <- summary$synced_at
+  if (file.exists(history_file)) {
+    history <- yaml::read_yaml(history_file)
+    vintages <- history$vintages
     
-    if (!is.null(synced_at)) {
-      sync_date <- as.Date(substr(synced_at, 1, 10))
-      age_days <- as.numeric(Sys.Date() - sync_date)
-      needs_sync <- age_days > max_age_days
+    if (!is.null(vintages) && length(vintages) > 0) {
+      latest <- vintages[[1]]
+      synced_at <- latest$synced_at
       
-      if (verbose && !needs_sync) {
-        message(sprintf("Metadata is fresh (synced %d days ago)", age_days))
+      if (!is.null(synced_at)) {
+        sync_date <- as.Date(substr(synced_at, 1, 10))
+        age_days <- as.numeric(Sys.Date() - sync_date)
+        needs_sync <- age_days > max_age_days
+        
+        if (verbose && !needs_sync) {
+          message(sprintf("Metadata is fresh (synced %d days ago)", age_days))
+        }
       }
     }
   }
