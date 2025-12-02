@@ -175,12 +175,15 @@ sync_dataflows <- function(verbose = TRUE) {
     desc_node <- xml2::xml_find_first(df, ".//com:Description", ns)
     description <- if (!is.na(desc_node)) xml2::xml_text(desc_node) else NULL
     
+    # Structure aligned with Python DataflowMetadata
     dataflows[[df_id]] <- list(
       id = df_id,
       name = name,
       agency = agency,
       version = version,
       description = description,
+      dimensions = NULL,   # Placeholder for future expansion
+      indicators = NULL,   # Placeholder for future expansion
       last_updated = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
     )
   }
