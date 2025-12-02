@@ -12,12 +12,16 @@ The **unicefData** package provides lightweight, consistent interfaces to the [U
 
 ## Quick Start
 
-Both R and Python use the **same `get_unicef()` function** with identical parameter names.
+Both R and Python use the **same functions** with identical parameter names.
 
 ### Python
 
 ```python
-from unicef_api import get_unicef
+from unicef_api import get_unicef, search_indicators, list_categories
+
+# Don't know the indicator code? Search for it!
+search_indicators("mortality")
+list_categories()
 
 # Fetch under-5 mortality for specific countries
 # Dataflow is auto-detected from the indicator code!
@@ -34,7 +38,12 @@ print(df.head())
 ### R
 
 ```r
-library(unicefData)
+source("indicator_registry.R")
+source("get_unicef.R")
+
+# Don't know the indicator code? Search for it!
+search_indicators("mortality")
+list_categories()
 
 # Fetch under-5 mortality for specific countries
 # Dataflow is auto-detected from the indicator code!
@@ -48,7 +57,7 @@ df <- get_unicef(
 print(head(df))
 ```
 
-> **Note:** You don't need to specify `dataflow`! The package automatically detects it from the indicator code on first use, fetching the complete indicator codelist from the UNICEF SDMX API.
+> **Note:** You don't need to specify `dataflow`! The package automatically detects it from the indicator code on first use, fetching the complete indicator codelist (733 indicators) from the UNICEF SDMX API.
 
 ---
 
@@ -72,35 +81,114 @@ pip install -e .
 
 ---
 
-## Automatic Dataflow Detection
+## Finding Indicators
 
-The package automatically downloads the complete UNICEF indicator codelist (700+ indicators) on first use and caches it locally. This enables:
+Use `search_indicators()` and `list_categories()` to discover available indicators.
 
-1. **No need to specify dataflow** - Just provide the indicator code
-2. **Accurate mapping** - Each indicator maps to its correct dataflow
-3. **Offline support** - Cache is saved to `config/unicef_indicators_metadata.yaml`
-4. **Auto-refresh** - Cache is refreshed every 30 days
-
-### How it works
+### Search by Keyword
 
 ```python
 # Python
-from unicef_api import get_dataflow_for_indicator
+from unicef_api import search_indicators
 
-# Auto-detects dataflow from indicator code
-get_dataflow_for_indicator("CME_MRY0T4")    # Returns: "CME"
-get_dataflow_for_indicator("NT_ANT_HAZ_NE2_MOD")  # Returns: "NUTRITION"
-get_dataflow_for_indicator("IM_DTP3")       # Returns: "IMMUNISATION"
+search_indicators("mortality")      # Find mortality-related indicators
+search_indicators("stunting")       # Find nutrition indicators
+search_indicators("immunization")   # Find vaccine coverage indicators
 ```
 
 ```r
 # R
-source("R/indicator_registry.R")
+source("indicator_registry.R")
 
-# Auto-detects dataflow from indicator code
-get_dataflow_for_indicator("CME_MRY0T4")    # Returns: "CME"
-get_dataflow_for_indicator("NT_ANT_HAZ_NE2_MOD")  # Returns: "NUTRITION"
+search_indicators("mortality")
+search_indicators("stunting")
+search_indicators("immunization")
 ```
+
+**Output:**
+```
+====================================================================================================
+  UNICEF Indicators matching 'mortality'
+====================================================================================================
+
+  Found 24 indicator(s) (showing first 10)
+----------------------------------------------------------------------------------------------------
+  CODE             CATEGORY    NAME                                 DESCRIPTION
+----------------------------------------------------------------------------------------------------
+  CME_MRM0         CME         Neonatal mortality rate              Probability of dying during..
+  CME_MRY0         CME         Infant mortality rate                Probability of dying between..
+  CME_MRY0T4       CME         Under-five mortality rate            Probability of dying between..
+  ...
+----------------------------------------------------------------------------------------------------
+```
+
+### List Categories
+
+```python
+# Python
+from unicef_api import list_categories
+list_categories()
+```
+
+```r
+# R
+list_categories()
+```
+
+**Output:**
+```
+==================================================
+  Available Indicator Categories
+==================================================
+
+  CATEGORY                       COUNT
+--------------------------------------------------
+  GLOBAL_DATAFLOW                  226
+  NUTRITION                        112
+  WASH_HOUSEHOLDS                   57
+  EDUCATION                         54
+  PT                                50
+  CME                               39
+  HIV_AIDS                          38
+  MNCH                              38
+  ...
+--------------------------------------------------
+  TOTAL                            733
+```
+
+### Search by Category
+
+```python
+# Python
+search_indicators(category="CME")           # All child mortality indicators
+search_indicators(category="NUTRITION")     # All nutrition indicators
+search_indicators("rate", category="CME")   # Mortality rates only
+```
+
+```r
+# R
+search_indicators(category = "CME")
+search_indicators(category = "NUTRITION")
+search_indicators("rate", category = "CME")
+```
+
+---
+
+## Automatic Dataflow Detection
+
+The package automatically downloads the complete UNICEF indicator codelist (733 indicators across 15 categories) on first use and caches it locally. This enables:
+
+1. **No need to specify dataflow** - Just provide the indicator code
+2. **Accurate mapping** - Each indicator maps to its correct dataflow
+3. **Offline support** - Cache is saved to language-specific metadata directories
+4. **Auto-refresh** - Cache is refreshed every 30 days
+
+### Cache Locations
+
+| Language | Cache Path |
+|----------|------------|
+| Python | `python/metadata/current/unicef_indicators_metadata.yaml` |
+| R | `R/metadata/current/unicef_indicators_metadata.yaml` |
 
 ### Manual cache refresh
 
@@ -108,26 +196,14 @@ get_dataflow_for_indicator("NT_ANT_HAZ_NE2_MOD")  # Returns: "NUTRITION"
 # Python
 from unicef_api import refresh_indicator_cache, get_cache_info
 
-# Force refresh from API
-n = refresh_indicator_cache()
-print(f"Refreshed cache with {n} indicators")
-
-# Check cache status
-info = get_cache_info()
-print(info)
+n = refresh_indicator_cache()  # Force refresh from API
+info = get_cache_info()        # Check cache status
 ```
 
 ```r
 # R
-source("R/indicator_registry.R")
-
-# Force refresh from API
 n <- refresh_indicator_cache()
-message(sprintf("Refreshed cache with %d indicators", n))
-
-# Check cache status
 info <- get_cache_info()
-print(info)
 ```
 
 ---
@@ -148,22 +224,42 @@ print(info)
 | `country_names` | boolean | TRUE | Add country name column |
 | `max_retries` | integer | 3 | Number of retry attempts on failure |
 
+### search_indicators() Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `query` | string | NULL | Search term (matches code, name, description) |
+| `category` | string | NULL | Filter by category (e.g., `CME`, `NUTRITION`) |
+| `limit` | integer | 50 | Max results to display (0 = unlimited) |
+| `show_description` | boolean | TRUE | Include description column |
+
+### list_categories()
+
+No parameters. Displays all available categories with indicator counts.
+
 ---
 
-## Available Dataflows
+## Available Categories
 
-| Dataflow | Description | Example Indicators |
-|----------|-------------|-------------------|
-| `CME` | Child Mortality Estimates | `CME_MRY0T4`, `CME_MRM0` |
-| `NUTRITION` | Nutrition indicators | `NT_ANT_HAZ_NE2_MOD` |
-| `EDUCATION_UIS_SDG` | Education (UNESCO) | `ED_ANAR_L02` |
-| `IMMUNISATION` | Immunization coverage | `IM_DTP3`, `IM_MCV1` |
-| `MNCH` | Maternal and Child Health | `MNCH_MMR` |
-| `WASH_HOUSEHOLDS` | Water and Sanitation | `WS_PPL_W-SM` |
-| `PT` | Child Protection | `PT_CHLD_Y0T4_REG` |
-| `GLOBAL_DATAFLOW` | All indicators | (fallback) |
+| Category | Count | Description |
+|----------|-------|-------------|
+| `GLOBAL_DATAFLOW` | 226 | General indicators |
+| `NUTRITION` | 112 | Nutrition (stunting, wasting, etc.) |
+| `WASH_HOUSEHOLDS` | 57 | Water and Sanitation |
+| `EDUCATION` | 54 | Education indicators |
+| `PT` | 50 | Child Protection |
+| `CME` | 39 | Child Mortality Estimates |
+| `HIV_AIDS` | 38 | HIV/AIDS indicators |
+| `MNCH` | 38 | Maternal and Child Health |
+| `DM` | 26 | Demographics |
+| `MIGRATION` | 26 | Migration |
+| `IMMUNISATION` | 18 | Immunization coverage |
+| `GENDER` | 16 | Gender indicators |
+| `ECON` | 13 | Economic indicators |
+| `FUNCTIONAL_DIFF` | 12 | Functional difficulties |
+| `ECD` | 8 | Early Childhood Development |
 
-Use `list_dataflows()` to see all 69+ available dataflows.
+Use `list_categories()` for the complete list.
 
 ---
 
@@ -172,12 +268,13 @@ Use `list_dataflows()` to see all 69+ available dataflows.
 | Feature | R | Python |
 |---------|---|--------|
 | Unified `get_unicef()` API | ✅ | ✅ |
-| **Auto dataflow detection** | ✅ | ✅ |
+| **`search_indicators()`** | ✅ | ✅ |
+| **`list_categories()`** | ✅ | ✅ |
+| Auto dataflow detection | ✅ | ✅ |
 | Filter by country, year, sex | ✅ | ✅ |
 | Automatic retries | ✅ | ✅ |
-| Indicator metadata cache | ✅ | ✅ |
-| 700+ indicators supported | ✅ | ✅ |
-| Country name lookup | ✅ | ✅ |
+| 733 indicators supported | ✅ | ✅ |
+| Metadata versioning | ✅ | ✅ |
 | Disk-based caching | ✅ | No |
 
 ---
@@ -207,9 +304,9 @@ See the examples directories:
 
 ## Links
 
-- UNICEF Data Portal: https://data.unicef.org/
-- SDMX API Docs: https://data.unicef.org/sdmx-api-documentation/
-- GitHub: https://github.com/unicef-drp/unicefData
+- UNICEF Data Portal: <https://data.unicef.org/>
+- SDMX API Docs: <https://data.unicef.org/sdmx-api-documentation/>
+- GitHub: <https://github.com/unicef-drp/unicefData>
 
 ---
 

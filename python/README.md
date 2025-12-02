@@ -13,17 +13,21 @@ The **unicefData** repository provides consistent APIs in both R and Python:
 
 | Feature | R | Python |
 |---------|---|--------|
-| Download SDMX series | `get_sdmx()` | `UNICEFSDMXClient()` |
-| List dataflows | `list_sdmx_flows()` | `client.list_dataflows()` |
-| Browse codelists | `list_sdmx_codelist()` | via config.py |
-| 40+ SDG indicators | ✅ | ✅ |
+| Unified API | `get_unicef()` | `get_unicef()` |
+| **Search indicators** | `search_indicators()` | `search_indicators()` |
+| **List categories** | `list_categories()` | `list_categories()` |
+| **Auto dataflow detection** | ✅ | ✅ |
+| List dataflows | `list_dataflows()` | `list_dataflows()` |
+| 733 indicators | ✅ | ✅ |
 | Automatic retries | ✅ | ✅ |
 | Country name lookup | ✅ | ✅ |
 
 ## 🚀 Features
 
 - **Easy-to-use API**: Simple Python interface for UNICEF SDMX data
-- **Comprehensive coverage**: Access 40+ SDG indicators across health, education, nutrition, protection
+- **Auto dataflow detection**: No need to know which dataflow an indicator is in
+- **Search capability**: Find indicators using `search_indicators()` and `list_categories()`
+- **Comprehensive coverage**: Access 733 indicators across 15 categories
 - **Automatic data cleaning**: Standardized DataFrames ready for analysis
 - **Error handling**: Comprehensive error messages and automatic retries
 - **Flexible filtering**: Filter by country, year, sex disaggregation
@@ -45,7 +49,45 @@ pip install -r requirements.txt
 
 ## 🎯 Quick Start
 
+### Find Indicators
+
+Don't know the indicator code? Search for it!
+
+```python
+from unicef_api import search_indicators, list_categories
+
+# Search for mortality indicators
+search_indicators("mortality")
+
+# Search for nutrition indicators
+search_indicators("stunting")
+
+# List all available categories (15 categories, 733 indicators)
+list_categories()
+
+# Search within a category
+search_indicators(category="CME")  # All child mortality indicators
+search_indicators("rate", category="CME")  # Only rates
+```
+
 ### Basic Usage
+
+```python
+from unicef_api import get_unicef
+
+# Fetch under-5 mortality for specific countries
+# Dataflow is auto-detected from indicator code!
+df = get_unicef(
+    indicator='CME_MRY0T4',
+    countries=['ALB', 'USA', 'BRA'],
+    start_year=2015,
+    end_year=2023
+)
+
+print(df.head())
+```
+
+### Using UNICEFSDMXClient (Advanced)
 
 ```python
 from unicef_api import UNICEFSDMXClient

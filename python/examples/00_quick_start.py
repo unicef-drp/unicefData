@@ -3,10 +3,11 @@ Quick Start Guide for unicef_api Python Package
 ================================================
 
 This demonstrates the unified get_unicef() API that is consistent
-with the R package.
+with the R package, plus the new search_indicators() and list_categories()
+functions for discovering available indicators.
 """
 
-from unicef_api import get_unicef, list_dataflows
+from unicef_api import get_unicef, list_dataflows, search_indicators, list_categories
 
 def main():
     print("=" * 70)
@@ -15,10 +16,33 @@ def main():
     print()
 
     # =========================================================================
+    # Example 0: Discover Indicators
+    # =========================================================================
+    print("--- Example 0: Discover Available Indicators ---")
+    print()
+    
+    # List all categories (15 categories, 733 indicators)
+    print("Available categories:\n")
+    list_categories()
+    
+    print()
+    
+    # Search for mortality indicators
+    print("Searching for 'mortality' indicators:\n")
+    search_indicators("mortality", limit=5)
+    
+    print()
+    
+    # Search within a specific category
+    print("Searching in NUTRITION category:\n")
+    search_indicators(category="NUTRITION", limit=5)
+
+    # =========================================================================
     # Example 1: Basic Usage - Fetch Under-5 Mortality
     # =========================================================================
-    print("--- Example 1: Basic Usage ---")
-    print("Fetching under-5 mortality for Albania, USA, and Brazil (2015-2023)\n")
+    print("\n--- Example 1: Basic Usage ---")
+    print("Fetching under-5 mortality for Albania, USA, and Brazil (2015-2023)")
+    print("Note: Dataflow is auto-detected from indicator code!\n")
 
     df = get_unicef(
         indicator="CME_MRY0T4",

@@ -2,7 +2,8 @@
 # Quick start guide for unicef_api R package
 # 
 # This demonstrates the unified get_unicef() API that is consistent
-# with the Python package.
+# with the Python package, plus the new search_indicators() and 
+# list_categories() functions for discovering available indicators.
 
 cat("========================================\n")
 cat("unicefdata R Package - Quick Start\n")
@@ -26,17 +27,40 @@ suppressPackageStartupMessages({
 
 # Source the R functions
 cat("Sourcing R functions...\n")
+source("R/indicator_registry.R")
 source("R/get_unicef.R")
+
+# =============================================================================
+# Example 0: Discover Available Indicators
+# =============================================================================
+cat("\n--- Example 0: Discover Available Indicators ---\n\n")
+
+# List all categories (15 categories, 733 indicators)
+cat("Available categories:\n\n")
+list_categories()
+
+cat("\n")
+
+# Search for mortality indicators
+cat("Searching for 'mortality' indicators:\n\n")
+search_indicators("mortality", limit = 5)
+
+cat("\n")
+
+# Search within a specific category
+cat("Searching in NUTRITION category:\n\n")
+search_indicators(category = "NUTRITION", limit = 5)
 
 # =============================================================================
 # Example 1: Basic Usage - Fetch Under-5 Mortality
 # =============================================================================
 cat("\n--- Example 1: Basic Usage ---\n")
-cat("Fetching under-5 mortality for Albania, USA, and Brazil (2015-2023)\n\n")
+cat("Fetching under-5 mortality for Albania, USA, and Brazil (2015-2023)\n")
+cat("Note: Dataflow is auto-detected from indicator code!\n\n")
 
 df <- get_unicef(
   indicator = "CME_MRY0T4",
-  dataflow = "CME",
+  # dataflow is auto-detected! No need to specify.
   countries = c("ALB", "USA", "BRA"),
   start_year = 2015,
   end_year = 2023
@@ -58,7 +82,7 @@ cat("Fetching neonatal + under-5 mortality for 2020-2023\n\n")
 
 df <- get_unicef(
   indicator = c("CME_MRM0", "CME_MRY0T4"),
-  dataflow = "CME",
+  # dataflow is auto-detected!
   start_year = 2020,
   end_year = 2023
 )
@@ -88,7 +112,7 @@ cat("Fetching stunting prevalence\n\n")
 
 df <- get_unicef(
   indicator = "NT_ANT_HAZ_NE2_MOD",
-  dataflow = "NUTRITION",
+  # dataflow is auto-detected!
   start_year = 2015
 )
 
