@@ -1,373 +1,0 @@
-
-=========================================================
-▶ Executing: 012_run 
-Start time: 2025-06-12 17:04:29 
-Log file: D:\jazevedo\GitHub\09_others\091_logs\log_run_20250612_170429.txt 
-=========================================================
-
-
-> # Purpose: Run selected scripts TASK 01 
-> # Main Script: 012_run.R
-> # Author: Joao Pedro Azevedo
-> # Date: 2025-06-12
-> 
-> # Define base path
-> ba .... [TRUNCATED] 
-
-> # Available scripts
-> available_scripts <- c(
-+   "0120_create_country_metadata.R",
-+   "0121_get_data_api.R",
-+   "0122_create_target_master.R",
-+  .... [TRUNCATED] 
-
-> # ---- OPTION TO SELECT SCRIPTS ----
-> 
-> # Option 1: Run all (default)
-> scripts_to_run <- available_scripts
-
-> # Option 2: Uncomment to manually select scripts by index
-> # selected_indices <- c(1, 3, 5)
-> # scripts_to_run <- available_scripts[selected_indice .... [TRUNCATED] 
-
-> for (script in scripts_to_run) {
-+   full_path <- file.path(base_path, script)
-+   if (!file.exists(full_path)) {
-+     warning("⚠ File not found: " .... [TRUNCATED] 
-
-> #-------------------------------------------------------------------#
-> # Project: PREP-SDG-REPORT-2025
-> # Sector: UNICEF Education Data & Analytic .... [TRUNCATED] 
-
-> unicef_countries <- unique(unf_rep_regions$ISO3Code)
-
-> # since there are multiple SDG classifications, we need to create a vector of unique SDG region codes 
-> sdg_reg_codes <- c("UNSDG_CENTRALASIASOUTHE ..." ... [TRUNCATED] 
-
-> sdg_regions <-
-+   read.csv("https://raw.githubusercontent.com/unicef-drp/Country-and-Region-Metadata/refs/heads/main/output/UNSDG_REGION_GLOBAL.csv ..." ... [TRUNCATED] 
-
-> # View(sdg_regions)
-> 
-> # World Bank Income groupings 
-> wb_income_groups <-
-+   read.csv("https://raw.githubusercontent.com/unicef-drp/Country-and ..." ... [TRUNCATED] 
-
-> # Create a joint country file
-> country_file <-
-+   unf_rep_regions %>%
-+   left_join(sdg_regions) %>%
-+   left_join(wb_income_groups) %>%
-+   renam .... [TRUNCATED] 
-
-> # View(country_file)
-> 
-> # write the file to the database
-> write.csv(country_file, file.path(metaData, "country_metadata_master.csv"), row.names = .... [TRUNCATED] 
-
-> #-------------------------------------------------------------------
-> # Project: PREP-SDG-REPORT-2025
-> # Sector: UNICEF Education Data & Analytics .... [TRUNCATED] 
-
-> ilo_neet_api <- get_ilostat(id = "SDG_0861_SEX_RT_A",     segment = "indicator") 
-
-> ilo_pov_api  <- get_ilostat(id = "SDG_0131_SEX_SOC_RT_A", segment = "indicator") ### add total contig in addition to chiild
-
-> # ------ Writing the csv files 
-> write.csv(ilo_cl_api, file.path(rawData , "api_ilo_cl.csv"))
-
-> write.csv(ilo_neet_api, file.path(rawData , "api_ilo_neet.csv"))
-
-> write.csv(ilo_pov_api, file.path(rawData , "api_ilo_pov.csv"))
-
-> # View(ilo_cl)
-> # View(ilo_pov)
-> 
-> ### Download from WB API poverty
-> 
-> # pov_cache <- wb_cache()
-> # View(pov_cache)
-> # 
-> # wb_inds <- pov_ca .... [TRUNCATED] 
-
-> wb_pov <- wb_data(indicator = wb_pov_inds, 
-+                    start_date = 2000, end_date = 2024)
-
-> # View(wb_pov)
-> 
-> write.csv(wb_pov, file.path(rawData , "api_wb_pov.csv"))
-
-> #### UNICEF DW
-> sdg_mortality    <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/.CME_MRM0+CME_MRY0T4..?format=csv&labe ..." ... [TRUNCATED] 
-
-> sdg_nutrition    <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,NUTRITION,1.0/.NT_ANT_HAZ_NE2_MOD+NT_ANT_WHZ_NE2+NT_ANT_WHZ_PO2 ..." ... [TRUNCATED] 
-
-> # separate file for wasting cause it has a selected time series
-> sdg_wasting      <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNIC ..." ... [TRUNCATED] 
-
-> sdg_education    <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,EDUCATION_UIS_SDG,1.0/.ED_ANAR_L02+ED_CR_L1_UIS_MOD+ED_CR_L2_UI ..." ... [TRUNCATED] 
-
-> sdg_anaemia      <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,NUTRITION,1.0/.NT_ANE_WOM_15_49_MOD......?format=csv&labels=bot ..." ... [TRUNCATED] 
-
-> sdg_immunization <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,IMMUNISATION,1.0/.IM_DTP3+IM_MCV1..?format=csv&labels=both"
-
-> sdg_hiv          <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,HIV_AIDS,1.0/.HVA_EPI_INF_RT.Y0T14+Y15T19....?format=csv&labels ..." ... [TRUNCATED] 
-
-> sdg_wash         <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,WASH_HOUSEHOLDS,1.0/.WS_PPL_H-B+WS_PPL_S-ALB+WS_PPL_S-OD+WS_PPL ..." ... [TRUNCATED] 
-
-> sdg_mnch         <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,MNCH,1.0/.MNCH_ABR+MNCH_INFDEC+MNCH_MMR+MNCH_SAB+MNCH_UHC...... ..." ... [TRUNCATED] 
-
-> # sdg_mnch         <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,MNCH,1.0/.MNCH_ABR+MNCH_MMR+MNCH_SAB+MNCH_UHC.......?format=c ..." ... [TRUNCATED] 
-
-> sdg_ecd          <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,ECD,1.0/.ECD_CHLD_LMPSL..........?format=csv&labels=both"
-
-> sdg_chmrg        <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,PT_CM,1.0/.PT_F_20-24_MRD_U18_TND..........?format=csv&labels=b ..." ... [TRUNCATED] 
-
-> sdg_fgm          <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,PT_FGM,1.0/.PT_F_15-49_FGM...........?format=csv&labels=both"
-
-> # sdg_gndr         <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,GENDER,1.0/.GN_SG_LGL_GENEQEMP....?format=csv&labels=both"
->  .... [TRUNCATED] 
-
-> sdg_ipfm         <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,PT,1.0/.PT_F_PS-SX_V_PTNR_12MNTH......?format=csv&labels=both"
-
-> unf_dw_mort <-
-+   read_csv(sdg_mortality) %>%
-+   write.csv(file.path(rawData , "api_unf_mort.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 786.43kB in  0s, 3.52MB/sindexed 917.50kB in  0s, 4.09MB/s                                                                                                                indexed 1.05MB in  0s, 4.65MB/sindexed 1.18MB in  0s, 5.22MB/sindexed 1.31MB in  0s, 5.78MB/sindexed 1.44MB in  0s, 6.33MB/sindexed 1.57MB in  0s, 5.20MB/sindexed 1.70MB in  0s, 5.21MB/sindexed 1.83MB in  0s, 5.60MB/sindexed 1.97MB in  0s, 5.98MB/sindexed 2.10MB in  0s, 6.25MB/sindexed 2.23MB in  0s, 6.63MB/sindexed 2.36MB in  0s, 6.98MB/sindexed 2.49MB in  0s, 7.35MB/sindexed 2.62MB in  0s, 7.72MB/sindexed 2.75MB in  0s, 8.08MB/sindexed 2.88MB in  0s, 7.07MB/sindexed 3.01MB in  0s, 7.37MB/sindexed 3.15MB in  0s, 7.68MB/sindexed 3.28MB in  0s, 7.58MB/sindexed 3.41MB in  0s, 7.86MB/sindexed 3.54MB in  0s, 8.16MB/sindexed 3.67MB in  0s, 8.45MB/sindexed 3.80MB in  0s, 8.74MB/sindexed 3.93MB in  0s, 8.91MB/sindexed 4.06MB in  0s, 9.18MB/sindexed 4.19MB in  0s, 9.47MB/sindexed 4.33MB in  0s, 9.76MB/sindexed 4.46MB in  0s, 10.04MB/sindexed 4.59MB in  0s, 10.32MB/sindexed 4.72MB in  0s, 10.60MB/sindexed 4.85MB in  0s, 10.87MB/sindexed 4.98MB in  0s, 11.15MB/sindexed 5.11MB in  0s, 11.42MB/sindexed 5.24MB in  0s, 11.68MB/sindexed 5.37MB in  0s, 11.93MB/sindexed 5.50MB in  0s, 12.21MB/sindexed 5.64MB in  0s, 12.49MB/sindexed 5.77MB in  0s, 12.69MB/sindexed 5.90MB in  1s, 11.64MB/sindexed 6.03MB in  1s, 11.88MB/sindexed 6.16MB in  1s, 12.10MB/sindexed 6.29MB in  1s, 12.35MB/sindexed 6.42MB in  1s, 12.59MB/sindexed 6.55MB in  1s, 12.15MB/sindexed 6.68MB in  1s, 12.38MB/sindexed 6.82MB in  1s, 12.55MB/sindexed 6.95MB in  1s, 12.77MB/sindexed 7.08MB in  1s, 12.99MB/sindexed 7.21MB in  1s, 13.22MB/sindexed 7.34MB in  1s, 13.45MB/sindexed 7.47MB in  1s, 13.67MB/sindexed 7.60MB in  1s, 13.89MB/sindexed 7.73MB in  1s, 14.12MB/sindexed 7.86MB in  1s, 14.28MB/sindexed 8.00MB in  1s, 14.50MB/sindexed 8.13MB in  1s, 14.72MB/sindexed 8.26MB in  1s, 14.94MB/sindexed 8.39MB in  1s, 15.16MB/sindexed 8.52MB in  1s, 15.38MB/sindexed 8.65MB in  1s, 15.60MB/sindexed 8.78MB in  1s, 15.82MB/sindexed 8.91MB in  1s, 15.92MB/sindexed 9.04MB in  1s, 16.14MB/sindexed 9.17MB in  1s, 16.36MB/sindexed 9.31MB in  1s, 16.57MB/sindexed 9.44MB in  1s, 16.79MB/sindexed 9.57MB in  1s, 17.01MB/sindexed 9.70MB in  1s, 17.22MB/sindexed 9.83MB in  1s, 17.43MB/sindexed 9.96MB in  1s, 17.65MB/sindexed 10.09MB in  1s, 17.86MB/sindexed 10.22MB in  1s, 17.97MB/sindexed 10.35MB in  1s, 18.19MB/sindexed 10.49MB in  1s, 18.40MB/sindexed 10.62MB in  1s, 18.60MB/sindexed 10.75MB in  1s, 18.82MB/sindexed 10.88MB in  1s, 18.98MB/sindexed 11.01MB in  1s, 19.19MB/sindexed 11.14MB in  1s, 19.39MB/sindexed 11.27MB in  1s, 19.60MB/sindexed 11.40MB in  1s, 19.78MB/sindexed 11.53MB in  1s, 19.98MB/sindexed 11.67MB in  1s, 20.19MB/sindexed 11.80MB in  1s, 19.07MB/sindexed 11.93MB in  1s, 19.25MB/sindexed 12.06MB in  1s, 19.45MB/sindexed 12.19MB in  1s, 19.64MB/sindexed 12.32MB in  1s, 19.83MB/sindexed 12.45MB in  1s, 20.02MB/sindexed 12.58MB in  1s, 20.22MB/sindexed 12.71MB in  1s, 20.39MB/sindexed 12.84MB in  1s, 20.58MB/sindexed 12.98MB in  1s, 20.76MB/sindexed 13.11MB in  1s, 20.40MB/sindexed 13.24MB in  1s, 20.56MB/sindexed 13.37MB in  1s, 20.75MB/sindexed 13.50MB in  1s, 20.93MB/sindexed 13.63MB in  1s, 21.12MB/sindexed 13.76MB in  1s, 21.14MB/sindexed 13.89MB in  1s, 21.18MB/sindexed 14.02MB in  1s, 21.36MB/sindexed 14.16MB in  1s, 21.54MB/sindexed 14.29MB in  1s, 21.71MB/sindexed 14.42MB in  1s, 21.89MB/sindexed 14.55MB in  1s, 22.07MB/sindexed 14.68MB in  1s, 22.25MB/sindexed 14.81MB in  1s, 22.43MB/sindexed 14.94MB in  1s, 22.61MB/sindexed 15.07MB in  1s, 22.79MB/sindexed 15.20MB in  1s, 22.90MB/sindexed 15.34MB in  1s, 23.07MB/sindexed 15.47MB in  1s, 23.25MB/sindexed 15.60MB in  1s, 23.42MB/sindexed 15.73MB in  1s, 23.60MB/sindexed 15.86MB in  1s, 23.78MB/sindexed 15.99MB in  1s, 23.95MB/sindexed 16.12MB in  1s, 24.11MB/sindexed 16.15MB in  1s, 24.14MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> unf_dw_nutr <-
-+   read_csv(sdg_nutrition) %>%
-+   write.csv(file.path(rawData , "api_unf_nutr.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 1.83MB in  0s, 8.42MB/sindexed 1.97MB in  0s, 8.99MB/sindexed 2.10MB in  0s, 9.57MB/sindexed 2.23MB in  0s, 10.14MB/sindexed 2.36MB in  0s, 10.71MB/sindexed 2.49MB in  0s, 11.26MB/sindexed 2.62MB in  0s, 11.83MB/sindexed 2.75MB in  0s, 12.39MB/sindexed 2.88MB in  0s, 12.95MB/s                                                                                                                indexed 3.01MB in  0s, 8.47MB/sindexed 3.15MB in  0s, 8.82MB/sindexed 3.28MB in  0s, 9.16MB/sindexed 3.41MB in  0s, 9.51MB/sindexed 3.54MB in  0s, 9.86MB/sindexed 3.67MB in  0s, 10.19MB/sindexed 3.80MB in  0s, 10.54MB/sindexed 3.93MB in  0s, 10.88MB/sindexed 4.06MB in  0s, 11.23MB/sindexed 4.19MB in  0s, 11.57MB/sindexed 4.33MB in  0s, 11.91MB/sindexed 4.46MB in  0s, 12.25MB/sindexed 4.59MB in  0s, 12.59MB/sindexed 4.72MB in  0s, 12.93MB/sindexed 4.85MB in  0s, 13.27MB/sindexed 4.98MB in  0s, 13.60MB/sindexed 5.11MB in  0s, 13.94MB/sindexed 5.24MB in  0s, 14.27MB/sindexed 5.37MB in  0s, 14.61MB/sindexed 5.50MB in  0s, 14.94MB/sindexed 5.64MB in  0s, 15.27MB/sindexed 5.77MB in  0s, 15.60MB/sindexed 5.90MB in  1s, 11.30MB/sindexed 6.03MB in  1s, 11.53MB/sindexed 6.16MB in  1s, 11.77MB/sindexed 6.29MB in  1s, 12.00MB/sindexed 6.42MB in  1s, 12.24MB/sindexed 6.55MB in  1s, 12.47MB/sindexed 6.68MB in  1s, 12.71MB/sindexed 6.82MB in  1s, 12.94MB/sindexed 6.95MB in  1s, 13.17MB/sindexed 7.08MB in  1s, 13.41MB/sindexed 7.21MB in  1s, 13.60MB/sindexed 7.34MB in  1s, 13.83MB/sindexed 7.47MB in  1s, 14.06MB/sindexed 7.60MB in  1s, 14.29MB/sindexed 7.73MB in  1s, 14.51MB/sindexed 7.86MB in  1s, 14.74MB/sindexed 8.00MB in  1s, 14.96MB/sindexed 8.13MB in  1s, 15.19MB/sindexed 8.26MB in  1s, 15.42MB/sindexed 8.39MB in  1s, 15.65MB/sindexed 8.52MB in  1s, 15.88MB/sindexed 8.65MB in  1s, 16.10MB/sindexed 8.78MB in  1s, 16.33MB/sindexed 8.91MB in  1s, 16.55MB/sindexed 9.04MB in  1s, 16.78MB/sindexed 9.17MB in  1s, 17.00MB/sindexed 9.31MB in  1s, 17.23MB/sindexed 9.44MB in  1s, 17.45MB/sindexed 9.57MB in  1s, 17.68MB/sindexed 9.70MB in  1s, 17.90MB/sindexed 9.83MB in  1s, 18.12MB/sindexed 9.96MB in  1s, 18.34MB/sindexed 10.09MB in  1s, 18.56MB/sindexed 10.22MB in  1s, 18.79MB/sindexed 10.35MB in  1s, 19.01MB/sindexed 10.49MB in  1s, 19.23MB/sindexed 10.62MB in  1s, 19.45MB/sindexed 10.75MB in  1s, 19.66MB/sindexed 10.88MB in  1s, 19.88MB/sindexed 11.01MB in  1s, 20.08MB/sindexed 11.14MB in  1s, 20.29MB/sindexed 11.27MB in  1s, 20.51MB/sindexed 11.40MB in  1s, 18.42MB/sindexed 11.53MB in  1s, 18.60MB/sindexed 11.67MB in  1s, 18.80MB/sindexed 11.80MB in  1s, 18.99MB/sindexed 11.93MB in  1s, 19.19MB/sindexed 12.06MB in  1s, 19.38MB/sindexed 12.19MB in  1s, 19.57MB/sindexed 12.32MB in  1s, 19.76MB/sindexed 12.45MB in  1s, 19.95MB/sindexed 12.58MB in  1s, 20.15MB/sindexed 12.71MB in  1s, 20.34MB/sindexed 12.84MB in  1s, 20.53MB/sindexed 12.98MB in  1s, 20.72MB/sindexed 13.11MB in  1s, 20.91MB/sindexed 13.24MB in  1s, 21.10MB/sindexed 13.37MB in  1s, 21.29MB/sindexed 13.50MB in  1s, 21.48MB/sindexed 13.63MB in  1s, 21.67MB/sindexed 13.76MB in  1s, 21.86MB/sindexed 13.89MB in  1s, 22.05MB/sindexed 14.02MB in  1s, 22.24MB/sindexed 14.16MB in  1s, 22.42MB/sindexed 14.29MB in  1s, 22.50MB/sindexed 14.42MB in  1s, 22.69MB/sindexed 14.55MB in  1s, 22.88MB/sindexed 14.68MB in  1s, 23.06MB/sindexed 14.81MB in  1s, 23.25MB/sindexed 14.94MB in  1s, 23.43MB/sindexed 15.07MB in  1s, 23.62MB/sindexed 15.20MB in  1s, 23.80MB/sindexed 15.34MB in  1s, 23.98MB/sindexed 15.47MB in  1s, 24.17MB/sindexed 15.60MB in  1s, 24.35MB/sindexed 15.73MB in  1s, 24.53MB/sindexed 15.86MB in  1s, 24.72MB/sindexed 15.99MB in  1s, 24.90MB/sindexed 16.12MB in  1s, 25.08MB/sindexed 16.25MB in  1s, 25.26MB/sindexed 16.38MB in  1s, 25.44MB/sindexed 16.51MB in  1s, 25.62MB/sindexed 16.65MB in  1s, 25.80MB/sindexed 16.78MB in  1s, 23.28MB/sindexed 16.91MB in  1s, 23.43MB/sindexed 17.04MB in  1s, 23.60MB/sindexed 17.17MB in  1s, 23.76MB/sindexed 17.30MB in  1s, 23.92MB/sindexed 17.43MB in  1s, 24.09MB/sindexed 17.56MB in  1s, 24.25MB/sindexed 17.69MB in  1s, 24.41MB/sindexed 17.83MB in  1s, 24.57MB/sindexed 17.96MB in  1s, 24.73MB/sindexed 18.09MB in  1s, 24.89MB/sindexed 18.22MB in  1s, 25.05MB/sindexed 18.35MB in  1s, 25.21MB/sindexed 18.48MB in  1s, 25.37MB/sindexed 18.61MB in  1s, 25.53MB/sindexed 18.74MB in  1s, 25.69MB/sindexed 18.87MB in  1s, 25.85MB/sindexed 19.01MB in  1s, 26.01MB/sindexed 19.14MB in  1s, 26.17MB/sindexed 19.27MB in  1s, 26.33MB/sindexed 19.40MB in  1s, 26.49MB/sindexed 19.53MB in  1s, 26.65MB/sindexed 19.66MB in  1s, 26.81MB/sindexed 19.79MB in  1s, 26.97MB/sindexed 19.92MB in  1s, 27.12MB/sindexed 20.05MB in  1s, 27.28MB/sindexed 20.18MB in  1s, 27.44MB/sindexed 20.32MB in  1s, 27.60MB/sindexed 20.45MB in  1s, 27.75MB/sindexed 20.58MB in  1s, 27.91MB/sindexed 20.71MB in  1s, 28.06MB/sindexed 20.84MB in  1s, 28.22MB/sindexed 20.97MB in  1s, 28.38MB/sindexed 21.10MB in  1s, 28.53MB/sindexed 21.23MB in  1s, 28.69MB/sindexed 21.36MB in  1s, 28.84MB/sindexed 21.50MB in  1s, 29.00MB/sindexed 21.63MB in  1s, 29.15MB/sindexed 21.76MB in  1s, 29.31MB/sindexed 21.89MB in  1s, 29.46MB/sindexed 22.02MB in  1s, 29.62MB/sindexed 22.15MB in  1s, 29.76MB/sindexed 22.28MB in  1s, 29.91MB/sindexed 22.41MB in  1s, 27.17MB/sindexed 22.54MB in  1s, 27.30MB/sindexed 22.68MB in  1s, 27.44MB/sindexed 22.81MB in  1s, 27.58MB/sindexed 22.94MB in  1s, 27.72MB/sindexed 23.07MB in  1s, 27.86MB/sindexed 23.20MB in  1s, 28.00MB/sindexed 23.33MB in  1s, 28.14MB/sindexed 23.46MB in  1s, 28.28MB/sindexed 23.59MB in  1s, 28.41MB/sindexed 23.72MB in  1s, 28.55MB/sindexed 23.85MB in  1s, 28.69MB/sindexed 23.99MB in  1s, 28.83MB/sindexed 24.12MB in  1s, 28.97MB/sindexed 24.25MB in  1s, 29.11MB/sindexed 24.38MB in  1s, 29.25MB/sindexed 24.51MB in  1s, 29.39MB/sindexed 24.64MB in  1s, 29.52MB/sindexed 24.77MB in  1s, 29.66MB/sindexed 24.90MB in  1s, 29.78MB/sindexed 25.03MB in  1s, 29.92MB/sindexed 25.17MB in  1s, 30.06MB/sindexed 25.30MB in  1s, 30.19MB/sindexed 25.43MB in  1s, 30.32MB/sindexed 25.56MB in  1s, 30.46MB/sindexed 25.69MB in  1s, 30.59MB/sindexed 25.82MB in  1s, 30.73MB/sindexed 25.95MB in  1s, 30.86MB/sindexed 26.08MB in  1s, 30.99MB/sindexed 26.21MB in  1s, 31.13MB/sindexed 26.35MB in  1s, 31.26MB/sindexed 26.48MB in  1s, 31.40MB/sindexed 26.61MB in  1s, 31.53MB/sindexed 26.74MB in  1s, 31.67MB/sindexed 26.87MB in  1s, 31.81MB/sindexed 27.00MB in  1s, 31.94MB/sindexed 27.13MB in  1s, 32.08MB/sindexed 27.26MB in  1s, 32.21MB/sindexed 27.39MB in  1s, 32.35MB/sindexed 27.52MB in  1s, 32.48MB/sindexed 27.66MB in  1s, 32.61MB/sindexed 27.79MB in  1s, 32.74MB/sindexed 27.92MB in  1s, 32.88MB/sindexed 28.05MB in  1s, 33.01MB/sindexed 28.18MB in  1s, 33.14MB/sindexed 28.31MB in  1s, 30.73MB/sindexed 28.44MB in  1s, 30.84MB/sindexed 28.57MB in  1s, 30.97MB/sindexed 28.70MB in  1s, 31.09MB/sindexed 28.84MB in  1s, 31.22MB/sindexed 28.97MB in  1s, 31.34MB/sindexed 29.10MB in  1s, 31.46MB/sindexed 29.23MB in  1s, 31.59MB/sindexed 29.36MB in  1s, 31.69MB/sindexed 29.49MB in  1s, 31.81MB/sindexed 29.62MB in  1s, 31.93MB/sindexed 29.75MB in  1s, 32.05MB/sindexed 29.88MB in  1s, 32.18MB/sindexed 30.02MB in  1s, 32.30MB/sindexed 30.15MB in  1s, 32.42MB/sindexed 30.28MB in  1s, 32.54MB/sindexed 30.41MB in  1s, 32.66MB/sindexed 30.54MB in  1s, 32.78MB/sindexed 30.67MB in  1s, 32.90MB/sindexed 30.80MB in  1s, 33.02MB/sindexed 30.93MB in  1s, 33.15MB/sindexed 31.06MB in  1s, 33.27MB/sindexed 31.19MB in  1s, 33.39MB/sindexed 31.33MB in  1s, 33.51MB/sindexed 31.46MB in  1s, 33.63MB/sindexed 31.59MB in  1s, 33.75MB/sindexed 31.72MB in  1s, 33.87MB/sindexed 31.85MB in  1s, 33.98MB/sindexed 31.98MB in  1s, 34.10MB/sindexed 32.11MB in  1s, 34.22MB/sindexed 32.24MB in  1s, 34.34MB/sindexed 32.37MB in  1s, 34.46MB/sindexed 32.51MB in  1s, 34.58MB/sindexed 32.64MB in  1s, 34.70MB/sindexed 32.77MB in  1s, 34.82MB/sindexed 32.90MB in  1s, 34.92MB/sindexed 33.03MB in  1s, 35.04MB/sindexed 33.16MB in  1s, 35.16MB/sindexed 33.29MB in  1s, 35.28MB/sindexed 33.42MB in  1s, 35.39MB/sindexed 33.55MB in  1s, 35.51MB/sindexed 33.69MB in  1s, 35.63MB/sindexed 33.82MB in  1s, 35.74MB/sindexed 33.95MB in  1s, 33.46MB/sindexed 34.08MB in  1s, 33.56MB/sindexed 34.21MB in  1s, 33.67MB/sindexed 34.34MB in  1s, 33.78MB/sindexed 34.47MB in  1s, 33.89MB/sindexed 34.60MB in  1s, 33.99MB/sindexed 34.73MB in  1s, 34.10MB/sindexed 34.86MB in  1s, 34.21MB/sindexed 35.00MB in  1s, 34.32MB/sindexed 35.13MB in  1s, 34.43MB/sindexed 35.26MB in  1s, 34.54MB/sindexed 35.39MB in  1s, 34.65MB/sindexed 35.52MB in  1s, 34.76MB/sindexed 35.65MB in  1s, 34.87MB/sindexed 35.78MB in  1s, 34.98MB/sindexed 35.91MB in  1s, 35.09MB/sindexed 36.04MB in  1s, 35.20MB/sindexed 36.18MB in  1s, 35.31MB/sindexed 36.31MB in  1s, 35.41MB/sindexed 36.44MB in  1s, 35.52MB/sindexed 36.57MB in  1s, 35.63MB/sindexed 36.70MB in  1s, 35.73MB/sindexed 36.83MB in  1s, 35.84MB/sindexed 36.96MB in  1s, 35.95MB/sindexed 37.09MB in  1s, 36.06MB/sindexed 37.22MB in  1s, 36.17MB/sindexed 37.36MB in  1s, 36.27MB/sindexed 37.49MB in  1s, 36.38MB/sindexed 37.62MB in  1s, 36.48MB/sindexed 37.75MB in  1s, 36.59MB/sindexed 37.88MB in  1s, 36.70MB/sindexed 38.01MB in  1s, 36.80MB/sindexed 38.14MB in  1s, 36.90MB/sindexed 38.27MB in  1s, 37.01MB/sindexed 38.40MB in  1s, 37.11MB/sindexed 38.53MB in  1s, 37.22MB/sindexed 38.67MB in  1s, 37.32MB/sindexed 38.80MB in  1s, 37.43MB/sindexed 38.93MB in  1s, 37.53MB/sindexed 39.06MB in  1s, 37.62MB/sindexed 39.19MB in  1s, 37.72MB/sindexed 39.32MB in  1s, 37.83MB/sindexed 39.45MB in  1s, 37.93MB/sindexed 39.58MB in  1s, 38.04MB/sindexed 39.65MB in  1s, 38.09MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> unf_dw_nutr <-
-+   read_csv(sdg_wasting) %>%
-+   write.csv(file.path(rawData , "api_unf_nutr_wast.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 2.62MB in  0s, 11.99MB/sindexed 2.75MB in  0s, 12.53MB/sindexed 2.88MB in  0s, 13.08MB/sindexed 3.01MB in  0s, 11.95MB/sindexed 3.15MB in  0s, 12.42MB/sindexed 3.28MB in  0s, 12.89MB/sindexed 3.41MB in  0s, 13.36MB/sindexed 3.54MB in  0s, 13.81MB/sindexed 3.67MB in  0s, 14.29MB/sindexed 3.80MB in  0s, 14.72MB/sindexed 3.93MB in  0s, 15.18MB/sindexed 4.06MB in  0s, 15.65MB/sindexed 4.19MB in  0s, 16.10MB/sindexed 4.33MB in  0s, 16.54MB/sindexed 4.46MB in  0s, 16.99MB/sindexed 4.59MB in  0s, 17.44MB/sindexed 4.72MB in  0s, 17.90MB/sindexed 4.85MB in  0s, 18.33MB/sindexed 4.98MB in  0s, 18.77MB/sindexed 5.11MB in  0s, 19.20MB/sindexed 5.24MB in  0s, 19.63MB/sindexed 5.37MB in  0s, 20.07MB/sindexed 5.50MB in  0s, 20.49MB/sindexed 5.64MB in  0s, 20.92MB/sindexed 5.77MB in  0s, 21.34MB/sindexed 5.90MB in  0s, 21.75MB/sindexed 6.03MB in  0s, 22.16MB/sindexed 6.16MB in  0s, 18.88MB/sindexed 6.29MB in  0s, 19.22MB/sindexed 6.42MB in  0s, 19.58MB/sindexed 6.55MB in  0s, 19.93MB/sindexed 6.68MB in  0s, 20.28MB/sindexed 6.82MB in  0s, 20.63MB/sindexed 6.95MB in  0s, 20.98MB/sindexed 7.08MB in  0s, 21.30MB/sindexed 7.21MB in  0s, 20.64MB/sindexed 7.34MB in  0s, 20.96MB/sindexed 7.47MB in  0s, 21.28MB/sindexed 7.60MB in  0s, 21.61MB/sindexed 7.73MB in  0s, 21.93MB/sindexed 7.86MB in  0s, 22.26MB/sindexed 8.00MB in  0s, 22.57MB/sindexed 8.13MB in  0s, 22.89MB/sindexed 8.26MB in  0s, 23.22MB/sindexed 8.39MB in  0s, 23.53MB/sindexed 8.52MB in  0s, 23.84MB/sindexed 8.65MB in  0s, 24.16MB/sindexed 8.78MB in  0s, 24.47MB/sindexed 8.91MB in  0s, 24.78MB/sindexed 9.04MB in  0s, 25.08MB/sindexed 9.17MB in  0s, 25.40MB/sindexed 9.31MB in  0s, 25.71MB/sindexed 9.44MB in  0s, 26.01MB/sindexed 9.57MB in  0s, 24.25MB/sindexed 9.70MB in  0s, 24.50MB/sindexed 9.83MB in  0s, 24.79MB/sindexed 9.96MB in  0s, 25.06MB/sindexed 10.09MB in  0s, 25.33MB/sindexed 10.22MB in  0s, 25.62MB/sindexed 10.35MB in  0s, 25.89MB/sindexed 10.49MB in  0s, 26.15MB/sindexed 10.62MB in  0s, 26.43MB/sindexed 10.75MB in  0s, 26.70MB/sindexed 10.88MB in  0s, 26.99MB/sindexed 11.01MB in  0s, 27.26MB/sindexed 11.14MB in  0s, 27.52MB/sindexed 11.27MB in  0s, 27.80MB/sindexed 11.40MB in  0s, 28.07MB/sindexed 11.53MB in  0s, 28.35MB/sindexed 11.67MB in  0s, 28.61MB/sindexed 11.80MB in  0s, 28.87MB/sindexed 11.93MB in  0s, 29.15MB/sindexed 12.06MB in  0s, 29.41MB/sindexed 12.19MB in  0s, 29.67MB/sindexed 12.32MB in  0s, 29.92MB/sindexed 12.45MB in  0s, 30.18MB/sindexed 12.58MB in  0s, 30.45MB/sindexed 12.71MB in  0s, 30.72MB/sindexed 12.84MB in  0s, 30.98MB/sindexed 12.98MB in  0s, 29.40MB/sindexed 13.11MB in  0s, 29.63MB/sindexed 13.24MB in  0s, 29.87MB/sindexed 13.37MB in  0s, 30.13MB/sindexed 13.50MB in  0s, 30.38MB/sindexed 13.63MB in  0s, 30.61MB/sindexed 13.76MB in  0s, 30.85MB/sindexed 13.89MB in  0s, 31.09MB/sindexed 14.02MB in  0s, 31.31MB/sindexed 14.16MB in  0s, 31.54MB/sindexed 14.29MB in  0s, 31.77MB/sindexed 14.42MB in  0s, 31.81MB/sindexed 14.55MB in  0s, 32.04MB/sindexed 14.68MB in  0s, 32.28MB/sindexed 14.81MB in  0s, 32.52MB/sindexed 14.94MB in  1s, 28.24MB/sindexed 15.07MB in  1s, 28.43MB/sindexed 15.20MB in  1s, 28.64MB/sindexed 15.34MB in  1s, 28.85MB/sindexed 15.47MB in  1s, 29.06MB/sindexed 15.60MB in  1s, 29.26MB/sindexed 15.73MB in  1s, 29.47MB/sindexed 15.86MB in  1s, 29.67MB/sindexed 15.99MB in  1s, 29.88MB/sindexed 16.12MB in  1s, 30.09MB/sindexed 16.25MB in  1s, 30.30MB/sindexed 16.38MB in  1s, 30.50MB/sindexed 16.51MB in  1s, 30.70MB/sindexed 16.65MB in  1s, 30.89MB/sindexed 16.78MB in  1s, 31.09MB/sindexed 16.91MB in  1s, 31.29MB/sindexed 17.04MB in  1s, 31.48MB/sindexed 17.17MB in  1s, 31.67MB/sindexed 17.30MB in  1s, 31.86MB/sindexed 17.43MB in  1s, 32.04MB/sindexed 17.56MB in  1s, 32.23MB/sindexed 17.69MB in  1s, 32.42MB/sindexed 17.83MB in  1s, 32.62MB/sindexed 17.96MB in  1s, 32.81MB/sindexed 18.09MB in  1s, 33.00MB/sindexed 18.22MB in  1s, 33.19MB/sindexed 18.35MB in  1s, 33.38MB/sindexed 18.48MB in  1s, 33.57MB/sindexed 18.61MB in  1s, 33.76MB/sindexed 18.74MB in  1s, 33.95MB/sindexed 18.87MB in  1s, 34.15MB/sindexed 19.01MB in  1s, 34.34MB/sindexed 19.14MB in  1s, 34.53MB/sindexed 19.27MB in  1s, 34.72MB/sindexed 19.40MB in  1s, 34.90MB/sindexed 19.53MB in  1s, 35.08MB/sindexed 19.66MB in  1s, 35.26MB/sindexed 19.79MB in  1s, 35.45MB/sindexed 19.92MB in  1s, 35.65MB/sindexed 20.05MB in  1s, 35.84MB/sindexed 20.18MB in  1s, 36.03MB/sindexed 20.32MB in  1s, 31.57MB/sindexed 20.45MB in  1s, 31.73MB/sindexed 20.58MB in  1s, 31.90MB/sindexed 20.71MB in  1s, 32.06MB/sindexed 20.84MB in  1s, 32.20MB/sindexed 20.97MB in  1s, 32.35MB/sindexed 21.10MB in  1s, 32.47MB/sindexed 21.23MB in  1s, 32.62MB/sindexed 21.36MB in  1s, 32.78MB/sindexed 21.50MB in  1s, 32.94MB/sindexed 21.63MB in  1s, 33.10MB/sindexed 21.76MB in  1s, 33.26MB/sindexed 21.89MB in  1s, 33.42MB/sindexed 22.02MB in  1s, 33.58MB/sindexed 22.15MB in  1s, 33.74MB/sindexed 22.28MB in  1s, 33.89MB/sindexed 22.41MB in  1s, 34.05MB/sindexed 22.54MB in  1s, 34.21MB/sindexed 22.68MB in  1s, 34.36MB/sindexed 22.81MB in  1s, 34.52MB/sindexed 22.94MB in  1s, 34.67MB/sindexed 23.07MB in  1s, 34.80MB/sindexed 23.20MB in  1s, 34.95MB/sindexed 23.33MB in  1s, 35.10MB/sindexed 23.46MB in  1s, 35.25MB/sindexed 23.59MB in  1s, 35.41MB/sindexed 23.72MB in  1s, 35.56MB/sindexed 23.85MB in  1s, 35.72MB/sindexed 23.99MB in  1s, 35.87MB/sindexed 24.12MB in  1s, 36.03MB/sindexed 24.25MB in  1s, 36.18MB/sindexed 24.38MB in  1s, 36.33MB/sindexed 24.51MB in  1s, 36.48MB/sindexed 24.64MB in  1s, 36.62MB/sindexed 24.77MB in  1s, 36.78MB/sindexed 24.90MB in  1s, 36.94MB/sindexed 25.03MB in  1s, 37.09MB/sindexed 25.17MB in  1s, 37.25MB/sindexed 25.30MB in  1s, 37.37MB/sindexed 25.43MB in  1s, 37.51MB/sindexed 25.56MB in  1s, 37.65MB/sindexed 25.69MB in  1s, 34.01MB/sindexed 25.82MB in  1s, 34.14MB/sindexed 25.95MB in  1s, 34.28MB/sindexed 26.08MB in  1s, 34.42MB/sindexed 26.21MB in  1s, 34.56MB/sindexed 26.35MB in  1s, 34.70MB/sindexed 26.48MB in  1s, 34.83MB/sindexed 26.61MB in  1s, 34.97MB/sindexed 26.74MB in  1s, 35.11MB/sindexed 26.87MB in  1s, 35.24MB/sindexed 27.00MB in  1s, 35.38MB/sindexed 27.13MB in  1s, 35.52MB/sindexed 27.26MB in  1s, 35.65MB/sindexed 27.39MB in  1s, 35.79MB/sindexed 27.52MB in  1s, 35.92MB/sindexed 27.66MB in  1s, 36.06MB/sindexed 27.79MB in  1s, 36.19MB/sindexed 27.92MB in  1s, 36.33MB/sindexed 28.05MB in  1s, 36.46MB/sindexed 28.18MB in  1s, 36.59MB/sindexed 28.31MB in  1s, 36.71MB/sindexed 28.44MB in  1s, 36.85MB/sindexed 28.57MB in  1s, 36.98MB/sindexed 28.70MB in  1s, 36.82MB/sindexed 28.84MB in  1s, 36.94MB/sindexed 28.97MB in  1s, 37.08MB/sindexed 29.10MB in  1s, 37.21MB/sindexed 29.23MB in  1s, 37.34MB/sindexed 29.36MB in  1s, 37.47MB/sindexed 29.49MB in  1s, 37.60MB/sindexed 29.62MB in  1s, 37.71MB/sindexed 29.75MB in  1s, 37.84MB/sindexed 29.88MB in  1s, 37.96MB/sindexed 30.02MB in  1s, 38.09MB/sindexed 30.15MB in  1s, 38.22MB/sindexed 30.28MB in  1s, 38.35MB/sindexed 30.41MB in  1s, 38.48MB/sindexed 30.54MB in  1s, 38.60MB/sindexed 30.67MB in  1s, 38.72MB/sindexed 30.80MB in  1s, 38.85MB/sindexed 30.93MB in  1s, 38.98MB/sindexed 31.06MB in  1s, 38.30MB/sindexed 31.19MB in  1s, 38.43MB/sindexed 31.33MB in  1s, 38.56MB/sindexed 31.46MB in  1s, 38.68MB/sindexed 31.59MB in  1s, 38.81MB/sindexed 31.72MB in  1s, 38.92MB/sindexed 31.85MB in  1s, 39.04MB/sindexed 31.98MB in  1s, 39.17MB/sindexed 32.11MB in  1s, 39.29MB/sindexed 32.24MB in  1s, 39.42MB/sindexed 32.37MB in  1s, 39.55MB/sindexed 32.51MB in  1s, 39.67MB/sindexed 32.64MB in  1s, 39.79MB/sindexed 32.77MB in  1s, 39.91MB/sindexed 32.90MB in  1s, 40.04MB/sindexed 33.03MB in  1s, 40.16MB/sindexed 33.16MB in  1s, 40.28MB/sindexed 33.29MB in  1s, 40.40MB/sindexed 33.42MB in  1s, 40.52MB/sindexed 33.55MB in  1s, 40.63MB/sindexed 33.56MB in  1s, 40.60MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> unf_dw_edu <-
-+   read_csv(sdg_education) %>%
-+   write.csv(file.path(rawData , "api_unf_edu.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 1.44MB in  0s, 6.69MB/sindexed 1.57MB in  0s, 7.26MB/sindexed 1.70MB in  0s, 7.82MB/sindexed 1.83MB in  0s, 8.39MB/sindexed 1.97MB in  0s, 8.95MB/sindexed 2.10MB in  0s, 8.96MB/sindexed 2.23MB in  0s, 9.48MB/sindexed 2.36MB in  0s, 9.98MB/sindexed 2.49MB in  0s, 10.50MB/sindexed 2.62MB in  0s, 11.03MB/sindexed 2.75MB in  0s, 11.54MB/sindexed 2.88MB in  0s, 12.03MB/sindexed 3.01MB in  0s, 12.52MB/sindexed 3.15MB in  0s, 13.01MB/sindexed 3.28MB in  0s, 13.50MB/sindexed 3.41MB in  0s, 13.99MB/sindexed 3.54MB in  0s, 14.49MB/sindexed 3.67MB in  0s, 14.99MB/sindexed 3.80MB in  0s, 15.47MB/sindexed 3.93MB in  0s, 15.95MB/sindexed 4.06MB in  0s, 10.22MB/sindexed 4.19MB in  0s, 10.53MB/sindexed 4.33MB in  0s, 10.84MB/sindexed 4.46MB in  0s, 11.15MB/sindexed 4.59MB in  0s, 11.43MB/sindexed 4.72MB in  0s, 11.73MB/sindexed 4.85MB in  0s, 12.03MB/sindexed 4.98MB in  0s, 12.33MB/sindexed 5.11MB in  0s, 12.63MB/sindexed 5.24MB in  0s, 12.93MB/sindexed 5.37MB in  0s, 13.22MB/sindexed 5.50MB in  0s, 13.52MB/sindexed 5.64MB in  0s, 13.81MB/sindexed 5.77MB in  0s, 14.11MB/sindexed 5.90MB in  0s, 14.41MB/sindexed 6.03MB in  0s, 14.71MB/sindexed 6.16MB in  0s, 15.00MB/sindexed 6.29MB in  0s, 15.28MB/sindexed 6.42MB in  0s, 15.57MB/sindexed 6.55MB in  0s, 15.86MB/sindexed 6.68MB in  0s, 16.15MB/sindexed 6.82MB in  0s, 16.44MB/sindexed 6.95MB in  0s, 16.73MB/sindexed 7.08MB in  0s, 17.00MB/sindexed 7.21MB in  0s, 17.29MB/sindexed 7.34MB in  0s, 17.58MB/sindexed 7.47MB in  0s, 17.86MB/sindexed 7.60MB in  0s, 18.14MB/sindexed 7.73MB in  0s, 18.42MB/sindexed 7.86MB in  0s, 18.71MB/sindexed 8.00MB in  0s, 18.98MB/sindexed 8.13MB in  0s, 19.26MB/sindexed 8.26MB in  0s, 19.52MB/sindexed 8.39MB in  0s, 19.78MB/sindexed 8.52MB in  0s, 20.05MB/sindexed 8.65MB in  0s, 20.32MB/sindexed 8.78MB in  1s, 15.45MB/sindexed 8.91MB in  1s, 15.61MB/sindexed 9.04MB in  1s, 15.81MB/sindexed 9.17MB in  1s, 16.02MB/sindexed 9.31MB in  1s, 16.23MB/sindexed 9.44MB in  1s, 16.44MB/sindexed 9.57MB in  1s, 16.65MB/sindexed 9.70MB in  1s, 16.86MB/sindexed 9.83MB in  1s, 17.07MB/sindexed 9.96MB in  1s, 17.26MB/sindexed 10.09MB in  1s, 17.46MB/sindexed 10.22MB in  1s, 17.66MB/sindexed 10.35MB in  1s, 17.86MB/sindexed 10.49MB in  1s, 18.07MB/sindexed 10.62MB in  1s, 18.26MB/sindexed 10.75MB in  1s, 18.47MB/sindexed 10.88MB in  1s, 18.67MB/sindexed 11.01MB in  1s, 18.88MB/sindexed 11.14MB in  1s, 19.08MB/sindexed 11.27MB in  1s, 19.28MB/sindexed 11.40MB in  1s, 19.48MB/sindexed 11.53MB in  1s, 19.68MB/sindexed 11.67MB in  1s, 19.88MB/sindexed 11.80MB in  1s, 20.07MB/sindexed 11.93MB in  1s, 20.27MB/sindexed 12.06MB in  1s, 20.47MB/sindexed 12.19MB in  1s, 20.67MB/sindexed 12.32MB in  1s, 20.86MB/sindexed 12.45MB in  1s, 21.06MB/sindexed 12.58MB in  1s, 21.26MB/sindexed 12.71MB in  1s, 21.46MB/sindexed 12.84MB in  1s, 21.65MB/sindexed 12.98MB in  1s, 21.84MB/sindexed 13.11MB in  1s, 22.04MB/sindexed 13.24MB in  1s, 22.23MB/sindexed 13.37MB in  1s, 22.43MB/sindexed 13.50MB in  1s, 22.62MB/sindexed 13.63MB in  1s, 22.81MB/sindexed 13.76MB in  1s, 23.01MB/sindexed 13.89MB in  1s, 23.19MB/sindexed 14.02MB in  1s, 23.38MB/sindexed 14.16MB in  1s, 23.57MB/sindexed 14.29MB in  1s, 23.76MB/sindexed 14.42MB in  1s, 23.94MB/sindexed 14.55MB in  1s, 24.13MB/sindexed 14.68MB in  1s, 24.32MB/sindexed 14.81MB in  1s, 24.51MB/sindexed 14.94MB in  1s, 24.70MB/sindexed 15.07MB in  1s, 24.88MB/sindexed 15.20MB in  1s, 25.07MB/sindexed 15.34MB in  1s, 25.25MB/sindexed 15.47MB in  1s, 25.43MB/sindexed 15.60MB in  1s, 25.61MB/sindexed 15.73MB in  1s, 25.78MB/sindexed 15.86MB in  1s, 25.96MB/sindexed 15.99MB in  1s, 21.94MB/sindexed 16.12MB in  1s, 22.09MB/sindexed 16.25MB in  1s, 22.24MB/sindexed 16.38MB in  1s, 22.39MB/sindexed 16.51MB in  1s, 22.55MB/sindexed 16.65MB in  1s, 22.70MB/sindexed 16.78MB in  1s, 22.85MB/sindexed 16.91MB in  1s, 23.01MB/sindexed 17.04MB in  1s, 23.17MB/sindexed 17.17MB in  1s, 23.33MB/sindexed 17.30MB in  1s, 23.48MB/sindexed 17.43MB in  1s, 23.63MB/sindexed 17.56MB in  1s, 23.67MB/sindexed 17.69MB in  1s, 23.83MB/sindexed 17.83MB in  1s, 23.98MB/sindexed 17.96MB in  1s, 24.13MB/sindexed 18.09MB in  1s, 24.28MB/sindexed 18.22MB in  1s, 24.44MB/sindexed 18.35MB in  1s, 24.58MB/sindexed 18.48MB in  1s, 24.73MB/sindexed 18.61MB in  1s, 24.88MB/sindexed 18.74MB in  1s, 25.02MB/sindexed 18.87MB in  1s, 25.18MB/sindexed 19.01MB in  1s, 25.32MB/sindexed 19.14MB in  1s, 25.47MB/sindexed 19.27MB in  1s, 25.62MB/sindexed 19.40MB in  1s, 25.77MB/sindexed 19.53MB in  1s, 25.92MB/sindexed 19.66MB in  1s, 26.07MB/sindexed 19.79MB in  1s, 26.21MB/sindexed 19.92MB in  1s, 26.36MB/sindexed 20.05MB in  1s, 26.51MB/sindexed 20.18MB in  1s, 26.65MB/sindexed 20.32MB in  1s, 26.80MB/sindexed 20.45MB in  1s, 26.94MB/sindexed 20.58MB in  1s, 27.09MB/sindexed 20.71MB in  1s, 27.23MB/sindexed 20.84MB in  1s, 27.38MB/sindexed 20.97MB in  1s, 27.52MB/sindexed 21.10MB in  1s, 27.66MB/sindexed 21.23MB in  1s, 27.81MB/sindexed 21.36MB in  1s, 27.95MB/sindexed 21.50MB in  1s, 28.10MB/sindexed 21.63MB in  1s, 28.24MB/sindexed 21.76MB in  1s, 28.39MB/sindexed 21.89MB in  1s, 28.54MB/sindexed 22.02MB in  1s, 28.68MB/sindexed 22.15MB in  1s, 28.83MB/sindexed 22.28MB in  1s, 28.97MB/sindexed 22.41MB in  1s, 29.12MB/sindexed 22.54MB in  1s, 29.26MB/sindexed 22.68MB in  1s, 29.40MB/sindexed 22.81MB in  1s, 29.55MB/sindexed 22.94MB in  1s, 29.69MB/sindexed 23.07MB in  1s, 27.59MB/sindexed 23.20MB in  1s, 27.70MB/sindexed 23.33MB in  1s, 27.83MB/sindexed 23.46MB in  1s, 27.95MB/sindexed 23.59MB in  1s, 28.08MB/sindexed 23.72MB in  1s, 28.21MB/sindexed 23.85MB in  1s, 28.34MB/sindexed 23.99MB in  1s, 28.47MB/sindexed 24.12MB in  1s, 28.60MB/sindexed 24.25MB in  1s, 28.74MB/sindexed 24.38MB in  1s, 28.86MB/sindexed 24.51MB in  1s, 29.00MB/sindexed 24.64MB in  1s, 29.13MB/sindexed 24.77MB in  1s, 29.26MB/sindexed 24.90MB in  1s, 29.39MB/sindexed 25.03MB in  1s, 29.53MB/sindexed 25.17MB in  1s, 29.65MB/sindexed 25.30MB in  1s, 29.78MB/sindexed 25.43MB in  1s, 29.91MB/sindexed 25.56MB in  1s, 30.04MB/sindexed 25.69MB in  1s, 30.16MB/sindexed 25.82MB in  1s, 30.29MB/sindexed 25.95MB in  1s, 30.41MB/sindexed 26.08MB in  1s, 30.54MB/sindexed 26.21MB in  1s, 30.66MB/sindexed 26.35MB in  1s, 30.79MB/sindexed 26.48MB in  1s, 30.92MB/sindexed 26.61MB in  1s, 31.04MB/sindexed 26.74MB in  1s, 31.17MB/sindexed 26.87MB in  1s, 31.30MB/sindexed 27.00MB in  1s, 31.42MB/sindexed 27.13MB in  1s, 31.55MB/sindexed 27.26MB in  1s, 31.67MB/sindexed 27.39MB in  1s, 31.79MB/sindexed 27.52MB in  1s, 31.92MB/sindexed 27.66MB in  1s, 32.05MB/sindexed 27.79MB in  1s, 32.18MB/sindexed 27.92MB in  1s, 32.30MB/sindexed 28.05MB in  1s, 32.43MB/sindexed 28.16MB in  1s, 32.51MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> # unf_dw_anaem <-
-> #   read_csv(sdg_anaemia) %>%
-> #   write.csv(file.path(rawData , "api_unf_anaem.csv"), row.names = FALSE, na = "")
-> 
-> unf_dw_ .... [TRUNCATED] 
-indexed 0B in  0s, 0B/sindexed 2.23MB in  0s, 9.32MB/sindexed 2.36MB in  0s, 9.83MB/sindexed 2.49MB in  0s, 10.33MB/sindexed 2.62MB in  0s, 10.84MB/sindexed 2.75MB in  0s, 11.35MB/sindexed 2.88MB in  0s, 11.83MB/sindexed 3.01MB in  0s, 12.34MB/sindexed 3.15MB in  0s, 12.84MB/sindexed 3.28MB in  0s, 13.35MB/sindexed 3.41MB in  0s, 13.84MB/sindexed 3.54MB in  0s, 14.31MB/sindexed 3.67MB in  0s, 14.80MB/sindexed 3.80MB in  0s, 15.28MB/sindexed 3.93MB in  0s, 15.73MB/sindexed 4.06MB in  0s, 16.21MB/sindexed 4.19MB in  0s, 16.68MB/sindexed 4.33MB in  0s, 17.15MB/sindexed 4.46MB in  0s, 17.63MB/sindexed 4.59MB in  0s, 18.09MB/sindexed 4.72MB in  0s, 18.56MB/sindexed 4.85MB in  0s, 19.03MB/sindexed 4.98MB in  0s, 15.18MB/sindexed 5.11MB in  0s, 15.53MB/sindexed 5.24MB in  0s, 15.90MB/sindexed 5.37MB in  0s, 16.27MB/sindexed 5.50MB in  0s, 16.57MB/sindexed 5.64MB in  0s, 16.93MB/sindexed 5.76MB in  0s, 17.26MB/s                                                                                                                indexed 2.15GB in  0s, 2.15GB/s                                                                                                                
-> unf_dw_hiv <-
-+   read_csv(sdg_hiv) %>%
-+   write.csv(file.path(rawData , "api_unf_hiv.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 2.36MB in  0s, 11.45MB/sindexed 2.49MB in  0s, 11.99MB/sindexed 2.62MB in  0s, 12.58MB/sindexed 2.75MB in  0s, 12.51MB/sindexed 2.88MB in  0s, 13.06MB/sindexed 3.01MB in  0s, 13.60MB/sindexed 3.15MB in  0s, 14.14MB/sindexed 3.28MB in  0s, 14.67MB/sindexed 3.41MB in  0s, 15.20MB/sindexed 3.54MB in  0s, 15.73MB/sindexed 3.67MB in  0s, 16.21MB/sindexed 3.80MB in  0s, 16.73MB/sindexed 3.93MB in  0s, 17.26MB/sindexed 4.06MB in  0s, 17.78MB/sindexed 4.19MB in  0s, 18.31MB/sindexed 4.33MB in  0s, 18.81MB/sindexed 4.46MB in  0s, 19.31MB/sindexed 4.59MB in  0s, 19.75MB/sindexed 4.72MB in  0s, 20.24MB/sindexed 4.85MB in  0s, 20.73MB/sindexed 4.98MB in  0s, 21.24MB/sindexed 5.11MB in  0s, 21.72MB/sindexed 5.24MB in  0s, 22.20MB/sindexed 5.37MB in  0s, 17.35MB/sindexed 5.50MB in  0s, 17.72MB/sindexed 5.60MB in  0s, 17.98MB/s                                                                                                                indexed 2.15GB in  0s, 2.15GB/s                                                                                                                
-> # unique(unf_dw_hiv$INDICATOR) has to be HVA_EPI_INF_RT
-> 
-> unf_dw_wash <-
-+   read_csv(sdg_wash) %>%
-+   write.csv(file.path(rawData , "api_unf_wa ..." ... [TRUNCATED] 
-indexed 0B in  0s, 0B/sindexed 1.97MB in  0s, 9.13MB/sindexed 2.10MB in  0s, 9.71MB/sindexed 2.23MB in  0s, 9.94MB/sindexed 2.36MB in  0s, 10.48MB/sindexed 2.49MB in  0s, 11.03MB/sindexed 2.62MB in  0s, 11.56MB/sindexed 2.75MB in  0s, 12.10MB/sindexed 2.88MB in  0s, 11.98MB/sindexed 3.01MB in  0s, 12.47MB/sindexed 3.15MB in  0s, 12.95MB/sindexed 3.28MB in  0s, 13.44MB/sindexed 3.41MB in  0s, 13.57MB/sindexed 3.54MB in  0s, 14.04MB/sindexed 3.67MB in  0s, 14.17MB/sindexed 3.80MB in  0s, 14.64MB/sindexed 3.93MB in  0s, 12.31MB/sindexed 4.06MB in  0s, 12.67MB/sindexed 4.19MB in  0s, 12.82MB/sindexed 4.33MB in  0s, 13.18MB/sindexed 4.46MB in  0s, 13.50MB/sindexed 4.59MB in  0s, 13.87MB/sindexed 4.72MB in  0s, 14.22MB/sindexed 4.85MB in  0s, 14.58MB/sindexed 4.98MB in  0s, 14.92MB/sindexed 5.11MB in  0s, 15.27MB/sindexed 5.24MB in  0s, 15.63MB/sindexed 5.37MB in  0s, 15.98MB/sindexed 5.50MB in  0s, 16.33MB/sindexed 5.64MB in  0s, 16.36MB/sindexed 5.77MB in  0s, 16.70MB/sindexed 5.90MB in  0s, 17.04MB/sindexed 6.03MB in  0s, 17.37MB/sindexed 6.16MB in  0s, 17.70MB/sindexed 6.29MB in  0s, 18.03MB/sindexed 6.42MB in  0s, 18.36MB/sindexed 6.55MB in  0s, 18.62MB/sindexed 6.68MB in  0s, 18.95MB/sindexed 6.82MB in  0s, 18.94MB/sindexed 6.95MB in  0s, 19.26MB/sindexed 7.08MB in  0s, 19.58MB/sindexed 7.21MB in  0s, 19.89MB/sindexed 7.34MB in  0s, 20.19MB/sindexed 7.47MB in  0s, 20.51MB/sindexed 7.60MB in  0s, 20.03MB/sindexed 7.73MB in  0s, 20.33MB/sindexed 7.86MB in  0s, 20.45MB/sindexed 8.00MB in  0s, 18.80MB/sindexed 8.13MB in  0s, 19.07MB/sindexed 8.26MB in  0s, 19.33MB/sindexed 8.39MB in  0s, 19.60MB/sindexed 8.52MB in  0s, 19.87MB/sindexed 8.65MB in  0s, 20.14MB/sindexed 8.78MB in  0s, 20.39MB/sindexed 8.91MB in  0s, 20.47MB/sindexed 9.04MB in  0s, 20.73MB/sindexed 9.17MB in  0s, 21.00MB/sindexed 9.31MB in  0s, 21.27MB/sindexed 9.44MB in  0s, 21.52MB/sindexed 9.57MB in  0s, 21.77MB/sindexed 9.70MB in  0s, 22.03MB/sindexed 9.83MB in  0s, 22.29MB/sindexed 9.96MB in  0s, 22.54MB/sindexed 10.09MB in  0s, 22.80MB/sindexed 10.22MB in  0s, 23.04MB/sindexed 10.35MB in  0s, 23.30MB/sindexed 10.49MB in  0s, 23.55MB/sindexed 10.62MB in  0s, 23.79MB/sindexed 10.75MB in  0s, 23.97MB/sindexed 10.88MB in  0s, 24.21MB/sindexed 11.01MB in  0s, 24.46MB/sindexed 11.14MB in  0s, 24.70MB/sindexed 11.27MB in  0s, 24.94MB/sindexed 11.40MB in  0s, 25.20MB/sindexed 11.53MB in  0s, 25.44MB/sindexed 11.67MB in  0s, 24.15MB/sindexed 11.80MB in  0s, 24.34MB/sindexed 11.93MB in  0s, 24.58MB/sindexed 12.06MB in  0s, 24.81MB/sindexed 12.19MB in  0s, 25.05MB/sindexed 12.32MB in  0s, 25.28MB/sindexed 12.45MB in  0s, 25.50MB/sindexed 12.58MB in  0s, 25.71MB/sindexed 12.71MB in  0s, 25.93MB/sindexed 12.84MB in  0s, 26.15MB/sindexed 12.98MB in  0s, 26.37MB/sindexed 13.11MB in  0s, 26.59MB/sindexed 13.24MB in  0s, 26.81MB/sindexed 13.37MB in  0s, 27.04MB/sindexed 13.50MB in  0s, 27.25MB/sindexed 13.63MB in  0s, 27.48MB/sindexed 13.76MB in  0s, 27.68MB/sindexed 13.89MB in  0s, 27.90MB/sindexed 14.02MB in  0s, 28.11MB/sindexed 14.16MB in  0s, 28.32MB/sindexed 14.29MB in  1s, 28.54MB/sindexed 14.42MB in  1s, 28.74MB/sindexed 14.55MB in  1s, 28.96MB/sindexed 14.68MB in  1s, 29.18MB/sindexed 14.81MB in  1s, 29.24MB/sindexed 14.94MB in  1s, 29.45MB/sindexed 15.07MB in  1s, 29.67MB/sindexed 15.20MB in  1s, 29.89MB/sindexed 15.34MB in  1s, 30.10MB/sindexed 15.47MB in  1s, 30.32MB/sindexed 15.60MB in  1s, 30.15MB/sindexed 15.73MB in  1s, 30.36MB/sindexed 15.86MB in  1s, 30.55MB/sindexed 15.99MB in  1s, 30.76MB/sindexed 16.12MB in  1s, 30.14MB/sindexed 16.25MB in  1s, 30.35MB/sindexed 16.38MB in  1s, 30.55MB/sindexed 16.51MB in  1s, 30.76MB/sindexed 16.65MB in  1s, 30.95MB/sindexed 16.78MB in  1s, 31.16MB/sindexed 16.91MB in  1s, 31.36MB/sindexed 17.04MB in  1s, 31.57MB/sindexed 17.17MB in  1s, 31.76MB/sindexed 17.30MB in  1s, 31.96MB/sindexed 17.43MB in  1s, 32.16MB/sindexed 17.56MB in  1s, 32.36MB/sindexed 17.69MB in  1s, 32.56MB/sindexed 17.83MB in  1s, 32.75MB/sindexed 17.85MB in  1s, 32.76MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> unf_dw_mnch <-
-+   read_csv(sdg_mnch) %>%
-+   write.csv(file.path(rawData , "api_unf_mnch.csv"), row.names = FALSE, na = "")
-indexed 0B in  0s, 0B/sindexed 1.18MB in  0s, 5.16MB/sindexed 1.31MB in  0s, 5.71MB/sindexed 1.44MB in  0s, 6.25MB/sindexed 1.57MB in  0s, 6.79MB/sindexed 1.70MB in  0s, 7.32MB/sindexed 1.83MB in  0s, 7.86MB/sindexed 1.97MB in  0s, 8.39MB/sindexed 2.10MB in  0s, 8.93MB/sindexed 2.23MB in  0s, 9.45MB/sindexed 2.36MB in  0s, 9.99MB/sindexed 2.49MB in  0s, 10.51MB/sindexed 2.62MB in  0s, 11.03MB/sindexed 2.75MB in  0s, 11.55MB/s                                                                                                                indexed 2.88MB in  0s, 8.39MB/sindexed 3.01MB in  0s, 8.75MB/sindexed 3.15MB in  0s, 9.11MB/sindexed 3.28MB in  0s, 9.46MB/sindexed 3.41MB in  0s, 9.81MB/sindexed 3.54MB in  0s, 10.17MB/sindexed 3.67MB in  0s, 10.51MB/sindexed 3.80MB in  0s, 10.87MB/sindexed 3.93MB in  0s, 11.22MB/sindexed 4.06MB in  0s, 11.57MB/sindexed 4.19MB in  0s, 11.91MB/sindexed 4.33MB in  0s, 12.26MB/sindexed 4.46MB in  0s, 12.60MB/sindexed 4.59MB in  0s, 12.95MB/sindexed 4.72MB in  0s, 13.28MB/sindexed 4.85MB in  0s, 13.63MB/sindexed 4.98MB in  0s, 13.97MB/sindexed 5.11MB in  0s, 14.31MB/sindexed 5.24MB in  0s, 14.64MB/sindexed 5.37MB in  0s, 14.92MB/sindexed 5.50MB in  0s, 15.25MB/sindexed 5.64MB in  0s, 15.58MB/sindexed 5.77MB in  0s, 13.09MB/sindexed 5.90MB in  0s, 13.35MB/sindexed 6.03MB in  0s, 13.63MB/sindexed 6.16MB in  0s, 13.90MB/sindexed 6.29MB in  0s, 14.16MB/sindexed 6.42MB in  0s, 14.43MB/sindexed 6.55MB in  0s, 14.69MB/sindexed 6.68MB in  0s, 14.96MB/sindexed 6.82MB in  0s, 15.22MB/sindexed 6.95MB in  1s, 12.77MB/sindexed 7.08MB in  1s, 12.99MB/sindexed 7.21MB in  1s, 13.20MB/sindexed 7.34MB in  1s, 13.41MB/sindexed 7.47MB in  1s, 13.63MB/sindexed 7.60MB in  1s, 13.85MB/sindexed 7.73MB in  1s, 14.07MB/sindexed 7.86MB in  1s, 14.29MB/sindexed 8.00MB in  1s, 14.51MB/sindexed 8.13MB in  1s, 14.72MB/sindexed 8.26MB in  1s, 14.94MB/sindexed 8.39MB in  1s, 15.16MB/sindexed 8.52MB in  1s, 15.37MB/sindexed 8.65MB in  1s, 15.58MB/sindexed 8.78MB in  1s, 15.80MB/sindexed 8.91MB in  1s, 16.01MB/sindexed 9.04MB in  1s, 16.22MB/sindexed 9.17MB in  1s, 16.43MB/sindexed 9.31MB in  1s, 16.64MB/sindexed 9.44MB in  1s, 16.85MB/sindexed 9.57MB in  1s, 17.06MB/sindexed 9.70MB in  1s, 17.26MB/sindexed 9.83MB in  1s, 17.47MB/sindexed 9.96MB in  1s, 17.68MB/sindexed 10.09MB in  1s, 17.90MB/sindexed 10.22MB in  1s, 18.10MB/sindexed 10.35MB in  1s, 18.30MB/sindexed 10.49MB in  1s, 18.42MB/sindexed 10.62MB in  1s, 18.63MB/sindexed 10.75MB in  1s, 18.83MB/sindexed 10.88MB in  1s, 19.05MB/sindexed 11.01MB in  1s, 19.25MB/sindexed 11.14MB in  1s, 19.45MB/sindexed 11.27MB in  1s, 19.65MB/sindexed 11.40MB in  1s, 19.85MB/sindexed 11.53MB in  1s, 20.06MB/sindexed 11.67MB in  1s, 20.25MB/sindexed 11.80MB in  1s, 20.45MB/sindexed 11.93MB in  1s, 20.66MB/sindexed 12.06MB in  1s, 20.86MB/sindexed 12.19MB in  1s, 21.05MB/sindexed 12.32MB in  1s, 21.25MB/sindexed 12.45MB in  1s, 21.45MB/sindexed 12.58MB in  1s, 21.64MB/sindexed 12.71MB in  1s, 21.84MB/sindexed 12.84MB in  1s, 22.03MB/sindexed 12.98MB in  1s, 22.06MB/sindexed 13.11MB in  1s, 22.24MB/sindexed 13.24MB in  1s, 22.43MB/sindexed 13.37MB in  1s, 22.61MB/sindexed 13.50MB in  1s, 22.81MB/sindexed 13.63MB in  1s, 23.00MB/sindexed 13.76MB in  1s, 23.19MB/sindexed 13.89MB in  1s, 23.38MB/sindexed 14.02MB in  1s, 23.57MB/sindexed 14.16MB in  1s, 23.77MB/sindexed 14.29MB in  1s, 23.96MB/sindexed 14.41MB in  1s, 24.13MB/s                                                                                                                indexed 2.15GB in  1s, 2.15GB/s                                                                                                                
-> # View(unf_dw_mnch)
-> 
-> unf_dw_cp <-
-+   read_csv(sdg_cp) %>%
-+   # for birth registration, we extract only age from 0 to 4
-+   mutate(br_drop = if .... [TRUNCATED] 
-indexed 0B in  0s, 0B/sindexed 1.18MB in  0s, 5.85MB/sindexed 1.31MB in  0s, 6.46MB/sindexed 1.44MB in  0s, 7.08MB/sindexed 1.57MB in  0s, 7.70MB/sindexed 1.70MB in  0s, 8.31MB/sindexed 1.83MB in  0s, 8.91MB/sindexed 1.97MB in  0s, 9.53MB/sindexed 2.10MB in  0s, 10.13MB/sindexed 2.23MB in  0s, 10.72MB/sindexed 2.36MB in  0s, 11.32MB/sindexed 2.49MB in  0s, 11.91MB/sindexed 2.62MB in  0s, 12.49MB/sindexed 2.75MB in  0s, 13.07MB/sindexed 2.84MB in  0s, 13.45MB/s                                                                                                                indexed 2.15GB in  0s, 2.15GB/s                                                                                                                
-⚠ WARNING in 012_run : One or more parsing issues, call `problems()` on your data frame for details, e.g.:
-  dat <- vroom(...)
-  problems(dat) 
-Called from: invokeRestart("muffleWarning")
-
-=========================================================
-
-=========================================================
-▶ Executing:▶ Executing:  022_run022_run  
-
-Start time:Start time:  2025-06-12 17:04:572025-06-12 17:04:57  
-
-Log file:Log file:  D:\jazevedo\GitHub\09_others\091_logs\log_run_20250612_170429.txtD:\jazevedo\GitHub\09_others\091_logs\log_run_20250612_170429.txt  
-
-=========================================================
-
-=========================================================
-
-
-
-> # Purpose: Run selected scripts TASK 02
-> # Main Script: 022_run.R
-> # Author: Joao Pedro Azevedo
-> # Date: 2025-06-12
-> 
-> 
-> # Define base path
-> > # Purpose: Run selected scripts TASK 02
-> # Main Script: 022_run.R
-> # Author: Joao Pedro Azevedo
-> # Date: 2025-06-12
-> 
-> 
-> # Define base path
->  .... [TRUNCATED]  .... [TRUNCATED] 
-
-
-
-> # Available scripts
-> available_scripts <- c(
-+   "0221_benchmark_data.R",
-+   "0222_bench_reg_inc.R",
-+   "0223_heatmaps.R",
-+   "0224_projections.> # Available scripts
-> available_scripts <- c(
-+   "0221_benchmark_data.R",
-+   "0222_bench_reg_inc.R",
-+   "0223_heatmaps.R",
-+   "0224_projections. ..." ... [TRUNCATED]  ..." ... [TRUNCATED] 
-
-
-
-> # ---- OPTION TO SELECT SCRIPTS ----
-> 
-> # Option 1: Run all (default)
-> scripts_to_run <- available_scripts> # ---- OPTION TO SELECT SCRIPTS ----
-> 
-> # Option 1: Run all (default)
-> scripts_to_run <- available_scripts
-
-
-
-> # Option 2: Uncomment to manually select scripts by index
-> # selected_indices <- c(1, 3)
-> # scripts_to_run <- available_scripts[selected_indices]
-> # Option 2: Uncomment to manually select scripts by index
-> # selected_indices <- c(1, 3)
-> # scripts_to_run <- available_scripts[selected_indices]
- .... [TRUNCATED]  .... [TRUNCATED] 
-
-
-
-> for (script in scripts_to_run) {
-+   full_path <- file.path(base_path, script)
-+   if (!file.exists(full_path)) {
-+     warning("⚠ File not found: "> for (script in scripts_to_run) {
-+   full_path <- file.path(base_path, script)
-+   if (!file.exists(full_path)) {
-+     warning("⚠ File not found: " .... [TRUNCATED]  .... [TRUNCATED] 
-
-
-
-> #-------------------------------------------------------------------
-> # Project: SDG Report 2025
-> # Sector: UNICEF Education Data & Analytics
-> # > #-------------------------------------------------------------------
-> # Project: SDG Report 2025
-> # Sector: UNICEF Education Data & Analytics
-> #  .... [TRUNCATED]  .... [TRUNCATED] 
-
-
-
-> data_to_bench <-
-+   iData_ranked %>%
-+   filter(!indicator %in% inds_to_drop_trgt) > data_to_bench <-
-+   iData_ranked %>%
-+   filter(!indicator %in% inds_to_drop_trgt) 
-
-
-
-> # View(data_to_bench)
-> 
-> 
-> inds_to_bench <- sort(unique(data_to_bench$indicator))> # View(data_to_bench)
-> 
-> 
-> inds_to_bench <- sort(unique(data_to_bench$indicator))
-
-
-
-> sex_disaggr_inds <- sexDisaggr_vector> sex_disaggr_inds <- sexDisaggr_vector
-
-
-
-> unique(data_to_bench$iShortName)> unique(data_to_bench$iShortName)
-
- [1] [1] "Neonatal mortality rate"                 "Neonatal mortality rate"                 "Under-five mortality rate"               "Under-five mortality rate"              
-
- [3] [3] "Early Childhood Development Index"       "Early Childhood Development Index"       "School attendance (pre-primary)"         "School attendance (pre-primary)"        
-
- [5] [5] "Completion rate (primary)"               "Completion rate (primary)"               "Completion rate (lower secondary)"       "Completion rate (lower secondary)"      
-
- [7] [7] "Completion rate (upper secondary)"       "Completion rate (upper secondary)"       "Out-of-school (primary)"                 "Out-of-school (primary)"                
-
- [9] [9] "Out-of-school (lower secondary)"         "Out-of-school (lower secondary)"         "Out-of-school (upper secondary)"         "Out-of-school (upper secondary)"        
-
-[11][11] "HIV Infections (0-14y/o, both Sexes)"    "HIV Infections (0-14y/o, both Sexes)"    "HIV Infections (15-19y/o, both Sexes)"   "HIV Infections (15-19y/o, both Sexes)"  
-
-[13][13] "DTP3 coverage"                           "DTP3 coverage"                           "MCV1 coverage"                           "MCV1 coverage"                          
-
-[15][15] "Adolescent birth rate (15-19)"           "Adolescent birth rate (15-19)"           "Maternal mortality ratio"                "Maternal mortality ratio"               
-
-[17][17] "Skilled birth attendant"                 "Skilled birth attendant"                 "Coverage of essential health services"   "Coverage of essential health services"  
-
-[19][19] "Stunting"                                "Stunting"                                "Wasting"                                 "Wasting"                                
-
-[21][21] "Overweight"                              "Overweight"                              "Violent discipline"                      "Violent discipline"                     
-
-[23][23] "Child labour"                            "Child labour"                            "Birth registration"                      "Birth registration"                     
-
-[25][25] "Sexual violence in childhood (Female)"   "Sexual violence in childhood (Female)"   "Child Marriage"                          "Child Marriage"                         
-
-[27][27] "Population in poverty"                   "Population in poverty"                   "Children covered by Social Protection"   "Children covered by Social Protection"  
-
-[29][29] "Population covered by Social Protection" "Population covered by Social Protection" "Basic hygiene"                           "Basic hygiene"                          
-
-[31][31] "At least basic sanitation"               "At least basic sanitation"               "Open defecation"                         "Open defecation"                        
-
-[33][33] "At least basic drinking water"           "At least basic drinking water"           "Safely managed drinking water"           "Safely managed drinking water"          
-
-[35][35] "NEET"                                    "NEET"                                    "Reproductive health agency"              "Reproductive health agency"             
-
-[37][37] "Child poverty"                           "Child poverty"                           "Children in HH below PPPU$ 2.15"         "Children in HH below PPPU$ 2.15"        
-
-[39][39] "Math proficiency (primary)"              "Math proficiency (primary)"              "Math proficiency (lower secondary)"      "Math proficiency (lower secondary)"     
-
-[41][41] "Reading proficiency (primary)"           "Reading proficiency (primary)"           "Reading proficiency (lower secondary)"   "Reading proficiency (lower secondary)"  
-
-[43][43] "Safely managed sanitation"               "Safely managed sanitation"               "Math proficiency (grade 2/3)"            "Math proficiency (grade 2/3)"           
-
-[45][45] "Reading proficiency (grade 2/3)"         "Reading proficiency (grade 2/3)"         "Sexual violence in childhood (Male)"     "Sexual violence in childhood (Male)"    
-
-[47][47] "Female genital mutilation"               "Female genital mutilation"              
-
-
-
-> benchmarked_data = list()> benchmarked_data = list()
-
-
-
-> bench_descr = list()> bench_descr = list()
-
-
-
-> for (i in 1:length(inds_to_bench)) {
-+   
-+   code = inds_to_bench[i]
-+   print(code)
-+   
-+   # Subset the data for this code
-+   data_subset <- 
-+> for (i in 1:length(inds_to_bench)) {
-+   
-+   code = inds_to_bench[i]
-+   print(code)
-+   
-+   # Subset the data for this code
-+   data_subset <- 
-+ .... [TRUNCATED]  .... [TRUNCATED] 
-
-[1][1] "CME_MRM0" "CME_MRM0"
-
-[1][1] "CME_MRY0T4" "CME_MRY0T4"
-
-
-⚠ WARNING in
-⚠ WARNING in  022_run022_run  ::  Removed 2 rows containing missing values or values outside the scale range (`geom_smooth()`).Removed 2 rows containing missing values or values outside the scale range (`geom_smooth()`).  
-
