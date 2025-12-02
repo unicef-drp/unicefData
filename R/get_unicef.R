@@ -50,36 +50,109 @@ list_unicef_codelist <- memoise::memoise(
 
 #' @title Fetch UNICEF SDMX data or structure
 #' @description
-#' Download one or more SDMX "flows" (and optional keys) from the UNICEF data warehouse.
+#' Download UNICEF indicator data from the SDMX data warehouse.
 #' Supports automatic paging, retrying on transient failure, memoisation, and tidy-up.
+#' 
+#' This function uses unified parameter names consistent with the Python package.
 #'
-#' @param flow Character vector of flow IDs.
-#' @param key Optional character vector of codes.
-#' @param start_period,end_period Optional single 4-digit years.
-#' @param detail "data" or "structure".
+#' @param indicator Character vector of indicator codes (e.g., "CME_MRY0T4").
+#'   Previously called 'key'. Both parameter names are supported.
+#' @param dataflow Character vector of dataflow IDs (e.g., "CME", "NUTRITION").
+#'   Previously called 'flow'. Both parameter names are supported.
+#' @param countries Character vector of ISO3 country codes (e.g., c("ALB", "USA")).
+#'   If NULL (default), fetches all countries.
+#' @param start_year Optional starting year (e.g., 2015).
+#'   Previously called 'start_period'. Both parameter names are supported.
+#' @param end_year Optional ending year (e.g., 2023).
+#'   Previously called 'end_period'. Both parameter names are supported.
+#' @param sex Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).
+#' @param tidy Logical; if TRUE (default), returns cleaned tibble with standardized column names.
+#' @param country_names Logical; if TRUE (default), adds country name column.
+#' @param max_retries Number of retry attempts on failure (default: 3).
+#'   Previously called 'retry'. Both parameter names are supported.
+#' @param cache Logical; if TRUE, memoises results.
+#' @param page_size Integer rows per page (default: 100000).
+#' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
-#' @param tidy Logical; if TRUE, rename and select key columns.
-#' @param country_names Logical; if TRUE, join ISO3 to country names.
-#' @param page_size Integer rows per page.
-#' @param retry Number of retries.
-#' @param cache Logical; if TRUE, memoise per flow.
-#' @return Tibble or list of tibbles (data) or xml_document(s) (structure).
+#' @param flow Deprecated. Use 'dataflow' instead.
+#' @param key Deprecated. Use 'indicator' instead.
+#' @param start_period Deprecated. Use 'start_year' instead.
+#' @param end_period Deprecated. Use 'end_year' instead.
+#' @param retry Deprecated. Use 'max_retries' instead.
+#' @return Tibble with indicator data, or xml_document if detail="structure".
+#' 
+#' @examples
+#' \dontrun{
+#' # Fetch under-5 mortality for specific countries
+#' df <- get_unicef(
+#'   indicator = "CME_MRY0T4",
+#'   countries = c("ALB", "USA", "BRA"),
+#'   start_year = 2015,
+#'   end_year = 2023
+#' )
+#' 
+#' # Fetch multiple indicators
+#' df <- get_unicef(
+#'   indicator = c("CME_MRY0T4", "CME_MRM0"),
+#'   dataflow = "CME",
+#'   start_year = 2020
+#' )
+#' 
+#' # Legacy syntax (still supported)
+#' df <- get_unicef(flow = "CME", key = "CME_MRY0T4")
+#' }
 #' @export
 get_unicef <- function(
-    flow,
+    # New unified parameter names
+    indicator     = NULL,
+    dataflow      = NULL,
+    countries     = NULL,
+    start_year    = NULL,
+    end_year      = NULL,
+    sex           = "_T",
+    tidy          = TRUE,
+    country_names = TRUE,
+    max_retries   = 3,
+    cache         = FALSE,
+    page_size     = 100000,
+    detail        = c("data", "structure"),
+    version       = NULL,
+    # Legacy parameter names (deprecated but supported)
+    flow          = NULL,
     key           = NULL,
     start_period  = NULL,
     end_period    = NULL,
-    detail        = c("data","structure"),
-    version       = NULL,
-    tidy          = TRUE,
-    country_names = TRUE,
-    page_size     = 100000,
-    retry         = 3,
-    cache         = FALSE
+    retry         = NULL
 ) {
+  # Handle legacy parameter names with deprecation warnings
+  if (!is.null(flow) && is.null(dataflow)) {
+    dataflow <- flow
+    # message("Note: 'flow' is deprecated. Use 'dataflow' instead.")
+  }
+  if (!is.null(key) && is.null(indicator)) {
+    indicator <- key
+    # message("Note: 'key' is deprecated. Use 'indicator' instead.")
+  }
+  if (!is.null(start_period) && is.null(start_year)) {
+    start_year <- start_period
+    # message("Note: 'start_period' is deprecated. Use 'start_year' instead.")
+  }
+  if (!is.null(end_period) && is.null(end_year)) {
+    end_year <- end_period
+    # message("Note: 'end_period' is deprecated. Use 'end_year' instead.")
+  }
+  if (!is.null(retry) && max_retries == 3) {
+    max_retries <- retry
+    # message("Note: 'retry' is deprecated. Use 'max_retries' instead.")
+  }
+  
+  # Validate required parameters
+  if (is.null(dataflow)) {
+    stop("'dataflow' is required. Use list_dataflows() to see available options.", call. = FALSE)
+  }
   detail <- match.arg(detail)
-  stopifnot(is.character(flow), length(flow) >= 1)
+  stopifnot(is.character(dataflow), length(dataflow) >= 1)
+  
   validate_year <- function(x, name) {
     if (!is.null(x)) {
       x_chr <- as.character(x)
@@ -89,10 +162,10 @@ get_unicef <- function(
     }
     NULL
   }
-  start_period <- validate_year(start_period, "start_period")
-  end_period   <- validate_year(end_period,   "end_period")
+  start_year_str <- validate_year(start_year, "start_year")
+  end_year_str   <- validate_year(end_year,   "end_year")
   
-  if (is.null(version) && detail == "data") flows_meta <- list_unicef_flows(retry = retry)
+  if (is.null(version) && detail == "data") flows_meta <- list_unicef_flows(retry = max_retries)
   
   fetch_flow <- function(fl) {
     ua <- httr::user_agent("get_unicef/1.0 (+https://github.com/jpazvd/get_unicef)")
@@ -101,23 +174,23 @@ get_unicef <- function(
     if (detail == "structure") {
       ver <- if (!is.null(version)) version else {
         idx <- match(fl, flows_meta$id)
-        if (is.na(idx)) stop(sprintf("Flow '%s' not found.", fl), call. = FALSE)
+        if (is.na(idx)) stop(sprintf("Dataflow '%s' not found.", fl), call. = FALSE)
         flows_meta$version[idx]
       }
       url <- sprintf("%s/structure/dataflow/UNICEF.%s?references=all&detail=full", base, fl)
-      return(xml2::read_xml(fetch_sdmx(url, ua, retry)))
+      return(xml2::read_xml(fetch_sdmx(url, ua, max_retries)))
     }
     
     ver <- if (!is.null(version)) version else {
       idx <- match(fl, flows_meta$id)
-      if (is.na(idx)) stop(sprintf("Flow '%s' not found.", fl), call. = FALSE)
+      if (is.na(idx)) stop(sprintf("Dataflow '%s' not found.", fl), call. = FALSE)
       flows_meta$version[idx]
     }
-    key_str  <- if (!is.null(key)) paste0(".", paste(key, collapse = "+")) else ""
-    date_str <- if (!is.null(start_period) || !is.null(end_period))
-      sprintf(".%s/%s", start_period %||% "", end_period %||% "") else ""
+    indicator_str  <- if (!is.null(indicator)) paste0(".", paste(indicator, collapse = "+")) else ""
+    date_str <- if (!is.null(start_year_str) || !is.null(end_year_str))
+      sprintf(".%s/%s", start_year_str %||% "", end_year_str %||% "") else ""
     
-    rel_path <- sprintf("data/UNICEF.%s.%s%s%s", fl, ver, key_str, date_str)
+    rel_path <- sprintf("data/UNICEF.%s.%s%s%s", fl, ver, indicator_str, date_str)
     full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
     
     # paging
@@ -126,7 +199,7 @@ get_unicef <- function(
       page_url <- paste0(full_url, "&startIndex=", page * page_size,
                          "&count=", page_size)
       df <- tryCatch(
-        readr::read_csv(fetch_sdmx(page_url, ua, retry), show_col_types = FALSE),
+        readr::read_csv(fetch_sdmx(page_url, ua, max_retries), show_col_types = FALSE),
         error = function(e) NULL
       )
       if (is.null(df) || nrow(df) == 0) break
@@ -135,6 +208,20 @@ get_unicef <- function(
       page <- page + 1L; Sys.sleep(0.2)
     }
     df_all <- dplyr::bind_rows(pages)
+    
+    # Filter by countries if specified
+    if (!is.null(countries) && nrow(df_all) > 0) {
+      if ("REF_AREA" %in% names(df_all)) {
+        df_all <- df_all %>% dplyr::filter(REF_AREA %in% countries)
+      }
+    }
+    
+    # Filter by sex if specified (default is "_T" for total)
+    if (!is.null(sex) && nrow(df_all) > 0) {
+      if ("SEX" %in% names(df_all)) {
+        df_all <- df_all %>% dplyr::filter(SEX == sex)
+      }
+    }
     
     if (tidy && nrow(df_all) > 0) {
       df_all <- df_all %>%
@@ -158,6 +245,16 @@ get_unicef <- function(
   }
   
   executor <- if (cache) memoise::memoise(fetch_flow) else fetch_flow
-  result <- purrr::map(flow, executor)
-  if (length(result) == 1) result[[1]] else setNames(result, flow)
+  result <- purrr::map(dataflow, executor)
+  if (length(result) == 1) result[[1]] else setNames(result, dataflow)
+}
+
+
+#' @title List available UNICEF dataflows
+#' @description Alias for list_unicef_flows() with consistent naming.
+#' @param max_retries Number of retry attempts (default: 3)
+#' @return Tibble with columns: id, agency, version
+#' @export
+list_dataflows <- function(max_retries = 3) {
+  list_unicef_flows(retry = max_retries)
 }
