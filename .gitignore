@@ -48,6 +48,12 @@ log/
 data/raw/*
 !data/raw/.gitkeep
 
+# Test output directories (but keep test scripts)
+python/test_output/*.csv
+python/test_output/metadata_test/
+R/test_output/*.csv
+R/test_output/metadata_test/
+
 # OS
 .DS_Store
 Thumbs.db
