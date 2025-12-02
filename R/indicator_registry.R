@@ -477,6 +477,252 @@ list_indicators <- function(dataflow = NULL, name_contains = NULL) {
 }
 
 
+#' Search Indicators
+#'
+#' Search and display UNICEF indicators in a user-friendly format.
+#' This function allows analysts to search the indicator metadata to find
+#' indicator codes they need. Results are printed to the screen in a
+#' formatted table.
+#'
+#' @param query Character. Search term to match in indicator code, name, or description
+#'   (case-insensitive). If NULL, shows all indicators.
+#' @param category Character. Filter by dataflow/category (e.g., "CME", "NUTRITION").
+#'   Use list_categories() to see available categories.
+#' @param limit Integer. Maximum number of results to display (default: 50).
+#'   Set to NULL or 0 to show all matches.
+#' @param show_description Logical. If TRUE, includes description column (default: TRUE).
+#'
+#' @return Invisibly returns a data.frame with the matching indicators.
+#'   Results are also printed to the screen.
+#'
+#' @examples
+#' \dontrun{
+#' # Search for mortality-related indicators
+#' search_indicators("mortality")
+#'
+#' # List all nutrition indicators
+#' search_indicators(category = "NUTRITION")
+#'
+#' # Search for stunting across all categories
+#' search_indicators("stunting")
+#'
+#' # List all indicators (first 50)
+#' search_indicators()
+#'
+#' # List all CME indicators without limit
+#' search_indicators(category = "CME", limit = 0)
+#' }
+#'
+#' @export
+search_indicators <- function(query = NULL, category = NULL, limit = 50, show_description = TRUE) {
+  indicators <- .ensure_cache_loaded()
+  
+  # Convert query to lowercase for case-insensitive matching
+  query_lower <- if (!is.null(query)) tolower(query) else NULL
+  
+  # Filter indicators
+  matches <- list()
+  
+  for (code in names(indicators)) {
+    info <- indicators[[code]]
+    
+    # Apply category filter
+    if (!is.null(category)) {
+      info_cat <- if (!is.null(info$category)) toupper(info$category) else ""
+      if (info_cat != toupper(category)) {
+        next
+      }
+    }
+    
+    # Apply query filter (search in code, name, and description)
+    if (!is.null(query_lower)) {
+      code_match <- grepl(query_lower, tolower(code), fixed = TRUE)
+      name_match <- grepl(query_lower, tolower(info$name %||% ""), fixed = TRUE)
+      desc_match <- grepl(query_lower, tolower(info$description %||% ""), fixed = TRUE)
+      
+      if (!(code_match || name_match || desc_match)) {
+        next
+      }
+    }
+    
+    matches[[length(matches) + 1]] <- list(
+      code = code,
+      name = info$name %||% "",
+      category = info$category %||% "",
+      description = info$description %||% ""
+    )
+  }
+  
+  # Sort by category, then by code
+  if (length(matches) > 0) {
+    sort_keys <- sapply(matches, function(m) paste(m$category, m$code, sep = "_"))
+    matches <- matches[order(sort_keys)]
+  }
+  
+  # Store total count before limiting
+  total_matches <- length(matches)
+  
+  # Apply limit
+  if (!is.null(limit) && limit > 0 && length(matches) > limit) {
+    matches <- matches[1:limit]
+  }
+  
+  # Print header
+  cat("\n")
+  cat(strrep("=", 100), "\n")
+  if (!is.null(query) && !is.null(category)) {
+    cat(sprintf("  UNICEF Indicators matching '%s' in category '%s'\n", query, category))
+  } else if (!is.null(query)) {
+    cat(sprintf("  UNICEF Indicators matching '%s'\n", query))
+  } else if (!is.null(category)) {
+    cat(sprintf("  UNICEF Indicators in category '%s'\n", category))
+  } else {
+    cat("  All UNICEF Indicators\n")
+  }
+  cat(strrep("=", 100), "\n")
+  
+  if (length(matches) == 0) {
+    cat("\n  No indicators found matching your criteria.\n\n")
+    cat("  Tips:\n")
+    cat("  - Try a different search term\n")
+    cat("  - Use list_categories() to see available categories\n")
+    cat("  - Use search_indicators() with no arguments to see all indicators\n\n")
+    return(invisible(data.frame()))
+  }
+  
+  # Print result count
+  cat(sprintf("\n  Found %d indicator(s)", total_matches))
+  if (!is.null(limit) && limit > 0 && total_matches > limit) {
+    cat(sprintf(" (showing first %d)", limit))
+  }
+  cat("\n")
+  cat(strrep("-", 100), "\n")
+  
+  # Calculate column widths
+  code_width <- max(sapply(matches, function(m) nchar(m$code)))
+  code_width <- max(code_width, 15)
+  cat_width <- max(sapply(matches, function(m) nchar(m$category)))
+  cat_width <- max(cat_width, 10)
+  
+  if (show_description) {
+    name_width <- 35
+    desc_width <- 100 - code_width - cat_width - name_width - 10
+  } else {
+    name_width <- 100 - code_width - cat_width - 6
+    desc_width <- 0
+  }
+  
+  # Print column headers
+  header <- sprintf("  %-*s  %-*s  %-*s", code_width, "CODE", cat_width, "CATEGORY", name_width, "NAME")
+  if (show_description) {
+    header <- paste0(header, sprintf("  %-*s", desc_width, "DESCRIPTION"))
+  }
+  cat(header, "\n")
+  cat(strrep("-", 100), "\n")
+  
+  # Print each indicator
+  for (m in matches) {
+    name <- m$name
+    if (nchar(name) > name_width) {
+      name <- paste0(substr(name, 1, name_width - 2), "..")
+    }
+    
+    row <- sprintf("  %-*s  %-*s  %-*s", code_width, m$code, cat_width, m$category, name_width, name)
+    
+    if (show_description) {
+      desc <- m$description
+      if (nchar(desc) > desc_width) {
+        desc <- paste0(substr(desc, 1, desc_width - 2), "..")
+      }
+      row <- paste0(row, sprintf("  %s", desc))
+    }
+    
+    cat(row, "\n")
+  }
+  
+  cat(strrep("-", 100), "\n")
+  
+  # Print footer with tips
+  if (total_matches > length(matches)) {
+    cat(sprintf("\n  Showing %d of %d results. Use limit = 0 to see all.\n", length(matches), total_matches))
+  }
+  
+  cat("\n  Usage tips:\n")
+  cat("  - get_unicef(indicator = 'CODE') to fetch data for an indicator\n")
+  cat("  - get_indicator_info('CODE') to see full metadata for an indicator\n")
+  cat("  - list_categories() to see all available categories\n\n")
+  
+  # Return data frame invisibly
+  df <- do.call(rbind, lapply(matches, function(m) {
+    data.frame(
+      code = m$code,
+      name = m$name,
+      category = m$category,
+      description = m$description,
+      stringsAsFactors = FALSE
+    )
+  }))
+  
+  return(invisible(df))
+}
+
+
+#' List Categories
+#'
+#' List all available indicator categories (dataflows) with counts.
+#' Prints a formatted table of categories showing how many indicators
+#' are in each category.
+#'
+#' @return Invisibly returns a data.frame with category counts.
+#'
+#' @examples
+#' \dontrun{
+#' list_categories()
+#' }
+#'
+#' @export
+list_categories <- function() {
+  indicators <- .ensure_cache_loaded()
+  
+  # Count indicators per category
+  category_counts <- list()
+  for (code in names(indicators)) {
+    cat_name <- indicators[[code]]$category %||% "UNKNOWN"
+    category_counts[[cat_name]] <- (category_counts[[cat_name]] %||% 0) + 1
+  }
+  
+  # Sort by count (descending)
+  counts <- unlist(category_counts)
+  sorted_cats <- names(sort(counts, decreasing = TRUE))
+  
+  cat("\n")
+  cat(strrep("=", 50), "\n")
+  cat("  Available Indicator Categories\n")
+  cat(strrep("=", 50), "\n")
+  cat(sprintf("\n  %-25s %10s\n", "CATEGORY", "COUNT"))
+  cat(strrep("-", 50), "\n")
+  
+  for (cat_name in sorted_cats) {
+    cat(sprintf("  %-25s %10d\n", cat_name, counts[cat_name]))
+  }
+  
+  cat(strrep("-", 50), "\n")
+  cat(sprintf("  %-25s %10d\n", "TOTAL", sum(counts)))
+  cat("\n")
+  cat("  Use search_indicators(category = 'CATEGORY_NAME') to see indicators\n\n")
+  
+  # Return data frame invisibly
+  df <- data.frame(
+    category = sorted_cats,
+    count = counts[sorted_cats],
+    row.names = NULL,
+    stringsAsFactors = FALSE
+  )
+  
+  return(invisible(df))
+}
+
+
 #' Refresh Indicator Cache
 #'
 #' Force refresh of the indicator cache from UNICEF SDMX API.
@@ -523,3 +769,4 @@ get_cache_info <- function() {
     indicator_count = if (!is.null(.indicator_cache$data)) length(.indicator_cache$data) else 0
   )
 }
+

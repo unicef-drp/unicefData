@@ -1,0 +1,7 @@
+vintages:
+- vintage_date: '2025-12-02'
+  synced_at: '2025-12-02T05:50:18Z'
+  dataflows: 69
+  indicators: 25
+  codelists: 4
+  errors: []

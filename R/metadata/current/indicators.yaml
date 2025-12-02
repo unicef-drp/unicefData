@@ -1,0 +1,230 @@
+metadata_version: '1.0'
+synced_at: '2025-12-02T05:50:32Z'
+source: unicefData package + SDMX API
+total_indicators: 25
+indicators:
+  CME_MRM0:
+    code: CME_MRM0
+    name: Neonatal mortality rate
+    dataflow: CME
+    sdg_target: 3.2.2
+    unit: Deaths per 1,000 live births
+    description: Probability of dying during the first 28 days of life
+    dimensions: ~
+    source: config
+  CME_MRY0T4:
+    code: CME_MRY0T4
+    name: Under-5 mortality rate
+    dataflow: CME
+    sdg_target: 3.2.1
+    unit: Deaths per 1,000 live births
+    description: Probability of dying before age 5 per 1,000 live births
+    dimensions: ~
+    source: config
+  NT_ANT_HAZ_NE2_MOD:
+    code: NT_ANT_HAZ_NE2_MOD
+    name: Stunting prevalence (moderate + severe)
+    dataflow: NUTRITION
+    sdg_target: 2.2.1
+    unit: Percentage
+    description: Children under 5 with height-for-age below -2 SD
+    dimensions: ~
+    source: config
+  NT_ANT_WHZ_NE2:
+    code: NT_ANT_WHZ_NE2
+    name: Wasting prevalence
+    dataflow: NUTRITION
+    sdg_target: 2.2.2
+    unit: Percentage
+    description: Children under 5 with weight-for-height below -2 SD
+    dimensions: ~
+    source: config
+  NT_ANT_WHZ_PO2_MOD:
+    code: NT_ANT_WHZ_PO2_MOD
+    name: Overweight prevalence (moderate + severe)
+    dataflow: NUTRITION
+    sdg_target: 2.2.2
+    unit: Percentage
+    description: Children under 5 with weight-for-height above +2 SD
+    dimensions: ~
+    source: config
+  ED_ANAR_L02:
+    code: ED_ANAR_L02
+    name: Adjusted net attendance rate, primary education
+    dataflow: EDUCATION_UIS_SDG
+    sdg_target: 4.1.1
+    unit: Percentage
+    description: Primary school-age children attending primary or secondary
+    dimensions: ~
+    source: config
+  ED_CR_L1_UIS_MOD:
+    code: ED_CR_L1_UIS_MOD
+    name: Completion rate, primary education
+    dataflow: EDUCATION_UIS_SDG
+    sdg_target: 4.1.2
+    unit: Percentage
+    description: Population completing primary education
+    dimensions: ~
+    source: config
+  ED_CR_L2_UIS_MOD:
+    code: ED_CR_L2_UIS_MOD
+    name: Completion rate, lower secondary education
+    dataflow: EDUCATION_UIS_SDG
+    sdg_target: 4.1.2
+    unit: Percentage
+    description: Population completing lower secondary education
+    dimensions: ~
+    source: config
+  ED_READ_L2:
+    code: ED_READ_L2
+    name: Reading proficiency, end of lower secondary
+    dataflow: EDUCATION_UIS_SDG
+    sdg_target: 4.1.1
+    unit: Percentage
+    description: Students achieving minimum reading proficiency
+    dimensions: ~
+    source: config
+  ED_MAT_L2:
+    code: ED_MAT_L2
+    name: Mathematics proficiency, end of lower secondary
+    dataflow: EDUCATION_UIS_SDG
+    sdg_target: 4.1.1
+    unit: Percentage
+    description: Students achieving minimum mathematics proficiency
+    dimensions: ~
+    source: config
+  IM_DTP3:
+    code: IM_DTP3
+    name: DTP3 immunization coverage
+    dataflow: IMMUNISATION
+    sdg_target: 3.b.1
+    unit: Percentage
+    description: Infants receiving 3 doses of DTP vaccine
+    dimensions: ~
+    source: config
+  IM_MCV1:
+    code: IM_MCV1
+    name: Measles immunization coverage (MCV1)
+    dataflow: IMMUNISATION
+    sdg_target: 3.b.1
+    unit: Percentage
+    description: Children receiving first dose of measles vaccine
+    dimensions: ~
+    source: config
+  HVA_EPI_INF_RT:
+    code: HVA_EPI_INF_RT
+    name: HIV incidence rate
+    dataflow: HIV_AIDS
+    sdg_target: 3.3.1
+    unit: Per 1,000 uninfected population
+    description: New HIV infections per 1,000 uninfected population
+    dimensions: ~
+    source: config
+  WS_PPL_W-SM:
+    code: WS_PPL_W-SM
+    name: Population using safely managed drinking water services
+    dataflow: WASH_HOUSEHOLDS
+    sdg_target: 6.1.1
+    unit: Percentage
+    description: Drinking water from improved source, available, free from contamination
+    dimensions: ~
+    source: config
+  WS_PPL_S-SM:
+    code: WS_PPL_S-SM
+    name: Population using safely managed sanitation services
+    dataflow: WASH_HOUSEHOLDS
+    sdg_target: 6.2.1
+    unit: Percentage
+    description: Improved sanitation, not shared, safely disposed/treated
+    dimensions: ~
+    source: config
+  WS_PPL_H-B:
+    code: WS_PPL_H-B
+    name: Population with basic handwashing facilities
+    dataflow: WASH_HOUSEHOLDS
+    sdg_target: 6.2.1
+    unit: Percentage
+    description: Handwashing facility with soap and water at home
+    dimensions: ~
+    source: config
+  MNCH_MMR:
+    code: MNCH_MMR
+    name: Maternal mortality ratio
+    dataflow: MNCH
+    sdg_target: 3.1.1
+    unit: Deaths per 100,000 live births
+    description: Maternal deaths per 100,000 live births
+    dimensions: ~
+    source: config
+  MNCH_SAB:
+    code: MNCH_SAB
+    name: Skilled attendance at birth
+    dataflow: MNCH
+    sdg_target: 3.1.2
+    unit: Percentage
+    description: Births attended by skilled health personnel
+    dimensions: ~
+    source: config
+  MNCH_ABR:
+    code: MNCH_ABR
+    name: Adolescent birth rate
+    dataflow: MNCH
+    sdg_target: 3.7.2
+    unit: Births per 1,000 women aged 15-19
+    description: Adolescent fertility rate (15-19 years)
+    dimensions: ~
+    source: config
+  PT_CHLD_Y0T4_REG:
+    code: PT_CHLD_Y0T4_REG
+    name: Birth registration (children under 5)
+    dataflow: PT
+    sdg_target: 16.9.1
+    unit: Percentage
+    description: Children under 5 whose births are registered
+    dimensions: ~
+    source: config
+  PT_CHLD_1-14_PS-PSY-V_CGVR:
+    code: PT_CHLD_1-14_PS-PSY-V_CGVR
+    name: Violent discipline (children 1-14)
+    dataflow: PT
+    sdg_target: 16.2.1
+    unit: Percentage
+    description: Children experiencing physical or psychological aggression
+    dimensions: ~
+    source: config
+  PT_F_20-24_MRD_U18_TND:
+    code: PT_F_20-24_MRD_U18_TND
+    name: Child marriage before age 18 (women 20-24)
+    dataflow: PT_CM
+    sdg_target: 5.3.1
+    unit: Percentage
+    description: Women 20-24 who were married before age 18
+    dimensions: ~
+    source: config
+  PT_F_15-49_FGM:
+    code: PT_F_15-49_FGM
+    name: Female genital mutilation prevalence (women 15-49)
+    dataflow: PT_FGM
+    sdg_target: 5.3.2
+    unit: Percentage
+    description: Women/girls 15-49 who have undergone FGM
+    dimensions: ~
+    source: config
+  ECD_CHLD_LMPSL:
+    code: ECD_CHLD_LMPSL
+    name: Children developmentally on track
+    dataflow: ECD
+    sdg_target: 4.2.1
+    unit: Percentage
+    description: Children 36-59 months on track in literacy-numeracy, physical, social-emotional
+    dimensions: ~
+    source: config
+  PV_CHLD_DPRV-S-L1-HS:
+    code: PV_CHLD_DPRV-S-L1-HS
+    name: Child multidimensional poverty
+    dataflow: CHLD_PVTY
+    sdg_target: 1.2.1
+    unit: Percentage
+    description: Children with severe deprivation in at least 1 dimension
+    dimensions: ~
+    source: config

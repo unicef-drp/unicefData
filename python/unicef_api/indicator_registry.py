@@ -437,6 +437,192 @@ def list_indicators(
     return result
 
 
+def search_indicators(
+    query: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 50,
+    show_description: bool = True,
+) -> None:
+    """Search and display UNICEF indicators in a user-friendly format.
+    
+    This function allows analysts to search the indicator metadata to find
+    indicator codes they need. Results are printed to the screen in a
+    formatted table.
+    
+    Args:
+        query: Search term to match in indicator code, name, or description
+               (case-insensitive). If None, shows all indicators.
+        category: Filter by dataflow/category (e.g., "CME", "NUTRITION", "IMMUNISATION").
+                  Use list_categories() to see available categories.
+        limit: Maximum number of results to display (default: 50).
+               Set to None or 0 to show all matches.
+        show_description: If True, includes description column (default: True).
+        
+    Returns:
+        None. Results are printed to the screen.
+        
+    Examples:
+        >>> # Search for mortality-related indicators
+        >>> search_indicators("mortality")
+        
+        >>> # List all nutrition indicators
+        >>> search_indicators(category="NUTRITION")
+        
+        >>> # Search for stunting across all categories
+        >>> search_indicators("stunting")
+        
+        >>> # List all indicators (first 50)
+        >>> search_indicators()
+        
+        >>> # List all CME indicators without limit
+        >>> search_indicators(category="CME", limit=0)
+    """
+    indicators = _ensure_cache_loaded()
+    
+    # Filter indicators
+    matches = []
+    query_lower = query.lower() if query else None
+    
+    for code, info in indicators.items():
+        # Apply category filter
+        if category and info.get('category', '').upper() != category.upper():
+            continue
+        
+        # Apply query filter (search in code, name, and description)
+        if query_lower:
+            code_match = query_lower in code.lower()
+            name_match = query_lower in info.get('name', '').lower()
+            desc_match = query_lower in info.get('description', '').lower()
+            
+            if not (code_match or name_match or desc_match):
+                continue
+        
+        matches.append({
+            'code': code,
+            'name': info.get('name', ''),
+            'category': info.get('category', ''),
+            'description': info.get('description', '') or ''
+        })
+    
+    # Sort by category, then by code
+    matches.sort(key=lambda x: (x['category'], x['code']))
+    
+    # Apply limit
+    total_matches = len(matches)
+    if limit and limit > 0:
+        matches = matches[:limit]
+    
+    # Print header
+    print("\n" + "=" * 100)
+    if query and category:
+        print(f"  UNICEF Indicators matching '{query}' in category '{category}'")
+    elif query:
+        print(f"  UNICEF Indicators matching '{query}'")
+    elif category:
+        print(f"  UNICEF Indicators in category '{category}'")
+    else:
+        print("  All UNICEF Indicators")
+    print("=" * 100)
+    
+    if not matches:
+        print("\n  No indicators found matching your criteria.\n")
+        print("  Tips:")
+        print("  - Try a different search term")
+        print("  - Use list_categories() to see available categories")
+        print("  - Use search_indicators() with no arguments to see all indicators")
+        print()
+        return
+    
+    # Print results
+    print(f"\n  Found {total_matches} indicator(s)", end="")
+    if limit and limit > 0 and total_matches > limit:
+        print(f" (showing first {limit})")
+    else:
+        print()
+    print("-" * 100)
+    
+    # Calculate column widths
+    code_width = max(len(m['code']) for m in matches)
+    code_width = max(code_width, 15)  # Minimum width
+    cat_width = max(len(m['category']) for m in matches)
+    cat_width = max(cat_width, 10)
+    
+    # Available width for name (and description)
+    if show_description:
+        name_width = 35
+        desc_width = 100 - code_width - cat_width - name_width - 10  # padding
+    else:
+        name_width = 100 - code_width - cat_width - 6
+        desc_width = 0
+    
+    # Print column headers
+    header = f"  {'CODE':<{code_width}}  {'CATEGORY':<{cat_width}}  {'NAME':<{name_width}}"
+    if show_description:
+        header += f"  {'DESCRIPTION':<{desc_width}}"
+    print(header)
+    print("-" * 100)
+    
+    # Print each indicator
+    for m in matches:
+        name = m['name'][:name_width-2] + ".." if len(m['name']) > name_width else m['name']
+        
+        row = f"  {m['code']:<{code_width}}  {m['category']:<{cat_width}}  {name:<{name_width}}"
+        
+        if show_description:
+            desc = m['description'][:desc_width-2] + ".." if len(m['description']) > desc_width else m['description']
+            row += f"  {desc}"
+        
+        print(row)
+    
+    print("-" * 100)
+    
+    # Print footer with tips
+    if total_matches > len(matches):
+        print(f"\n  Showing {len(matches)} of {total_matches} results. Use limit=0 to see all.")
+    
+    print("\n  Usage tips:")
+    print("  - get_unicef(indicator='CODE') to fetch data for an indicator")
+    print("  - get_indicator_info('CODE') to see full metadata for an indicator")
+    print("  - list_categories() to see all available categories")
+    print()
+
+
+def list_categories() -> None:
+    """List all available indicator categories (dataflows) with counts.
+    
+    Prints a formatted table of categories showing how many indicators
+    are in each category.
+    
+    Examples:
+        >>> list_categories()
+    """
+    indicators = _ensure_cache_loaded()
+    
+    # Count indicators per category
+    category_counts = {}
+    for code, info in indicators.items():
+        cat = info.get('category', 'UNKNOWN')
+        category_counts[cat] = category_counts.get(cat, 0) + 1
+    
+    # Sort by count (descending)
+    sorted_cats = sorted(category_counts.items(), key=lambda x: -x[1])
+    
+    print("\n" + "=" * 50)
+    print("  Available Indicator Categories")
+    print("=" * 50)
+    print(f"\n  {'CATEGORY':<25} {'COUNT':>10}")
+    print("-" * 50)
+    
+    for cat, count in sorted_cats:
+        print(f"  {cat:<25} {count:>10}")
+    
+    print("-" * 50)
+    print(f"  {'TOTAL':<25} {sum(category_counts.values()):>10}")
+    print()
+    print("  Use search_indicators(category='CATEGORY_NAME') to see indicators")
+    print()
+
+
 def refresh_indicator_cache() -> int:
     """Force refresh of the indicator cache from UNICEF SDMX API.
     

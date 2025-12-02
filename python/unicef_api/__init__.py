@@ -56,6 +56,8 @@ from unicef_api.indicator_registry import (
     get_dataflow_for_indicator,
     get_indicator_info,
     list_indicators,
+    search_indicators,
+    list_categories,
     refresh_indicator_cache,
     get_cache_info,
 )
