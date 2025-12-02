@@ -13,13 +13,13 @@ if readme_file.exists():
 
 setup(
     name="unicef-api",
-    version="0.1.0",
+    version="0.2.0",
     author="Joao Pedro Azevedo",
     author_email="jazevedo@unicef.org",
-    description="Python library for downloading UNICEF indicators via SDMX API",
+    description="Bilingual R and Python library for downloading UNICEF SDG indicators via SDMX API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/unicef/unicefData",
+    url="https://github.com/unicef-drp/unicefData",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",

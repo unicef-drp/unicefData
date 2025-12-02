@@ -20,7 +20,7 @@ Basic usage:
 For more details, see: https://data.unicef.org/sdmx-api-documentation/
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Joao Pedro Azevedo"
 __email__ = "jazevedo@unicef.org"
 

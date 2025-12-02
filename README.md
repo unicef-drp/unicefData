@@ -1,20 +1,20 @@
-# unicefdata# unicefdata# unicefdata
+# unicefData# unicefdata# unicefdata# unicefdata
 
 
 
-[![R-CMD-check](https://github.com/unicef-drp/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefdata/actions)
+[![R-CMD-check](https://github.com/unicef-drp/unicefData/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions)
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![R-CMD-check](https://github.com/unicef-drp/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefdata/actions)[![R-CMD-check](https://github.com/your-org/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/your-org/unicefdata/actions)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![R-CMD-check](https://github.com/unicef-drp/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefdata/actions)
 
 
 
-**Multi-language library for downloading UNICEF child welfare indicators via SDMX API**[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/unicefdata)](https://cran.r-project.org/package=unicefdata)  
+**Bilingual R and Python library for downloading UNICEF SDG indicators via SDMX API**[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 
 
-The **unicefdata** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![Codecov test coverage](https://codecov.io/gh/your-org/unicefdata/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/unicefdata)  
+The **unicefData** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![R-CMD-check](https://github.com/unicef-drp/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefdata/actions)[![R-CMD-check](https://github.com/your-org/unicefdata/actions/workflows/check.yaml/badge.svg)](https://github.com/your-org/unicefdata/actions)  
 
 
 
@@ -22,15 +22,15 @@ The **unicefdata** package provides lightweight, consistent interfaces to the [U
 
 
 
-## 📂 Repository Structure**Multi-language library for downloading UNICEF child welfare indicators via SDMX API**The **unicefdata** package provides a lightweight, consistent R interface to the UNICEF SDMX “Data Warehouse” API, inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank). You can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.
+## 📂 Repository Structure**Multi-language library for downloading UNICEF child welfare indicators via SDMX API**[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/unicefdata)](https://cran.r-project.org/package=unicefdata)  
 
 
 
 ```
 
-unicefdata/
+unicefData/
 
-├── R/                        # R package source codeThe **unicefdata** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.---
+├── R/                        # R package source codeThe **unicefdata** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![Codecov test coverage](https://codecov.io/gh/your-org/unicefdata/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/unicefdata)  
 
 │   ├── codelist.R            # Codelist browsing functions
 
@@ -38,191 +38,416 @@ unicefdata/
 
 │   ├── flows.R               # Dataflow listing
 
-│   ├── get_sdmx.R            # Main SDMX fetching function---## ⚡️ Features
+│   ├── get_sdmx.R            # Main SDMX fetching function---
+
+│   ├── get_unicef.R          # Alternative API interface
 
 │   ├── utils.R               # Helper functions
 
 │   └── examples/             # R usage examples
 
-│       ├── 01_batch_fetch_sdg.R
+│       ├── 01_batch_fetch_sdg.R## 📂 Repository Structure**Multi-language library for downloading UNICEF child welfare indicators via SDMX API**The **unicefdata** package provides a lightweight, consistent R interface to the UNICEF SDMX “Data Warehouse” API, inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank). You can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.
 
-│       └── 02_sdmx_client_demo.R## 📂 Repository Structure- **`get_unicef()`** — download one or more SDMX series as a tidy `data.frame`  
+│       ├── 02_sdmx_client_demo.R
+
+│       └── test_api.R
 
 ├── python/                   # Python package
 
-│   ├── unicef_api/           # Python module- **`list_series()`** — browse available series codes and descriptions  
+│   ├── unicef_api/           # Python module```
 
 │   ├── examples/             # Python usage examples
 
-│   └── tests/                # Unit tests```- **Flexible parameters** for date range, geography, frequency, and output format  
+│   └── tests/                # Unit testsunicefdata/
 
 ├── DESCRIPTION               # R package metadata
 
-├── NAMESPACE                 # R exportsunicefdata/- **Automatic caching** and retries  
+├── NAMESPACE                 # R exports├── R/                        # R package source codeThe **unicefdata** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.---
 
-└── README.md
+├── LICENSE                   # MIT License
 
-```├── R/                    # R package source code- **Built‐in error handling** for missing series, malformed URLs, empty results  
+└── README.md                 # This file│   ├── codelist.R            # Codelist browsing functions
 
+```
 
-
----├── python/               # Python package source code- **`sanity_check()`** integration to track changes in raw CSVs  
-
-
-
-## ⚡ Features│   ├── unicef_api/       # Python module
-
-
-
-| Feature | R | Python |│   ├── examples/         # Usage examples---
-
-|---------|---|--------|
-
-| Download SDMX series as tidy data | ✅ | ✅ |│   └── tests/            # Unit tests
-
-| Browse available dataflows | ✅ | ✅ |
-
-| Browse dimension codelists | ✅ | ✅ |├── testthat/             # R unit tests## 🚀 Installation
-
-| Filter by country, year, sex | ✅ | ✅ |
-
-| Automatic retries & error handling | ✅ | ✅ |├── DESCRIPTION           # R package metadata
-
-| Disk-based caching | ✅ | ⬚ |
-
-| Pagination for large datasets | ✅ | ⬚ |└── README.md             # This fileFrom CRAN:
-
-| 40+ pre-configured SDG indicators | ⬚ | ✅ |
-
-| Batch download multiple indicators | ✅ | ✅ |```
-
-| Data cleaning utilities | ✅ | ✅ |
-
-```r
+│   ├── data_utilities.R      # Safe I/O utilities
 
 ---
 
----install.packages("unicefdata")
-
-## 🚀 Installation
-
-
-
-### R Package
+│   ├── flows.R               # Dataflow listing
 
 ## ⚡ Features
 
+│   ├── get_sdmx.R            # Main SDMX fetching function---## ⚡️ Features
+
+| Feature | R | Python |
+
+|---------|---|--------|│   ├── utils.R               # Helper functions
+
+| Download SDMX series as tidy data | ✅ `get_sdmx()` | ✅ `UNICEFSDMXClient()` |
+
+| Browse available dataflows | ✅ `list_sdmx_flows()` | ✅ `list_dataflows()` |│   └── examples/             # R usage examples
+
+| Browse dimension codelists | ✅ `list_sdmx_codelist()` | ✅ via config.py |
+
+| Filter by country, year, sex | ✅ | ✅ |│       ├── 01_batch_fetch_sdg.R
+
+| Automatic retries & error handling | ✅ | ✅ |
+
+| Disk-based caching (memoise) | ✅ | ⬚ |│       └── 02_sdmx_client_demo.R## 📂 Repository Structure- **`get_unicef()`** — download one or more SDMX series as a tidy `data.frame`  
+
+| Pagination for large datasets | ✅ | ⬚ |
+
+| 40+ pre-configured SDG indicators | ✅ | ✅ |├── python/                   # Python package
+
+| Batch download multiple indicators | ✅ | ✅ |
+
+| Country name lookup | ✅ | ✅ |│   ├── unicef_api/           # Python module- **`list_series()`** — browse available series codes and descriptions  
+
+| Data cleaning utilities | ✅ | ✅ |
+
+│   ├── examples/             # Python usage examples
+
+---
+
+│   └── tests/                # Unit tests```- **Flexible parameters** for date range, geography, frequency, and output format  
+
+## 🚀 Installation
+
+├── DESCRIPTION               # R package metadata
+
+### R Package
+
+├── NAMESPACE                 # R exportsunicefdata/- **Automatic caching** and retries  
+
 ```r
 
-# From GitHub:# getUnicef
+# Install from GitHub└── README.md
 
-# install.packages("devtools")
+devtools::install_github("unicef-drp/unicefData")
 
-devtools::install_github("unicef-drp/unicefdata")| Feature | R | Python |
+```├── R/                    # R package source code- **Built‐in error handling** for missing series, malformed URLs, empty results  
+
+# Load the package
+
+library(unicefData)
+
+```
+
+---├── python/               # Python package source code- **`sanity_check()`** integration to track changes in raw CSVs  
+
+### Python Package
+
+
+
+```bash
+
+# Install from source## ⚡ Features│   ├── unicef_api/       # Python module
+
+cd python/
+
+pip install -e .
+
+
+
+# Or install dependencies directly| Feature | R | Python |│   ├── examples/         # Usage examples---
+
+pip install -r requirements.txt
+
+```|---------|---|--------|
+
+
+
+---| Download SDMX series as tidy data | ✅ | ✅ |│   └── tests/            # Unit tests
+
+
+
+## 📖 Quick Start| Browse available dataflows | ✅ | ✅ |
+
+
+
+### R Usage| Browse dimension codelists | ✅ | ✅ |├── testthat/             # R unit tests## 🚀 Installation
+
+
+
+```r| Filter by country, year, sex | ✅ | ✅ |
+
+library(unicefData)
+
+| Automatic retries & error handling | ✅ | ✅ |├── DESCRIPTION           # R package metadata
+
+# List available dataflows
+
+flows <- list_sdmx_flows()| Disk-based caching | ✅ | ⬚ |
+
+print(flows)
+
+| Pagination for large datasets | ✅ | ⬚ |└── README.md             # This fileFrom CRAN:
+
+# Fetch under-5 mortality data
+
+mortality <- get_sdmx(| 40+ pre-configured SDG indicators | ⬚ | ✅ |
+
+  flow = "CME",
+
+  key = "CME_MRY0T4",| Batch download multiple indicators | ✅ | ✅ |```
+
+  start_period = 2015,
+
+  end_period = 2023,| Data cleaning utilities | ✅ | ✅ |
+
+  tidy = TRUE,
+
+  country_names = TRUE```r
+
+)
+
+---
+
+print(head(mortality))
+
+```---install.packages("unicefdata")
+
+
+
+### Python Usage## 🚀 Installation
+
+
+
+```python
+
+from unicef_api import UNICEFSDMXClient
+
+### R Package
+
+# Initialize client
+
+client = UNICEFSDMXClient()## ⚡ Features
+
+
+
+# Fetch under-5 mortality for specific countries```r
+
+df = client.fetch_indicator(
+
+    'CME_MRY0T4',# From GitHub:# getUnicef
+
+    countries=['ALB', 'USA', 'BRA'],
+
+    start_year=2015,# install.packages("devtools")
+
+    end_year=2023
+
+)devtools::install_github("unicef-drp/unicefdata")| Feature | R | Python |
+
+
+
+print(df.head())```
 
 ```
 
 |---------|---|--------|**Client for the UNICEF SDMX Data Warehouse**
 
+---
+
 ### Python Package
+
+## 📊 Common Indicators
 
 | Download SDMX series as tidy data | ✅ | ✅ |
 
+### Child Mortality (SDG 3.2)
+
 ```bash
 
-cd python| Browse available series/dataflows | ✅ | ✅ |- **list_unicef_flows()**  
+- `CME_MRM0` - Neonatal mortality rate
 
-pip install -e .
+- `CME_MRY0T4` - Under-5 mortality ratecd python| Browse available series/dataflows | ✅ | ✅ |- **list_unicef_flows()**  
 
-| Filter by country, year, sex | ✅ | ✅ |  Returns all available “flows” (tables) you can download.
 
-# Or install dependencies directly:
 
-pip install -r requirements.txt| Automatic retries & error handling | ✅ | ✅ |
+### Nutrition (SDG 2.2)pip install -e .
 
-```
+
+
+- `NT_ANT_HAZ_NE2_MOD` - Stunting prevalence| Filter by country, year, sex | ✅ | ✅ |  Returns all available “flows” (tables) you can download.
+
+- `NT_ANT_WHZ_NE2` - Wasting prevalence
+
+- `NT_ANT_WHZ_PO2_MOD` - Overweight prevalence# Or install dependencies directly:
+
+
+
+### Education (SDG 4.1)pip install -r requirements.txt| Automatic retries & error handling | ✅ | ✅ |
+
+
+
+- `ED_CR_L1_UIS_MOD` - Primary completion rate```
+
+- `ED_CR_L2_UIS_MOD` - Lower secondary completion rate
 
 | 40+ pre-configured SDG indicators | ✅ | ✅ |- **list_unicef_codelist(flow, dimension)**  
 
+### Immunization (SDG 3.b)
+
 ---
 
-| Batch download multiple indicators | ✅ | ✅ |  Returns the codelist (allowed codes + human‐readable descriptions) for a given flow + dimension.
+- `IM_DTP3` - DTP3 immunization coverage
 
-## 🎯 Quick Start
+- `IM_MCV1` - Measles immunization coverage| Batch download multiple indicators | ✅ | ✅ |  Returns the codelist (allowed codes + human‐readable descriptions) for a given flow + dimension.
 
-| Data cleaning & transformation utilities | ✅ | ✅ |
+
+
+### WASH (SDG 6.1, 6.2)## 🎯 Quick Start
+
+
+
+- `WS_PPL_W-SM` - Safely managed drinking water| Data cleaning & transformation utilities | ✅ | ✅ |
+
+- `WS_PPL_S-SM` - Safely managed sanitation
 
 ### R - Basic Usage
 
+### Child Protection (SDG 5.3, 16.2, 16.9)
+
 - **get_unicef(flow, key = NULL, …)**  
 
-```r
+- `PT_CHLD_Y0T4_REG` - Birth registration
 
-# Load the package---  Download one or more flows, with optional filters, automatic paging, retry, and tidy output.
-
-source("R/utils.R")
-
-source("R/flows.R")
-
-source("R/codelist.R")
-
-source("R/get_sdmx.R")## 🚀 Installation## Installation
+- `PT_F_20-24_MRD_U18_TND` - Child marriage```r
 
 
+
+---# Load the package---  Download one or more flows, with optional filters, automatic paging, retry, and tidy output.
+
+
+
+## 📚 Documentationsource("R/utils.R")
+
+
+
+### R Functionssource("R/flows.R")
+
+
+
+| Function | Description |source("R/codelist.R")
+
+|----------|-------------|
+
+| `get_sdmx()` | Download SDMX data series with optional filtering |source("R/get_sdmx.R")## 🚀 Installation## Installation
+
+| `get_unicef()` | Alternative interface with pagination support |
+
+| `list_sdmx_flows()` | List all available UNICEF dataflows |
+
+| `list_sdmx_codelist()` | Browse dimension codelists |
 
 # 1. List all available UNICEF dataflows
 
+### Python Classes
+
 flows <- list_sdmx_flows(agency = "UNICEF")
 
-print(flows)### R Package```r
+| Class/Function | Description |
 
+|----------------|-------------|print(flows)### R Package```r
 
+| `UNICEFSDMXClient` | Main client for fetching indicator data |
+
+| `fetch_indicator()` | Fetch single indicator with filters |
+
+| `fetch_multiple_indicators()` | Batch download multiple indicators |
 
 # 2. Fetch under-5 mortality data# From CRAN (once published)
 
+See `R/examples/` and `python/examples/` for complete usage examples.
+
 mortality <- get_sdmx(
+
+---
 
   agency       = "UNICEF",```rinstall.packages("getUnicef")
 
+## 🔗 Data Sources
+
   flow         = "CME",
+
+All data is sourced from the UNICEF SDMX Data Warehouse:
 
   key          = "CME_MRY0T4",# From GitHub:
 
-  start_period = 2015,
+- **SDMX API**: [https://sdmx.data.unicef.org/](https://sdmx.data.unicef.org/)
+
+- **Data Portal**: [https://data.unicef.org/](https://data.unicef.org/)  start_period = 2015,
+
+- **API Documentation**: [https://data.unicef.org/sdmx-api-documentation/](https://data.unicef.org/sdmx-api-documentation/)
 
   end_period   = 2023,# install.packages("devtools")# Or from GitHub:
 
+---
+
   tidy         = TRUE
+
+## 📄 License
 
 )devtools::install_github("unicef-drp/unicefdata")# install.packages("devtools")
 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 print(head(mortality))
+
+---
 
 ``````devtools::install_github("yourusername/getUnicef")
 
+## 👤 Authors
 
 
-### R - Batch Fetch Multiple Indicators
+
+**Joao Pedro Azevedo**  
+
+Senior Advisor, Data and Analytics  ### R - Batch Fetch Multiple Indicators
+
+UNICEF  
 
 ### Python Package
 
-```r
+**Garen Avanesian**  
+
+Data Specialist  ```r
+
+UNICEF
 
 # See: R/examples/01_batch_fetch_sdg.R```bash
 
+---
+
 cd python
+
+## 🙏 Acknowledgments
 
 library(purrr)pip install -e .
 
+This library was developed as part of UNICEF's SDG reporting efforts, with code adapted from:
+
 source("R/get_sdmx.R")
 
-source("R/data_utilities.R")# Or install dependencies directly:
+- `PROD-SDG-REP-2025` production pipeline
 
-pip install -r requirements.txt
+- `unicef-sdg-llm-benchmark` repositorysource("R/data_utilities.R")# Or install dependencies directly:
 
-# Define flows to fetch```
 
-flows_to_fetch <- list(
+
+---pip install -r requirements.txt
+
+
+
+## 📝 Changelog# Define flows to fetch```
+
+
+
+See [NEWS.md](NEWS.md) for version history and changes.flows_to_fetch <- list(
+
 
   mort  = list(flow = "CME", key = c("CME_MRM0", "CME_MRY0T4")),---
 

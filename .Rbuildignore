@@ -1,2 +1,42 @@
+# R package build ignores
 ^unicefData\.Rproj$
 ^\.Rproj\.user$
+^\.Rhistory$
+^\.RData$
+^\.Rdata$
+
+# Git
+^\.git$
+^\.gitignore$
+
+# Python package (separate from R package)
+^python$
+^python/.*$
+
+# Examples folder (not part of R package)
+^R/examples$
+^R/examples/.*$
+
+# Documentation
+^README\.Rmd$
+^README\.md$
+^NEWS\.md$
+^LICENSE\.md$
+^docs$
+^_pkgdown\.yml$
+
+# CI/CD
+^\.github$
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$
+
+# Logs and temp files
+^log$
+^logs$
+^testthat$
+^data$
+
+# IDE
+^\.vscode$
+^\.idea$

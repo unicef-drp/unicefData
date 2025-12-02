@@ -1,6 +1,14 @@
-# unicefdata Changelog
+# unicefData Changelog
 
-## 0.2.0 (2025-12-01)
+## 0.2.0 (2025-01-06)
+
+### R Package Bug Fixes
+* **Fixed SDMX URL construction** in `get_sdmx()` - corrected indicator key format 
+  from `.INDICATOR.` to `.INDICATOR..` (two trailing dots) to match UNICEF API requirements
+* **Fixed countrycode integration** - replaced deprecated `countrycode::countrycode_df` 
+  with `countrycode::countrycode()` function
+* Added comprehensive test script (`R/examples/test_api.R`) validating all major dataflows
+* Verified compatibility with 68 UNICEF SDMX dataflows
 
 ### Python Package (NEW)
 * Added complete Python implementation (`python/unicef_api/`)
@@ -16,14 +24,19 @@
   - `04_data_analysis.py` - Data transformation workflows
 * Added unit tests with pytest
 
-### R Package
+### R Package Improvements
 * Reorganized R examples into `R/examples/`:
   - `01_batch_fetch_sdg.R` - Batch-fetch SDG indicators
   - `02_sdmx_client_demo.R` - SDMX client demonstration
+  - `test_api.R` - API test suite
 * Improved documentation
 
 ### Repository
 * Updated README to document bilingual R/Python support
+* Updated DESCRIPTION with correct dependencies (added tibble, xml2, memoise, countrycode, tools)
+* Updated NAMESPACE with all exported functions
+* Updated .Rbuildignore for Python folder exclusion
+* Added MIT LICENSE file
 * Added comprehensive `.gitignore`
 * Cleaned up old log files and temporary directories
 

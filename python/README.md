@@ -3,9 +3,22 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Python library for downloading UNICEF child welfare indicators via SDMX API**
+**Python component of the bilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
 
-This library provides a simplified, robust interface for fetching child welfare and development statistics from UNICEF's SDMX data repository.
+This is the Python implementation of the **unicefData** package. For the R implementation, see the [main repository README](../README.md).
+
+## 🌐 Bilingual Package
+
+The **unicefData** repository provides consistent APIs in both R and Python:
+
+| Feature | R | Python |
+|---------|---|--------|
+| Download SDMX series | `get_sdmx()` | `UNICEFSDMXClient()` |
+| List dataflows | `list_sdmx_flows()` | `client.list_dataflows()` |
+| Browse codelists | `list_sdmx_codelist()` | via config.py |
+| 40+ SDG indicators | ✅ | ✅ |
+| Automatic retries | ✅ | ✅ |
+| Country name lookup | ✅ | ✅ |
 
 ## 🚀 Features
 
