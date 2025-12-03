@@ -110,6 +110,36 @@ df <- get_unicef(
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
 cat(sprintf("Years: %d - %d\n", min(df$period), max(df$period)))
 
+# =============================================================================
+# Example 6: Minimal Call (Only Indicator)
+# =============================================================================
+cat("\n--- Example 6: Minimal Call (Only Indicator) ---\n")
+cat("Indicator: CME_MRY0T4\n")
+cat("Result: All countries, all years, default filters (Totals)\n\n")
+
+# Note: This can be a large download!
+df <- get_unicef(indicator = "CME_MRY0T4")
+
+cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+print(head(df))
+
+# =============================================================================
+# Example 7: Multiple Indicators Merged (Wide Format)
+# =============================================================================
+cat("\n--- Example 7: Multiple Indicators Merged (Wide Format) ---\n")
+cat("Indicators: Under-5 (CME_MRY0T4) & Neonatal (CME_MRM0)\n")
+cat("Format: wide_indicators (Merged side-by-side)\n\n")
+
+df <- get_unicef(
+  indicator = c("CME_MRY0T4", "CME_MRM0"),
+  countries = c("ALB", "USA", "BRA"),
+  start_year = 2015,
+  format = "wide_indicators"
+)
+
+cat(sprintf("Result: %d rows\n", nrow(df)))
+print(head(df))
+
 cat("\n======================================================================\n")
 cat("Quick Start Complete!\n")
 cat("======================================================================\n")

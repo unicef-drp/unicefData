@@ -33,6 +33,13 @@ if (!exists("get_unicef_raw", mode = "function")) {
 }
 
 # Internal helper to perform HTTP GET and return text
+#' Fetch SDMX content from URL
+#'
+#' @param url URL to fetch
+#' @param ua User agent string
+#' @param retry Number of retries
+#' @return Content as text
+#' @keywords internal
 fetch_sdmx <- function(url, ua, retry) {
   resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
   httr::stop_for_status(resp)
@@ -115,6 +122,10 @@ list_unicef_codelist <- memoise::memoise(
 #' @param end_year Optional ending year (e.g., 2023).
 #'   Previously called 'end_period'. Both parameter names are supported.
 #' @param sex Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).
+#' @param age Filter by age group. Default is NULL (keeps totals).
+#' @param wealth Filter by wealth quintile. Default is NULL (keeps totals).
+#' @param residence Filter by residence (e.g. "URBAN", "RURAL"). Default is NULL (keeps totals).
+#' @param maternal_edu Filter by maternal education. Default is NULL (keeps totals).
 #' @param tidy Logical; if TRUE (default), returns cleaned tibble with standardized column names.
 #' @param country_names Logical; if TRUE (default), adds country name column.
 #' @param max_retries Number of retry attempts on failure (default: 3).
@@ -124,7 +135,8 @@ list_unicef_codelist <- memoise::memoise(
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
 #' @param format Output format: "long" (default), "wide" (years as columns), 
-#'   or "wide_indicators" (indicators as columns).
+#'   "wide_indicators" (indicators as columns), or wide by dimension:
+#'   "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu".
 #' @param latest Logical; if TRUE, keep only the most recent non-missing value per country.
 #'   The year may differ by country. Useful for cross-sectional analysis.
 #' @param add_metadata Character vector of metadata to add: "region", "income_group", 
@@ -194,6 +206,10 @@ get_unicef <- function(
     start_year    = NULL,
     end_year      = NULL,
     sex           = "_T",
+    age           = NULL,
+    wealth        = NULL,
+    residence     = NULL,
+    maternal_edu  = NULL,
     tidy          = TRUE,
     country_names = TRUE,
     max_retries   = 3,
@@ -202,7 +218,7 @@ get_unicef <- function(
     detail        = c("data", "structure"),
     version       = NULL,
     # NEW: Post-production options
-    format        = c("long", "wide", "wide_indicators"),
+    format        = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
     latest        = FALSE,
     add_metadata  = NULL,
     dropna        = FALSE,
@@ -236,6 +252,13 @@ get_unicef <- function(
   
   format <- match.arg(format)
   detail <- match.arg(detail)
+
+  # Auto-adjust filters for wide formats
+  if (format == "wide_sex") sex <- "ALL"
+  if (format == "wide_age") age <- "ALL"
+  if (format == "wide_wealth") wealth <- "ALL"
+  if (format == "wide_residence") residence <- "ALL"
+  if (format == "wide_maternal_edu") maternal_edu <- "ALL"
   
   # Handle structure request
   if (detail == "structure") {
@@ -298,10 +321,7 @@ get_unicef <- function(
   is_default_filters <- (sex == "_T") # Add others if they were params
   
   if (!raw || !is_default_filters) {
-    result <- filter_unicef_data(result, sex = sex)
-    # Note: get_unicef params only have 'sex'. 
-    # Original get_unicef hardcoded filtering for age, wealth, etc. to totals.
-    # filter_unicef_data handles that default behavior.
+    result <- filter_unicef_data(result, sex = sex, age = age, wealth = wealth, residence = residence, maternal_edu = maternal_edu)
   }
 
   # Add spacing after logs for single dataflow (verbose mode)
@@ -521,6 +541,37 @@ apply_format <- function(df, format) {
         values_from = value
       )
     
+  } else if (format %in% c("wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu")) {
+    
+    # Map format to column name
+    pivot_col <- switch(format,
+      "wide_sex" = "sex",
+      "wide_age" = "age",
+      "wide_wealth" = "wealth_quintile",
+      "wide_residence" = "residence",
+      "wide_maternal_edu" = "maternal_edu_lvl"
+    )
+    
+    if (!pivot_col %in% names(df)) {
+      warning(sprintf("Column '%s' not found in data. Cannot pivot.", pivot_col))
+      return(df)
+    }
+    
+    # Identify columns to keep as index (same as wide_indicators)
+    id_cols <- c("iso3", "period")
+    if ("country" %in% names(df)) id_cols <- c(id_cols[1], "country", id_cols[2])
+    for (col in c("region", "income_group", "continent")) {
+      if (col %in% names(df)) id_cols <- c(id_cols, col)
+    }
+
+    df %>%
+      tidyr::pivot_wider(
+        id_cols = dplyr::all_of(id_cols),
+        names_from = c("indicator", pivot_col),
+        values_from = value,
+        names_sep = "_"
+      )
+      
   } else {
     df
   }

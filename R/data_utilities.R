@@ -19,6 +19,14 @@
 #--------------------------#
 # Safe CSV Reader
 #--------------------------#
+
+#' Safely read a CSV file with error handling and logging
+#'
+#' @param path Character path to the CSV file.
+#' @param label Optional label for logging (defaults to basename of path).
+#' @param show_col_types Logical; whether to show column types (default FALSE).
+#' @return A data frame (tibble) or NULL if an error occurs.
+#' @export
 safe_read_csv <- function(path, label = NULL, show_col_types = FALSE) {
   tryCatch({
     df <- readr::read_csv(path, show_col_types = show_col_types)
@@ -35,6 +43,14 @@ safe_read_csv <- function(path, label = NULL, show_col_types = FALSE) {
 #--------------------------#
 # Safe CSV Writer
 #--------------------------#
+
+#' Safely write a data frame to CSV with error handling and logging
+#'
+#' @param df Data frame to save.
+#' @param path Character path where the CSV should be saved.
+#' @param label Optional label for logging (defaults to basename of path).
+#' @return None (invisible).
+#' @export
 safe_write_csv <- function(df, path, label = NULL) {
   tryCatch({
     if (!is.null(df) && nrow(df) > 0) {
@@ -53,6 +69,13 @@ safe_write_csv <- function(df, path, label = NULL) {
 #--------------------------#
 # Process Block Wrapper
 #--------------------------#
+
+#' Execute a code block with labeled logging and error handling
+#'
+#' @param label Character label for the block.
+#' @param expr Expression to evaluate.
+#' @return The result of the expression or NULL on error.
+#' @export
 process_block <- function(label, expr) {
   cat(paste0("\n--- ", label, " ---\n"))
   tryCatch({
@@ -68,6 +91,13 @@ process_block <- function(label, expr) {
 #-------------------------------------------------------------------------------
 # 1) Safe helpers (base R + httr/vroom)
 #-------------------------------------------------------------------------------
+
+#' Safely read a CSV from a URL with error handling
+#'
+#' @param url Character URL to the CSV file.
+#' @param name Character name for logging purposes.
+#' @return A data frame (tibble) or NULL if an error occurs.
+#' @export
 safe_read_csv_url <- function(url, name) {
   tryCatch({
     df <- readr::read_csv(url, show_col_types = FALSE)
@@ -79,6 +109,13 @@ safe_read_csv_url <- function(url, name) {
   })
 }
 
+#' Safely save a data frame to CSV using base R
+#'
+#' @param df Data frame to save.
+#' @param path Character path where the CSV should be saved.
+#' @param label Character label for logging purposes.
+#' @return None (invisible).
+#' @export
 safe_save_csv <- function(df, path, label) {
   if (is.null(df)) {
     cat(sprintf("⚠ Skipped saving %s: Data is NULL\n", label))

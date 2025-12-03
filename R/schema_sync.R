@@ -28,7 +28,14 @@ library(dplyr)
 
 SDMX_BASE_URL <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
 
-# Get R package root (assumes script is in R/ folder)
+#' Get R package root directory
+#'
+#' Attempts to locate the root of the R package by checking for specific files
+#' (get_unicef.R or DESCRIPTION) in the current directory, R/ subdirectory,
+#' or parent directories.
+#'
+#' @return Character path to the package root.
+#' @keywords internal
 get_package_root <- function() {
 
   # Try to find R package root

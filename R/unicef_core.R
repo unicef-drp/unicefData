@@ -15,6 +15,14 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 `%>%` <- magrittr::`%>%`
 
 # --- Helper: Fetch SDMX ---
+
+#' Fetch SDMX content as text
+#'
+#' @param url URL to fetch
+#' @param ua User agent string
+#' @param retry Number of retries
+#' @return Content as text
+#' @keywords internal
 fetch_sdmx_text <- function(url, ua, retry) {
   resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
   httr::stop_for_status(resp)
@@ -222,7 +230,7 @@ clean_unicef_data <- function(df) {
   }
   
   # Standard columns
-  standard_cols <- c("indicator", "indicator_name", "iso3", "country", "period", "value",
+  standard_cols <- c("indicator", "indicator_name", "iso3", "country", "geo_type", "period", "value",
                      "unit", "unit_name", "sex", "sex_name", "age", 
                      "wealth_quintile", "wealth_quintile_name", "residence", 
                      "maternal_edu_lvl", "lower_bound", "upper_bound", 
@@ -248,6 +256,15 @@ clean_unicef_data <- function(df) {
       dplyr::select(iso3, country, dplyr::everything())
   }
   
+  # Add geo_type (country vs aggregate)
+  if ("iso3" %in% names(df_clean)) {
+    valid_iso3 <- countrycode::codelist$iso3c
+    df_clean <- df_clean %>%
+      dplyr::mutate(
+        geo_type = dplyr::if_else(iso3 %in% valid_iso3, "country", "aggregate")
+      )
+  }
+  
   return(df_clean)
 }
 
@@ -267,7 +284,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       available_disaggregations <- c(available_disaggregations, 
                                      paste0("sex: ", paste(sex_values, collapse = ", ")))
     }
-    if (!is.null(sex)) {
+    if (!is.null(sex) && sex != "ALL") {
       df <- df %>% dplyr::filter(SEX == sex)
       applied_filters <- c(applied_filters, paste0("sex: ", sex))
     }
@@ -287,7 +304,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
           df <- df %>% dplyr::filter(AGE %in% age_totals)
           applied_filters <- c(applied_filters, paste0("age: ", paste(age_totals, collapse = ", "), " (Default)"))
         }
-      } else {
+      } else if (age != "ALL") {
         df <- df %>% dplyr::filter(AGE == age)
         applied_filters <- c(applied_filters, paste0("age: ", age))
       }
@@ -304,7 +321,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
     if (is.null(wealth) && "_T" %in% wq_values) {
       df <- df %>% dplyr::filter(WEALTH_QUINTILE == "_T")
       applied_filters <- c(applied_filters, "wealth_quintile: _T (Default)")
-    } else if (!is.null(wealth)) {
+    } else if (!is.null(wealth) && wealth != "ALL") {
       df <- df %>% dplyr::filter(WEALTH_QUINTILE == wealth)
       applied_filters <- c(applied_filters, paste0("wealth_quintile: ", wealth))
     }
@@ -320,7 +337,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
     if (is.null(residence) && "_T" %in% res_values) {
       df <- df %>% dplyr::filter(RESIDENCE == "_T")
       applied_filters <- c(applied_filters, "residence: _T (Default)")
-    } else if (!is.null(residence)) {
+    } else if (!is.null(residence) && residence != "ALL") {
       df <- df %>% dplyr::filter(RESIDENCE == residence)
       applied_filters <- c(applied_filters, paste0("residence: ", residence))
     }
@@ -336,7 +353,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
     if (is.null(maternal_edu) && "_T" %in% edu_values) {
       df <- df %>% dplyr::filter(MATERNAL_EDU_LVL == "_T")
       applied_filters <- c(applied_filters, "maternal_edu_lvl: _T (Default)")
-    } else if (!is.null(maternal_edu)) {
+    } else if (!is.null(maternal_edu) && maternal_edu != "ALL") {
       df <- df %>% dplyr::filter(MATERNAL_EDU_LVL == maternal_edu)
       applied_filters <- c(applied_filters, paste0("maternal_edu_lvl: ", maternal_edu))
     }

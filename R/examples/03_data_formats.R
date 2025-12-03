@@ -108,6 +108,52 @@ df <- get_unicef(
 cat(sprintf("Shape: %d x %d (expect 6 rows: 3 years x 2 countries)\n", nrow(df), ncol(df)))
 print(df[, c("iso3", "period", "value")])
 
+# =============================================================================
+# Example 6: Default Behavior (All Countries, All Years, Totals)
+# =============================================================================
+cat("\n--- Example 6: Default Behavior ---\n")
+cat("Only indicator specified -> All countries, all years, totals only\n\n")
+
+# Note: Limiting to a short time range to avoid fetching too much data for the example
+df <- get_unicef(
+  indicator = "CME_MRY0T4",
+  start_year = 2021
+)
+
+cat(sprintf("Shape: %d x %d\n", nrow(df), ncol(df)))
+# Check that we have multiple countries and only Total sex/wealth if available
+cols_to_show <- intersect(c("iso3", "country", "period", "value", "sex", "wealth_quintile"), names(df))
+print(head(df[, cols_to_show], 10))
+
+# =============================================================================
+# Example 7: Wide Formats by Dimension
+# =============================================================================
+cat("\n--- Example 7: Wide Formats by Dimension ---\n")
+cat("Pivoting by Sex, Wealth, Age, etc.\n\n")
+
+# Wide by Wealth Quintile
+cat("1. Wide by Wealth Quintile:\n")
+# Note: Not all indicators have wealth disaggregation. 
+# Using an indicator that typically does (e.g. Stunting or similar if CME doesn't in this context)
+# But CME_MRY0T4 often has it in MICS. Let's try.
+df_wealth <- get_unicef(
+  indicator = "CME_MRY0T4",
+  countries = c("COL", "PER"),
+  start_year = 2015,
+  format = "wide_wealth"
+)
+print(head(df_wealth))
+
+# Wide by Sex
+cat("\n2. Wide by Sex:\n")
+df_sex <- get_unicef(
+  indicator = "CME_MRY0T4",
+  countries = c("ZWE", "KEN"),
+  start_year = 2019,
+  format = "wide_sex"
+)
+print(head(df_sex))
+
 cat("\n======================================================================\n")
 cat("Data Formats Complete!\n")
 cat("======================================================================\n")
