@@ -4,6 +4,8 @@
 
 #' @import dplyr
 #' @importFrom magrittr %>%
+#' @importFrom stats na.omit setNames
+#' @importFrom utils capture.output head write.csv
 NULL
 
 # Ensure required packages are loaded
