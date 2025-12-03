@@ -28,7 +28,6 @@
 #' @importFrom xml2 read_xml
 #' @importFrom dplyr bind_rows rename mutate select left_join everything
 #' @importFrom purrr map
-#' @importFrom countrycode countrycode_df
 #' @importFrom memoise memoise cache_filesystem
 #' @importFrom tools R_user_dir
 #' @importFrom jsonlite fromJSON
