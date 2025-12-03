@@ -8,7 +8,7 @@
 # 4. Track metadata versions for triangulation and auditing
 #
 # Usage:
-#   source("R/metadata.R")
+#   source("R/unicef_api/metadata.R")
 #   sync_metadata()  # Downloads and caches all metadata
 #   validate_data(df, "CME_MRY0T4")  # Validate data
 
@@ -35,7 +35,7 @@ set_metadata_cache <- function(path = NULL) {
   if (is.null(path)) {
     wd <- getwd()
     # Check if we are in the R directory (heuristic: contains get_unicef.R)
-    if (file.exists(file.path(wd, "get_unicef.R"))) {
+    if (file.exists(file.path(wd, "get_unicef.R")) || file.exists(file.path(wd, "unicef_api", "get_unicef.R"))) {
        path <- file.path(wd, "metadata")
     } else {
        # Assume we are in root or somewhere else, try to target R/metadata

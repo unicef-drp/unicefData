@@ -11,7 +11,7 @@
 # - Consistency between Python and R packages
 #
 # Usage:
-#   source("R/schema_sync.R")
+#   source("R/unicef_api/schema_sync.R")
 #   sync_dataflow_schemas()
 #
 # =============================================================================
@@ -46,7 +46,7 @@ get_package_root <- function() {
   )
   
   for (path in candidates) {
-    if (file.exists(file.path(path, "get_unicef.R")) || file.exists(file.path(path, "DESCRIPTION"))) {
+    if (file.exists(file.path(path, "get_unicef.R")) || file.exists(file.path(path, "unicef_api", "get_unicef.R")) || file.exists(file.path(path, "DESCRIPTION"))) {
       return(normalizePath(path))
     }
   }
@@ -318,7 +318,7 @@ sync_dataflow_schemas <- function(output_dir = NULL, verbose = TRUE, dataflows =
     pkg_root <- get_package_root()
     
     # Check if pkg_root is the R directory or the project root
-    if (file.exists(file.path(pkg_root, "get_unicef.R"))) {
+    if (file.exists(file.path(pkg_root, "get_unicef.R")) || file.exists(file.path(pkg_root, "unicef_api", "get_unicef.R"))) {
       # It is the R directory
       output_dir <- file.path(pkg_root, "metadata", "current")
     } else {

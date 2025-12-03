@@ -5,17 +5,23 @@
 # ============================================================================
 
 # Set working directory
-setwd("D:/jazevedo/GitHub/unicefData")
+# setwd("D:/jazevedo/GitHub/unicefData")
 
 # Source the main get_unicef function (which loads dependencies)
-source("R/get_unicef.R")
+if (file.exists("R/unicef_api/get_unicef.R")) {
+  source("R/unicef_api/get_unicef.R")
+  source("R/unicef_api/metadata.R")
+  source("R/unicef_api/flows.R")
+  OUTPUT_DIR <- "R/tests/output"
+} else if (file.exists("../unicef_api/get_unicef.R")) {
+  source("../unicef_api/get_unicef.R")
+  source("../unicef_api/metadata.R")
+  source("../unicef_api/flows.R")
+  OUTPUT_DIR <- "output"
+} else {
+  stop("Could not find R/unicef_api/get_unicef.R")
+}
 
-# Also source metadata functions for metadata tests
-source("R/metadata.R")
-source("R/flows.R")
-
-# Output directory
-OUTPUT_DIR <- "R/test_output"
 if (!dir.exists(OUTPUT_DIR)) {
   dir.create(OUTPUT_DIR, recursive = TRUE)
 }
@@ -115,7 +121,7 @@ test_immunization <- function() {
 test_metadata_sync <- function() {
   log_msg("Testing metadata sync...")
   
-  cache_dir <- file.path(OUTPUT_DIR, "metadata_test")
+  cache_dir <- file.path(OUTPUT_DIR, "metadata_sync_test")
   set_metadata_cache(cache_dir)
   
   results <- sync_metadata(verbose = FALSE)

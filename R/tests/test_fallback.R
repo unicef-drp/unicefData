@@ -1,5 +1,12 @@
 # Test script for R fallback mechanism
-source("get_unicef.R")
+# Locate get_unicef.R
+if (file.exists("../unicef_api/get_unicef.R")) {
+  source("../unicef_api/get_unicef.R")
+} else if (file.exists("R/unicef_api/get_unicef.R")) {
+  source("R/unicef_api/get_unicef.R")
+} else {
+  stop("Could not find get_unicef.R")
+}
 
 cat("============================================================\n")
 cat("R TEST SUMMARY\n")

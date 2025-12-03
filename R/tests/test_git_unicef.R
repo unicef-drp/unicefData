@@ -14,10 +14,17 @@ message("Working directory: ", getwd())
 #–––––––––––––––––––––––––––––––––––––––
 # Load dependencies and functions
 #–––––––––––––––––––––––––––––––––––––––
-# Path to your get_unicef implementation (same directory):
-impl_file <- file.path(getwd(), "get_unicef.R")  # adjust if needed
+# Path to your get_unicef implementation
+# Try relative path from tests/ directory
+impl_file <- file.path(getwd(), "..", "unicef_api", "get_unicef.R")
+
 if (!file.exists(impl_file)) {
-  stop("Implementation file not found: ", impl_file)
+   # Try from root
+   impl_file <- file.path(getwd(), "R", "unicef_api", "get_unicef.R")
+}
+
+if (!file.exists(impl_file)) {
+  stop("Implementation file not found. Please run from project root or tests directory.")
 }
 message("Sourcing implementation from: ", impl_file)
 source(impl_file)
@@ -25,7 +32,17 @@ source(impl_file)
 #–––––––––––––––––––––––––––––––––––––––
 # Define rawData directory
 #–––––––––––––––––––––––––––––––––––––––
-rawData <- file.path(getwd(), "01_input_data", "02_api_data_raw")
+# Use R/tests/output
+wd <- getwd()
+if (basename(wd) == "tests") {
+  output_base <- file.path(wd, "output")
+} else if (dir.exists(file.path(wd, "R", "tests"))) {
+  output_base <- file.path(wd, "R", "tests", "output")
+} else {
+  output_base <- file.path(wd, "output")
+}
+
+rawData <- file.path(output_base, "raw_api_data")
 if (!dir.exists(rawData)) {
   message("Creating rawData directory: ", rawData)
   dir.create(rawData, recursive = TRUE)

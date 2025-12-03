@@ -51,8 +51,9 @@ data/raw/*
 # Test output directories (but keep test scripts)
 python/test_output/*.csv
 python/test_output/metadata_test/
-R/test_output/*.csv
-R/test_output/metadata_test/
+R/tests/output/*.csv
+R/tests/output/metadata_sync_test/
+R/tests/output/raw_api_data/
 
 # OS
 .DS_Store

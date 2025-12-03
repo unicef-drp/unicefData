@@ -14,10 +14,10 @@
 # ============================================================================
 
 # Adjust path if running from examples directory
-if (file.exists("../get_unicef.R")) {
-  source("../get_unicef.R")
-} else if (file.exists("R/get_unicef.R")) {
-  source("R/get_unicef.R")
+if (file.exists("../unicef_api/get_unicef.R")) {
+  source("../unicef_api/get_unicef.R")
+} else if (file.exists("R/unicef_api/get_unicef.R")) {
+  source("R/unicef_api/get_unicef.R")
 } else if (file.exists("unicefData/R/get_unicef.R")) {
   source("unicefData/R/get_unicef.R")
 } else {
