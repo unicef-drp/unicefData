@@ -22,6 +22,14 @@ if (file.exists("../unicef_api/get_unicef.R")) {
   stop("Could not find get_unicef.R")
 }
 
+# Setup data directory
+if (dir.exists(file.path("R", "examples"))) {
+  data_dir <- file.path("R", "examples", "data")
+} else {
+  data_dir <- "data"
+}
+dir.create(data_dir, showWarnings = FALSE)
+
 cat("======================================================================\n")
 cat("02_sdg_indicators.R - SDG Indicator Examples\n")
 cat("======================================================================\n")
@@ -44,6 +52,7 @@ df <- get_unicef(
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
 cat(sprintf("Indicators: %s\n", paste(unique(df$indicator), collapse = ", ")))
+write.csv(df, file.path(data_dir, "02_ex1_child_mortality.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 2: Nutrition (SDG 2.2)
@@ -58,6 +67,7 @@ df <- get_unicef(
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+write.csv(df, file.path(data_dir, "02_ex2_nutrition.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 3: Education Completion (SDG 4.1)
@@ -69,10 +79,11 @@ df <- get_unicef(
   indicator = c("ED_CR_L1_UIS_MOD", "ED_CR_L2_UIS_MOD", "ED_CR_L3_UIS_MOD"),
   countries = COUNTRIES,
   start_year = START_YEAR,
-  dataflow = "EDUCATION_UIS_SDG"  # Explicit dataflow for reliability
+  dataflow = "EDUCATION_UIS_SDG" # Explicit dataflow for reliability
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+write.csv(df, file.path(data_dir, "02_ex3_education.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 4: Child Marriage (SDG 5.3)
@@ -87,6 +98,7 @@ df <- get_unicef(
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+write.csv(df, file.path(data_dir, "02_ex4_child_marriage.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 5: WASH (SDG 6)
@@ -101,6 +113,7 @@ df <- get_unicef(
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+write.csv(df, file.path(data_dir, "02_ex5_wash.csv"), row.names = FALSE)
 
 cat("\n======================================================================\n")
 cat("SDG Indicators Complete!\n")

@@ -1,0 +1,89 @@
+id: COVID_CASES
+name: Covid cases and deaths
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-03T04:59:54.028385+00:00'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - WORLD
+  is_exhaustive: true
+  total_values_count: 1
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - CME_COVID_CASES
+  - CME_COVID_CASES_SHARE
+  - CME_COVID_DEATHS
+  - CME_COVID_DEATHS_SHARE
+  is_exhaustive: true
+  total_values_count: 4
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+  values:
+  - Y0T19
+  - _T
+  is_exhaustive: true
+  total_values_count: 2
+- id: SEX
+  position: 4
+  codelist: CL_SEX
+  values:
+  - _T
+  is_exhaustive: true
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: null
+attributes:
+- id: DATA_SOURCE
+  codelist: null
+  values:
+  - Max Planck Institute for Demographic Research
+  is_exhaustive: true
+  total_values_count: 1
+- id: CAVEAT_LINK
+  codelist: null
+  values:
+  - https://data.unicef.org/resources/covid-19-confirmed-cases-and-deaths-dashboard/
+  is_exhaustive: true
+  total_values_count: 1
+- id: CAVEAT_NOTE
+  codelist: null
+  values:
+  - Data on COVID-19 cases and deaths by age and sex are only available for a limited
+    number of countries for the time period 2020-2022. Where data exist, quality varies
+    widely and reporting of COVID-19 cases and deaths may be incomplete or suffer
+    from low coverage. Additionally, to develop standardized age-disaggregated data
+    some redistribution and recalculation methods have been applied. Due to the rapidly
+    evolving nature of the COVID-19 pandemic and limitations in data collection systems,
+    data may also be out of date by the time of publication. These data should be
+    interpreted with caution and may deviate substantially from the true number of
+    COVID-19 cases and deaths in a subset of countries with limited data.
+  is_exhaustive: true
+  total_values_count: 1
+- id: OBS_FOOTNOTE
+  codelist: null
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - NUMBER
+  - PCNT
+  is_exhaustive: true
+  total_values_count: 2
+time_dimension_summary:
+  type: numerical
+  min: 2022.0
+  max: 2022.0
+  total_count: 1

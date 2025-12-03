@@ -22,6 +22,14 @@ if (file.exists("../unicef_api/get_unicef.R")) {
   stop("Could not find get_unicef.R")
 }
 
+# Setup data directory
+if (dir.exists(file.path("R", "examples"))) {
+  data_dir <- file.path("R", "examples", "data")
+} else {
+  data_dir <- "data"
+}
+dir.create(data_dir, showWarnings = FALSE)
+
 # source("../indicator_registry.R") # This file might not exist or need similar handling
 
 cat("======================================================================\n")
@@ -110,6 +118,7 @@ cat(sprintf("Total dataflows: %d\n", nrow(flows)))
 cat("\nKey dataflows:\n")
 key_flows <- c("CME", "NUTRITION", "EDUCATION_UIS_SDG", "IMMUNISATION", "MNCH", "PT", "PT_CM", "PT_FGM")
 print(flows[flows$id %in% key_flows, c("id", "agency")])
+write.csv(flows, file.path(data_dir, "01_ex6_dataflows.csv"), row.names = FALSE)
 
 cat("\n======================================================================\n")
 cat("Indicator Discovery Complete!\n")

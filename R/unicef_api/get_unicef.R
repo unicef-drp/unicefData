@@ -20,6 +20,9 @@ if (!requireNamespace("httr", quietly = TRUE)) {
 # Import pipe operator for direct sourcing
 `%>%` <- magrittr::`%>%`
 
+# Null coalescing operator
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
 # Source core functions
 if (!exists("get_unicef_raw", mode = "function")) {
   script_file <- sys.frame(1)$ofile

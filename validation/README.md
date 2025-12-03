@@ -12,9 +12,9 @@ python validate_outputs.py
 ## What it does
 
 1. Scans for matching CSV files in:
-   - `python/test_output/*.csv` vs `R/test_output/*.csv`
-   - `python/examples/*.csv` vs `R/examples/*.csv`
-2. Skips metadata files (`test_dataflows.csv`, `test_indicators.csv`, `test_codelists.csv`)
+   - `python/tests/output/*.csv` vs `R/tests/output/*.csv`
+   - `python/examples/data/*.csv` vs `R/examples/data/*.csv`
+2. Skips metadata files (`test_indicators.csv`, `test_codelists.csv`)
 3. Compares each matching pair for:
    - Row counts
    - Column names
@@ -33,6 +33,18 @@ validation/
 
 ## Workflow
 
-1. Run tests in Python: `cd python/test_output && python run_tests.py`
-2. Run tests in R: `cd R/test_output && Rscript run_tests.R`
-3. Validate outputs match: `cd validation && python validate_outputs.py`
+1. Run tests in Python: `python python/tests/run_tests.py`
+2. Run tests in R: `Rscript R/tests/run_tests.R`
+3. Run examples in Python:
+   ```bash
+   python python/examples/00_quick_start.py
+   python python/examples/01_indicator_discovery.py
+   python python/examples/02_sdg_indicators.py
+   ```
+4. Run examples in R:
+   ```bash
+   Rscript R/examples/00_quick_start.R
+   Rscript R/examples/01_indicator_discovery.R
+   Rscript R/examples/02_sdg_indicators.R
+   ```
+5. Validate outputs match: `python validation/validate_outputs.py`

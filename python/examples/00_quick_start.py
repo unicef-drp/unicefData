@@ -13,9 +13,15 @@ Examples:
   5. All countries (large download)
 """
 import sys
+import os
 sys.path.insert(0, '..')
 
 from unicef_api import get_unicef
+
+# Setup data directory
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
 print("=" * 70)
 print("00_quick_start.py - UNICEF API Quick Start Guide")
@@ -38,6 +44,7 @@ df = get_unicef(
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
 print(df[["iso3", "country", "period", "value"]].head())
+df.to_csv(os.path.join(DATA_DIR, '00_ex1_mortality.csv'), index=False)
 
 # =============================================================================
 # Example 2: Multiple Indicators - Mortality Comparison
@@ -104,6 +111,7 @@ df = get_unicef(
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
 print(f"Years: {df['period'].min()} - {df['period'].max()}")
+df.to_csv(os.path.join(DATA_DIR, '00_ex2_mult_mortality.csv'), index=False)
 
 print("\n" + "=" * 70)
 print("Quick Start Complete!")

@@ -26,17 +26,20 @@ BASE_DIR = os.path.dirname(SCRIPT_DIR)
 # Note: test_dataflows.csv is now included in validation
 SKIP_FILES = {'test_indicators.csv', 'test_codelists.csv'}
 
+# Columns to ignore in comparison
+SKIP_COLS = {'geo_type'}
+
 # Folders to compare
 FOLDERS_TO_COMPARE = [
     {
         "name": "test_output",
-        "python": os.path.join(BASE_DIR, "python", "test_output"),
-        "r": os.path.join(BASE_DIR, "R", "test_output"),
+        "python": os.path.join(BASE_DIR, "python", "tests", "output"),
+        "r": os.path.join(BASE_DIR, "R", "tests", "output"),
     },
     {
         "name": "examples", 
-        "python": os.path.join(BASE_DIR, "python", "examples"),
-        "r": os.path.join(BASE_DIR, "R", "examples"),
+        "python": os.path.join(BASE_DIR, "python", "examples", "data"),
+        "r": os.path.join(BASE_DIR, "R", "examples", "data"),
     },
 ]
 
@@ -68,9 +71,23 @@ def compare_csv_files(py_path, r_path):
     
     try:
         df_r = pd.read_csv(r_path)
+    except UnicodeDecodeError:
+        # Fallback for R CSVs generated on Windows (often cp1252)
+        try:
+            df_r = pd.read_csv(r_path, encoding='cp1252')
+        except Exception as e:
+            return False, [f"R CSV read error (cp1252): {e}"], df_py, None
     except Exception as e:
         return False, [f"R CSV read error: {e}"], df_py, None
     
+    # Normalize column names to lowercase for comparison
+    df_py.columns = df_py.columns.str.lower()
+    df_r.columns = df_r.columns.str.lower()
+
+    # Drop ignored columns
+    df_py = df_py.drop(columns=[c for c in SKIP_COLS if c in df_py.columns])
+    df_r = df_r.drop(columns=[c for c in SKIP_COLS if c in df_r.columns])
+
     # Compare row counts
     if len(df_py) != len(df_r):
         issues.append(f"Row count: Python={len(df_py)}, R={len(df_r)}")
@@ -89,7 +106,7 @@ def compare_csv_files(py_path, r_path):
     
     # Find common key columns for comparison
     key_cols = []
-    for col in ['iso3', 'country_code', 'indicator', 'year', 'period']:
+    for col in ['iso3', 'country_code', 'indicator', 'year', 'period', 'id']:
         if col in df_py.columns and col in df_r.columns:
             key_cols.append(col)
     

@@ -22,6 +22,14 @@ if (file.exists("../unicef_api/get_unicef.R")) {
   stop("Could not find get_unicef.R")
 }
 
+# Setup data directory
+if (dir.exists(file.path("R", "examples"))) {
+  data_dir <- file.path("R", "examples", "data")
+} else {
+  data_dir <- "data"
+}
+dir.create(data_dir, showWarnings = FALSE)
+
 cat("======================================================================\n")
 cat("00_quick_start.R - UNICEF API Quick Start Guide\n")
 cat("======================================================================\n")
@@ -43,6 +51,7 @@ df <- get_unicef(
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
 print(head(df[, c("iso3", "country", "period", "value")]))
+write.csv(df, file.path(data_dir, "00_ex1_mortality.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 2: Multiple Indicators - Mortality Comparison
@@ -109,8 +118,9 @@ df <- get_unicef(
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
 cat(sprintf("Years: %d - %d\n", min(df$period), max(df$period)))
+write.csv(df, file.path(data_dir, "00_ex2_mult_mortality.csv"), row.names = FALSE)
 
-# =============================================================================
+cat("\n======================================================================\n")
 # Example 6: Minimal Call (Only Indicator)
 # =============================================================================
 cat("\n--- Example 6: Minimal Call (Only Indicator) ---\n")

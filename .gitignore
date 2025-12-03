@@ -49,8 +49,8 @@ data/raw/*
 !data/raw/.gitkeep
 
 # Test output directories (but keep test scripts)
-python/test_output/*.csv
-python/test_output/metadata_test/
+python/tests/output/*.csv
+python/tests/output/metadata_sync_test/
 R/tests/output/*.csv
 R/tests/output/metadata_sync_test/
 R/tests/output/raw_api_data/
@@ -62,3 +62,10 @@ Thumbs.db
 # Misc
 *.csv
 !python/examples/*.csv
+
+# Test and Example Outputs
+python/tests/output/
+R/tests/output/
+python/examples/data/
+R/examples/data/
+validation/validation_results.csv

@@ -519,7 +519,7 @@ class UNICEFSDMXClient:
         df: pd.DataFrame,
         indicator_code: str,
         countries: Optional[List[str]] = None,
-        sex_filter: str = "_T",
+        sex_filter: Union[str, List[str]] = "_T",
         dropna: bool = True,
         dataflow: Optional[str] = None,
     ) -> pd.DataFrame:
@@ -651,15 +651,27 @@ class UNICEFSDMXClient:
             
             # Check what disaggregations are available and log them
             available_disaggregations = []
+            defaults_applied = []
             
             # Filter by sex (default: total)
             if "sex" in df.columns:
                 sex_values = df["sex"].dropna().unique().tolist()
                 if len(sex_values) > 1 or (len(sex_values) == 1 and sex_values[0] != "_T"):
                     available_disaggregations.append(f"sex: {sex_values}")
-                if sex_filter and sex_filter in df["sex"].values:
-                    df = df[df["sex"] == sex_filter].copy()
-                    logger.debug(f"Filtered to sex={sex_filter}")
+                
+                if sex_filter:
+                    if isinstance(sex_filter, list):
+                        # Filter by list of values
+                        # Only filter if at least one value is present
+                        if any(s in sex_values for s in sex_filter):
+                            df = df[df["sex"].isin(sex_filter)].copy()
+                            logger.debug(f"Filtered to sex in {sex_filter}")
+                            defaults_applied.append(f"sex={sex_filter}")
+                    elif sex_filter in sex_values:
+                        # Filter by single value
+                        df = df[df["sex"] == sex_filter].copy()
+                        logger.debug(f"Filtered to sex={sex_filter}")
+                        defaults_applied.append(f"sex='{sex_filter}'")
             
             # Filter by age (default: total "_T" or indicator-specific total like "Y0T4")
             if "age" in df.columns:
@@ -672,6 +684,7 @@ class UNICEFSDMXClient:
                     if age_totals:
                         df = df[df["age"].isin(age_totals)].copy()
                         logger.debug(f"Filtered to total age groups: {age_totals}")
+                        defaults_applied.append(f"age={age_totals}")
             
             # Filter by wealth quintile (default: total)
             if "wealth_quintile" in df.columns:
@@ -681,6 +694,7 @@ class UNICEFSDMXClient:
                 if "_T" in df["wealth_quintile"].values:
                     df = df[df["wealth_quintile"] == "_T"].copy()
                     logger.debug("Filtered to wealth_quintile=_T")
+                    defaults_applied.append("wealth_quintile='_T'")
             
             # Filter by residence (default: total)
             if "residence" in df.columns:
@@ -690,6 +704,7 @@ class UNICEFSDMXClient:
                 if "_T" in df["residence"].values:
                     df = df[df["residence"] == "_T"].copy()
                     logger.debug("Filtered to residence=_T")
+                    defaults_applied.append("residence='_T'")
             
             # Filter by maternal education level (default: total)
             if "maternal_edu_lvl" in df.columns:
@@ -699,14 +714,15 @@ class UNICEFSDMXClient:
                 if "_T" in df["maternal_edu_lvl"].values:
                     df = df[df["maternal_edu_lvl"] == "_T"].copy()
                     logger.debug("Filtered to maternal_edu_lvl=_T")
+                    defaults_applied.append("maternal_edu_lvl='_T'")
             
             # Log available disaggregations
             if available_disaggregations:
-                logger.info(
-                    f"Note: Disaggregated data available for {indicator_code}: "
-                    f"{', '.join(available_disaggregations)}. "
-                    f"Use raw=True or adjust filters to access."
-                )
+                msg = f"Note: Disaggregated data available for {indicator_code}: {', '.join(available_disaggregations)}."
+                if defaults_applied:
+                    msg += f"\nDefaults used: {', '.join(defaults_applied)}."
+                msg += "\nUse raw=True or adjust filters to access."
+                logger.info(msg)
             
             # Standard output columns - always include all for cross-language consistency
             # Including all disaggregation columns and names for transparency

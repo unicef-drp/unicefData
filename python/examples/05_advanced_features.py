@@ -13,7 +13,7 @@ Examples:
   5. Combining filters
 """
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, "..")
 
 from unicef_api import get_unicef
 
@@ -34,7 +34,7 @@ df = get_unicef(
     sex=["M", "F"]  # Male and Female
 )
 
-print(df[["iso3", "year", "sex", "value"]])
+print(df[["iso3", "period", "sex", "value"]])
 
 # =============================================================================
 # Example 2: Disaggregation by Wealth
@@ -42,15 +42,19 @@ print(df[["iso3", "year", "sex", "value"]])
 print("\n--- Example 2: Disaggregation by Wealth ---")
 print("Stunting by wealth quintile\n")
 
+# Note: wealth_quintile filter is not yet supported in get_unicef arguments
+# We fetch raw data and filter manually
 df = get_unicef(
     indicator="NT_ANT_HAZ_NE2_MOD",
     countries=["IND", "NGA", "ETH"],
     start_year=2015,
-    wealth_quintile=["Q1", "Q5"]  # Poorest and Richest
+    raw=True  # Get raw data to access disaggregations
 )
 
-if not df.empty:
-    print(df[["iso3", "year", "wealth_quintile", "value"]])
+if not df.empty and "wealth_quintile" in df.columns:
+    # Filter for Q1 and Q5
+    df = df[df["wealth_quintile"].isin(["Q1", "Q5"])]
+    print(df[["iso3", "period", "wealth_quintile", "value"]])
 else:
     print("No wealth-disaggregated data available for these countries")
 
@@ -68,7 +72,7 @@ df = get_unicef(
 )
 
 print(f"Time series: {len(df)} observations")
-print(df[["year", "value"]].head(10))
+print(df[["period", "value"]].head(10))
 
 # =============================================================================
 # Example 4: Multiple Countries Latest
@@ -84,7 +88,7 @@ df = get_unicef(
     latest=True
 )
 
-print(df[["iso3", "country", "year", "value"]])
+print(df[["iso3", "country", "period", "value"]])
 
 # =============================================================================
 # Example 5: Combining Filters
@@ -100,8 +104,9 @@ df = get_unicef(
     add_metadata=["indicator_name"]          # Include names
 )
 
-print(df[["iso3", "indicator", "indicator_name", "year", "value"]])
+print(df[["iso3", "indicator", "indicator_name", "period", "value"]])
 
 print("\n" + "=" * 70)
 print("Advanced Features Complete!")
 print("=" * 70)
+

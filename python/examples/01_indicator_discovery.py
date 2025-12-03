@@ -13,6 +13,7 @@ Examples:
   5. List dataflows
 """
 import sys
+import os
 sys.path.insert(0, '..')
 
 from unicef_api import (
@@ -22,6 +23,11 @@ from unicef_api import (
     list_dataflows,
     get_dataflow_for_indicator
 )
+
+# Setup data directory
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
 print("=" * 70)
 print("01_indicator_discovery.py - Discover UNICEF Indicators")
@@ -89,6 +95,7 @@ print(f"Total dataflows: {len(flows)}")
 print("\nKey dataflows:")
 key_flows = ["CME", "NUTRITION", "EDUCATION_UIS_SDG", "IMMUNISATION", "MNCH", "PT", "PT_CM", "PT_FGM"]
 print(flows[flows['id'].isin(key_flows)][['id', 'agency']].to_string(index=False))
+flows.to_csv(os.path.join(DATA_DIR, '01_ex6_dataflows.csv'), index=False)
 
 print("\n" + "=" * 70)
 print("Indicator Discovery Complete!")

@@ -3,6 +3,7 @@ import yaml
 import pandas as pd
 from typing import Dict, List, Optional, Any
 import logging
+from unicef_api.schema_sync import get_dataflow_schema
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,11 @@ class MetadataManager:
                          it relative to this file.
         """
         if metadata_dir is None:
-            # Default to shared metadata at repo root
-            # This file is in python/unicef_api/metadata_manager.py
+            # Default to metadata directory within the python package
+            # This ensures it works when installed as a package
             current_dir = os.path.dirname(os.path.abspath(__file__))
             package_root = os.path.dirname(current_dir) # python/
-            repo_root = os.path.dirname(package_root)   # root/
-            self.metadata_dir = os.path.join(repo_root, 'metadata', 'current')
+            self.metadata_dir = os.path.join(package_root, 'metadata', 'current')
         else:
             self.metadata_dir = metadata_dir
             
@@ -81,9 +81,27 @@ class MetadataManager:
         schema_path = os.path.join(self.metadata_dir, 'dataflows', f'{dataflow_id}.yaml')
         
         if not os.path.exists(schema_path):
-            # Try case-insensitive lookup if needed, but for now assume exact match
-            logger.debug(f"Schema for {dataflow_id} not found at {schema_path}")
-            return None
+            # Try to fetch schema on-demand
+            logger.info(f"Schema for {dataflow_id} not found locally. Fetching from API...")
+            try:
+                schema = get_dataflow_schema(dataflow_id)
+                if schema:
+                    # Ensure directory exists
+                    os.makedirs(os.path.dirname(schema_path), exist_ok=True)
+                    
+                    # Save schema
+                    with open(schema_path, 'w', encoding='utf-8') as f:
+                        yaml.dump(schema, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+                    
+                    self.schemas[dataflow_id] = schema
+                    logger.info(f"Successfully fetched and saved schema for {dataflow_id}")
+                    return schema
+                else:
+                    logger.warning(f"Could not fetch schema for {dataflow_id}")
+                    return None
+            except Exception as e:
+                logger.error(f"Error fetching schema for {dataflow_id}: {e}")
+                return None
             
         try:
             with open(schema_path, 'r', encoding='utf-8') as f:

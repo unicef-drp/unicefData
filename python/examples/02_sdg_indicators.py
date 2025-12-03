@@ -13,9 +13,15 @@ Examples:
   5. WASH indicators (SDG 6)
 """
 import sys
+import os
 sys.path.insert(0, '..')
 
 from unicef_api import get_unicef
+
+# Setup data directory
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
 print("=" * 70)
 print("02_sdg_indicators.py - SDG Indicator Examples")
@@ -39,6 +45,7 @@ df = get_unicef(
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
 print(f"Indicators: {df['indicator'].unique().tolist()}")
+df.to_csv(os.path.join(DATA_DIR, '02_ex1_child_mortality.csv'), index=False)
 
 # =============================================================================
 # Example 2: Nutrition (SDG 2.2)
@@ -53,6 +60,7 @@ df = get_unicef(
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
+df.to_csv(os.path.join(DATA_DIR, '02_ex2_nutrition.csv'), index=False)
 
 # =============================================================================
 # Example 3: Education Completion (SDG 4.1)
@@ -68,6 +76,7 @@ df = get_unicef(
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
+df.to_csv(os.path.join(DATA_DIR, '02_ex3_education.csv'), index=False)
 
 # =============================================================================
 # Example 4: Child Marriage (SDG 5.3)
@@ -82,6 +91,7 @@ df = get_unicef(
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
+df.to_csv(os.path.join(DATA_DIR, '02_ex4_child_marriage.csv'), index=False)
 
 # =============================================================================
 # Example 5: WASH (SDG 6)
@@ -96,6 +106,7 @@ df = get_unicef(
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
+df.to_csv(os.path.join(DATA_DIR, '02_ex5_wash.csv'), index=False)
 
 print("\n" + "=" * 70)
 print("SDG Indicators Complete!")
