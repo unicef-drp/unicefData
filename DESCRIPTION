@@ -1,5 +1,5 @@
-Package: unicefdata
-Title: Download SDG Indicators from UNICEF Data Warehouse
+Package: unicefData
+Title: Download Indicators from UNICEF Data Warehouse
 Version: 0.2.2
 Authors@R: c(
     person("Joao Pedro", "Azevedo", email = "jazevedo@unicef.org", role = c("aut", "cre")),
@@ -26,7 +26,8 @@ Imports:
     jsonlite,
     magrittr,
     purrr,
-    rlang
+    rlang,
+    digest
 Suggests:
     testthat (>= 3.0.0),
     devtools
