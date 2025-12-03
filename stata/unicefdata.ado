@@ -154,18 +154,52 @@ program define unicefdata, rclass
         
         *-----------------------------------------------------------------------
         * Rename and standardize variables
+        * (Aligned with R get_unicef() and Python unicef_api)
         *-----------------------------------------------------------------------
         
         if ("`raw'" == "") {
             
             * Rename core columns to standardized names
+            * These names match R's clean_unicef_data() and Python's _clean_dataframe()
+            * Note: import delimited converts column names to lowercase
             capture rename ref_area iso3
-            capture rename indicator indicator_code
+            capture rename indicator indicator
             capture rename time_period period
             capture rename obs_value value
             capture rename geographicarea country
             
-            * Convert period to numeric
+            * Rename descriptive columns (from API's "label" columns)
+            * API returns pairs like INDICATOR/Indicator - Stata creates v4, v6 for duplicates
+            capture rename v4 indicator_name
+            capture rename unitofmeasure unit_name
+            capture rename v6 sex_name
+            capture rename wealthquintile wealth_quintile_name
+            capture rename observationstatus obs_status_name
+            
+            * Rename additional metadata columns (lowercase after import delimited)
+            capture rename unit_measure unit
+            capture rename wealth_quintile wealth_quintile
+            capture rename lower_bound lower_bound
+            capture rename upper_bound upper_bound
+            capture rename obs_status obs_status
+            capture rename data_source data_source
+            capture rename ref_period ref_period
+            capture rename country_notes country_notes
+            capture rename maternal_edu_lvl maternal_edu_lvl
+            
+            * Convert period to numeric (handle YYYY-MM format)
+            capture {
+                * Check if period contains "-" (YYYY-MM format)
+                gen _has_month = strpos(period, "-") > 0
+                gen _year = real(substr(period, 1, 4))
+                gen _month = real(substr(period, 6, 2)) if _has_month == 1
+                replace _month = 0 if _has_month == 0
+                gen period_num = _year + _month/12
+                drop period _has_month _year _month
+                rename period_num period
+            }
+            
+            * If the above fails, try simple numeric conversion
             capture {
                 destring period, replace force
             }
@@ -174,6 +208,10 @@ program define unicefdata, rclass
             capture {
                 destring value, replace force
             }
+            
+            * Convert bounds to numeric
+            capture destring lower_bound, replace force
+            capture destring upper_bound, replace force
             
             * Filter by sex if specified
             if ("`sex'" != "" & "`sex'" != "ALL") {
@@ -248,9 +286,9 @@ program define unicefdata, rclass
                 drop if missing(value)
                 
                 * Get latest period for each country-indicator
-                capture confirm variable indicator_code
+                capture confirm variable indicator
                 if (_rc == 0) {
-                    bysort iso3 indicator_code (period): keep if _n == _N
+                    bysort iso3 indicator (period): keep if _n == _N
                 }
                 else {
                     bysort iso3 (period): keep if _n == _N
@@ -266,13 +304,13 @@ program define unicefdata, rclass
             capture confirm variable iso3
             capture confirm variable period
             if (_rc == 0) {
-                capture confirm variable indicator_code
+                capture confirm variable indicator
                 if (_rc == 0) {
-                    gsort iso3 indicator_code -period
-                    by iso3 indicator_code: gen _rank = _n
+                    gsort iso3 indicator -period
+                    by iso3 indicator: gen _rank = _n
                     keep if _rank <= `mrv'
                     drop _rank
-                    sort iso3 indicator_code period
+                    sort iso3 indicator period
                 }
                 else {
                     gsort iso3 -period

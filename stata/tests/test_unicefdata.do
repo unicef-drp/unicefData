@@ -181,7 +181,7 @@ run_test, testnum(6) ///
 * Show indicators
 if (_N > 0) {
     noi di as text "{bf:VERIFICATION: Indicators in dataflow}"
-    cap noi tab indicator_code
+    cap noi tab indicator
     noi di as text ""
 }
 

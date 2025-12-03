@@ -79,11 +79,35 @@ and {it:indicators} (specific measures). You can specify either:
 {pstd}
 Data is returned in a standardized format with variables including:
 {p_end}
-{phang2}{cmd:iso3} - ISO 3166-1 alpha-3 country code{p_end}
-{phang2}{cmd:country} - Country name{p_end}
-{phang2}{cmd:indicator_code} - Indicator code{p_end}
-{phang2}{cmd:period} - Time period (year){p_end}
-{phang2}{cmd:value} - Observation value{p_end}
+
+{phang2}{cmd:Core variables (always present):}{p_end}
+{phang2}{space 4}{cmd:iso3} - ISO 3166-1 alpha-3 country code{p_end}
+{phang2}{space 4}{cmd:country} - Country name{p_end}
+{phang2}{space 4}{cmd:indicator} - Indicator code{p_end}
+{phang2}{space 4}{cmd:indicator_name} - Indicator description{p_end}
+{phang2}{space 4}{cmd:period} - Time period (year or decimal year for monthly data){p_end}
+{phang2}{space 4}{cmd:value} - Observation value{p_end}
+
+{phang2}{cmd:Additional metadata (when available):}{p_end}
+{phang2}{space 4}{cmd:unit} - Unit of measure code{p_end}
+{phang2}{space 4}{cmd:unit_name} - Unit of measure description{p_end}
+{phang2}{space 4}{cmd:sex} - Sex disaggregation code{p_end}
+{phang2}{space 4}{cmd:sex_name} - Sex description{p_end}
+{phang2}{space 4}{cmd:age} - Age group{p_end}
+{phang2}{space 4}{cmd:wealth_quintile} - Wealth quintile code{p_end}
+{phang2}{space 4}{cmd:wealth_quintile_name} - Wealth quintile description{p_end}
+{phang2}{space 4}{cmd:residence} - Residence type (Urban/Rural){p_end}
+{phang2}{space 4}{cmd:maternal_edu_lvl} - Maternal education level{p_end}
+{phang2}{space 4}{cmd:lower_bound} - Lower confidence bound{p_end}
+{phang2}{space 4}{cmd:upper_bound} - Upper confidence bound{p_end}
+{phang2}{space 4}{cmd:obs_status} - Observation status code{p_end}
+{phang2}{space 4}{cmd:obs_status_name} - Observation status description{p_end}
+{phang2}{space 4}{cmd:data_source} - Data source{p_end}
+
+{pstd}
+{it:Note:} Variable names are aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} packages
+for cross-language consistency.
+{p_end}
 
 
 {marker options}{...}
