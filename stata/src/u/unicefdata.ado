@@ -1,6 +1,6 @@
 *******************************************************************************
 * unicefdata
-*! v 1.0.0   03Dec2025               by Joao Pedro Azevedo
+*! v 1.0.0   03Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
 *******************************************************************************
 
@@ -155,12 +155,12 @@ program define unicefdata, rclass
         *-----------------------------------------------------------------------
         * Rename and standardize variables
         * (Aligned with R get_unicef() and Python unicef_api)
+        * Using short names with descriptive variable labels
         *-----------------------------------------------------------------------
         
         if ("`raw'" == "") {
             
-            * Rename core columns to standardized names
-            * These names match R's clean_unicef_data() and Python's _clean_dataframe()
+            * Rename core columns to standardized short names
             * Note: import delimited converts column names to lowercase
             capture rename ref_area iso3
             capture rename indicator indicator
@@ -173,19 +173,43 @@ program define unicefdata, rclass
             capture rename v4 indicator_name
             capture rename unitofmeasure unit_name
             capture rename v6 sex_name
-            capture rename wealthquintile wealth_quintile_name
-            capture rename observationstatus obs_status_name
+            capture rename wealthquintile wealth_name
+            capture rename observationstatus status_name
             
             * Rename additional metadata columns (lowercase after import delimited)
             capture rename unit_measure unit
-            capture rename wealth_quintile wealth_quintile
-            capture rename lower_bound lower_bound
-            capture rename upper_bound upper_bound
-            capture rename obs_status obs_status
-            capture rename data_source data_source
-            capture rename ref_period ref_period
-            capture rename country_notes country_notes
-            capture rename maternal_edu_lvl maternal_edu_lvl
+            capture rename wealth_quintile wealth
+            capture rename lower_bound lb
+            capture rename upper_bound ub
+            capture rename obs_status status
+            capture rename data_source source
+            capture rename ref_period refper
+            capture rename country_notes notes
+            capture rename maternal_edu_lvl matedu
+            
+            * Add descriptive variable labels
+            capture label variable iso3       "ISO3 country code"
+            capture label variable country    "Country name"
+            capture label variable indicator  "Indicator code"
+            capture label variable indicator_name "Indicator name"
+            capture label variable period     "Time period (year)"
+            capture label variable value      "Observation value"
+            capture label variable unit       "Unit of measure code"
+            capture label variable unit_name  "Unit of measure"
+            capture label variable sex        "Sex code"
+            capture label variable sex_name   "Sex"
+            capture label variable age        "Age group"
+            capture label variable wealth     "Wealth quintile code"
+            capture label variable wealth_name "Wealth quintile"
+            capture label variable residence  "Residence type"
+            capture label variable matedu     "Maternal education level"
+            capture label variable lb         "Lower confidence bound"
+            capture label variable ub         "Upper confidence bound"
+            capture label variable status     "Observation status code"
+            capture label variable status_name "Observation status"
+            capture label variable source     "Data source"
+            capture label variable refper     "Reference period"
+            capture label variable notes      "Country notes"
             
             * Convert period to numeric (handle YYYY-MM format)
             capture {
@@ -197,6 +221,7 @@ program define unicefdata, rclass
                 gen period_num = _year + _month/12
                 drop period _has_month _year _month
                 rename period_num period
+                label variable period "Time period (year)"
             }
             
             * If the above fails, try simple numeric conversion
@@ -210,8 +235,8 @@ program define unicefdata, rclass
             }
             
             * Convert bounds to numeric
-            capture destring lower_bound, replace force
-            capture destring upper_bound, replace force
+            capture destring lb, replace force
+            capture destring ub, replace force
             
             * Filter by sex if specified
             if ("`sex'" != "" & "`sex'" != "ALL") {
@@ -231,9 +256,9 @@ program define unicefdata, rclass
             
             * Filter by wealth quintile if specified
             if ("`wealth'" != "" & "`wealth'" != "ALL") {
-                capture confirm variable wealth_quintile
+                capture confirm variable wealth
                 if (_rc == 0) {
-                    keep if wealth_quintile == "`wealth'"
+                    keep if wealth == "`wealth'"
                 }
             }
             
@@ -247,9 +272,9 @@ program define unicefdata, rclass
             
             * Filter by maternal education if specified
             if ("`maternal_edu'" != "" & "`maternal_edu'" != "ALL") {
-                capture confirm variable maternal_edu_lvl
+                capture confirm variable matedu
                 if (_rc == 0) {
-                    keep if maternal_edu_lvl == "`maternal_edu'"
+                    keep if matedu == "`maternal_edu'"
                 }
             }
             

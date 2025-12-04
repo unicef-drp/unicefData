@@ -77,36 +77,40 @@ and {it:indicators} (specific measures). You can specify either:
 {phang2}2. A {opt dataflow()} ID to download all indicators in that dataflow{p_end}
 
 {pstd}
-Data is returned in a standardized format with variables including:
+Data is returned in a standardized format with short variable names and descriptive labels:
 {p_end}
 
 {phang2}{cmd:Core variables (always present):}{p_end}
-{phang2}{space 4}{cmd:iso3} - ISO 3166-1 alpha-3 country code{p_end}
+{phang2}{space 4}{cmd:iso3} - ISO3 country code{p_end}
 {phang2}{space 4}{cmd:country} - Country name{p_end}
 {phang2}{space 4}{cmd:indicator} - Indicator code{p_end}
-{phang2}{space 4}{cmd:indicator_name} - Indicator description{p_end}
+{phang2}{space 4}{cmd:indicator_name} - Indicator name{p_end}
 {phang2}{space 4}{cmd:period} - Time period (year or decimal year for monthly data){p_end}
 {phang2}{space 4}{cmd:value} - Observation value{p_end}
 
-{phang2}{cmd:Additional metadata (when available):}{p_end}
-{phang2}{space 4}{cmd:unit} - Unit of measure code{p_end}
-{phang2}{space 4}{cmd:unit_name} - Unit of measure description{p_end}
-{phang2}{space 4}{cmd:sex} - Sex disaggregation code{p_end}
-{phang2}{space 4}{cmd:sex_name} - Sex description{p_end}
+{phang2}{cmd:Disaggregation variables:}{p_end}
+{phang2}{space 4}{cmd:sex} - Sex code (_T=Total, F=Female, M=Male){p_end}
+{phang2}{space 4}{cmd:sex_name} - Sex{p_end}
 {phang2}{space 4}{cmd:age} - Age group{p_end}
-{phang2}{space 4}{cmd:wealth_quintile} - Wealth quintile code{p_end}
-{phang2}{space 4}{cmd:wealth_quintile_name} - Wealth quintile description{p_end}
+{phang2}{space 4}{cmd:wealth} - Wealth quintile code{p_end}
+{phang2}{space 4}{cmd:wealth_name} - Wealth quintile{p_end}
 {phang2}{space 4}{cmd:residence} - Residence type (Urban/Rural){p_end}
-{phang2}{space 4}{cmd:maternal_edu_lvl} - Maternal education level{p_end}
-{phang2}{space 4}{cmd:lower_bound} - Lower confidence bound{p_end}
-{phang2}{space 4}{cmd:upper_bound} - Upper confidence bound{p_end}
-{phang2}{space 4}{cmd:obs_status} - Observation status code{p_end}
-{phang2}{space 4}{cmd:obs_status_name} - Observation status description{p_end}
-{phang2}{space 4}{cmd:data_source} - Data source{p_end}
+{phang2}{space 4}{cmd:matedu} - Maternal education level{p_end}
+
+{phang2}{cmd:Quality and metadata:}{p_end}
+{phang2}{space 4}{cmd:unit} - Unit of measure code{p_end}
+{phang2}{space 4}{cmd:unit_name} - Unit of measure{p_end}
+{phang2}{space 4}{cmd:lb} - Lower confidence bound{p_end}
+{phang2}{space 4}{cmd:ub} - Upper confidence bound{p_end}
+{phang2}{space 4}{cmd:status} - Observation status code{p_end}
+{phang2}{space 4}{cmd:status_name} - Observation status{p_end}
+{phang2}{space 4}{cmd:source} - Data source{p_end}
+{phang2}{space 4}{cmd:refper} - Reference period{p_end}
+{phang2}{space 4}{cmd:notes} - Country notes{p_end}
 
 {pstd}
-{it:Note:} Variable names are aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} packages
-for cross-language consistency.
+{it:Note:} All variables have descriptive labels accessible via {cmd:describe} or {cmd:codebook}.
+Variable names are aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} packages.
 {p_end}
 
 
@@ -241,7 +245,7 @@ Get 5 most recent values per country:{p_end}
 {pstd}
 Joao Pedro Azevedo{break}
 UNICEF{break}
-jazevedo@unicef.org
+jpazevedo@unicef.org
 
 {pstd}
 This command is part of the {cmd:unicefData} package, which provides 
