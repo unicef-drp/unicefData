@@ -27,6 +27,10 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict
 import hashlib
 
+# Package version - used in watermarks
+__version__ = "0.2.2"
+__sync_version__ = "1.0.0"
+
 
 @dataclass
 class DataflowMetadata:
@@ -73,14 +77,16 @@ class MetadataSync:
     
     Directory Structure:
         metadata/
-        ├── current/              # Latest metadata (symlink or copy)
-        │   ├── dataflows.yaml
-        │   ├── indicators.yaml
-        │   └── codelists.yaml
+        ├── current/                          # Latest metadata
+        │   ├── _unicefdata_dataflows.yaml
+        │   ├── _unicefdata_indicators.yaml
+        │   ├── _unicefdata_codelists.yaml
+        │   ├── _unicefdata_countries.yaml
+        │   └── _unicefdata_regions.yaml
         ├── vintages/
-        │   ├── 2025-12-01/       # Historical snapshots
+        │   ├── 2025-12-01/                   # Historical snapshots
         │   └── 2025-11-01/
-        └── sync_history.yaml     # Log of all syncs
+        └── _unicefdata_sync_history.yaml     # Log of all syncs
     
     Example:
         >>> sync = MetadataSync(cache_dir='./metadata')
@@ -93,6 +99,15 @@ class MetadataSync:
     BASE_URL = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
     AGENCY = "UNICEF"
     DEFAULT_MAX_AGE_DAYS = 30
+    METADATA_VERSION = "2.0.0"  # Version for watermark tracking
+    
+    # Standard file names with _unicefdata_ prefix
+    FILE_DATAFLOWS = "_unicefdata_dataflows.yaml"
+    FILE_INDICATORS = "_unicefdata_indicators.yaml"
+    FILE_CODELISTS = "_unicefdata_codelists.yaml"
+    FILE_COUNTRIES = "_unicefdata_countries.yaml"
+    FILE_REGIONS = "_unicefdata_regions.yaml"
+    FILE_SYNC_HISTORY = "_unicefdata_sync_history.yaml"
     
     # XML namespaces for SDMX parsing
     NAMESPACES = {
@@ -134,6 +149,50 @@ class MetadataSync:
         self.session.headers.update({
             'User-Agent': 'unicefData/0.2.1 (+https://github.com/unicef-drp/unicefData)'
         })
+    
+    # -------------------------------------------------------------------------
+    # Watermark Generation
+    # -------------------------------------------------------------------------
+    
+    def _create_watermarked_dict(
+        self,
+        content_type: str,
+        source_url: str,
+        content: Dict[str, Any],
+        counts: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Create a dictionary with standardized watermark header.
+        
+        All YAML files include a watermark with:
+        - platform: Which platform generated the file (Python/R/Stata)
+        - version: Metadata schema version
+        - synced_at: ISO 8601 timestamp
+        - source: API endpoint URL
+        - agency: SDMX agency identifier
+        - counts: Item counts for quick reference
+        
+        Args:
+            content_type: Type of content (dataflows, indicators, etc.)
+            source_url: URL(s) used to fetch this data
+            content: The actual content dictionary
+            counts: Count statistics for the watermark
+            
+        Returns:
+            Dictionary with _metadata watermark and content
+        """
+        watermark = {
+            '_metadata': {
+                'platform': 'python',
+                'version': self.METADATA_VERSION,
+                'synced_at': datetime.utcnow().isoformat() + 'Z',
+                'source': source_url,
+                'agency': self.agency,
+                'content_type': content_type,
+                **counts
+            }
+        }
+        # Merge watermark with content
+        return {**watermark, **content}
     
     # -------------------------------------------------------------------------
     # Auto-Sync and Staleness
@@ -184,7 +243,7 @@ class MetadataSync:
     def sync_all(self, verbose: bool = True, create_vintage: bool = True) -> Dict[str, Any]:
         """Sync all metadata from UNICEF SDMX API.
         
-        Downloads dataflows, codelists, and indicator definitions,
+        Downloads dataflows, codelists, countries, regions, and indicator definitions,
         saves to current/ and optionally creates a dated vintage snapshot.
         
         Args:
@@ -201,47 +260,122 @@ class MetadataSync:
             'vintage_date': vintage_date,
             'dataflows': 0,
             'codelists': 0,
+            'countries': 0,
+            'regions': 0,
             'indicators': 0,
+            'files_created': [],
             'errors': []
         }
         
         if verbose:
-            print(f"Syncing UNICEF SDMX metadata to {self.cache_dir}")
+            print("=" * 80)
+            print("UNICEF Metadata Sync")
+            print("=" * 80)
+            print(f"Output location: {self.current_dir}")
+            print(f"Timestamp: {results['synced_at']}")
+            print("-" * 80)
         
         # 1. Sync dataflows
         try:
-            dataflows = self.sync_dataflows(verbose=verbose)
+            if verbose:
+                print("  📁 Fetching dataflows...")
+            dataflows = self.sync_dataflows(verbose=False)
             results['dataflows'] = len(dataflows)
+            results['files_created'].append(self.FILE_DATAFLOWS)
+            if verbose:
+                print(f"     ✓ {self.FILE_DATAFLOWS} - {len(dataflows)} dataflows")
         except Exception as e:
             results['errors'].append(f"Dataflows: {str(e)}")
+            if verbose:
+                print(f"     ✗ Dataflows error: {e}")
         
-        # 2. Sync common codelists
+        # 2. Sync codelists (excluding countries/regions)
         try:
-            codelists = self.sync_codelists(verbose=verbose)
+            if verbose:
+                print("  📁 Fetching codelists...")
+            codelists = self.sync_codelists(verbose=False)
             results['codelists'] = len(codelists)
+            results['files_created'].append(self.FILE_CODELISTS)
+            if verbose:
+                codelist_detail = ", ".join([f"{k}: {len(v.codes)}" for k, v in list(codelists.items())[:3]])
+                print(f"     ✓ {self.FILE_CODELISTS} - {len(codelists)} codelists")
+                print(f"       • {codelist_detail}...")
         except Exception as e:
             results['errors'].append(f"Codelists: {str(e)}")
+            if verbose:
+                print(f"     ✗ Codelists error: {e}")
         
-        # 3. Generate indicator catalog from config
+        # 3. Sync countries (separate file)
         try:
-            indicators = self.sync_indicators(verbose=verbose)
+            if verbose:
+                print("  📁 Fetching country codes...")
+            countries = self.sync_countries(verbose=False)
+            results['countries'] = len(countries)
+            results['files_created'].append(self.FILE_COUNTRIES)
+            if verbose:
+                print(f"     ✓ {self.FILE_COUNTRIES} - {len(countries)} country codes")
+        except Exception as e:
+            results['errors'].append(f"Countries: {str(e)}")
+            if verbose:
+                print(f"     ✗ Countries error: {e}")
+        
+        # 4. Sync regions (separate file)
+        try:
+            if verbose:
+                print("  📁 Fetching regional codes...")
+            regions = self.sync_regions(verbose=False)
+            results['regions'] = len(regions)
+            results['files_created'].append(self.FILE_REGIONS)
+            if verbose:
+                print(f"     ✓ {self.FILE_REGIONS} - {len(regions)} regional codes")
+        except Exception as e:
+            results['errors'].append(f"Regions: {str(e)}")
+            if verbose:
+                print(f"     ✗ Regions error: {e}")
+        
+        # 5. Generate indicator catalog from config
+        try:
+            if verbose:
+                print("  📁 Building indicator catalog...")
+            indicators, indicators_by_dataflow = self.sync_indicators(verbose=False)
             results['indicators'] = len(indicators)
+            results['indicators_by_dataflow'] = {k: len(v) for k, v in indicators_by_dataflow.items()}
+            results['files_created'].append(self.FILE_INDICATORS)
+            if verbose:
+                print(f"     ✓ {self.FILE_INDICATORS} - {len(indicators)} indicators")
+                for df, count in list(indicators_by_dataflow.items())[:5]:
+                    print(f"       • {df}: {count} indicators")
+                if len(indicators_by_dataflow) > 5:
+                    print(f"       • ... and {len(indicators_by_dataflow) - 5} more dataflows")
         except Exception as e:
             results['errors'].append(f"Indicators: {str(e)}")
+            if verbose:
+                print(f"     ✗ Indicators error: {e}")
         
-        # 4. Create vintage snapshot
+        # 6. Create vintage snapshot
         if create_vintage:
             self._create_vintage(vintage_date, results)
         
-        # 5. Update sync history
+        # 7. Update sync history
         self._update_sync_history(results)
+        results['files_created'].append(self.FILE_SYNC_HISTORY)
         
+        # Summary
         if verbose:
-            print(f"\n✅ Sync complete: {results['dataflows']} dataflows, "
-                  f"{results['codelists']} codelists, {results['indicators']} indicators")
-            print(f"   Vintage: {vintage_date}")
+            print("-" * 80)
+            print("Summary:")
+            print(f"  Total files created: {len(results['files_created'])}")
+            print(f"  - Dataflows:   {results['dataflows']}")
+            print(f"  - Indicators:  {results['indicators']}")
+            print(f"  - Codelists:   {results['codelists']}")
+            print(f"  - Countries:   {results['countries']}")
+            print(f"  - Regions:     {results['regions']}")
             if results['errors']:
-                print(f"⚠️  Errors: {len(results['errors'])}")
+                print(f"  ⚠️  Errors: {len(results['errors'])}")
+                for err in results['errors']:
+                    print(f"     - {err}")
+            print(f"  Vintage: {vintage_date}")
+            print("=" * 80)
         
         return results
     
@@ -276,15 +410,14 @@ class MetadataSync:
                 last_updated=datetime.utcnow().isoformat() + 'Z'
             )
         
-        # Save to current/
-        dataflows_dict = {
-            'metadata_version': '1.0',
-            'synced_at': datetime.utcnow().isoformat() + 'Z',
-            'source': url,
-            'agency': self.agency,
-            'dataflows': {k: asdict(v) for k, v in dataflows.items()}
-        }
-        self._save_yaml('dataflows.yaml', dataflows_dict)
+        # Save to current/ with watermark
+        dataflows_dict = self._create_watermarked_dict(
+            content_type='dataflows',
+            source_url=url,
+            content={'dataflows': {k: asdict(v) for k, v in dataflows.items()}},
+            counts={'total_dataflows': len(dataflows)}
+        )
+        self._save_yaml(self.FILE_DATAFLOWS, dataflows_dict)
         
         if verbose:
             print(f"    Found {len(dataflows)} dataflows")
@@ -296,15 +429,16 @@ class MetadataSync:
         codelist_ids: Optional[List[str]] = None,
         verbose: bool = True
     ) -> Dict[str, CodelistMetadata]:
-        """Sync codelist definitions from SDMX API."""
+        """Sync codelist definitions from SDMX API (excluding countries/regions)."""
         if codelist_ids is None:
+            # Codelists excluding CL_REF_AREA (countries/regions handled separately)
             codelist_ids = [
-                'CL_REF_AREA',
                 'CL_SEX',
                 'CL_AGE',
                 'CL_WEALTH_QUINTILE',
                 'CL_RESIDENCE',
                 'CL_UNIT_MEASURE',
+                'CL_OBS_STATUS',
             ]
         
         if verbose:
@@ -320,22 +454,79 @@ class MetadataSync:
                 if verbose:
                     print(f"    ⚠️  Could not fetch {cl_id}: {e}")
         
-        codelists_dict = {
-            'metadata_version': '1.0',
-            'synced_at': datetime.utcnow().isoformat() + 'Z',
-            'source': f"{self.base_url}/codelist/{self.agency}",
-            'agency': self.agency,
-            'codelists': {k: asdict(v) for k, v in codelists.items()}
-        }
-        self._save_yaml('codelists.yaml', codelists_dict)
+        # Save with watermark
+        codelists_dict = self._create_watermarked_dict(
+            content_type='codelists',
+            source_url=f"{self.base_url}/codelist/{self.agency}",
+            content={'codelists': {k: asdict(v) for k, v in codelists.items()}},
+            counts={
+                'total_codelists': len(codelists),
+                'codes_per_list': {k: len(v.codes) for k, v in codelists.items()}
+            }
+        )
+        self._save_yaml(self.FILE_CODELISTS, codelists_dict)
         
         if verbose:
             print(f"    Found {len(codelists)} codelists")
         
         return codelists
     
-    def sync_indicators(self, verbose: bool = True) -> Dict[str, IndicatorMetadata]:
-        """Sync indicator catalog from config and API."""
+    def sync_countries(self, verbose: bool = True) -> Dict[str, str]:
+        """Sync country codes from CL_COUNTRY."""
+        if verbose:
+            print("  Fetching country codes...")
+        
+        cl = self._fetch_codelist('CL_COUNTRY')
+        
+        countries = {}
+        if cl:
+            countries = cl.codes
+        
+        # Save countries with watermark
+        countries_dict = self._create_watermarked_dict(
+            content_type='countries',
+            source_url=f"{self.base_url}/codelist/{self.agency}/CL_COUNTRY/latest",
+            content={'countries': countries},
+            counts={'total_countries': len(countries)}
+        )
+        self._save_yaml(self.FILE_COUNTRIES, countries_dict)
+        
+        if verbose:
+            print(f"    Found {len(countries)} country codes")
+        
+        return countries
+    
+    def sync_regions(self, verbose: bool = True) -> Dict[str, str]:
+        """Sync regional/aggregate codes from CL_WORLD_REGIONS."""
+        if verbose:
+            print("  Fetching regional codes...")
+        
+        cl = self._fetch_codelist('CL_WORLD_REGIONS')
+        
+        regions = {}
+        if cl:
+            regions = cl.codes
+        
+        # Save regions with watermark
+        regions_dict = self._create_watermarked_dict(
+            content_type='regions',
+            source_url=f"{self.base_url}/codelist/{self.agency}/CL_WORLD_REGIONS/latest",
+            content={'regions': regions},
+            counts={'total_regions': len(regions)}
+        )
+        self._save_yaml(self.FILE_REGIONS, regions_dict)
+        
+        if verbose:
+            print(f"    Found {len(regions)} regional codes")
+        
+        return regions
+    
+    def sync_indicators(self, verbose: bool = True) -> Tuple[Dict[str, IndicatorMetadata], Dict[str, List[str]]]:
+        """Sync indicator catalog from config and API.
+        
+        Returns:
+            Tuple of (indicators dict, indicators_by_dataflow dict)
+        """
         if verbose:
             print("  Building indicator catalog...")
         
@@ -345,33 +536,44 @@ class MetadataSync:
             COMMON_INDICATORS = {}
         
         indicators = {}
+        indicators_by_dataflow = {}
         
         for code, info in COMMON_INDICATORS.items():
             sdg_target = info.get('sdg')
+            dataflow = info.get('dataflow', 'GLOBAL_DATAFLOW')
             
             indicators[code] = IndicatorMetadata(
                 code=code,
                 name=info.get('name', code),
-                dataflow=info.get('dataflow', 'GLOBAL_DATAFLOW'),
+                dataflow=dataflow,
                 sdg_target=sdg_target,
                 unit=info.get('unit'),
                 description=info.get('description'),
                 source='config'
             )
+            
+            # Track by dataflow
+            if dataflow not in indicators_by_dataflow:
+                indicators_by_dataflow[dataflow] = []
+            indicators_by_dataflow[dataflow].append(code)
         
-        indicators_dict = {
-            'metadata_version': '1.0',
-            'synced_at': datetime.utcnow().isoformat() + 'Z',
-            'source': 'unicef_api.config + SDMX API',
-            'total_indicators': len(indicators),
-            'indicators': {k: asdict(v) for k, v in indicators.items()}
-        }
-        self._save_yaml('indicators.yaml', indicators_dict)
+        # Save with watermark
+        indicators_dict = self._create_watermarked_dict(
+            content_type='indicators',
+            source_url='unicef_api.config + SDMX API',
+            content={'indicators': {k: asdict(v) for k, v in indicators.items()}},
+            counts={
+                'total_indicators': len(indicators),
+                'dataflows_covered': len(indicators_by_dataflow),
+                'indicators_per_dataflow': {k: len(v) for k, v in indicators_by_dataflow.items()}
+            }
+        )
+        self._save_yaml(self.FILE_INDICATORS, indicators_dict)
         
         if verbose:
             print(f"    Cataloged {len(indicators)} indicators")
         
-        return indicators
+        return indicators, indicators_by_dataflow
     
     # -------------------------------------------------------------------------
     # Vintage Management
@@ -387,8 +589,15 @@ class MetadataSync:
         
         vintage_path.mkdir(parents=True, exist_ok=True)
         
-        # Copy current files to vintage
-        for filename in ['dataflows.yaml', 'indicators.yaml', 'codelists.yaml']:
+        # Copy current files to vintage (using new naming convention)
+        vintage_files = [
+            self.FILE_DATAFLOWS,
+            self.FILE_INDICATORS,
+            self.FILE_CODELISTS,
+            self.FILE_COUNTRIES,
+            self.FILE_REGIONS,
+        ]
+        for filename in vintage_files:
             src = self.current_dir / filename
             if src.exists():
                 shutil.copy2(src, vintage_path / filename)
@@ -400,6 +609,8 @@ class MetadataSync:
             'dataflows': results['dataflows'],
             'indicators': results['indicators'],
             'codelists': results['codelists'],
+            'countries': results.get('countries', 0),
+            'regions': results.get('regions', 0),
         }
         with open(vintage_path / 'summary.yaml', 'w') as f:
             yaml.dump(vintage_summary, f, default_flow_style=False)
@@ -415,7 +626,10 @@ class MetadataSync:
         vintages = []
         if self.vintages_dir.exists():
             for d in self.vintages_dir.iterdir():
-                if d.is_dir() and (d / 'dataflows.yaml').exists():
+                # Check for new naming convention first, then legacy
+                has_new_format = (d / self.FILE_DATAFLOWS).exists()
+                has_legacy = (d / 'dataflows.yaml').exists()
+                if d.is_dir() and (has_new_format or has_legacy):
                     vintages.append(d.name)
         return sorted(vintages, reverse=True)
     
@@ -635,7 +849,7 @@ class MetadataSync:
     
     def _load_sync_history(self) -> Dict[str, Any]:
         """Load sync history from YAML."""
-        filepath = self.cache_dir / 'sync_history.yaml'
+        filepath = self.cache_dir / self.FILE_SYNC_HISTORY
         if not filepath.exists():
             return {'vintages': []}
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -651,6 +865,8 @@ class MetadataSync:
             'dataflows': results.get('dataflows', 0),
             'indicators': results.get('indicators', 0),
             'codelists': results.get('codelists', 0),
+            'countries': results.get('countries', 0),
+            'regions': results.get('regions', 0),
             'errors': results.get('errors', []),
         }
         
@@ -660,7 +876,7 @@ class MetadataSync:
         # Keep only last 50 entries
         history['vintages'] = history['vintages'][:50]
         
-        filepath = self.cache_dir / 'sync_history.yaml'
+        filepath = self.cache_dir / self.FILE_SYNC_HISTORY
         with open(filepath, 'w', encoding='utf-8') as f:
             yaml.dump(history, f, default_flow_style=False, allow_unicode=True)
     

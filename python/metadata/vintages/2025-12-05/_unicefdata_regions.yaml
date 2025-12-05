@@ -1,0 +1,121 @@
+_metadata:
+  platform: python
+  version: 2.0.0
+  synced_at: '2025-12-05T10:06:35.041646Z'
+  source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_WORLD_REGIONS/latest
+  agency: UNICEF
+  content_type: regions
+  total_regions: 111
+regions:
+  FAO_LIFDC: Low-Income Food-Deficit Countries
+  UNDEV_002: Africa
+  UNDEV_005: South America
+  UNDEV_009: Oceania excluding Australia and New Zealand
+  UNDEV_011: Western Africa
+  UNDEV_013: Central America
+  UNDEV_014: Eastern Africa
+  UNDEV_015: Northern Africa
+  UNDEV_017: Middle Africa
+  UNDEV_018: Southern Africa
+  UNDEV_021: Northern America
+  UNDEV_029: Caribbean
+  UNDEV_030: Eastern Asia
+  UNDEV_034: Southern Asia
+  UNDEV_035: South-Eastern Asia
+  UNDEV_053: Australia/New Zealand
+  UNDEV_142: Asia excluding Japan
+  UNDEV_143: Central Asia
+  UNDEV_145: Western Asia
+  UNDEV_150: Europe
+  UNDEV_419: Latin America and the Caribbean
+  UNDEV_LD: Less Developed regions
+  UNDEV_MD: More Developed regions
+  UNICEF_EAP: East Asia and Pacific
+  UNICEF_ECA: Europe and Central Asia
+  UNICEF_EECA: Eastern Europe and Central Asia
+  UNICEF_ESA: Eastern and Southern Africa
+  UNICEF_LAC: Latin America and Caribbean
+  UNICEF_MENA: Middle East and North Africa
+  UNICEF_NA: North America
+  UNICEF_REP_REG_GLOBAL: UNICEF Reporting Region - Global
+  UNICEF_SA: South Asia
+  UNICEF_SSA: Sub-Saharan Africa
+  UNICEF_WCA: West and Central Africa
+  UNICEF_WE: Western Europe
+  UNICEF_XCH: World excluding China
+  UNICEF_PROG_REG_GLOBAL: UNICEF Programme Regions - Global
+  UNICEF_EAPRO: East Asia and Pacific
+  UNICEF_ECARO: Europe and Central Asia
+  UNICEF_ESARO: Eastern and Southern Africa
+  UNICEF_LACRO: Latin America and Caribbean
+  UNICEF_MENARO: Middle East and North Africa
+  UNICEF_WCARO: West and Central Africa
+  UNSDG_AUSTRALIANEWZEALAND: Australia and New Zealand
+  UNSDG_CARIBBEAN: Caribbean
+  UNSDG_CENTRALAMR: Central America
+  UNSDG_CENTRALASIA: Central Asia
+  UNSDG_CENTRALASIASOUTHERNASIA: Central and Southern Asia
+  UNSDG_EASTERNAFR: Eastern Africa
+  UNSDG_EASTERNASIA: Eastern Asia
+  UNSDG_EASTERNASIASOUTHEASTERNASIA: Eastern and South-Eastern Asia
+  UNSDG_EUROPE: Europe
+  UNSDG_EUROPENORTHERNAMR: Europe and Northern America
+  UNSDG_LAC: Latin America & the Caribbean
+  UNSDG_LDC: Least developed countries (LDCs)
+  UNSDG_LLDC: Landlocked developing countries (LLDCs)
+  UNSDG_MIDDLEAFR: Middle Africa
+  UNSDG_NORTHAFR: Northern Africa
+  UNSDG_NORTHERNAMR: North America
+  UNSDG_OCEANIA: Oceania
+  UNSDG_OCEANIAexAUSNZL: Oceania excluding Australia and New Zealand
+  UNSDG_REGION_GLOBAL: SDG Regions - Global
+  UNSDG_SIDS: Small island developing States (SIDS)
+  UNSDG_SOUTHAMR: South America
+  UNSDG_SOUTHASIA: Southern Asia
+  UNSDG_SOUTHEASTERNASIA: South-Eastern Asia
+  UNSDG_SOUTHERNAFR: Southern Africa
+  UNSDG_SUBSAHARANAFRICA: Sub-Saharan Africa
+  UNSDG_WESTERNAFR: Western Africa
+  UNSDG_WESTERNASIA: Western Asia
+  UNSDG_WESTERNASIANORTHERNAFR: Northern Africa and Western Asia
+  UNDEV_GLOBAL: UN Development Regions - Global
+  WB_EAP: East Asia and Pacific
+  WB_ECA: Europe and Central Asia
+  WB_REG_GLOBAL: World Bank Regions - Global
+  WB_HI: High income
+  WB_INCOME: World Bank Income Groups
+  WB_LAC: Latin America and the Caribbean
+  WB_LI: Low income
+  WB_LMI: Lower-middle income
+  WB_MI: Middle Income
+  WB_MNA: Middle East and North Africa
+  WB_NAR: North America
+  WB_SAR: South Asia
+  WB_SSA: Sub-Saharan Africa
+  WB_UMI: Upper-middle income
+  WHO_REG_GLOBAL: World Health Organisation Region - Global
+  WHO_AFRO: Africa
+  WHO_AMRO: Americas
+  WHO_EMRO: Eastern Mediterranean
+  WHO_EURO: Europe
+  WHO_SEARO: South-East Asia
+  WHO_WPRO: Western Pacific
+  UNFPA_REGIONS: UNFPA Regions
+  UNFPA_AP: Asia and the Pacific
+  UNFPA_EECA: Eastern Europe and Central Asia
+  UNFPA_AS: Arab States
+  UNFPA_ESA: East and Southern Africa
+  UNFPA_LAC: Latin America and the Caribbean
+  UNFPA_WCA: West and Central Africa
+  FAO_GLOBAL: SOFI World
+  UNSDG_NORTHAMR_EUROPE_AUSNZL: North America, Europe, Australia and New Zealand
+  UNSDG_SOUTHEASTERNASIAexAUSNZL: South Eastern Asia and Oceania (excl. Australia
+    and New Zealand)
+  UNDEV_SSA: Sub-Saharan Africa
+  UNDEV_151: Eastern Europe
+  UNDEV_154: Northern Europe
+  UNDEV_39: Southern Europe
+  UNDEV_155: Western Europe
+  UNDEV_054: Melanesia
+  UNDEV_057: Micronesia
+  UNDEV_061: Polynesia

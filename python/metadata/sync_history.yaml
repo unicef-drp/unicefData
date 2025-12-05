@@ -1,4 +1,27 @@
 vintages:
+- codelists: 5
+  dataflows: 69
+  errors: []
+  indicators: 25
+  synced_at: '2025-12-05T10:04:12.328089Z'
+  vintage_date: '2025-12-05'
+- codelists: 5
+  dataflows: 69
+  errors: []
+  indicators: 25
+  synced_at: '2025-12-05T10:00:24.387064Z'
+  vintage_date: '2025-12-05'
+- codelists: 0
+  dataflows: 0
+  errors:
+  - 'Dataflows: ''MetadataSync'' object has no attribute ''METADATA_VERSION'''
+  - 'Codelists: ''MetadataSync'' object has no attribute ''METADATA_VERSION'''
+  - 'Countries: ''MetadataSync'' object has no attribute ''METADATA_VERSION'''
+  - 'Regions: ''MetadataSync'' object has no attribute ''METADATA_VERSION'''
+  - 'Indicators: ''MetadataSync'' object has no attribute ''METADATA_VERSION'''
+  indicators: 0
+  synced_at: '2025-12-05T09:59:54.021297Z'
+  vintage_date: '2025-12-05'
 - codelists: 4
   dataflows: 69
   errors: []
