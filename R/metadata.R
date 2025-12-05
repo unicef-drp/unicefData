@@ -329,8 +329,8 @@ sync_dataflows <- function(verbose = TRUE) {
 sync_codelists <- function(codelist_ids = NULL, verbose = TRUE) {
   if (is.null(codelist_ids)) {
     # Codelists excluding CL_COUNTRY and CL_WORLD_REGIONS (handled separately)
+    # Note: CL_SEX does not exist on UNICEF SDMX API
     codelist_ids <- c(
-      "CL_SEX",                # Sex disaggregation
       "CL_AGE",                # Age groups
       "CL_WEALTH_QUINTILE",    # Wealth quintiles
       "CL_RESIDENCE",          # Urban/rural
@@ -384,17 +384,20 @@ sync_countries <- function(verbose = TRUE) {
   cl <- .fetch_codelist("CL_COUNTRY")
   
   countries <- list()
+  codelist_name <- NULL
   if (!is.null(cl)) {
     countries <- cl$codes
+    codelist_name <- cl$name
   }
   
-  # Save with watermark
+  # Save with watermark (codelist_name stored in metadata)
   result <- .create_watermarked_list(
     content_type = "countries",
     source_url = sprintf("%s/codelist/%s/CL_COUNTRY/latest", 
                          .metadata_config$BASE_URL, .metadata_config$AGENCY),
     content = list(countries = countries),
-    counts = list(total_countries = length(countries))
+    counts = list(total_countries = length(countries)),
+    extra_metadata = list(codelist_id = "CL_COUNTRY", codelist_name = codelist_name)
   )
   .save_yaml(.metadata_config$FILE_COUNTRIES, result)
   
@@ -414,17 +417,20 @@ sync_regions <- function(verbose = TRUE) {
   cl <- .fetch_codelist("CL_WORLD_REGIONS")
   
   regions <- list()
+  codelist_name <- NULL
   if (!is.null(cl)) {
     regions <- cl$codes
+    codelist_name <- cl$name
   }
   
-  # Save with watermark
+  # Save with watermark (codelist_name stored in metadata)
   result <- .create_watermarked_list(
     content_type = "regions",
     source_url = sprintf("%s/codelist/%s/CL_WORLD_REGIONS/latest", 
                          .metadata_config$BASE_URL, .metadata_config$AGENCY),
     content = list(regions = regions),
-    counts = list(total_regions = length(regions))
+    counts = list(total_regions = length(regions)),
+    extra_metadata = list(codelist_id = "CL_WORLD_REGIONS", codelist_name = codelist_name)
   )
   .save_yaml(.metadata_config$FILE_REGIONS, result)
   
@@ -1152,6 +1158,16 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
     doc <- xml2::read_xml(response)
     ns <- xml2::xml_ns(doc)
     
+    # Extract codelist's own name (from Codelist element, not Code elements)
+    codelist_name <- NULL
+    codelist_elem <- xml2::xml_find_first(doc, ".//str:Codelist", ns)
+    if (!is.na(codelist_elem)) {
+      name_elem <- xml2::xml_find_first(codelist_elem, "com:Name", ns)
+      if (!is.na(name_elem)) {
+        codelist_name <- xml2::xml_text(name_elem)
+      }
+    }
+    
     codes <- list()
     for (code_elem in xml2::xml_find_all(doc, ".//str:Code", ns)) {
       code_id <- xml2::xml_attr(code_elem, "id")
@@ -1165,7 +1181,8 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
       agency = .metadata_config$AGENCY,
       version = "latest",
       codes = codes,
-      last_updated = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+      last_updated = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+      name = codelist_name  # Codelist's own descriptive name
     )
   }, error = function(e) {
     NULL
@@ -1173,21 +1190,26 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
 }
 
 #' Create a list with standardized watermark header (matches Python format)
+#' @param extra_metadata Optional list of additional metadata fields (e.g., codelist_name)
 #' @keywords internal
-.create_watermarked_list <- function(content_type, source_url, content, counts) {
-  watermark <- list(
-    `_metadata` = c(
-      list(
-        platform = "R",
-        version = .metadata_config$METADATA_VERSION,
-        synced_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-        source = source_url,
-        agency = .metadata_config$AGENCY,
-        content_type = content_type
-      ),
-      counts
-    )
+.create_watermarked_list <- function(content_type, source_url, content, counts, extra_metadata = NULL) {
+  metadata_list <- c(
+    list(
+      platform = "R",
+      version = .metadata_config$METADATA_VERSION,
+      synced_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+      source = source_url,
+      agency = .metadata_config$AGENCY,
+      content_type = content_type
+    ),
+    counts
   )
+  # Add extra metadata fields if provided
+  if (!is.null(extra_metadata)) {
+    metadata_list <- c(metadata_list, extra_metadata)
+  }
+  
+  watermark <- list(`_metadata` = metadata_list)
   # Merge watermark with content
   c(watermark, content)
 }
