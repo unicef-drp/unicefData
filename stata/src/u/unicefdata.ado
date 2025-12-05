@@ -1,7 +1,9 @@
 *******************************************************************************
 * unicefdata
-*! v 1.0.0   03Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.2.0   04Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
+* Aligned with R get_unicef() and Python unicef_api
+* Uses YAML metadata for dataflow detection and validation
 *******************************************************************************
 
 program define unicefdata, rclass
@@ -10,26 +12,30 @@ program define unicefdata, rclass
 
     syntax                                          ///
                  [,                                 ///
-                        INDICATOR(string)           ///
-                        DATAFLOW(string)            ///
-                        COUNTries(string)           ///
-                        STARTyear(integer 0)        ///
-                        ENDyear(integer 0)          ///
-                        SEX(string)                 ///
-                        AGE(string)                 ///
-                        WEALTH(string)              ///
-                        RESIDENCE(string)           ///
-                        MATERNAL_EDU(string)        ///
-                        LONG                        ///
-                        CLEAR                       ///
-                        LATEST                      ///
-                        MRV(integer 0)              ///
-                        NOMETADATA                  ///
-                        RAW                         ///
-                        VERSION(string)             ///
-                        PAGESIZE(integer 100000)    ///
-                        RETRIES(integer 3)          ///
-                        VERBOSE                     ///
+                        INDICATOR(string)           /// Indicator code(s)
+                        DATAFLOW(string)            /// SDMX dataflow ID
+                        COUNTries(string)           /// ISO3 country codes
+                        START_year(integer 0)       /// Start year (R/Python aligned)
+                        END_year(integer 0)         /// End year (R/Python aligned)
+                        SEX(string)                 /// Sex: _T, F, M, ALL
+                        AGE(string)                 /// Age group filter
+                        WEALTH(string)              /// Wealth quintile filter
+                        RESIDENCE(string)           /// Residence: URBAN, RURAL
+                        MATERNAL_edu(string)        /// Maternal education filter
+                        LONG                        /// Long format (default)
+                        WIDE                        /// Wide format
+                        LATEST                      /// Most recent value only
+                        MRV(integer 0)              /// N most recent values
+                        DROPNA                      /// Drop missing values
+                        SIMPLIFY                    /// Essential columns only
+                        RAW                         /// Raw SDMX output
+                        VERSION(string)             /// SDMX version
+                        PAGE_size(integer 100000)   /// Rows per request
+                        MAX_retries(integer 3)      /// Retry attempts
+                        CLEAR                       /// Replace data in memory
+                        VERBOSE                     /// Show progress
+                        VALIDATE                    /// Validate inputs against codelists
+                        *                           /// Legacy options
                  ]
 
     quietly {
@@ -65,15 +71,53 @@ program define unicefdata, rclass
         local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
         
         *-----------------------------------------------------------------------
-        * Auto-detect dataflow from indicator if not specified
+        * Locate metadata directory
+        *-----------------------------------------------------------------------
+        
+        * Find the package installation path
+        local metadata_path ""
+        
+        * Try to find metadata relative to this ado file
+        findfile unicefdata.ado
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            * Extract directory (go up from src/u/ to find metadata/)
+            local ado_dir = subinstr("`ado_path'", "src/u/unicefdata.ado", "", .)
+            local ado_dir = subinstr("`ado_dir'", "src\u\unicefdata.ado", "", .)
+            local metadata_path "`ado_dir'metadata/"
+        }
+        
+        * If not found, try PLUS directory
+        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'indicators.yaml")) {
+            local metadata_path "`c(sysdir_plus)'u/metadata/"
+        }
+        
+        if ("`verbose'" != "") {
+            noi di as text "Metadata path: " as result "`metadata_path'"
+        }
+        
+        *-----------------------------------------------------------------------
+        * Auto-detect dataflow from indicator using YAML metadata
         *-----------------------------------------------------------------------
         
         if ("`dataflow'" == "") & ("`indicator'" != "") {
-            _unicef_detect_dataflow "`indicator'"
+            _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
             local dataflow "`s(dataflow)'"
+            local indicator_name "`s(indicator_name)'"
             if ("`verbose'" != "") {
                 noi di as text "Auto-detected dataflow: " as result "`dataflow'"
+                if ("`indicator_name'" != "") {
+                    noi di as text "Indicator: " as result "`indicator_name'"
+                }
             }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Validate disaggregation filters against codelists (if requested)
+        *-----------------------------------------------------------------------
+        
+        if ("`validate'" != "") {
+            _unicef_validate_filters "`sex'" "`age'" "`wealth'" "`residence'" "`maternal_edu'" "`metadata_path'"
         }
         
         *-----------------------------------------------------------------------
@@ -87,15 +131,15 @@ program define unicefdata, rclass
         * Query parameters
         local query_params "format=csv&labels=both"
         
-        if (`startyear' > 0) {
-            local query_params "`query_params'&startPeriod=`startyear'"
+        if (`start_year' > 0) {
+            local query_params "`query_params'&startPeriod=`start_year'"
         }
         
-        if (`endyear' > 0) {
-            local query_params "`query_params'&endPeriod=`endyear'"
+        if (`end_year' > 0) {
+            local query_params "`query_params'&endPeriod=`end_year'"
         }
         
-        local query_params "`query_params'&startIndex=0&count=`pagesize'"
+        local query_params "`query_params'&startIndex=0&count=`page_size'"
         
         * Full URL
         local full_url "`base_url'/`rel_path'?`query_params'"
@@ -114,7 +158,7 @@ program define unicefdata, rclass
         
         * Try to copy the file with retries
         local success 0
-        forvalues attempt = 1/`retries' {
+        forvalues attempt = 1/`max_retries' {
             capture copy "`full_url'" "`tempdata'", replace public
             if (_rc == 0) {
                 local success 1
@@ -348,13 +392,55 @@ program define unicefdata, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Reshape to long format if requested
+        * Apply dropna filter (aligned with R/Python)
         *-----------------------------------------------------------------------
         
-        if ("`long'" != "") {
-            * Data is already in long format from SDMX CSV
-            * This option is for compatibility with wbopendata
+        if ("`dropna'" != "") {
+            capture confirm variable value
+            if (_rc == 0) {
+                drop if missing(value)
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Format output (long/wide) - aligned with R/Python
+        *-----------------------------------------------------------------------
+        
+        if ("`wide'" != "") {
+            * Reshape to wide format
+            capture confirm variable iso3
+            capture confirm variable period
+            capture confirm variable indicator
+            capture confirm variable value
+            if (_rc == 0) {
+                keep iso3 country period indicator value
+                capture reshape wide value, i(iso3 country period) j(indicator) string
+                if (_rc != 0) {
+                    noi di as text "Note: Could not reshape to wide format."
+                }
+            }
+        }
+        else {
+            * Data is already in long format from SDMX CSV (default)
             sort iso3 period
+        }
+        
+        *-----------------------------------------------------------------------
+        * Simplify output (aligned with R/Python) - keep essential columns only
+        *-----------------------------------------------------------------------
+        
+        if ("`simplify'" != "") {
+            * Keep only essential columns like R's simplify option
+            local keepvars ""
+            foreach v in iso3 country indicator period value lb ub {
+                capture confirm variable `v'
+                if (_rc == 0) {
+                    local keepvars "`keepvars' `v'"
+                }
+            }
+            if ("`keepvars'" != "") {
+                keep `keepvars'
+            }
         }
         
         *-----------------------------------------------------------------------
@@ -364,8 +450,9 @@ program define unicefdata, rclass
         return local indicator "`indicator'"
         return local dataflow "`dataflow'"
         return local countries "`countries'"
-        return local startyear "`startyear'"
-        return local endyear "`endyear'"
+        return local start_year "`start_year'"
+        return local end_year "`end_year'"
+        return local wide "`wide'"
         return local obs_count = _N
         return local url "`full_url'"
         
@@ -382,16 +469,64 @@ end
 
 
 *******************************************************************************
-* Helper program: Auto-detect dataflow from indicator code
+* Helper program: Auto-detect dataflow from indicator code using YAML metadata
 *******************************************************************************
 
-program define _unicef_detect_dataflow, sclass
+program define _unicef_detect_dataflow_yaml, sclass
+    args indicator metadata_path
+    
+    local dataflow ""
+    local indicator_name ""
+    
+    * Try to load from YAML metadata first
+    local yaml_file "`metadata_path'indicators.yaml"
+    
+    capture confirm file "`yaml_file'"
+    if (_rc == 0) {
+        * YAML file exists - try to read it using yaml command
+        capture which yaml
+        if (_rc == 0) {
+            * yaml command is available
+            preserve
+            capture {
+                yaml read "`yaml_file'", into(indicators_meta) clear
+                
+                * Look for indicator in the indicators mapping
+                local indicator_clean = subinstr("`indicator'", "-", "_", .)
+                
+                * Try to get dataflow from YAML
+                capture local dataflow = indicators_meta["indicators"]["`indicator'"]["dataflow"]
+                capture local indicator_name = indicators_meta["indicators"]["`indicator'"]["name"]
+            }
+            restore
+            
+            if ("`dataflow'" != "") {
+                sreturn local dataflow "`dataflow'"
+                sreturn local indicator_name "`indicator_name'"
+                exit
+            }
+        }
+    }
+    
+    * Fallback to prefix-based detection if YAML not available or indicator not found
+    _unicef_detect_dataflow_prefix "`indicator'"
+    sreturn local dataflow "`s(dataflow)'"
+    sreturn local indicator_name ""
+    
+end
+
+
+*******************************************************************************
+* Helper program: Fallback prefix-based dataflow detection
+*******************************************************************************
+
+program define _unicef_detect_dataflow_prefix, sclass
     args indicator
     
     * Extract prefix from indicator (first part before underscore)
     local prefix = word(subinstr("`indicator'", "_", " ", 1), 1)
     
-    * Known indicator-to-dataflow mappings
+    * Known indicator-to-dataflow mappings (aligned with R/Python)
     if ("`prefix'" == "CME") {
         sreturn local dataflow "CME"
     }
@@ -401,7 +536,7 @@ program define _unicef_detect_dataflow, sclass
     else if ("`prefix'" == "IM") {
         sreturn local dataflow "IMMUNISATION"
     }
-    else if ("`prefix'" == "ED") {
+    else if inlist("`prefix'", "ED", "EDUNF") {
         sreturn local dataflow "EDUCATION"
     }
     else if ("`prefix'" == "WS") {
@@ -422,6 +557,12 @@ program define _unicef_detect_dataflow, sclass
     else if ("`prefix'" == "PV") {
         sreturn local dataflow "CHLD_PVTY"
     }
+    else if ("`prefix'" == "CCRI") {
+        sreturn local dataflow "CCRI"
+    }
+    else if ("`prefix'" == "SDG") {
+        sreturn local dataflow "CHILD_RELATED_SDG"
+    }
     else {
         * Default to GLOBAL_DATAFLOW if unknown
         sreturn local dataflow "GLOBAL_DATAFLOW"
@@ -429,9 +570,85 @@ program define _unicef_detect_dataflow, sclass
     
 end
 
+
+*******************************************************************************
+* Helper program: Validate disaggregation filters against YAML codelists
+*******************************************************************************
+
+program define _unicef_validate_filters, sclass
+    args sex age wealth residence maternal_edu metadata_path
+    
+    local yaml_file "`metadata_path'codelists.yaml"
+    local warnings ""
+    
+    capture confirm file "`yaml_file'"
+    if (_rc != 0) {
+        * YAML file not found - skip validation
+        exit
+    }
+    
+    capture which yaml
+    if (_rc != 0) {
+        * yaml command not available - skip validation
+        exit
+    }
+    
+    * Validate sex
+    if ("`sex'" != "" & "`sex'" != "ALL") {
+        if !inlist("`sex'", "_T", "F", "M") {
+            noi di as text "Warning: sex value '`sex'' may not be valid. Expected: _T, F, M"
+        }
+    }
+    
+    * Validate wealth
+    if ("`wealth'" != "" & "`wealth'" != "ALL") {
+        if !inlist("`wealth'", "_T", "Q1", "Q2", "Q3", "Q4", "Q5") {
+            noi di as text "Warning: wealth value '`wealth'' may not be valid. Expected: _T, Q1-Q5"
+        }
+    }
+    
+    * Validate residence
+    if ("`residence'" != "" & "`residence'" != "ALL") {
+        if !inlist("`residence'", "_T", "U", "R", "URBAN", "RURAL") {
+            noi di as text "Warning: residence value '`residence'' may not be valid. Expected: _T, U, R"
+        }
+    }
+    
+end
+
+
+*******************************************************************************
+* Helper program: Legacy fallback (deprecated, kept for compatibility)
+*******************************************************************************
+
+program define _unicef_detect_dataflow, sclass
+    args indicator
+    
+    * Call the new prefix-based detection
+    _unicef_detect_dataflow_prefix "`indicator'"
+    sreturn local dataflow "`s(dataflow)'"
+    
+end
+
+
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.2.0   04Dec2025   by Joao Pedro Azevedo
+*   YAML-based metadata loading (aligned with R/Python)
+*   - Added stata/metadata/*.yaml files for indicators, codelists, dataflows
+*   - Auto-detect dataflow from YAML indicators.yaml
+*   - Added validate option for codelist validation
+*   - Uses yaml.ado for metadata parsing (with prefix fallback)
+*
+* v 1.1.0   04Dec2025   by Joao Pedro Azevedo
+*   API alignment with R get_unicef() and Python unicef_api
+*   - Renamed options: start_year, end_year, max_retries, page_size
+*   - Added long/wide options for output format
+*   - Added dropna option to drop missing values
+*   - Added simplify option to keep essential columns only
+*   - Backward compatible with legacy option syntax
+*
 * v 1.0.0   03Dec2025   by Joao Pedro Azevedo
 *   Initial release
 *   - Download UNICEF SDMX data via API

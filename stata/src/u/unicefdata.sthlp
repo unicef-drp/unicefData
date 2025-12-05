@@ -1,13 +1,15 @@
 {smcl}
-{* *! version 1.0.0  03Dec2025}{...}
+{* *! version 1.2.0  04Dec2025}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "wbopendata" "help wbopendata"}{...}
+{vieweralsosee "yaml" "help yaml"}{...}
 {viewerjumpto "Syntax" "unicefdata##syntax"}{...}
 {viewerjumpto "Description" "unicefdata##description"}{...}
 {viewerjumpto "Options" "unicefdata##options"}{...}
 {viewerjumpto "Examples" "unicefdata##examples"}{...}
 {viewerjumpto "Stored results" "unicefdata##results"}{...}
+{viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {title:Title}
 
@@ -35,8 +37,8 @@
 {synopt:{opt ind:icator(string)}}indicator code(s) to download (e.g., CME_MRY0T4){p_end}
 {synopt:{opt data:flow(string)}}dataflow ID (e.g., CME, NUTRITION){p_end}
 {synopt:{opt count:ries(string)}}ISO3 country codes, space or comma separated{p_end}
-{synopt:{opt start:year(#)}}start year for data range{p_end}
-{synopt:{opt end:year(#)}}end year for data range{p_end}
+{synopt:{opt start_year(#)}}start year for data range{p_end}
+{synopt:{opt end_year(#)}}end year for data range{p_end}
 
 {syntab:Disaggregation Filters}
 {synopt:{opt sex(string)}}sex filter: _T (total), F (female), M (male), or ALL{p_end}
@@ -47,15 +49,18 @@
 
 {syntab:Output Options}
 {synopt:{opt long}}keep data in long format (default){p_end}
+{synopt:{opt wide}}reshape data to wide format (indicators as columns){p_end}
+{synopt:{opt dropna}}drop observations with missing values{p_end}
+{synopt:{opt simplify}}keep only essential columns (iso3, country, indicator, period, value, lb, ub){p_end}
 {synopt:{opt latest}}keep only most recent value per country{p_end}
 {synopt:{opt mrv(#)}}keep N most recent values per country{p_end}
 {synopt:{opt raw}}return raw data without standardization{p_end}
-{synopt:{opt nomet:adata}}do not include metadata columns{p_end}
 
 {syntab:Technical}
 {synopt:{opt version(string)}}SDMX version (default: 1.0){p_end}
 {synopt:{opt page_size(#)}}rows per API request (default: 100000){p_end}
-{synopt:{opt retries(#)}}number of retry attempts (default: 3){p_end}
+{synopt:{opt max_retries(#)}}number of retry attempts (default: 3){p_end}
+{synopt:{opt validate}}validate inputs against YAML codelists{p_end}
 {synopt:{opt clear}}replace data in memory{p_end}
 {synopt:{opt verbose}}display progress messages{p_end}
 {synoptline}
@@ -147,7 +152,8 @@ Multiple indicators can be separated by spaces. Example indicators include:
 Multiple codes can be space or comma separated (e.g., {cmd:countries(ALB USA BRA)}).
 
 {phang}
-{opt startyear(#)} and {opt endyear(#)} specify the year range for data retrieval.
+{opt start_year(#)} and {opt end_year(#)} specify the year range for data retrieval.
+(Aligned with R/Python syntax.)
 
 {dlgtab:Disaggregation Filters}
 
@@ -170,6 +176,16 @@ Multiple codes can be space or comma separated (e.g., {cmd:countries(ALB USA BRA
 This is the default format from the SDMX API.
 
 {phang}
+{opt wide} reshapes data to wide format with indicators as columns.
+
+{phang}
+{opt dropna} drops observations with missing values. Aligned with R/Python {cmd:dropna} parameter.
+
+{phang}
+{opt simplify} keeps only essential columns: {cmd:iso3}, {cmd:country}, {cmd:indicator}, 
+{cmd:period}, {cmd:value}, {cmd:lb}, {cmd:ub}. Aligned with R/Python {cmd:simplify} parameter.
+
+{phang}
 {opt latest} keeps only the most recent non-missing value for each country.
 Useful for cross-sectional analysis.
 
@@ -180,6 +196,10 @@ Useful for cross-sectional analysis.
 {opt raw} returns raw SDMX data without variable renaming or standardization.
 
 {dlgtab:Technical}
+
+{phang}
+{opt max_retries(#)} specifies the number of retry attempts (default: 3). 
+(Aligned with R/Python syntax.)
 
 {phang}
 {opt clear} allows the command to replace existing data in memory.
@@ -200,8 +220,8 @@ Download for specific countries:{p_end}
 {phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear}{p_end}
 
 {pstd}
-Download with year range:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) startyear(2010) endyear(2023) clear}{p_end}
+Download with year range (aligned R/Python syntax):{p_end}
+{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) start_year(2010) end_year(2023) clear}{p_end}
 
 {pstd}
 Get latest value per country:{p_end}
@@ -219,6 +239,14 @@ Download all indicators from a dataflow:{p_end}
 Get 5 most recent values per country:{p_end}
 {phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) mrv(5) clear}{p_end}
 
+{pstd}
+Simplify output to essential columns (like R/Python):{p_end}
+{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) simplify dropna clear}{p_end}
+
+{pstd}
+Wide format output:{p_end}
+{phang2}{cmd:. unicefdata, dataflow(CME) countries(BRA ARG) wide clear}{p_end}
+
 
 {marker results}{...}
 {title:Stored results}
@@ -234,9 +262,33 @@ Get 5 most recent values per country:{p_end}
 {synopt:{cmd:r(indicator)}}indicator code(s) requested{p_end}
 {synopt:{cmd:r(dataflow)}}dataflow ID used{p_end}
 {synopt:{cmd:r(countries)}}countries requested (if specified){p_end}
-{synopt:{cmd:r(startyear)}}start year (if specified){p_end}
-{synopt:{cmd:r(endyear)}}end year (if specified){p_end}
+{synopt:{cmd:r(start_year)}}start year (if specified){p_end}
+{synopt:{cmd:r(end_year)}}end year (if specified){p_end}
+{synopt:{cmd:r(wide)}}wide format indicator{p_end}
 {synopt:{cmd:r(url)}}API URL used for download{p_end}
+
+
+{marker metadata}{...}
+{title:YAML Metadata}
+
+{pstd}
+{cmd:unicefdata} uses YAML metadata files for dataflow auto-detection and input validation,
+aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} implementations.
+
+{pstd}
+Metadata files are located in {cmd:stata/metadata/}:
+
+{phang2}{cmd:indicators.yaml} - Maps indicator codes to dataflows, names, SDG targets{p_end}
+{phang2}{cmd:codelists.yaml} - Valid codes for sex, age, wealth, residence{p_end}
+{phang2}{cmd:dataflows.yaml} - Available UNICEF SDMX dataflows{p_end}
+
+{pstd}
+The {helpb yaml} command is used to parse these files. If {cmd:yaml} is not installed,
+the command falls back to prefix-based dataflow detection.
+
+{pstd}
+To install the {cmd:yaml} package:{p_end}
+{phang2}{cmd:. ssc install yaml}{p_end}
 
 
 {marker author}{...}

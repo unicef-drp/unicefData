@@ -1,0 +1,381 @@
+# TODO: YAML Metadata Enhancements for unicefData
+
+**Created:** 2025-12-05  
+**Status:** Planning  
+**Affects:** R, Python, Stata implementations
+
+---
+
+## Overview
+
+Implement consistent YAML metadata generation and usage across all three language implementations (R, Python, Stata) with proper watermarking, versioning, age warnings, and user feedback.
+
+---
+
+## 0. File Naming Convention (DECISION REQUIRED)
+
+### Current State
+| Language | Location | Current Names |
+|----------|----------|---------------|
+| R | `inst/extdata/metadata/` | `dataflows.yaml`, `indicators.yaml`, `codelists.yaml` |
+| Python | `python/unicef_api/data/` | `dataflows.yaml`, `indicators.yaml`, `codelists.yaml` |
+| Stata | `stata/metadata/` | `dataflows.yaml`, `indicators.yaml`, `codelists.yaml` |
+
+### Options for Standardized Naming
+
+#### Option A: Simple names (CURRENT)
+```
+dataflows.yaml
+indicators.yaml
+codelists.yaml
+```
+- ✅ Clean and simple
+- ✅ Already in use
+- ❌ Not immediately identifiable as unicefData files
+
+#### Option B: Package prefix with underscore
+```
+unicefdata_dataflows.yaml
+unicefdata_indicators.yaml
+unicefdata_codelists.yaml
+```
+- ✅ Clearly identifies source package
+- ✅ Consistent with Stata naming conventions (lowercase)
+- ✅ Easy to glob: `unicefdata_*.yaml`
+- ❌ Longer filenames
+
+#### Option C: Package prefix with hyphen
+```
+unicefdata-dataflows.yaml
+unicefdata-indicators.yaml
+unicefdata-codelists.yaml
+```
+- ✅ Clearly identifies source package
+- ✅ More readable than underscores
+- ❌ Hyphens can be problematic in some contexts
+
+#### Option D: Namespaced with dots
+```
+unicef.dataflows.yaml
+unicef.indicators.yaml
+unicef.codelists.yaml
+```
+- ✅ Namespace-style (like Java packages)
+- ❌ Dots can confuse file extension detection
+
+### **DECISION: Option B variant** (`_unicefdata_<name>.yaml`)
+
+Leading underscore chosen because:
+1. **Stata compatibility**: Underscores are standard in Stata naming
+2. **Glob-friendly**: Easy to find all files with `_unicefdata_*.yaml`
+3. **Clear provenance**: Immediately obvious these are unicefData files
+4. **Sorted first**: Leading underscore sorts before alphabetical files
+5. **Convention**: Leading underscore often indicates "system/config" files
+
+### Standard File Names (FINAL)
+```
+_unicefdata_dataflows.yaml      # SDMX dataflow definitions
+_unicefdata_indicators.yaml     # Indicator → dataflow mappings
+_unicefdata_codelists.yaml      # Valid dimension codes (sex, age, wealth, etc.)
+_unicefdata_countries.yaml      # Country ISO3 codes (separate from codelists)
+_unicefdata_regions.yaml        # Regional/aggregate codes (separate from codelists)
+_unicefdata_sync_history.yaml   # Sync timestamps and versions
+```
+
+### Migration Plan
+- [x] Decision made: `_unicefdata_<name>.yaml` format
+- [ ] Rename files in `metadata/current/`
+- [ ] Update R code to use new names
+- [ ] Update Python code to use new names  
+- [ ] Update Stata code to use new names
+- [ ] Update `.gitignore` patterns if needed
+
+---
+
+## 0.1 Unified Directory Structure (ALL LANGUAGES)
+
+### Confirmed Structure
+All three languages will follow the **same directory structure**:
+
+```
+{language_root}/metadata/
+├── _unicefdata_dataflows.yaml
+├── _unicefdata_indicators.yaml
+├── _unicefdata_codelists.yaml
+├── _unicefdata_countries.yaml
+├── _unicefdata_regions.yaml
+└── _unicefdata_sync_history.yaml
+```
+
+### Language-Specific Roots
+| Language | Root | Full Metadata Path |
+|----------|------|-------------------|
+| R | `inst/extdata/` | `inst/extdata/metadata/_unicefdata_*.yaml` |
+| Python | `python/unicef_api/data/` | `python/unicef_api/data/metadata/_unicefdata_*.yaml` |
+| Stata | `stata/` | `stata/metadata/_unicefdata_*.yaml` |
+
+### Shared Master Location
+Additionally, a **master copy** will be maintained at the repo root:
+```
+unicefData/
+├── metadata/
+│   ├── current/
+│   │   ├── _unicefdata_dataflows.yaml
+│   │   ├── _unicefdata_indicators.yaml
+│   │   ├── _unicefdata_codelists.yaml
+│   │   ├── _unicefdata_countries.yaml
+│   │   ├── _unicefdata_regions.yaml
+│   │   └── _unicefdata_sync_history.yaml
+│   └── vintages/
+│       └── YYYY-MM-DD/
+│           └── ... (archived versions)
+```
+
+### Sync Strategy
+1. **Primary source**: `metadata/current/` (repo root)
+2. **Language copies**: Synced from primary via script or CI
+3. **Package installation**: Each language includes its copy
+
+---
+
+## 1. YAML File Watermark/Header
+
+### Requirements
+- [ ] All generated YAML files must include a standard header with:
+  - `generated_by`: Platform name (R/Python/Stata)
+  - `generator_version`: Version of the function that created it (e.g., `get_unicef() v0.2.2`)
+  - `package_version`: Package version (e.g., `unicefData v0.2.2`)
+  - `generated_at`: ISO 8601 timestamp
+  - `source_api`: API URL used
+  - `checksum`: Optional MD5/SHA hash for integrity
+
+### Example Header
+```yaml
+# =============================================================================
+# UNICEF Data Warehouse Metadata
+# Generated by: unicefData (Python v0.2.2)
+# Generator function: sync_metadata() v1.0.0
+# Generated at: 2025-12-05T10:30:00Z
+# Source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest
+# =============================================================================
+metadata_version: "1.0"
+generated_by:
+  platform: Python
+  package: unicefData
+  package_version: "0.2.2"
+  function: sync_metadata
+  function_version: "1.0.0"
+generated_at: "2025-12-05T10:30:00Z"
+source_api: "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+```
+
+### Tasks
+- [ ] R: Update `R/metadata.R` - `sync_metadata()` function
+- [ ] Python: Update `python/unicef_api/metadata_sync.py` - `sync_metadata()` function
+- [ ] Stata: Create `stata/src/_unicef_sync_metadata.ado` helper program
+
+---
+
+## 2. Centralized YAML Storage Location
+
+### Requirements
+- [ ] All YAML files saved to a shared location accessible by all three languages
+- [ ] Structure: `metadata/current/` for active files, `metadata/vintages/` for history
+- [ ] Language-specific copies in `R/inst/extdata/`, `python/unicef_api/data/`, `stata/metadata/`
+
+### Directory Structure
+```
+unicefData/
+├── metadata/
+│   ├── current/
+│   │   ├── dataflows.yaml
+│   │   ├── indicators.yaml
+│   │   └── codelists.yaml
+│   ├── vintages/
+│   │   └── 2025-12-05/
+│   │       ├── dataflows.yaml
+│   │       └── ...
+│   └── sync_history.yaml
+├── R/inst/extdata/metadata/     # Symlink or copy
+├── python/unicef_api/data/      # Symlink or copy
+└── stata/metadata/              # Symlink or copy
+```
+
+### Tasks
+- [ ] Create sync script to copy from `metadata/current/` to language-specific folders
+- [ ] R: Update `load_metadata()` to use shared location
+- [ ] Python: Update `MetadataManager` to use shared location
+- [ ] Stata: Update `_unicef_detect_dataflow_yaml` to use shared location
+
+---
+
+## 3. Generation Summary Messages
+
+### Requirements
+- [ ] When metadata is generated, display summary with:
+  - File being created (name and path)
+  - Number of dataflows
+  - Number of indicators (total and per dataflow)
+  - Number of country/regional codes
+  - Total YAML files created
+  - Output location
+
+### Example Output
+```
+================================================================================
+UNICEF Metadata Sync Summary
+================================================================================
+Generated at: 2025-12-05 10:30:00 UTC
+Output location: /path/to/unicefData/metadata/current/
+
+Files created:
+  ✓ dataflows.yaml     - 45 dataflows
+  ✓ indicators.yaml    - 1,247 indicators across 45 dataflows
+  ✓ codelists.yaml     - 12 codelists with 2,341 codes
+                         • CL_REF_AREA: 248 country/regional codes
+                         • CL_SEX: 3 codes
+                         • CL_AGE: 156 codes
+                         • ...
+
+Total: 3 YAML files created
+================================================================================
+```
+
+### Tasks
+- [ ] R: Add `verbose` output to `sync_metadata()`
+- [ ] Python: Add `verbose` output to `sync_metadata()`
+- [ ] Stata: Add display messages to sync helper
+
+---
+
+## 4. Metadata Age Check and Warnings
+
+### Requirements
+- [ ] On each API call, check age of metadata files
+- [ ] Display extraction date of YAML files being used
+- [ ] Warn if metadata is older than 30 days
+- [ ] Recommend update command
+
+### Example Warning
+```
+Note: Using metadata from 2025-11-01 (34 days old)
+Warning: Metadata is older than 30 days. Consider updating:
+  R:      unicefData::sync_metadata()
+  Python: unicef_api.sync_metadata()
+  Stata:  unicefdata_sync
+```
+
+### Tasks
+- [ ] R: Add age check to `get_unicef()` 
+- [ ] Python: Add age check to `get_unicef()`
+- [ ] Stata: Add age check to `unicefdata`
+- [ ] Create consistent warning message format
+
+---
+
+## 5. Sync Functions per Language
+
+### R Implementation
+```r
+# R/metadata.R
+sync_metadata <- function(output_dir = NULL, verbose = TRUE) {
+
+  # ... implementation
+}
+```
+
+**Tasks:**
+- [ ] Update function signature
+- [ ] Add watermark to YAML output
+- [ ] Add verbose summary messages
+- [ ] Save to shared `metadata/current/`
+
+### Python Implementation
+```python
+# python/unicef_api/metadata_sync.py
+def sync_metadata(output_dir: Optional[Path] = None, verbose: bool = True) -> dict:
+    # ... implementation
+```
+
+**Tasks:**
+- [ ] Update function signature
+- [ ] Add watermark to YAML output
+- [ ] Add verbose summary messages
+- [ ] Save to shared `metadata/current/`
+
+### Stata Implementation
+```stata
+* stata/src/_unicef_sync_metadata.ado
+program define unicefdata_sync
+    * ... implementation
+end
+```
+
+**Tasks:**
+- [ ] Create new `unicefdata_sync.ado` command
+- [ ] Use `yaml write` to create files with watermark
+- [ ] Add display summary messages
+- [ ] Save to `stata/metadata/`
+
+---
+
+## 6. Implementation Priority
+
+### Phase 1: Core Infrastructure (High Priority)
+1. [ ] Define standard YAML header format (shared spec)
+2. [ ] Update Python `sync_metadata()` with watermark and summary
+3. [ ] Update R `sync_metadata()` with watermark and summary
+4. [ ] Create Stata `unicefdata_sync` command
+
+### Phase 2: Age Checking (Medium Priority)
+5. [ ] Add metadata age check to Python `get_unicef()`
+6. [ ] Add metadata age check to R `get_unicef()`
+7. [ ] Add metadata age check to Stata `unicefdata`
+8. [ ] Create consistent warning message format
+
+### Phase 3: Centralization (Lower Priority)
+9. [ ] Set up shared `metadata/current/` structure
+10. [ ] Create cross-platform sync script
+11. [ ] Update all language implementations to use shared location
+12. [ ] Add CI/CD to auto-sync metadata weekly
+
+---
+
+## 7. Testing Checklist
+
+- [ ] R: Test `sync_metadata()` generates correct watermark
+- [ ] R: Test `get_unicef()` shows age warning for old metadata
+- [ ] Python: Test `sync_metadata()` generates correct watermark
+- [ ] Python: Test `get_unicef()` shows age warning for old metadata
+- [ ] Stata: Test `unicefdata_sync` generates correct watermark
+- [ ] Stata: Test `unicefdata` shows age warning for old metadata
+- [ ] Cross-platform: Verify YAML files are interchangeable
+
+---
+
+## 8. Documentation Updates
+
+- [ ] R: Update `man/sync_metadata.Rd`
+- [ ] Python: Update docstrings and README
+- [ ] Stata: Update `unicefdata.sthlp` with metadata section
+- [ ] Main README: Add metadata management section
+
+---
+
+## Notes
+
+- Stata implementation depends on `yaml.ado` package (v1.3.0+)
+- Consider using `ruamel.yaml` in Python to preserve comments/formatting
+- R `yaml` package handles comments via `handlers` argument
+- All timestamps should be UTC in ISO 8601 format
+
+---
+
+## Related Files
+
+| Language | Sync Function | Data Function | Metadata Location |
+|----------|---------------|---------------|-------------------|
+| R | `R/metadata.R` | `R/get_unicef.R` | `inst/extdata/metadata/` |
+| Python | `python/unicef_api/metadata_sync.py` | `python/unicef_api/api.py` | `python/unicef_api/data/` |
+| Stata | `stata/src/unicefdata_sync.ado` | `stata/src/u/unicefdata.ado` | `stata/metadata/` |
+

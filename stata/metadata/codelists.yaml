@@ -1,0 +1,73 @@
+# UNICEF Codelists for Stata unicefdata command
+# Synced from: metadata/current/codelists.yaml
+# Last updated: 2025-12-04
+#
+# This file contains valid codes for SDMX dimensions.
+# Used by unicefdata.ado for input validation.
+
+metadata_version: "1.0"
+synced_at: "2025-12-04T00:00:00Z"
+source: "unicefData/metadata/current/codelists.yaml"
+
+codelists:
+  # Sex codes
+  CL_SEX:
+    _T: Total
+    F: Female
+    M: Male
+
+  # Common age groups (subset of full CL_AGE)
+  CL_AGE:
+    _T: Total
+    Y0T4: Under 5 years old
+    Y0T14: Under 15 years old
+    Y0T17: Under 18 years old
+    Y5T14: 5 to 14 years old
+    Y5T17: 5 to 17 years old
+    Y10T14: 10 to 14 years old
+    Y10T19: 10 to 19 years old
+    Y15T19: 15 to 19 years old
+    Y15T24: 15 to 24 years old
+    Y15T49: 15 to 49 years old
+    Y20T24: 20 to 24 years old
+
+  # Wealth quintiles
+  CL_WEALTH:
+    _T: Total
+    Q1: Poorest
+    Q2: Second
+    Q3: Middle
+    Q4: Fourth
+    Q5: Richest
+
+  # Residence
+  CL_RESIDENCE:
+    _T: Total
+    U: Urban
+    R: Rural
+
+  # Maternal education
+  CL_MATERNAL_EDU:
+    _T: Total
+    NONE: None
+    PRIMARY: Primary
+    SECONDARY: Secondary
+    HIGHER: Higher
+
+  # Common units of measure (subset)
+  CL_UNIT:
+    PCNT: Percentage
+    PER1000: Per 1,000
+    PER100000: Per 100,000
+    PER1000LIVEBIRTHS: Per 1,000 live births
+    PER100KLIVEBIRTHS: Per 100,000 live births
+    NUMBER: Number
+    RATIO: Ratio
+    YR: Years
+
+  # Observation status
+  CL_OBS_STATUS:
+    A: Normal value
+    E: Estimated value
+    M: Missing value
+    P: Provisional value

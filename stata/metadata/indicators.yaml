@@ -1,0 +1,246 @@
+# UNICEF Indicator Metadata for Stata unicefdata command
+# Synced from: metadata/current/indicators.yaml
+# Last updated: 2025-12-04
+# 
+# This file maps indicator codes to their dataflows, names, and SDG targets.
+# Used by unicefdata.ado for auto-detection of dataflows.
+
+metadata_version: "1.0"
+synced_at: "2025-12-04T00:00:00Z"
+source: "unicefData/metadata/current/indicators.yaml"
+
+indicators:
+  # Child Mortality Estimates (CME)
+  CME_MRM0:
+    dataflow: CME
+    name: Neonatal mortality rate
+    sdg_target: "3.2.2"
+    unit: Deaths per 1,000 live births
+  CME_MRY0T4:
+    dataflow: CME
+    name: Under-5 mortality rate
+    sdg_target: "3.2.1"
+    unit: Deaths per 1,000 live births
+  CME_MRY0:
+    dataflow: CME
+    name: Infant mortality rate
+    sdg_target: "3.2.1"
+    unit: Deaths per 1,000 live births
+
+  # Nutrition (NUTRITION)
+  NT_ANT_HAZ_NE2_MOD:
+    dataflow: NUTRITION
+    name: Stunting prevalence (moderate + severe)
+    sdg_target: "2.2.1"
+    unit: Percentage
+  NT_ANT_WHZ_NE2:
+    dataflow: NUTRITION
+    name: Wasting prevalence
+    sdg_target: "2.2.2"
+    unit: Percentage
+  NT_ANT_WHZ_PO2_MOD:
+    dataflow: NUTRITION
+    name: Overweight prevalence (moderate + severe)
+    sdg_target: "2.2.2"
+    unit: Percentage
+  NT_BF_EXBF:
+    dataflow: NUTRITION
+    name: Exclusive breastfeeding
+    sdg_target: "2.2.1"
+    unit: Percentage
+  NT_BW_LBW:
+    dataflow: NUTRITION
+    name: Low birthweight
+    sdg_target: "2.2.1"
+    unit: Percentage
+
+  # Education (EDUCATION_UIS_SDG)
+  ED_ANAR_L02:
+    dataflow: EDUCATION_UIS_SDG
+    name: Adjusted net attendance rate, primary education
+    sdg_target: "4.1.1"
+    unit: Percentage
+  ED_CR_L1_UIS_MOD:
+    dataflow: EDUCATION_UIS_SDG
+    name: Completion rate, primary education
+    sdg_target: "4.1.1"
+    unit: Percentage
+  ED_CR_L2_UIS_MOD:
+    dataflow: EDUCATION_UIS_SDG
+    name: Completion rate, lower secondary education
+    sdg_target: "4.1.1"
+    unit: Percentage
+  ED_READ_L2:
+    dataflow: EDUCATION_UIS_SDG
+    name: Reading proficiency, end of lower secondary
+    sdg_target: "4.1.1"
+    unit: Percentage
+  ED_MAT_L2:
+    dataflow: EDUCATION_UIS_SDG
+    name: Mathematics proficiency, end of lower secondary
+    sdg_target: "4.1.1"
+    unit: Percentage
+
+  # Immunization (IMMUNISATION)
+  IM_DTP3:
+    dataflow: IMMUNISATION
+    name: DTP3 immunization coverage
+    sdg_target: "3.b.1"
+    unit: Percentage
+  IM_MCV1:
+    dataflow: IMMUNISATION
+    name: Measles immunization coverage (MCV1)
+    sdg_target: "3.b.1"
+    unit: Percentage
+  IM_MCV2:
+    dataflow: IMMUNISATION
+    name: Measles immunization coverage (MCV2)
+    sdg_target: "3.b.1"
+    unit: Percentage
+  IM_BCG:
+    dataflow: IMMUNISATION
+    name: BCG immunization coverage
+    sdg_target: "3.b.1"
+    unit: Percentage
+  IM_POL3:
+    dataflow: IMMUNISATION
+    name: Polio immunization coverage
+    sdg_target: "3.b.1"
+    unit: Percentage
+
+  # HIV/AIDS (HIV_AIDS)
+  HVA_EPI_INF_RT:
+    dataflow: HIV_AIDS
+    name: HIV incidence rate
+    sdg_target: "3.3.1"
+    unit: Per 1,000 uninfected population
+  HVA_PMTCT_MTCT:
+    dataflow: HIV_AIDS
+    name: PMTCT coverage
+    sdg_target: "3.3.1"
+    unit: Percentage
+
+  # WASH (WASH_HOUSEHOLDS)
+  WS_PPL_W-SM:
+    dataflow: WASH_HOUSEHOLDS
+    name: Population using safely managed drinking water services
+    sdg_target: "6.1.1"
+    unit: Percentage
+  WS_PPL_W-B:
+    dataflow: WASH_HOUSEHOLDS
+    name: Population using basic drinking water services
+    sdg_target: "6.1.1"
+    unit: Percentage
+  WS_PPL_S-SM:
+    dataflow: WASH_HOUSEHOLDS
+    name: Population using safely managed sanitation services
+    sdg_target: "6.2.1"
+    unit: Percentage
+  WS_PPL_S-B:
+    dataflow: WASH_HOUSEHOLDS
+    name: Population using basic sanitation services
+    sdg_target: "6.2.1"
+    unit: Percentage
+  WS_PPL_H-B:
+    dataflow: WASH_HOUSEHOLDS
+    name: Population with basic handwashing facilities
+    sdg_target: "6.2.1"
+    unit: Percentage
+
+  # Maternal, Newborn, Child Health (MNCH)
+  MNCH_MMR:
+    dataflow: MNCH
+    name: Maternal mortality ratio
+    sdg_target: "3.1.1"
+    unit: Deaths per 100,000 live births
+  MNCH_SAB:
+    dataflow: MNCH
+    name: Skilled attendance at birth
+    sdg_target: "3.1.2"
+    unit: Percentage
+  MNCH_ABR:
+    dataflow: MNCH
+    name: Adolescent birth rate
+    sdg_target: "3.7.2"
+    unit: Births per 1,000 women aged 15-19
+  MNCH_ANC4:
+    dataflow: MNCH
+    name: Antenatal care (4+ visits)
+    sdg_target: "3.1.2"
+    unit: Percentage
+
+  # Child Protection (PT)
+  PT_CHLD_Y0T4_REG:
+    dataflow: PT
+    name: Birth registration (children under 5)
+    sdg_target: "16.9.1"
+    unit: Percentage
+  PT_CHLD_1-14_PS-PSY-V_CGVR:
+    dataflow: PT
+    name: Violent discipline (children 1-14)
+    sdg_target: "16.2.1"
+    unit: Percentage
+  PT_CHLD_5-17_LBR_EC:
+    dataflow: PT
+    name: Child labour
+    sdg_target: "8.7.1"
+    unit: Percentage
+
+  # Child Marriage (PT_CM)
+  PT_F_20-24_MRD_U18_TND:
+    dataflow: PT_CM
+    name: Child marriage before age 18 (women 20-24)
+    sdg_target: "5.3.1"
+    unit: Percentage
+  PT_F_20-24_MRD_U15_TND:
+    dataflow: PT_CM
+    name: Child marriage before age 15 (women 20-24)
+    sdg_target: "5.3.1"
+    unit: Percentage
+
+  # Female Genital Mutilation (PT_FGM)
+  PT_F_15-49_FGM:
+    dataflow: PT_FGM
+    name: Female genital mutilation prevalence (women 15-49)
+    sdg_target: "5.3.2"
+    unit: Percentage
+
+  # Early Childhood Development (ECD)
+  ECD_CHLD_LMPSL:
+    dataflow: ECD
+    name: Children developmentally on track
+    sdg_target: "4.2.1"
+    unit: Percentage
+  ECD_CHLD_36-59M_BOOKS:
+    dataflow: ECD
+    name: Children with 3+ books at home
+    sdg_target: "4.2.1"
+    unit: Percentage
+
+  # Child Poverty (CHLD_PVTY)
+  PV_CHLD_DPRV-S-L1-HS:
+    dataflow: CHLD_PVTY
+    name: Child multidimensional poverty
+    sdg_target: "1.2.1"
+    unit: Percentage
+  PV_CHLD_DPRV-MN:
+    dataflow: CHLD_PVTY
+    name: Monetary child poverty
+    sdg_target: "1.2.1"
+    unit: Percentage
+
+# Prefix-to-dataflow fallback mappings
+# Used when indicator is not found in the list above
+prefix_mappings:
+  CME: CME
+  NT: NUTRITION
+  IM: IMMUNISATION
+  ED: EDUCATION
+  WS: WASH_HOUSEHOLDS
+  HVA: HIV_AIDS
+  MNCH: MNCH
+  PT: PT
+  ECD: ECD
+  PV: CHLD_PVTY
+  CCRI: CCRI
+  SDG: CHILD_RELATED_SDG
