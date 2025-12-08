@@ -213,15 +213,15 @@ def write_yaml(
             f.write(f'  {item_id}:\n')
             f.write(f'    code: {item_id}\n')
             
-            # Name field
+            # Name field - always quote to handle colons and special chars
             name = item.get('name', '')
             if name:
-                f.write(f'    name: {name}\n')
+                f.write(f"    name: '{name}'\n")
             
-            # Description field
+            # Description field - always quote
             desc = item.get('description', '')
             if desc:
-                f.write(f"    description: {desc}\n")
+                f.write(f"    description: '{desc}'\n")
             else:
                 f.write("    description: ''\n")
             
