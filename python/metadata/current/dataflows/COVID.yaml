@@ -2,7 +2,7 @@ id: COVID
 name: COVID-19 Baseline Indicators April 2020
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:42.947384+00:00'
+synced_at: '2025-12-08T11:15:30.103159+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

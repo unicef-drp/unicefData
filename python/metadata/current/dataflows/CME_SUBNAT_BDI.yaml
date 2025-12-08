@@ -2,7 +2,7 @@ id: CME_SUBNAT_BDI
 name: CME Burundi
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:02.766821+00:00'
+synced_at: '2025-12-08T11:13:05.627636+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

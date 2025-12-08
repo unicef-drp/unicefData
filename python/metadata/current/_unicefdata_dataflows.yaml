@@ -1,7 +1,7 @@
 _metadata:
   platform: python
   version: 2.0.0
-  synced_at: '2025-12-07T12:47:43.994347Z'
+  synced_at: '2025-12-08T10:49:44.212960Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF?references=none&detail=full
   agency: UNICEF
   content_type: dataflows
@@ -15,7 +15,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993674Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CCRI:
     id: CCRI
     name: Children’s Climate and Environment Risk Index
@@ -24,7 +24,7 @@ dataflows:
     description: Children’s Climate and Environment Risk Index (CCRI)
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993693Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CHILD_RELATED_SDG:
     id: CHILD_RELATED_SDG
     name: Child-related SDGs 2020
@@ -33,7 +33,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993704Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CHLD_PVTY:
     id: CHLD_PVTY
     name: Child Poverty
@@ -42,7 +42,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993712Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CME:
     id: CME
     name: Child Mortality
@@ -51,7 +51,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993720Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CME_CAUSE_OF_DEATH:
     id: CME_CAUSE_OF_DEATH
     name: CME Cause of death
@@ -60,7 +60,7 @@ dataflows:
     description: CME Causes of death. Data source is JHU.
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993728Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CME_COUNTRY_PROFILES_DATA:
     id: CME_COUNTRY_PROFILES_DATA
     name: CME Country profiles data
@@ -69,7 +69,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993736Z'
+    last_updated: '2025-12-08T10:49:44.210972Z'
   CME_DF_2021_WQ:
     id: CME_DF_2021_WQ
     name: IGME Child Mortality Estimates wq
@@ -78,7 +78,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993743Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNATIONAL:
     id: CME_SUBNATIONAL
     name: CME Subnational Data
@@ -87,7 +87,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993750Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_AGO:
     id: CME_SUBNAT_AGO
     name: CME Angola
@@ -96,7 +96,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993757Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_BDI:
     id: CME_SUBNAT_BDI
     name: CME Burundi
@@ -105,7 +105,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993764Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_BEN:
     id: CME_SUBNAT_BEN
     name: CME Benin
@@ -114,7 +114,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993771Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_BGD:
     id: CME_SUBNAT_BGD
     name: CME Bangladesh
@@ -123,7 +123,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993779Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_CMR:
     id: CME_SUBNAT_CMR
     name: CME Cameroon
@@ -132,7 +132,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993786Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_ETH:
     id: CME_SUBNAT_ETH
     name: CME Ethiopia
@@ -141,7 +141,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993792Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_GHA:
     id: CME_SUBNAT_GHA
     name: CME Ghana
@@ -150,7 +150,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993799Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_GIN:
     id: CME_SUBNAT_GIN
     name: CME Guinea
@@ -159,7 +159,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993806Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_HTI:
     id: CME_SUBNAT_HTI
     name: CME Haiti
@@ -168,7 +168,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993813Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_KEN:
     id: CME_SUBNAT_KEN
     name: CME Kenya
@@ -177,7 +177,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993820Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_LAO:
     id: CME_SUBNAT_LAO
     name: CME Lao
@@ -186,7 +186,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993827Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_LBR:
     id: CME_SUBNAT_LBR
     name: CME Liberia
@@ -195,7 +195,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993834Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_LSO:
     id: CME_SUBNAT_LSO
     name: CME Lesotho
@@ -204,7 +204,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993841Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_MDG:
     id: CME_SUBNAT_MDG
     name: CME Madagascar
@@ -213,7 +213,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993848Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_MLI:
     id: CME_SUBNAT_MLI
     name: CME Mali
@@ -222,7 +222,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993854Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_MMR:
     id: CME_SUBNAT_MMR
     name: CME Myanmar
@@ -231,7 +231,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993861Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_MRT:
     id: CME_SUBNAT_MRT
     name: CME Mauritania
@@ -240,7 +240,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993868Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_MWI:
     id: CME_SUBNAT_MWI
     name: CME Malawi
@@ -249,7 +249,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993875Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_NAM:
     id: CME_SUBNAT_NAM
     name: CME Namibia
@@ -258,7 +258,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993882Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_NGA:
     id: CME_SUBNAT_NGA
     name: CME Nigeria
@@ -267,7 +267,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993889Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_NPL:
     id: CME_SUBNAT_NPL
     name: CME Nepal
@@ -276,7 +276,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993895Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_PAK:
     id: CME_SUBNAT_PAK
     name: CME Pakistan
@@ -285,7 +285,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993902Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_RWA:
     id: CME_SUBNAT_RWA
     name: CME Rwanda
@@ -294,7 +294,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993908Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_SEN:
     id: CME_SUBNAT_SEN
     name: CME Senegal
@@ -303,7 +303,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993915Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_SLE:
     id: CME_SUBNAT_SLE
     name: CME Sierra Leone
@@ -312,7 +312,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993922Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_TCD:
     id: CME_SUBNAT_TCD
     name: CME Chad
@@ -321,7 +321,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993928Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_TGO:
     id: CME_SUBNAT_TGO
     name: CME Togo
@@ -330,7 +330,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993937Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_TZA:
     id: CME_SUBNAT_TZA
     name: CME Tanzania
@@ -339,7 +339,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993944Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_UGA:
     id: CME_SUBNAT_UGA
     name: CME Uganda
@@ -348,7 +348,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993950Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_ZMB:
     id: CME_SUBNAT_ZMB
     name: CME Zambia
@@ -357,7 +357,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993957Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   CME_SUBNAT_ZWE:
     id: CME_SUBNAT_ZWE
     name: CME Zimbabwe
@@ -366,7 +366,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993964Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   COVID:
     id: COVID
     name: COVID-19 Baseline Indicators April 2020
@@ -375,7 +375,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993970Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   COVID_CASES:
     id: COVID_CASES
     name: Covid cases and deaths
@@ -384,7 +384,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993977Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   DM:
     id: DM
     name: Demography
@@ -393,7 +393,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993984Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   DM_PROJECTIONS:
     id: DM_PROJECTIONS
     name: Projection Demography
@@ -402,7 +402,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993991Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   ECD:
     id: ECD
     name: Early Childhood Development
@@ -411,7 +411,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.993998Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   ECONOMIC:
     id: ECONOMIC
     name: Economic
@@ -420,7 +420,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994004Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   EDUCATION:
     id: EDUCATION
     name: EDU - Access and Completion (HH Survey Data)
@@ -429,7 +429,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994011Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   EDUCATION_FLS:
     id: EDUCATION_FLS
     name: EDU - Learning and Skills
@@ -438,7 +438,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994017Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   EDUCATION_UIS_SDG:
     id: EDUCATION_UIS_SDG
     name: EDU - SDG Indicators (UIS Database)
@@ -447,7 +447,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994023Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   FUNCTIONAL_DIFF:
     id: FUNCTIONAL_DIFF
     name: Functional difficulties
@@ -456,7 +456,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994030Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   GENDER:
     id: GENDER
     name: Gender
@@ -465,7 +465,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994036Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   GLOBAL_DATAFLOW:
     id: GLOBAL_DATAFLOW
     name: Cross-sector indicators
@@ -474,7 +474,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994043Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   HIV_AIDS:
     id: HIV_AIDS
     name: HIV/AIDS
@@ -483,7 +483,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994050Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   IMMUNISATION:
     id: IMMUNISATION
     name: Immunisation
@@ -492,7 +492,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994056Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   MG:
     id: MG
     name: Migration
@@ -501,7 +501,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994063Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   MNCH:
     id: MNCH
     name: Maternal, child and newborn health
@@ -510,7 +510,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994069Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   NUTRITION:
     id: NUTRITION
     name: Nutrition
@@ -519,7 +519,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994076Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   PT:
     id: PT
     name: Child Protection
@@ -528,7 +528,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994083Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   PT_CM:
     id: PT_CM
     name: Child Marriage
@@ -537,7 +537,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994089Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   PT_CONFLICT:
     id: PT_CONFLICT
     name: Children Exposed to Conflict
@@ -546,7 +546,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994096Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   PT_FGM:
     id: PT_FGM
     name: Child Protection FGM
@@ -555,7 +555,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994103Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   SDG_PROG_ASSESSMENT:
     id: SDG_PROG_ASSESSMENT
     name: SDG Progress assessment
@@ -564,7 +564,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994109Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   SOC_PROTECTION:
     id: SOC_PROTECTION
     name: Social protection
@@ -573,7 +573,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994116Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WASH_HEALTHCARE_FACILITY:
     id: WASH_HEALTHCARE_FACILITY
     name: WASH Healthcare Facility
@@ -582,7 +582,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994124Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WASH_HOUSEHOLDS:
     id: WASH_HOUSEHOLDS
     name: WASH Households
@@ -591,7 +591,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994132Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WASH_HOUSEHOLD_MH:
     id: WASH_HOUSEHOLD_MH
     name: WASH Household Menstrual Health
@@ -600,7 +600,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994139Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WASH_HOUSEHOLD_SUBNAT:
     id: WASH_HOUSEHOLD_SUBNAT
     name: WASH Household subnational
@@ -609,7 +609,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994145Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WASH_SCHOOLS:
     id: WASH_SCHOOLS
     name: WASH Schools
@@ -618,7 +618,7 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994152Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'
   WT:
     id: WT
     name: Transition to Work
@@ -627,4 +627,4 @@ dataflows:
     description: null
     dimensions: null
     indicators: null
-    last_updated: '2025-12-07T12:47:43.994158Z'
+    last_updated: '2025-12-08T10:49:44.211982Z'

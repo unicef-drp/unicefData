@@ -2,7 +2,7 @@ id: CAUSE_OF_DEATH
 name: Cause of death
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:47:45.974721+00:00'
+synced_at: '2025-12-08T11:11:59.410347+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

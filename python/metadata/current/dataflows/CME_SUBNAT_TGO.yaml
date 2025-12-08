@@ -2,7 +2,7 @@ id: CME_SUBNAT_TGO
 name: CME Togo
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:36.332694+00:00'
+synced_at: '2025-12-08T11:15:01.430659+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

@@ -2,7 +2,7 @@ id: COVID_CASES
 name: Covid cases and deaths
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:44.335768+00:00'
+synced_at: '2025-12-08T11:15:35.084549+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

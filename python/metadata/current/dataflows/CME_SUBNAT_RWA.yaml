@@ -2,7 +2,7 @@ id: CME_SUBNAT_RWA
 name: CME Rwanda
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:31.221295+00:00'
+synced_at: '2025-12-08T11:14:40.644007+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

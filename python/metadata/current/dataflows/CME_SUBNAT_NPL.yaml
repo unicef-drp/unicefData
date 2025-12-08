@@ -2,7 +2,7 @@ id: CME_SUBNAT_NPL
 name: CME Nepal
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:48:28.586025+00:00'
+synced_at: '2025-12-08T11:14:30.350297+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

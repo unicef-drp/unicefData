@@ -2,7 +2,7 @@ id: CHILD_RELATED_SDG
 name: Child-related SDGs 2020
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-07T12:47:48.629697+00:00'
+synced_at: '2025-12-08T11:12:09.637603+00:00'
 dimensions:
 - id: REF_AREA
   position: 1
