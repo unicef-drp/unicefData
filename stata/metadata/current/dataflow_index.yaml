@@ -1,6 +1,351 @@
 metadata_version: '1.0'
-synced_at: '2025-12-07T09:35:14Z'
+synced_at: '2025-12-08T10:53:00Z'
 source: SDMX API Data Structure Definitions
 agency: UNICEF
 total_dataflows: 69
 dataflows:
+- id: CAUSE_OF_DEATH
+  name: 'Cause of death'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 14
+- id: CCRI
+  name: 'Children’s Climate and Environment Risk Index'
+  version: '1.0'
+  dimensions_count: 2
+  attributes_count: 5
+- id: CHILD_RELATED_SDG
+  name: 'Child-related SDGs 2020'
+  version: '1.0'
+  dimensions_count: 11
+  attributes_count: 9
+- id: CHLD_PVTY
+  name: 'Child Poverty'
+  version: '1.0'
+  dimensions_count: 4
+  attributes_count: 5
+- id: CME
+  name: 'Child Mortality'
+  version: '1.0'
+  dimensions_count: 4
+  attributes_count: 7
+- id: CME_CAUSE_OF_DEATH
+  name: 'CME Cause of death'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 3
+- id: CME_COUNTRY_PROFILES_DATA
+  name: 'CME Country profiles data'
+  version: '1.0'
+  dimensions_count: 2
+  attributes_count: 4
+- id: CME_DF_2021_WQ
+  name: 'IGME Child Mortality Estimates wq'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 21
+- id: CME_SUBNATIONAL
+  name: 'CME Subnational Data'
+  version: '1.0'
+  dimensions_count: 8
+  attributes_count: 21
+- id: CME_SUBNAT_AGO
+  name: 'CME Angola'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_BDI
+  name: 'CME Burundi'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_BEN
+  name: 'CME Benin'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_BGD
+  name: 'CME Bangladesh'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_CMR
+  name: 'CME Cameroon'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_ETH
+  name: 'CME Ethiopia'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_GHA
+  name: 'CME Ghana'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_GIN
+  name: 'CME Guinea'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_HTI
+  name: 'CME Haiti'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_KEN
+  name: 'CME Kenya'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_LAO
+  name: 'CME Lao'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_LBR
+  name: 'CME Liberia'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_LSO
+  name: 'CME Lesotho'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_MDG
+  name: 'CME Madagascar'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_MLI
+  name: 'CME Mali'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_MMR
+  name: 'CME Myanmar'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_MRT
+  name: 'CME Mauritania'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_MWI
+  name: 'CME Malawi'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_NAM
+  name: 'CME Namibia'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_NGA
+  name: 'CME Nigeria'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_NPL
+  name: 'CME Nepal'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_PAK
+  name: 'CME Pakistan'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_RWA
+  name: 'CME Rwanda'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_SEN
+  name: 'CME Senegal'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_SLE
+  name: 'CME Sierra Leone'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_TCD
+  name: 'CME Chad'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_TGO
+  name: 'CME Togo'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_TZA
+  name: 'CME Tanzania'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_UGA
+  name: 'CME Uganda'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_ZMB
+  name: 'CME Zambia'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: CME_SUBNAT_ZWE
+  name: 'CME Zimbabwe'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 22
+- id: COVID
+  name: 'COVID-19 Baseline Indicators April 2020'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 16
+- id: COVID_CASES
+  name: 'Covid cases and deaths'
+  version: '1.0'
+  dimensions_count: 4
+  attributes_count: 6
+- id: DM
+  name: 'Demography'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 11
+- id: DM_PROJECTIONS
+  name: 'Projection Demography'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 11
+- id: ECD
+  name: 'Early Childhood Development'
+  version: '1.0'
+  dimensions_count: 12
+  attributes_count: 15
+- id: ECONOMIC
+  name: 'Economic'
+  version: '1.0'
+  dimensions_count: 2
+  attributes_count: 10
+- id: EDUCATION
+  name: 'EDU - Access and Completion (HH Survey Data)'
+  version: '1.0'
+  dimensions_count: 7
+  attributes_count: 10
+- id: EDUCATION_FLS
+  name: 'EDU - Learning and Skills'
+  version: '1.0'
+  dimensions_count: 3
+  attributes_count: 3
+- id: EDUCATION_UIS_SDG
+  name: 'EDU - SDG Indicators (UIS Database)'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 3
+- id: FUNCTIONAL_DIFF
+  name: 'Functional difficulties'
+  version: '1.0'
+  dimensions_count: 12
+  attributes_count: 12
+- id: GENDER
+  name: 'Gender'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 10
+- id: GLOBAL_DATAFLOW
+  name: 'Cross-sector indicators'
+  version: '1.0'
+  dimensions_count: 3
+  attributes_count: 16
+- id: HIV_AIDS
+  name: 'HIV/AIDS'
+  version: '1.0'
+  dimensions_count: 7
+  attributes_count: 15
+- id: IMMUNISATION
+  name: 'Immunisation'
+  version: '1.0'
+  dimensions_count: 4
+  attributes_count: 12
+- id: MG
+  name: 'Migration'
+  version: '1.0'
+  dimensions_count: 4
+  attributes_count: 11
+- id: MNCH
+  name: 'Maternal, child and newborn health'
+  version: '1.0'
+  dimensions_count: 9
+  attributes_count: 16
+- id: NUTRITION
+  name: 'Nutrition'
+  version: '1.0'
+  dimensions_count: 8
+  attributes_count: 21
+- id: PT
+  name: 'Child Protection'
+  version: '1.0'
+  dimensions_count: 8
+  attributes_count: 21
+- id: PT_CM
+  name: 'Child Marriage'
+  version: '1.0'
+  dimensions_count: 12
+  attributes_count: 20
+- id: PT_CONFLICT
+  name: 'Children Exposed to Conflict'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 6
+- id: PT_FGM
+  name: 'Child Protection FGM'
+  version: '1.0'
+  dimensions_count: 13
+  attributes_count: 19
+- id: SDG_PROG_ASSESSMENT
+  name: 'SDG Progress assessment'
+  version: '1.1'
+  dimensions_count: 2
+  attributes_count: 9
+- id: SOC_PROTECTION
+  name: 'Social protection'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 9
+- id: WASH_HEALTHCARE_FACILITY
+  name: 'WASH Healthcare Facility'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 11
+- id: WASH_HOUSEHOLDS
+  name: 'WASH Households'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 11
+- id: WASH_HOUSEHOLD_MH
+  name: 'WASH Household Menstrual Health'
+  version: '1.0'
+  dimensions_count: 6
+  attributes_count: 10
+- id: WASH_HOUSEHOLD_SUBNAT
+  name: 'WASH Household subnational'
+  version: '1.0'
+  dimensions_count: 8
+  attributes_count: 14
+- id: WASH_SCHOOLS
+  name: 'WASH Schools'
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 11
+- id: WT
+  name: 'Transition to Work'
+  version: '1.0'
+  dimensions_count: 8
+  attributes_count: 21

@@ -1,0 +1,40 @@
+id: WASH_HEALTHCARE_FACILITY
+name: 'WASH Healthcare Facility'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T12:36:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: SERVICE_TYPE
+  position: 3
+  codelist: CL_WASH_SERVICE_TYPE
+- id: HCF_TYPE
+  position: 4
+  codelist: CL_HEALTHCARE_FACILITY_TYPE
+- id: RESIDENCE
+  position: 5
+  codelist: CL_RESIDENCE
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: SERIES_FOOTNOTE
+- id: SOURCE_LINK
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+- id: DATA_SOURCE
+- id: TIME_PERIOD_METHOD
+- id: COVERAGE_TIME
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+- id: OBS_FOOTNOTE

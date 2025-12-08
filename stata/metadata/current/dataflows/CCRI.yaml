@@ -1,0 +1,23 @@
+id: CCRI
+name: 'Children’s Climate and Environment Risk Index'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T10:53:00Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CCRI_INDICATORS
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_FOOTNOTE
+- id: DATA_SOURCE
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS

@@ -1,0 +1,59 @@
+id: CME_SUBNAT_NPL
+name: 'CME Nepal'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T10:53:00Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_CME_REF_AREA_SUBNAT
+- id: INDICATOR
+  position: 2
+  codelist: CL_INDICATOR_CME
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+- id: WEALTH_QUINTILE
+  position: 4
+  codelist: CL_WEALTH_QUINTILE
+- id: SERIES_NAME
+  position: 5
+  codelist: CL_SERIES_CME
+- id: SERIES_YEAR
+  position: 6
+  codelist: CL_SERIES_YEAR_CME
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: COUNTRY_NOTES
+- id: REGIONAL_GROUP
+  codelist: CL_REGIONAL_GROUPS
+- id: CONNECTION
+- id: DEATH_CATEGORY
+- id: CATEGORY
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS_CME
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: SERIES_CATEGORY
+  codelist: CL_SERIES_CATEGORY_CME
+- id: SERIES_TYPE
+  codelist: CL_SERIES_TYPE_CME
+- id: STD_ERR
+- id: REF_DATE
+- id: AGE_GROUP_OF_WOMEN
+  codelist: CL_AGE
+- id: TIME_SINCE_FIRST_BIRTH
+  codelist: CL_TSFB_CME
+- id: DEFINITION
+- id: INTERVAL
+- id: SERIES_METHOD
+  codelist: CL_METHOD_CME
+- id: LOWER_BOUND
+- id: UPPER_BOUND
+- id: STATUS
+- id: YEAR_TO_ACHIEVE
+- id: MODEL
+  codelist: CL_MODEL
+- id: ADMIN_LEVEL
+  codelist: CL_ADMIN_LEVEL

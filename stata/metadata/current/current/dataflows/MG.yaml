@@ -1,0 +1,37 @@
+id: MG
+name: 'Migration'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T12:36:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+- id: STAT_POP
+  position: 4
+  codelist: CL_STAT_POP
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: DATA_SOURCE
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: SOURCE_LINK
+- id: TIME_PERIOD_METHOD
+- id: COVERAGE_TIME
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+- id: SERIES_FOOTNOTE
+- id: OBS_FOOTNOTE

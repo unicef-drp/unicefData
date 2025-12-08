@@ -1,0 +1,69 @@
+id: ECD
+name: 'Early Childhood Development'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T12:36:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: ECD_DOMAIN
+  position: 3
+  codelist: CL_ECD_DOMAIN
+- id: SEX
+  position: 4
+  codelist: CL_SEX
+- id: AGE
+  position: 5
+  codelist: CL_AGE
+- id: WEALTH_QUINTILE
+  position: 6
+  codelist: CL_WEALTH_QUINTILE
+- id: RESIDENCE
+  position: 7
+  codelist: CL_RESIDENCE
+- id: MOTHER_EDUCATION
+  position: 8
+  codelist: CL_EDU_LEVEL
+- id: FATHER_EDUCATION
+  position: 9
+  codelist: CL_EDU_LEVEL
+- id: EC_EDUC_ATTND
+  position: 10
+  codelist: CL_EC_EDUC_ATTND
+- id: PLAYTHNG_TYPE
+  position: 11
+  codelist: CL_PLAYTHNG_TYPE
+- id: INDQT_SPVN
+  position: 12
+  codelist: CL_INDQT_SPVN
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_D
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_C
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_B
+  codelist: CL_OBS_SOWC_NOTES
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+- id: DATA_SOURCE
+- id: SOURCE_LINK
+- id: TIME_PERIOD_METHOD
+- id: COVERAGE_TIME
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+- id: SERIES_FOOTNOTE
+- id: OBS_FOOTNOTE

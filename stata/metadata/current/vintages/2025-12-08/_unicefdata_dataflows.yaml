@@ -1,0 +1,422 @@
+metadata:
+  version: '2.0.0'
+  source: UNICEF SDMX dataflow
+  url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF/all/latest
+  last_updated: 2025-12-08T12:36:51
+  description: Comprehensive UNICEF dataflows dataflow with metadata (auto-generated)
+  dataflow_count: 69
+dataflows:
+  CAUSE_OF_DEATH:
+    code: CAUSE_OF_DEATH
+    name: 'Cause of death'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CCRI:
+    code: CCRI
+    name: 'Children’s Climate and Environment Risk Index'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CHILD_RELATED_SDG:
+    code: CHILD_RELATED_SDG
+    name: 'Child-related SDGs 2020'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CHLD_PVTY:
+    code: CHLD_PVTY
+    name: 'Child Poverty'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME:
+    code: CME
+    name: 'Child Mortality'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_CAUSE_OF_DEATH:
+    code: CME_CAUSE_OF_DEATH
+    name: 'CME Cause of death'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_COUNTRY_PROFILES_DATA:
+    code: CME_COUNTRY_PROFILES_DATA
+    name: 'CME Country profiles data'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_DF_2021_WQ:
+    code: CME_DF_2021_WQ
+    name: 'IGME Child Mortality Estimates wq'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNATIONAL:
+    code: CME_SUBNATIONAL
+    name: 'CME Subnational Data'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_AGO:
+    code: CME_SUBNAT_AGO
+    name: 'CME Angola'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_BDI:
+    code: CME_SUBNAT_BDI
+    name: 'CME Burundi'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_BEN:
+    code: CME_SUBNAT_BEN
+    name: 'CME Benin'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_BGD:
+    code: CME_SUBNAT_BGD
+    name: 'CME Bangladesh'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_CMR:
+    code: CME_SUBNAT_CMR
+    name: 'CME Cameroon'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_ETH:
+    code: CME_SUBNAT_ETH
+    name: 'CME Ethiopia'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_GHA:
+    code: CME_SUBNAT_GHA
+    name: 'CME Ghana'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_GIN:
+    code: CME_SUBNAT_GIN
+    name: 'CME Guinea'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_HTI:
+    code: CME_SUBNAT_HTI
+    name: 'CME Haiti'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_KEN:
+    code: CME_SUBNAT_KEN
+    name: 'CME Kenya'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_LAO:
+    code: CME_SUBNAT_LAO
+    name: 'CME Lao'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_LBR:
+    code: CME_SUBNAT_LBR
+    name: 'CME Liberia'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_LSO:
+    code: CME_SUBNAT_LSO
+    name: 'CME Lesotho'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_MDG:
+    code: CME_SUBNAT_MDG
+    name: 'CME Madagascar'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_MLI:
+    code: CME_SUBNAT_MLI
+    name: 'CME Mali'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_MMR:
+    code: CME_SUBNAT_MMR
+    name: 'CME Myanmar'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_MRT:
+    code: CME_SUBNAT_MRT
+    name: 'CME Mauritania'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_MWI:
+    code: CME_SUBNAT_MWI
+    name: 'CME Malawi'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_NAM:
+    code: CME_SUBNAT_NAM
+    name: 'CME Namibia'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_NGA:
+    code: CME_SUBNAT_NGA
+    name: 'CME Nigeria'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_NPL:
+    code: CME_SUBNAT_NPL
+    name: 'CME Nepal'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_PAK:
+    code: CME_SUBNAT_PAK
+    name: 'CME Pakistan'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_RWA:
+    code: CME_SUBNAT_RWA
+    name: 'CME Rwanda'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_SEN:
+    code: CME_SUBNAT_SEN
+    name: 'CME Senegal'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_SLE:
+    code: CME_SUBNAT_SLE
+    name: 'CME Sierra Leone'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_TCD:
+    code: CME_SUBNAT_TCD
+    name: 'CME Chad'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_TGO:
+    code: CME_SUBNAT_TGO
+    name: 'CME Togo'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_TZA:
+    code: CME_SUBNAT_TZA
+    name: 'CME Tanzania'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_UGA:
+    code: CME_SUBNAT_UGA
+    name: 'CME Uganda'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_ZMB:
+    code: CME_SUBNAT_ZMB
+    name: 'CME Zambia'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  CME_SUBNAT_ZWE:
+    code: CME_SUBNAT_ZWE
+    name: 'CME Zimbabwe'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  COVID:
+    code: COVID
+    name: 'COVID-19 Baseline Indicators April 2020'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  COVID_CASES:
+    code: COVID_CASES
+    name: 'Covid cases and deaths'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  DM:
+    code: DM
+    name: 'Demography'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  DM_PROJECTIONS:
+    code: DM_PROJECTIONS
+    name: 'Projection Demography'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  ECD:
+    code: ECD
+    name: 'Early Childhood Development'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  ECONOMIC:
+    code: ECONOMIC
+    name: 'Economic'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  EDUCATION:
+    code: EDUCATION
+    name: 'EDU - Access and Completion (HH Survey Data)'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  EDUCATION_FLS:
+    code: EDUCATION_FLS
+    name: 'EDU - Learning and Skills'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  EDUCATION_UIS_SDG:
+    code: EDUCATION_UIS_SDG
+    name: 'EDU - SDG Indicators (UIS Database)'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  FUNCTIONAL_DIFF:
+    code: FUNCTIONAL_DIFF
+    name: 'Functional difficulties'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  GENDER:
+    code: GENDER
+    name: 'Gender'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  GLOBAL_DATAFLOW:
+    code: GLOBAL_DATAFLOW
+    name: 'Cross-sector indicators'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  HIV_AIDS:
+    code: HIV_AIDS
+    name: 'HIV/AIDS'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  IMMUNISATION:
+    code: IMMUNISATION
+    name: 'Immunisation'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  MG:
+    code: MG
+    name: 'Migration'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  MNCH:
+    code: MNCH
+    name: 'Maternal, child and newborn health'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  NUTRITION:
+    code: NUTRITION
+    name: 'Nutrition'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  PT:
+    code: PT
+    name: 'Child Protection'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  PT_CM:
+    code: PT_CM
+    name: 'Child Marriage'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  PT_CONFLICT:
+    code: PT_CONFLICT
+    name: 'Children Exposed to Conflict'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  PT_FGM:
+    code: PT_FGM
+    name: 'Child Protection FGM'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  SDG_PROG_ASSESSMENT:
+    code: SDG_PROG_ASSESSMENT
+    name: 'SDG Progress assessment'
+    description: ''
+    version: '1.1'
+    agency_id: UNICEF
+  SOC_PROTECTION:
+    code: SOC_PROTECTION
+    name: 'Social protection'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WASH_HEALTHCARE_FACILITY:
+    code: WASH_HEALTHCARE_FACILITY
+    name: 'WASH Healthcare Facility'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WASH_HOUSEHOLDS:
+    code: WASH_HOUSEHOLDS
+    name: 'WASH Households'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WASH_HOUSEHOLD_MH:
+    code: WASH_HOUSEHOLD_MH
+    name: 'WASH Household Menstrual Health'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WASH_HOUSEHOLD_SUBNAT:
+    code: WASH_HOUSEHOLD_SUBNAT
+    name: 'WASH Household subnational'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WASH_SCHOOLS:
+    code: WASH_SCHOOLS
+    name: 'WASH Schools'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
+  WT:
+    code: WT
+    name: 'Transition to Work'
+    description: ''
+    version: '1.0'
+    agency_id: UNICEF
