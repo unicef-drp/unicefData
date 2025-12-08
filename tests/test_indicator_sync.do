@@ -8,8 +8,9 @@ discard
 * Change to repo directory first
 cd "C:\GitHub\others\unicefData"
 
-* Start logging
-log using "tests/test_indicator_sync.log", replace text
+* Close any existing log and start fresh
+capture log close _all
+log using "tests/test_indicator_sync.log", replace text name(synctest)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"
@@ -32,4 +33,4 @@ unicefdata_sync, verbose forcepython force
 * Show results
 di "Sync completed"
 
-log close
+log close synctest

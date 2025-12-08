@@ -10,8 +10,9 @@ discard
 * Change to repo directory first
 cd "C:\GitHub\others\unicefData"
 
-* Start logging
-log using "tests/test_indicator_sync_stataonly.log", replace text
+* Close any existing log and start fresh
+capture log close _all
+log using "tests/test_indicator_sync_stataonly.log", replace text name(stataonly)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"
@@ -39,5 +40,5 @@ di "Sync completed (pure Stata parser)"
 di "Note: unicef_indicators_metadata_stataonly.yaml may be missing"
 di "      if macro limits were exceeded. This is expected behavior."
 
-log close
+log close stataonly
 
