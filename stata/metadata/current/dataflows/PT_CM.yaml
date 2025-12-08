@@ -1,0 +1,74 @@
+id: PT_CM
+name: 'Child Marriage'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T10:53:00Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+- id: AGE
+  position: 4
+  codelist: CL_AGE
+- id: EDUCATION_LEVEL
+  position: 5
+  codelist: CL_EDU_LEVEL
+- id: WEALTH_QUINTILE
+  position: 6
+  codelist: CL_WEALTH_QUINTILE
+- id: RESIDENCE
+  position: 7
+  codelist: CL_RESIDENCE
+- id: SCHOOL_ED_LEVEL
+  position: 8
+  codelist: CL_SCHOOL_STATUS
+- id: RELIGIOUS_GROUP
+  position: 9
+  codelist: CL_RELIGIOUS_GROUP
+- id: ETHNIC_GROUP
+  position: 10
+  codelist: CL_ETHNIC_GROUP
+- id: PROJ_SCENARIO
+  position: 11
+  codelist: CL_PROJECTION_SCENARIO
+- id: CH_MARRIAGE_STATUS
+  position: 12
+  codelist: CL_MARITAL_STATUS
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_D
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+- id: M49
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: TIME_PERIOD_METHOD
+  codelist: CL_TIME_PERIOD_METHOD
+- id: COVERAGE_TIME
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+- id: OBS_FOOTNOTE
+- id: UNWGTD_SAMPL_SIZE
+- id: WGTD_SAMPL_SIZE
+- id: LOWER_BOUND
+- id: UPPER_BOUND
+- id: DATA_SOURCE
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: SOWC_FLAG_C
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_B
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOURCE_LINK
+- id: SERIES_FOOTNOTE

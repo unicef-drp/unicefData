@@ -1,0 +1,151 @@
+id: WASH_HOUSEHOLDS
+name: WASH Households
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:12:33Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - PHL
+  - BEN
+  - UNICEF_ROSA
+  - AU_NORTHERN_AFRICA
+  - AU_SOUTHERN_AFRICA
+  - TUV
+  - AUREC_COMESA
+  - AUREC_EAC
+  - ECU
+  - ETH
+  is_exhaustive: no
+  total_values_count: 279
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - WS_PPL_H-B
+  - WS_PPL_H-L
+  - WS_PPL_H-N
+  - WS_PPL_S-ALB
+  - WS_PPL_S-B
+  - WS_PPL_S-DIS
+  - WS_PPL_S-FST
+  - WS_PPL_S-I
+  - WS_PPL_S-L
+  - WS_PPL_S-LAT
+  - WS_PPL_S-OD
+  - WS_PPL_S-SEP
+  - WS_PPL_S-SEW
+  - WS_PPL_S-SM
+  - WS_PPL_S-UI
+  - WS_PPL_S-WWT
+  - WS_PPL_W-ALB
+  - WS_PPL_W-AVA
+  - WS_PPL_W-B
+  - WS_PPL_W-I
+  - WS_PPL_W-L
+  - WS_PPL_W-NP
+  - WS_PPL_W-P
+  - WS_PPL_W-PRE
+  - WS_PPL_W-QUA
+  - WS_PPL_W-SM
+  - WS_PPL_W-SW
+  - WS_PPL_W-UI
+  is_exhaustive: yes
+  total_values_count: 28
+- id: SERVICE_TYPE
+  position: 3
+  codelist: CL_WASH_SERVICE_TYPE
+  values:
+  - SAN
+  - WAT
+  - HYG
+  is_exhaustive: yes
+  total_values_count: 3
+- id: WEALTH_QUINTILE
+  position: 4
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: RESIDENCE
+  position: 5
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  - R
+  - U
+  is_exhaustive: yes
+  total_values_count: 3
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOURCE_LINK
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - WHO/UNICEF Joint Monitoring Programme ()
+  is_exhaustive: yes
+  total_values_count: 1
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: COVERAGE_TIME
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 100.0
+  total_count: 7936
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 5

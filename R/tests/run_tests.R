@@ -8,18 +8,18 @@
 # setwd("D:/jazevedo/GitHub/unicefData")
 
 # Source the main get_unicef function (which loads dependencies)
-if (file.exists("R/unicef_api/get_unicef.R")) {
-  source("R/unicef_api/get_unicef.R")
-  source("R/unicef_api/metadata.R")
-  source("R/unicef_api/flows.R")
+if (file.exists("R/get_unicef.R")) {
+  source("R/get_unicef.R")
+  source("R/metadata.R")
+  source("R/flows.R")
   OUTPUT_DIR <- "R/tests/output"
-} else if (file.exists("../unicef_api/get_unicef.R")) {
-  source("../unicef_api/get_unicef.R")
-  source("../unicef_api/metadata.R")
-  source("../unicef_api/flows.R")
+} else if (file.exists("../get_unicef.R")) {
+  source("../get_unicef.R")
+  source("../metadata.R")
+  source("../flows.R")
   OUTPUT_DIR <- "output"
 } else {
-  stop("Could not find R/unicef_api/get_unicef.R")
+  stop("Could not find R/get_unicef.R - run from unicefData root directory")
 }
 
 if (!dir.exists(OUTPUT_DIR)) {

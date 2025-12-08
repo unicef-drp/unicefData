@@ -1,0 +1,209 @@
+id: HIV_AIDS
+name: HIV/AIDS
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:11:52Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - BFA
+  - CIV
+  - ARM
+  - AU_AFRICA
+  - BDI
+  - BEN
+  - BWA
+  - CAF
+  - CMR
+  - AFG
+  is_exhaustive: no
+  total_values_count: 44
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - HVA_EPI_DTH_ANN
+  - HVA_EPI_DTH_RT
+  - HVA_EPI_INF_ANN
+  - HVA_EPI_INF_RT
+  - HVA_EPI_LHIV
+  - HVA_PED_ART_CVG
+  - HVA_PED_ART_NUM
+  - HVA_PED_EID_CVG
+  - HVA_PED_EID_NUM
+  - HVA_PED_LOST
+  - HVA_PED_LOST_AIDS
+  - HVA_PMTCT_ART_CVG
+  - HVA_PMTCT_ART_NUM
+  - HVA_PMTCT_ARV_CVG
+  - HVA_PMTCT_ARV_NUM
+  - HVA_PMTCT_MTCT
+  - HVA_PMTCT_STAT_CVG
+  - HVA_PMTCT_STAT_NUM
+  - HVA_PREV_KNOW
+  - HVA_PREV_TEST_RES
+  is_exhaustive: yes
+  total_values_count: 20
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+  values:
+  - _T
+  - Y0
+  - Y0T14
+  - Y0T19
+  - Y0T4
+  - Y0T9
+  - Y10T14
+  - Y10T19
+  - Y15T19
+  - Y15T24
+  - Y15T49
+  - Y20T24
+  - Y5T9
+  is_exhaustive: yes
+  total_values_count: 13
+- id: SEX
+  position: 4
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: WEALTH_QUINTILE
+  position: 5
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - Q5
+  is_exhaustive: yes
+  total_values_count: 6
+- id: RESIDENCE
+  position: 6
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  - R
+  - U
+  is_exhaustive: yes
+  total_values_count: 3
+- id: DATA_SOURCE
+  position: 7
+  codelist: ~
+  values:
+  - UNAIDS 2025 estimates
+  - Global AIDS Monitoring
+  - Global AIDS Monitoring and UNAIDS 2025 estimates
+  - Demographic and Health Survey 2021
+  is_exhaustive: yes
+  total_values_count: 4
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - NUMBER
+  - PCNT
+  - RATE_100
+  - RATE_1000
+  - RATE_100000
+  is_exhaustive: yes
+  total_values_count: 5
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - E
+  - RP
+  is_exhaustive: yes
+  total_values_count: 2
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: LOWER_BOUND
+  codelist: ~
+  values_min: 1.0
+  values_max: 5.91e+07
+  total_values_count: 908
+- id: UPPER_BOUND
+  codelist: ~
+  values_min: 1.0
+  values_max: 5.91e+07
+  total_values_count: 908
+- id: N_CASES
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: STD_ERR
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: CONF_INTVAL
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOURCE_LINK
+  codelist: ~
+  values:
+  - http://aidsinfo.unaids.org/
+  is_exhaustive: yes
+  total_values_count: 1
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values:
+  - EOF
+  is_exhaustive: yes
+  total_values_count: 1
+- id: COVERAGE_TIME
+  codelist: ~
+  values:
+  - 2000 to 2024
+  - 2010 to 2024
+  - 2020 to 2024
+  is_exhaustive: yes
+  total_values_count: 3
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values_min: 1.0
+  values_max: 1.0
+  total_values_count: 1
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values:
+  - Data from Global AIDS Monitoring and UNAIDS estimates are published by UNAIDS
+    in collaboration with UNICEF and WHO. More data can be found at http://aidsinfo.unaids.org/.
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 6.13e+07
+  total_count: 1222
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 5

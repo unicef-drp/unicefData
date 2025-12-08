@@ -2,7 +2,7 @@ id: CME_SUBNAT_ZMB
 name: CME Zambia
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-03T04:59:49.913128+00:00'
+synced_at: '2025-12-08T11:15:21.155710+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

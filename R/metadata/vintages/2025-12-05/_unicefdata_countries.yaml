@@ -1,0 +1,462 @@
+_metadata:
+  platform: R
+  version: 2.0.0
+  synced_at: '2025-12-05T10:12:59Z'
+  source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
+  agency: UNICEF
+  content_type: countries
+  total_countries: 453
+countries:
+  ABW: Aruba
+  AFG: Afghanistan
+  AGO: Angola
+  AIA: Anguilla
+  ALB: Albania
+  AND: Andorra
+  ARE: United Arab Emirates
+  ARG: Argentina
+  ARM: Armenia
+  ASM: American Samoa
+  ATG: Antigua and Barbuda
+  AUS: Australia
+  AUT: Austria
+  AZE: Azerbaijan
+  BDI: Burundi
+  BEL: Belgium
+  BEN: Benin
+  BES: Bonaire, Sint Eustatius and Saba
+  BFA: Burkina Faso
+  BGD: Bangladesh
+  BGR: Bulgaria
+  BHR: Bahrain
+  BHS: Bahamas
+  BIH: Bosnia and Herzegovina
+  BLM: Saint Barthélemy
+  BLR: Belarus
+  BLZ: Belize
+  BMU: Bermuda
+  BOL: Bolivia (Plurinational State of)
+  BRA: Brazil
+  BRB: Barbados
+  BRN: Brunei Darussalam
+  BTN: Bhutan
+  BWA: Botswana
+  CAF: Central African Republic
+  CAN: Canada
+  CHE: Switzerland
+  CHI: Channel Islands
+  CHL: Chile
+  CHN: China
+  CIV: Côte d'Ivoire
+  CMR: Cameroon
+  COD: Democratic Republic of the Congo
+  COG: Congo
+  COK: Cook Islands
+  COL: Colombia
+  COM: Comoros
+  CPV: Cabo Verde
+  CRI: Costa Rica
+  CUB: Cuba
+  CUW: Curaçao
+  CYM: Cayman Islands
+  CYP: Cyprus
+  CZE: Czechia
+  DEU: Germany
+  DJI: Djibouti
+  DMA: Dominica
+  DNK: Denmark
+  DOM: Dominican Republic
+  DZA: Algeria
+  ECU: Ecuador
+  EGY: Egypt
+  ERI: Eritrea
+  ESP: Spain
+  EST: Estonia
+  ETH: Ethiopia
+  FAO_GLOBAL: SOFI - Global
+  FAO_LIFDC: Low Income Food Deficit Countries (LIFDCs)
+  FIN: Finland
+  FJI: Fiji
+  FLK: Falkland Islands (Malvinas)
+  FRA: France
+  FRO: Faroe Islands
+  FSM: Micronesia (Federated States of)
+  GAB: Gabon
+  GBR: United Kingdom
+  GEO: Georgia
+  GHA: Ghana
+  GIB: Gibraltar
+  GIN: Guinea
+  GLP: Guadeloupe
+  GMB: Gambia
+  GNB: Guinea-Bissau
+  GNQ: Equatorial Guinea
+  GRC: Greece
+  GRD: Grenada
+  GRL: Greenland
+  GTM: Guatemala
+  GUF: French Guiana
+  GUM: Guam
+  GUY: Guyana
+  HKG: <U+0627><U+0644><U+0635><U+064A><U+0646><U+060C> <U+0645><U+0646><U+0637><U+0642><U+0629> <U+0647><U+0648><U+0646><U+063A> <U+0643><U+0648><U+0646><U+063A> <U+0627><U+0644><U+0625><U+062F><U+0627><U+0631><U+064A><U+0629> <U+0627><U+0644><U+062E><U+0627><U+0635><U+0629>
+  HND: Honduras
+  HRV: Croatia
+  HTI: Haiti
+  HUN: Hungary
+  IDN: Indonesia
+  IMN: Isle of Man
+  IND: India
+  IRL: Ireland
+  IRN: Iran (Islamic Republic of)
+  IRQ: Iraq
+  ISL: Iceland
+  ISR: Israel
+  ITA: Italy
+  JAM: Jamaica
+  JOR: Jordan
+  JPN: Japan
+  KAZ: Kazakhstan
+  KEN: Kenya
+  KGZ: Kyrgyzstan
+  KHM: Cambodia
+  KIR: Kiribati
+  KNA: Saint Kitts and Nevis
+  KOR: Republic of Korea
+  KWT: Kuwait
+  LAO: Lao People's Democratic Republic
+  LBN: Lebanon
+  LBR: Liberia
+  LBY: Libya
+  LCA: Saint Lucia
+  LIE: Liechtenstein
+  LKA: Sri Lanka
+  LSO: Lesotho
+  LTU: Lithuania
+  LUX: Luxembourg
+  LVA: Latvia
+  MAC: <U+0627><U+0644><U+0635><U+064A><U+0646><U+060C> <U+0645><U+0646><U+0637><U+0642><U+0629> <U+0645><U+0627><U+0643><U+0627><U+0648> <U+0627><U+0644><U+0625><U+062F><U+0627><U+0631><U+064A><U+0629> <U+0627><U+0644><U+062E><U+0627><U+0635><U+0629>
+  MAF: Saint Martin (French part)
+  MAR: Morocco
+  MCO: Monaco
+  MDA: Republic of Moldova
+  MDG: Madagascar
+  MDV: Maldives
+  MEX: Mexico
+  MHL: Marshall Islands
+  MKD: North Macedonia
+  MLI: Mali
+  MLT: Malta
+  MMR: Myanmar
+  MNE: Montenegro
+  MNG: Mongolia
+  MNP: Northern Mariana Islands
+  MOZ: Mozambique
+  MRT: Mauritania
+  MSR: Montserrat
+  MTQ: Martinique
+  MUS: Mauritius
+  MWI: Malawi
+  MYS: Malaysia
+  MYT: Mayotte
+  NAM: Namibia
+  NCL: New Caledonia
+  NER: Niger
+  NGA: Nigeria
+  NIC: Nicaragua
+  NIU: Niue
+  NLD: <U+0647><U+0648><U+0644><U+0646><U+062F><U+0627>
+  NOR: Norway
+  NPL: Nepal
+  NRU: Nauru
+  NZL: New Zealand
+  OMN: Oman
+  PAK: Pakistan
+  PAN: Panama
+  PER: Peru
+  PHL: Philippines
+  PLW: Palau
+  PNG: Papua New Guinea
+  POL: Poland
+  PRI: Puerto Rico
+  PRK: Democratic People's Republic of Korea
+  PRT: Portugal
+  PRY: Paraguay
+  PSE: State of Palestine
+  PYF: French Polynesia
+  QAT: Qatar
+  REU: Réunion
+  ROU: Romania
+  RUS: Russian Federation
+  RWA: Rwanda
+  SAU: Saudi Arabia
+  SDN: Sudan
+  SEN: Senegal
+  SGP: Singapore
+  SHN: Saint Helena, Ascension and Tristan da Cunha
+  SLB: Solomon Islands
+  SLE: Sierra Leone
+  SLV: El Salvador
+  SMR: San Marino
+  SOM: Somalia
+  SPM: Saint Pierre and Miquelon
+  SRB: Serbia
+  SSD: South Sudan
+  STP: Sao Tome and Principe
+  SUR: Suriname
+  SVK: Slovakia
+  SVN: Slovenia
+  SWE: Sweden
+  SWZ: Eswatini
+  SXM: <U+0633><U+0627><U+0646><U+062A> <U+0645><U+0627><U+0631><U+062A><U+0646> (<U+0627><U+0644><U+062C><U+0632><U+0621> <U+0627><U+0644><U+0647><U+0648><U+0644><U+0646><U+062F><U+064A>)
+  SYC: Seychelles
+  SYR: Syrian Arab Republic
+  TCA: Turks and Caicos Islands
+  TCD: Chad
+  TGO: Togo
+  THA: Thailand
+  TJK: Tajikistan
+  TKL: Tokelau
+  TKM: Turkmenistan
+  TLS: Timor-Leste
+  TON: Tonga
+  TTO: Trinidad and Tobago
+  TUN: Tunisia
+  TUR: <U+062A><U+0631><U+0643><U+064A><U+0627>
+  TUV: Tuvalu
+  TWN: Taïwan
+  TZA: United Republic of Tanzania
+  UGA: Uganda
+  UKR: Ukraine
+  UNDEV_002: Africa (UN Regions)
+  UNDEV_005: South America (UN Regions)
+  UNDEV_009: Oceania (UN Regions)
+  UNDEV_011: Western Africa (UN Regions)
+  UNDEV_013: Central America (UN Regions)
+  UNDEV_014: Eastern Africa (UN Regions)
+  UNDEV_015: Northern Africa (UN Regions)
+  UNDEV_017: Middle Africa (UN Regions)
+  UNDEV_018: Southern Africa (UN Regions)
+  UNDEV_021: Northern America (UN Regions)
+  UNDEV_029: Caribbean (UN Regions)
+  UNDEV_030: Eastern Asia (UN Regions)
+  UNDEV_034: Southern Asia (UN Regions)
+  UNDEV_035: South-eastern Asia (UN Regions)
+  UNDEV_053: Australia and New Zealand (UN Regions)
+  UNDEV_142: Asia (UN Regions)
+  UNDEV_143: Central Asia (UN Regions)
+  UNDEV_145: Western Asia (UN Regions)
+  UNDEV_151: Eastern Europe (UN Regions)
+  UNDEV_154: Northern Europe (UN Regions)
+  UNDEV_155: Western Europe (UN Regions)
+  UNDEV_39: Southern Europe (UN Regions)
+  UNDEV_419: Latin America and the Caribbean (UN Regions)
+  UNDEV_54: Melanasia (UN Regions)
+  UNDEV_543: Oceania, excluding Australia and New Zealand (UN Regions)
+  UNDEV_57: Micronesia (UN Regions)
+  UNDEV_61: Polynesia (UN Regions)
+  UNDEV_GLOBAL: UN regions - Global
+  UNDEV_LD: Less Developed Regions (UN Regions)
+  UNFPA_AP: Asia and the Pacific (UNFPA)
+  UNFPA_AS: Arab States (UNFPA)
+  UNFPA_EECA: Europe de l’Est et Asie centrale
+  UNFPA_ESA: East and Southern Africa (UNFPA)
+  UNFPA_LAC: Latin America and the Caribbean (UNFPA)
+  UNFPA_REGIONS: UNFPA regions (UNFPA)
+  UNFPA_WCA: West and Central Africa (UNFPA)
+  UNICEF_EAP: Asia Oriental y Pacífico
+  UNICEF_EAPRO: East Asia and Pacific (UNICEF Prog.regions)
+  UNICEF_ECA: Europa y Asia Central
+  UNICEF_ECARO: Europe and Central Asia (UNICEF Prog.regions)
+  UNICEF_EECA: Europa del Este y Asia Central
+  UNICEF_ESA: África Oriental y Meridional
+  UNICEF_ESARO: Eastern and Southern Africa (UNICEF Prog.regions)
+  UNICEF_LAC: América Latina y el Caribe
+  UNICEF_LACRO: Latin America and the Caribbean (UNICEF Prog.regions)
+  UNICEF_MENA: Oriente Medio y África del Norte
+  UNICEF_MENARO: Middle East and North Africa (UNICEF Prog.regions)
+  UNICEF_NA: América del Norte
+  UNICEF_PROG_REG_GLOBAL: UNICEF Programme Regions - Global
+  UNICEF_REP_REG_GLOBAL: UNICEF reporting regions - Global
+  UNICEF_ROSA: South Asia (UNICEF Prog.regions)
+  UNICEF_SA: Asia Meridional
+  UNICEF_SSA: África Subsahariana
+  UNICEF_WCA: África Occidental y Central
+  UNICEF_WCARO: West and Central Africa (UNICEF Prog.regions)
+  UNICEF_WE: Europa Occidental
+  UNICEF_XCH: World excluding China (UNICEF Rep.Regions)
+  UNSDG_AUSTRALIANEWZEALAND: Australia and New Zealand (UNSDG)
+  UNSDG_CARIBBEAN: Caribbean (UNSDG)
+  UNSDG_CENTRALAMR: Central America (UNSDG)
+  UNSDG_CENTRALASIA: Central Asia (UNSDG)
+  UNSDG_CENTRALASIASOUTHERNASIA: Central and Southern Asia (UNSDG)
+  UNSDG_EASTERNAFR: Eastern Africa (UNSDG)
+  UNSDG_EASTERNASIA: Eastern Asia (UNSDG)
+  UNSDG_EASTERNASIASOUTHEASTERNASIA: Eastern and South-Eastern Asia (UNSDG)
+  UNSDG_EASTERNEUROPE: Eastern Europe (UNSDG)
+  UNSDG_EUROPE: Europe (UNSDG)
+  UNSDG_EUROPENORTHERNAMR: Europe and Northern America (UNSDG)
+  UNSDG_LAC: Latin America and the Caribbean (UNSDG)
+  UNSDG_LDC: Países menos adelantados
+  UNSDG_LLDC: Landlocked developing countries (LLDC) (UNSDG)
+  UNSDG_MELANESIA: Melanesia (UNSDG)
+  UNSDG_MIDDLEAFR: Middle Africa (UNSDG)
+  UNSDG_NORTHAFR: Northern Africa (UNSDG)
+  UNSDG_NORTHERNAMR: Northern America (UNSDG)
+  UNSDG_OCEANIA: Oceania (UNSDG)
+  UNSDG_OCEANIAexAUSNZL: Oceania (exc. Australia and New Zealand) (UNSDG)
+  UNSDG_POLYNESIA: Polynesia (UNSDG)
+  UNSDG_REGION_GLOBAL: SDG regions - Global (UNSDG)
+  UNSDG_SIDS: Small island developing States (SIDS) (UNSDG)
+  UNSDG_SOUTHAMR: South America (UNSDG)
+  UNSDG_SOUTHASIA: Southern Asia (UNSDG)
+  UNSDG_SOUTHEASTERNASIA: South-eastern Asia (UNSDG)
+  UNSDG_SOUTHERNAFR: Southern Africa (UNSDG)
+  UNSDG_SUBSAHARANAFRICA: Sub-Saharan Africa (UNSDG)
+  UNSDG_WESTERNAFR: Western Africa (UNSDG)
+  UNSDG_WESTERNASIA: Western Asia (UNSDG)
+  UNSDG_WESTERNASIANORTHERNAFR: Northern Africa and Western Asia (UNSDG)
+  URY: Uruguay
+  USA: United States
+  UZB: Uzbekistan
+  VAT: Holy See
+  VCT: Saint Vincent and the Grenadines
+  VEN: Venezuela (Bolivarian Republic of)
+  VGB: British Virgin Islands
+  VIR: Virgin Islands U.S.
+  VNM: Viet Nam
+  VUT: Vanuatu
+  WB_EAP: East Asia and Pacific (World Bank regions)
+  WB_HI: World Bank (high income)
+  WB_INCOME: World Bank income groups - Global
+  WB_LAC: Latin America and the Caribbean (World Bank regions)
+  WB_LI: World Bank (low income)
+  WB_LMI: World Bank (lower middle income)
+  WB_MNA: Middle East and North Africa (World Bank regions)
+  WB_NAR: North America (World Bank regions)
+  WB_REG_GLOBAL: World bank World - Global
+  WB_SAR: South Asia (World Bank regions)
+  WB_SSA: Sub-Saharan Africa (World Bank regions)
+  WB_UMI: World Bank (upper middle income)
+  WHO_AFRO: Africa (WHO regions)
+  WHO_AMRO: Americas (WHO regions)
+  WHO_EMRO: Eastern Mediterranean (WHO regions)
+  WHO_EURO: Europe (WHO regions)
+  WHO_REG_GLOBAL: World Health Organisation regions - Global
+  WHO_SEARO: South-East Asia (WHO regions)
+  WHO_WPRO: Western Pacific (WHO regions)
+  WLF: Wallis and Futuna
+  WORLD: World
+  WSM: Samoa
+  XKX: Kosovo (UNSCR 1244)
+  YEM: Yemen
+  ZAF: South Africa
+  ZMB: Zambia
+  ZWE: Zimbabwe
+  AU: African Union
+  AU_AFRICA: African Union
+  AU_CENTRAL_AFRICA: Central Africa (African Union)
+  AU_EASTERN_AFRICA: Eastern Africa (African Union)
+  AU_NORTHERN_AFRICA: Northern Africa (African Union)
+  AU_SOUTHERN_AFRICA: Southern Africa (African Union)
+  AU_WESTERN_AFRICA: Western Africa (African Union)
+  OECD: OECD
+  OECD_FRAGILEANY: OECD Fragile Contexts
+  UNICEF_OPS_REG_GLOBAL: UNICEF operational regions
+  UNICEF_EAPR_OPS: EAPR (operational region)
+  UNICEF_ECAR_OPS: ECAR (operational region)
+  UNICEF_ESAR_OPS: ESAR (operational region)
+  UNICEF_LACR_OPS: LACR (operational region)
+  UNICEF_MENA_OPS: MENA (operational region)
+  UNICEF_ROSA_OPS: ROSA (operational region)
+  UNICEF_WCAR_OPS: WCAR (operational region)
+  AUREC: Regional Economic Communities
+  AUREC_AMU: Arab Maghreb Union (AMU)
+  AUREC_COMESA: Common Market for Eastern and Southern Africa (COMESA)
+  AUREC_CEN_SAD: Community of Sahel-Saharan States (CEN-SAD)
+  AUREC_EAC: East African Community (EAC)
+  AUREC_ECCAS: Economic Community of Central African States (ECCAS)
+  AUREC_ECOWAS: Economic Community of West African States (ECOWAS)
+  AUREC_IGAD: Intergovernmental Authority on Development (IGAD)
+  AUREC_SADC: Southern African Development Community (SADC)
+  AUREC_ECOWAS_202502: Economic Community of West African States (ECOWAS 2025)
+  SDGRC_ECA_ALL: (SDGRC) United Nations Economic Commission for Africa
+  SDGRC_ECA_NA: (SDGRC) North Africa
+  SDGRC_ECA_SA: (SDGRC) Southern Africa
+  SDGRC_ECA_WA: (SDGRC) West Africa
+  SDGRC_ECA_EA: (SDGRC) Eastern Africa
+  SDGRC_ECA_CA: (SDGRC) Central Africa
+  SDGRC_ECA_AMU: (SDGRC) ECA AMU
+  SDGRC_ECA_CEN_SAD: (SDGRC) ECA_CEN-SAD
+  SDGRC_ECA_COMESA: (SDGRC) ECA_COMESA
+  SDGRC_ECA_EAC: (SDGRC) ECA_EAC
+  SDGRC_ECA_ECCAS: (SDGRC) ECA_ECCAS
+  SDGRC_ECA_ECOWAS: (SDGRC) ECA_ECOWAS
+  SDGRC_ECA_IGAD: (SDGRC) ECA_IGAD
+  SDGRC_ECA_SADC: (SDGRC) ECA_SADC
+  SDGRC_ARAB: (SDGRC) ESCWA_Arab countries
+  SDGRC_AUC: (SDGRC) ECA_African Union Commission
+  SDGRC_ECA_IE: (SDGRC) ECA_Island economies
+  SDGRC_ECA_LDC: (SDGRC) ECA_Least developed countries
+  SDGRC_ECA_LLC: (SDGRC) ECA_Land-locked countries
+  SDGRC_ECA_LL_LDC: (SDGRC) ECA_Land-locked LDCs
+  SDGRC_ECA_MRC: (SDGRC) ECA_Mineral-rich countries
+  SDGRC_ECA_NOP: (SDGRC) ECA_Non-Oil Producing
+  SDGRC_ECA_NO_LDC: (SDGRC) ECA_Non-Oil LDCs
+  SDGRC_ECA_OP: (SDGRC) ECA_Oil producing economies
+  SDGRC_ECA_O_LDC: (SDGRC) ECA_Oil LDCs
+  SDGRC_ECA_SACU: (SDGRC) ECA_Southern Africa Customs Union (SACU)
+  SDGRC_ECA_SAHEL: (SDGRC) ECA_Sahel
+  SDGRC_ECA_SIS: (SDGRC) ECA_Small Island states
+  SDGRC_ECA_SSA: (SDGRC) ECA_Sub-Saharan Africa
+  SDGRC_ESCAP_AFRICA: (SDGRC) ESCAP_Africa (AFR)
+  SDGRC_ESCWA_ARAB_LOW: (SDGRC) ESCWA_Arab Low-Income Countries (LICs)
+  SDGRC_ESCWA_ARAB_MID: (SDGRC) ESCWA_Arab Middle-Income Countries (MICs)
+  SDGRC_ESCWA_CONFLICT: (SDGRC) ESCWA_Countries in conflict
+  SDGRC_ESCWA_LDC: (SDGRC) ESCWA_Arab LDCs subregion
+  SDGRC_ESCWA_MAGHREB: (SDGRC) ESCWA_Maghreb subregion
+  SDGRC_ESCWA_MASHREQ: (SDGRC) ESCWA_Mashreq subregion
+  SDGRC_ESCWA_NOCONFLICT_MID: (SDGRC) ESCWA_Non-conflict middle income countries
+  SDGRC: SDGRC
+  SDGRC_ECE_ALL: ECE_All countries
+  SDGRC_ECE_CIS11: ECE_CIS (CWG)
+  SDGRC_ECE_EAEU: ECE_Eurasian Economic Union (EAEU)
+  SDGRC_ECE_EECCA: ECE_Eastern Europe, Caucasus and Central Asia (CIS)
+  SDGRC_ECE_EU27: ECE_European Union (E25)
+  SDGRC_ECE_EU_EUROAREA: ECE_Euro area (EMU)
+  SDGRC_ECE_WESTBALKANS: ECE_West Balkans (ST7)
+  SDGRC_ECLAC_ALL: ECLAC_All countries
+  SDGRC_ECLAC_CARIBBEAN: ECLAC_Carribean
+  SDGRC_ECLAC_LA: ECLAC_Latin America
+  SDGRC_ESCAP_ALL: ESCAP_All countries
+  SDGRC_ESCAP_ASEAN: ESCAP_ASEAN (ASEAN)
+  SDGRC_ESCAP_CSN: ESCAP_Countries with Special Needs
+  SDGRC_ESCAP_ECO: ESCAP_ECO (ECO)
+  SDGRC_ESCAP_ENEA: ESCAP_East and North-East Asia (ENEA)
+  SDGRC_ESCAP_EUROPE: ESCAP_Europe (Europe)
+  SDGRC_ESCAP_LATIN_AMERICA: ESCAP_Latin America (LAC)
+  SDGRC_ESCAP_LDC: ESCAP_LDC (LDC_E)
+  SDGRC_ESCAP_LLDC: ESCAP_LLDC (LLDC_E)
+  SDGRC_ESCAP_NCA: ESCAP_North and Central Asia (NCA)
+  SDGRC_ESCAP_NORTH_AMERICA: ESCAP_North America (NAM)
+  SDGRC_ESCAP_OTHER_AREA: ESCAP_Other Area (OTH_REGION)
+  SDGRC_ESCAP_PACIFIC: ESCAP_PACIFIC (PAC)
+  SDGRC_ESCAP_PIDE: ESCAP_Pacific island developing economies (PIDE)
+  SDGRC_ESCAP_SAARC: ESCAP_SAARC (SAARC)
+  SDGRC_ESCAP_SEA: ESCAP_South-East Asia (SEA)
+  SDGRC_ESCAP_SIDS: ESCAP_Small Islands Developing States
+  SDGRC_ESCAP_SSWA: ESCAP_South and South-West Asia (SSWA)
+  SDGRC_ESCAP_WB_HIGH: ESCAP_WB High Income Economies
+  SDGRC_ESCAP_WB_LOW: ESCAP_WB Low Income Economies
+  SDGRC_ESCAP_WB_LOWER_MID: ESCAP_WB Lower Middle Income Economies
+  SDGRC_ESCAP_WB_UPPER_MID: ESCAP_WB Upper Middle Income Economies
+  SDGRC_ESCWA_ARAB_HIGH: ESCWA_Arab High-Income Countries (HICs)
+  SDGRC_ESCWA_GCC: ESCWA_Gulf Cooperation Council (GCC)
+  UNSDG_NORTHAMR_EUROPE_AUSNZL: North America, Europe, Australia and New Zealand (UNSDG)
+  UNSDG_AFRICA: Africa (UNSDG)
+  UNSDG_AMERICAS: Americas (UNSDG)
+  UNSDG_ASIA: Asia (UNSDG)
+  UNSDG_NORTHERNEUROPE: Northern Europe (UNSDG)
+  UNSDG_SOUTHERNEUROPE: Southern Europe (UNSDG)
+  UNSDG_WESTERNEUROPE: Western Europe (UNSDG)
+  UNSDG_MICRONESIA: Micronesia (UNSDG)
+  WB_ECA: Europe and Central Asia (World Bank regions)

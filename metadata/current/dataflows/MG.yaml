@@ -1,0 +1,152 @@
+id: MG
+name: Migration
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:11:58Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - AZE
+  - BDI
+  - BEN
+  - BFA
+  - BGD
+  - BIH
+  - CAF
+  - CMR
+  - COD
+  - COL
+  is_exhaustive: no
+  total_values_count: 417
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - MG_INTERNAL_DISP_PERS
+  - MG_INTNL_MG_CNTRY_DEST
+  - MG_RFGS_CNTRY_ASYLM
+  - MG_RFGS_CNTRY_ASYLM_PER_USD_GNI
+  - MG_RFGS_CNTRY_ASYLM_PER1000
+  - MG_RFGS_CNTRY_ORIGIN
+  is_exhaustive: yes
+  total_values_count: 6
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+  values:
+  - _T
+  - Y0T17
+  is_exhaustive: yes
+  total_values_count: 2
+- id: STAT_POP
+  position: 4
+  codelist: CL_STAT_POP
+  values:
+  - _T
+  - SH_NAT_POP
+  - POP_CONF_VIOLENCE
+  is_exhaustive: yes
+  total_values_count: 3
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  - PER1000
+  - PER1USD_GNI_CAP
+  - PS
+  is_exhaustive: yes
+  total_values_count: 4
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - 'United Nations High Commissioner for Refugees, Global Trends: Forced Displacement
+    in 2023. UNHCR, 2024.'
+  - Internal Displacement Monitoring Centre, Global Internal Displacement Database
+    (GIDD), IDMC, 2024.
+  - United Nations Department of Economic and Social Affairs, Population Division
+    (2024). International Migrant Stock 2024.
+  is_exhaustive: yes
+  total_values_count: 3
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: SOURCE_LINK
+  codelist: ~
+  values:
+  - https://www.unhcr.org/refugee-statistics/download/
+  - https://www.internal-displacement.org/database/displacement-data
+  - https://www.un.org/development/desa/pd/content/international-migrant-stock
+  is_exhaustive: yes
+  total_values_count: 3
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: COVERAGE_TIME
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values:
+  - Stateless and unknown origin refugees are only included in the global number.
+  - Stateless and unknown origin refugees are only included in the global number.
+    Under 18 refugee population from years 2001 to 2020 is extrapolated using the
+    known number of children and the total number of refugees. Only showing countries
+    and regions with 50% or more coverage of age and sex. For years 2021 and later,
+    under 18 population is estimated using the mean value of the the hierarchical
+    Bayesian model performed by UNHCR.
+  - Including refugees under UNHCR mandate, people in refugee-like situations and
+    the category Other people in need of international protection.
+  - Under 18 refugee population from years 2001 to 2020 is extrapolated using the
+    known number of children and the total number of refugees. Only showing countries
+    and regions with 50% or more coverage of age and sex. For years 2021 and later,
+    under 18 population is estimated using the mean value of the the hierarchical
+    Bayesian model performed by UNHCR.
+  - Use country's child percentage from UNPD as an estimate of IDP child percentage.
+    Rounded to the 2nd significant number.
+  - GNI per capita from World Bank database 2024.
+  - Including refugees under UNHCR mandate, people in refugee-like situations and
+    the category Other people in need of international protection. National population
+    from 2024 World Population Prospects
+  is_exhaustive: yes
+  total_values_count: 7
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 3.0402181e+08
+  total_count: 5243
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 5

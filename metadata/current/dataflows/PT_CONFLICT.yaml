@@ -1,0 +1,121 @@
+id: PT_CONFLICT
+name: Children Exposed to Conflict
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:12:20Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_GEO_REPO
+  values:
+  - ABW_V1
+  - AFG_V1
+  - AGO_V1
+  - AIA_V1
+  - ALB_V1
+  - AND_V1
+  - ARG_V1
+  - ARM_V1
+  - ATG_V1
+  - AUT_V1
+  is_exhaustive: no
+  total_values_count: 208
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - PT_CHLD_CONFLICT
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: AGE
+  position: 4
+  codelist: CL_AGE
+  values:
+  - _T
+  - Y0T4
+  - Y10T14
+  - Y15T17
+  - Y5T9
+  is_exhaustive: yes
+  total_values_count: 5
+- id: ADMIN_LEVEL
+  position: 5
+  codelist: CL_ADMIN_LEVEL
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: REF_AREA_PARENT
+  position: 6
+  codelist: CL_GEO_REPO
+  values:
+  - ABW_V1
+  - AFG_V1
+  - AGO_V1
+  - AIA_V1
+  - ALB_V1
+  - AND_V1
+  - ARG_V1
+  - ARM_V1
+  - ATG_V1
+  - AUT_V1
+  is_exhaustive: no
+  total_values_count: 208
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PS
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values:
+  - WorldPop constrained age/sex structures not available for the country. Exposed
+    WorldPop population counts computed from raster data. Exposed children 0-17 years
+    (by sex) estimated from UN World Population Prospects.
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - ACLED (https://acleddata.com/) and WorldPop age/sex structures (https://hub.worldpop.org/geodata/listing?id=88).
+  - ACLED (https://acleddata.com/), WorldPop population counts (https://hub.worldpop.org/geodata/listing?id=79)
+    and UN World Population Prospects (https://population.un.org/wpp/).
+  is_exhaustive: yes
+  total_values_count: 2
+primary_measure_summary:
+  type: numerical
+  min: 1.0
+  max: 4.7159173e+07
+  total_count: 9166
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2023.0
+  total_count: 4

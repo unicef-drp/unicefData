@@ -1,0 +1,24 @@
+id: EDUCATION_FLS
+name: 'EDU - Learning and Skills'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T12:36:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE

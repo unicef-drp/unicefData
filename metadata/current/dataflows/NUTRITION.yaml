@@ -1,0 +1,298 @@
+id: NUTRITION
+name: Nutrition
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:12:03Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - PER
+  - MEX
+  - TZA
+  - MLI
+  - IND
+  - JOR
+  - NGA
+  - CIV
+  - MWI
+  - YEM
+  is_exhaustive: no
+  total_values_count: 195
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - NT_ANE_WOM_15_49_MOD
+  - NT_ANT_HAZ_NE2
+  - NT_ANT_WAZ_NE2
+  - NT_ANT_WHZ_NE2
+  - NT_ANT_WHZ_NE3
+  - NT_ANT_WHZ_PO2
+  - NT_IOD_ANY_TH
+  - NT_IOD_ANY_TS
+  is_exhaustive: yes
+  total_values_count: 8
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: AGE
+  position: 4
+  codelist: CL_AGE
+  values:
+  - _T
+  - M0T11
+  - M0T23
+  - M0T5
+  - M12T17
+  - M12T23
+  - M18T23
+  - M24T29
+  - M24T35
+  - M24T59
+  - M30T35
+  - M36T41
+  - M36T47
+  - M42T47
+  - M48T53
+  - M48T59
+  - M54T59
+  - M6T11
+  - Y0T4
+  - Y15T49
+  is_exhaustive: yes
+  total_values_count: 20
+- id: WEALTH_QUINTILE
+  position: 5
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  - B20
+  - B40
+  - B60
+  - B80
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - Q5
+  - R20
+  - R40
+  - R60
+  - R80
+  is_exhaustive: yes
+  total_values_count: 14
+- id: RESIDENCE
+  position: 6
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  - R
+  - U
+  is_exhaustive: yes
+  total_values_count: 3
+- id: MATERNAL_EDU_LVL
+  position: 7
+  codelist: CL_EDU_LEVEL
+  values:
+  - _T
+  - AGG_0_1
+  - AGG_2_3
+  - AGG_3S_H
+  - AGG_5T8
+  - ISCED11_1
+  - ISCED11A_01
+  is_exhaustive: yes
+  total_values_count: 7
+- id: HEAD_OF_HOUSE
+  position: 8
+  codelist: CL_SEX
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: DATA_SOURCE_PRIORITY
+  codelist: ~
+  values_min: 0.0
+  values_max: 1.0
+  total_values_count: 2
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: REPORTING_LVL
+  codelist: REPORTING_LVL
+  values:
+  - C
+  is_exhaustive: yes
+  total_values_count: 1
+- id: INDICATOR_METADATA
+  codelist: ~
+  values:
+  - https://data.unicef.org/indicator-profile/NT_ANT_WAZ_NE2
+  - https://data.unicef.org/indicator-profile/NT_ANT_HAZ_NE2
+  - https://data.unicef.org/indicator-profile/NT_ANT_WHZ_NE2
+  - https://data.unicef.org/indicator-profile/NT_ANT_WHZ_NE3
+  - https://data.unicef.org/indicator-profile/NT_ANT_WHZ_PO2
+  - https://data.unicef.org/indicator-profile/NT_ANE_WOM_15_49_MOD
+  - https://data.unicef.org/indicator-profile/NT_IOD_ANY_TH
+  - https://data.unicef.org/indicator-profile/NT_IOD_ANY_TS
+  is_exhaustive: yes
+  total_values_count: 8
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  is_exhaustive: yes
+  total_values_count: 1
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - WHO Global Anaemia estimates. Prevalence of anaemia in women of reproductive age
+    (%). Global Health Observatory (GHO) data. Geneva  World Health Organization (https
+    //www.who.int/data/gho)
+  - Encuesta Demográfica y de Salud Familiar-ENDES 2020 Nacional y Departamental
+  - National Family Health Survey (NFHS-5)  2019-21  India. Mumbai  IIPS
+  - Jordan Population and Family and Health Survey 2023
+  - Encuesta Demográfica y de Salud Familiar-ENDES 2022 Nacional y Departamental
+  - Peru Encuesta Demográfica y de Salud Familiar-ENDES 2023 Nacional y Departamental
+  - Encuesta Demográfica y de Salud Familiar-ENDES 2021 Nacional y Departamental
+  - Encuesta Nacional de Salud y Nutrición Continua COVID-19  Mexico 2020
+  - The 2022 Tanzania Demographic and Health Survey and Malaria Indicator Survey
+  - Enquête Démographique et de Santé de Côte d’Ivoire  2021. Rockville  Maryland  USA   INS/Côte
+    d’Ivoire et ICF
+  is_exhaustive: no
+  total_values_count: 79
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - RA
+  - RP
+  - U
+  - ER
+  is_exhaustive: yes
+  total_values_count: 4
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: LOWER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: 100.0
+  total_values_count: 814
+- id: UPPER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: 100.0
+  total_values_count: 917
+- id: STD_ERR
+  codelist: ~
+  values_min: 0.0
+  values_max: 14.5
+  total_values_count: 93
+- id: WGTD_SAMPL_SIZE
+  codelist: ~
+  values_min: 6.5
+  values_max: 5.7426904e+07
+  total_values_count: 5049
+- id: SOURCE_LINK
+  codelist: ~
+  values:
+  - https://data.unicef.org/topic/nutrition/malnutrition/
+  - https://data.unicef.org/topic/nutrition/iodine/
+  is_exhaustive: yes
+  total_values_count: 2
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values:
+  - MOF
+  - OTHER
+  is_exhaustive: yes
+  total_values_count: 2
+- id: COVERAGE_TIME
+  codelist: ~
+  values:
+  - 1991-2023
+  - 1988-2022
+  - 1987-2024
+  - 1991-2022
+  - 2000-2023
+  - 1990-2023
+  - 1992-2020
+  - 1988-2021
+  - 1992-2021
+  - 1990-2021
+  is_exhaustive: no
+  total_values_count: 42
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values:
+  - UNICEF/WHO/World Bank Joint Malnutrition Estimates Expanded Databases  March 2025
+  - UNICEF Global Databases on Iodized salt  New York  June 2024
+  is_exhaustive: yes
+  total_values_count: 2
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values:
+  - Height/length modality (standing/lying) was not collected
+  - Oedema data was not considered in the analysis
+  - exludes North Sinai
+  - Oedema data was not considered in the analysis  Height/length modality (standing/lying)
+    was not collected
+  - Age-Adjusted  Oedema data was not considered in the analysis
+  - Reduced age range  Oedema data was not considered in the analysis Age 0-5 months
+    not covered  unadjusted for age
+  - Reduced age range  Oedema data was not considered in the analysis Age 0-5 months
+    not covered  unadjusted
+  - Unweighted sample size is between 25 and 49
+  - Age-Adjusted
+  - Unweighted sample size is between 25 and 49  Height/length modality (standing/lying)
+    was not collected
+  is_exhaustive: no
+  total_values_count: 19
+- id: CUSTODIAN
+  codelist: ~
+  values:
+  - UNICEF Division of Data  Analysis  Planning and Monitoring
+  - Nutrition Section  Programme Dvision and the Data and Analytics Section  Division
+    of Data  Analytics  Planning and Monitoring  UNICEF
+  is_exhaustive: yes
+  total_values_count: 2
+- id: PUBLICATION_DATE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 100.0
+  total_count: 866
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 13

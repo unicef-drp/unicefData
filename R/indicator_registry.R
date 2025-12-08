@@ -53,17 +53,24 @@ CACHE_MAX_AGE_DAYS <- 30
   # Try to find R directory relative to current working directory
   script_dir <- getwd()
   
+  # Priority order: look for R/metadata/current first (project root case)
+  # then metadata/current (if already in R/ directory)
   candidates <- c(
+    file.path(script_dir, "R", "metadata", "current"),      # If in project root (highest priority)
     file.path(script_dir, "metadata", "current"),           # If in R/
-    file.path(script_dir, "R", "metadata", "current"),      # If in project root
-    file.path(script_dir, "..", "metadata", "current"),     # If in R/examples/
-    file.path(script_dir, "..", "R", "metadata", "current") # If in project subdirectory
+    file.path(script_dir, "..", "R", "metadata", "current"), # If in project subdirectory
+    file.path(script_dir, "..", "metadata", "current")      # If in R/examples/
   )
   
   for (metadata_dir in candidates) {
-    parent_dir <- dirname(metadata_dir)
-    # Check if parent exists (metadata/ directory)
-    if (dir.exists(dirname(parent_dir))) {
+    # Check if the R/ or metadata/ parent exists to validate correct location
+    parent_dir <- dirname(metadata_dir)  # e.g., R/metadata or metadata
+    grandparent_dir <- dirname(parent_dir)  # e.g., R or .
+    
+    # For R/metadata/current, check if R/ exists
+    # For metadata/current (when in R/), check if metadata/ parent is within R structure
+    if (dir.exists(parent_dir) || 
+        (dir.exists(grandparent_dir) && basename(grandparent_dir) == "R")) {
       # Create current/ if needed
       if (!dir.exists(metadata_dir)) {
         dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
@@ -316,11 +323,6 @@ CACHE_MAX_AGE_DAYS <- 30
 #' @param indicators Named list of indicator metadata
 #' @keywords internal
 .save_cache <- function(indicators) {
-  if (!requireNamespace("yaml", quietly = TRUE)) {
-    warning("Package 'yaml' is required to save cache")
-    return(invisible(NULL))
-  }
-  
   cache_path <- .get_cache_path()
   
   # Ensure directory exists
@@ -342,13 +344,98 @@ CACHE_MAX_AGE_DAYS <- 30
   )
   
   tryCatch({
-    yaml::write_yaml(data, cache_path)
+    # Write YAML without line wrapping for cross-platform consistency
+    yaml_lines <- .yaml_no_wrap(data)
+    writeLines(yaml_lines, cache_path, useBytes = TRUE)
     message(sprintf("Saved %d indicators to %s", length(indicators), cache_path))
   }, error = function(e) {
     warning(sprintf("Failed to save cache: %s", e$message))
   })
   
   invisible(NULL)
+}
+
+#' Convert R list to YAML without line wrapping
+#' @param data List to convert
+#' @param indent Current indentation level
+#' @return Character vector of YAML lines
+#' @keywords internal
+.yaml_no_wrap <- function(data, indent = 0) {
+  lines <- character()
+  prefix <- strrep("  ", indent)
+  
+  if (is.null(data)) {
+    return("~")
+  }
+  
+  if (!is.list(data)) {
+    # Scalar value
+    return(.yaml_scalar(data))
+  }
+  
+  names_data <- names(data)
+  
+  for (i in seq_along(data)) {
+    key <- names_data[i]
+    value <- data[[i]]
+    
+    if (is.null(key) || key == "") {
+      # List item (no key)
+      if (is.list(value) && length(value) > 0) {
+        lines <- c(lines, paste0(prefix, "- ", names(value)[1], ": ", .yaml_scalar(value[[1]])))
+        if (length(value) > 1) {
+          for (j in 2:length(value)) {
+            lines <- c(lines, paste0(prefix, "  ", names(value)[j], ": ", .yaml_scalar(value[[j]])))
+          }
+        }
+      } else {
+        lines <- c(lines, paste0(prefix, "- ", .yaml_scalar(value)))
+      }
+    } else {
+      # Named key
+      if (is.list(value) && length(value) > 0 && !is.null(names(value))) {
+        lines <- c(lines, paste0(prefix, key, ":"))
+        lines <- c(lines, .yaml_no_wrap(value, indent + 1))
+      } else if (is.list(value) && length(value) > 0) {
+        # Unnamed list (array)
+        lines <- c(lines, paste0(prefix, key, ":"))
+        for (item in value) {
+          if (is.list(item)) {
+            lines <- c(lines, .yaml_no_wrap(item, indent + 1))
+          } else {
+            lines <- c(lines, paste0(prefix, "  - ", .yaml_scalar(item)))
+          }
+        }
+      } else {
+        lines <- c(lines, paste0(prefix, key, ": ", .yaml_scalar(value)))
+      }
+    }
+  }
+  
+  return(lines)
+}
+
+#' Convert scalar value to YAML string
+#' @param x Scalar value
+#' @return Character string in YAML format
+#' @keywords internal
+.yaml_scalar <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return("''")
+  }
+  if (is.logical(x)) {
+    return(tolower(as.character(x)))
+  }
+  if (is.numeric(x)) {
+    return(as.character(x))
+  }
+  # String - check if quoting needed
+  x <- as.character(x)
+  if (x == "" || grepl("^[\\s]|[\\s]$|[:#\\[\\]{}\"'|>]", x, perl = TRUE) || x %in% c("true", "false", "null", "~")) {
+    # Quote strings that need it
+    return(paste0("'", gsub("'", "''", x), "'"))
+  }
+  return(x)
 }
 
 

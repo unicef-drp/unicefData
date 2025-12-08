@@ -2,7 +2,7 @@ id: CME_SUBNAT_LBR
 name: CME Liberia
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-02T22:47:30Z'
+synced_at: '2025-12-08T13:31:18Z'
 dimensions:
 - id: REF_AREA
   position: 1

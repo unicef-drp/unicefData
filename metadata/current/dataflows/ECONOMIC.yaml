@@ -1,0 +1,108 @@
+id: ECONOMIC
+name: Economic
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:11:30Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - AFG
+  - AGO
+  - ALB
+  - ARG
+  - ARM
+  - AU_AFRICA
+  - AU_CENTRAL_AFRICA
+  - AU_EASTERN_AFRICA
+  - AU_SOUTHERN_AFRICA
+  - AUREC_COMESA
+  is_exhaustive: no
+  total_values_count: 270
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - ECON_GVT_EDU_EXP_PTEXP
+  - ECON_GVT_EDU_EXP_PTGDP
+  - ECON_GVT_EXP_PTGDP
+  - ECON_GVT_HLTH_EXP_PTEXP
+  - ECON_GVT_HLTH_EXP_PTGDP
+  - ECON_GVT_REV_PTGDP
+  - ECON_ODA_INFLOW_PTGNI
+  - ECON_ODA_INFLOW_USD
+  - ECON_ODA_OUTFLOW_PTGNI
+  - ECON_ODA_OUTFLOW_USD
+  - ECON_SOC_PRO_EXP_PTEXP
+  - ECON_SOC_PRO_EXP_PTGDP
+  is_exhaustive: yes
+  total_values_count: 12
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: TIME_PERIOD_METHOD
+  codelist: CL_TIME_PERIOD_METHOD
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 6.0
+  values_max: 6.0
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  - USD
+  is_exhaustive: yes
+  total_values_count: 2
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - World Bank World Developent Indicators
+  - UNICEF Aggregates
+  - World Bank ASPIRE
+  is_exhaustive: yes
+  total_values_count: 3
+primary_measure_summary:
+  type: numerical
+  min: -380.5799866
+  max: 190067.796875
+  total_count: 2026
+time_dimension_summary:
+  type: numerical
+  min: 2024.0
+  max: 2024.0
+  total_count: 1

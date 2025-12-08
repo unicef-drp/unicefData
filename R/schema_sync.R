@@ -359,8 +359,9 @@ sync_dataflow_schemas <- function(output_dir = NULL, verbose = TRUE, dataflows =
     df_version <- df_row$version %||% "1.0"
     
     if (verbose) {
-      cat(sprintf("  [%d/%d] Fetching schema for %s... ", 
-                  i, nrow(all_dataflows), df_id))
+      # Use message() for immediate stderr output (unbuffered)
+      message(sprintf("  [%d/%d] Fetching schema for %s... ", 
+                  i, nrow(all_dataflows), df_id), appendLF = FALSE)
     }
     
     schema <- get_dataflow_schema(df_id, df_version)
@@ -380,7 +381,9 @@ sync_dataflow_schemas <- function(output_dir = NULL, verbose = TRUE, dataflows =
       
       # Fetch sample values if requested
       if (include_sample_values) {
-        if (verbose) cat("fetching samples... ")
+        if (verbose) {
+          message("fetching samples... ", appendLF = FALSE)
+        }
         sample_data <- get_sample_data(df_id)
         
         if (!is.null(sample_data)) {
@@ -445,12 +448,12 @@ sync_dataflow_schemas <- function(output_dir = NULL, verbose = TRUE, dataflows =
       
       success_count <- success_count + 1
       if (verbose) {
-        cat(sprintf("OK (%d dims, %d attrs)\n", 
+        message(sprintf("OK (%d dims, %d attrs)", 
                     length(schema$dimensions), length(schema$attributes)))
       }
     } else {
       fail_count <- fail_count + 1
-      if (verbose) cat("FAILED\n")
+      if (verbose) message("FAILED")
     }
     
     # Small delay to avoid rate limiting

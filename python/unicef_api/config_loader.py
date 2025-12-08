@@ -12,6 +12,83 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 
 
+def get_shared_indicators_path() -> Path:
+    """Get path to the shared common_indicators.yaml config file.
+    
+    Searches in order:
+    1. UNICEF_SHARED_CONFIG_PATH environment variable
+    2. ../../config/common_indicators.yaml relative to this file
+    3. ./config/common_indicators.yaml relative to current working directory
+    
+    Returns:
+        Path to common_indicators.yaml
+        
+    Raises:
+        FileNotFoundError: If config file not found
+    """
+    # Check environment variable first
+    env_path = os.environ.get('UNICEF_SHARED_CONFIG_PATH')
+    if env_path:
+        path = Path(env_path)
+        if path.exists():
+            return path
+    
+    # Check relative to this module
+    module_dir = Path(__file__).parent
+    relative_path = module_dir.parent.parent / 'config' / 'common_indicators.yaml'
+    if relative_path.exists():
+        return relative_path
+    
+    # Check relative to cwd
+    cwd_path = Path.cwd() / 'config' / 'common_indicators.yaml'
+    if cwd_path.exists():
+        return cwd_path
+    
+    raise FileNotFoundError(
+        "Could not find common_indicators.yaml config file. "
+        "Set UNICEF_SHARED_CONFIG_PATH environment variable or ensure config/common_indicators.yaml exists."
+    )
+
+
+def load_shared_indicators() -> Dict[str, Dict[str, Any]]:
+    """Load indicator definitions from shared common_indicators.yaml.
+    
+    This ensures Python, R, and Stata use identical indicator definitions.
+    
+    Returns dictionary compatible with COMMON_INDICATORS format:
+    {
+        "CME_MRY0T4": {
+            "code": "CME_MRY0T4",
+            "name": "Under-5 mortality rate",
+            "dataflow": "CME",
+            "sdg": "3.2.1",
+            "unit": "Deaths per 1,000 live births",
+        },
+        ...
+    }
+    """
+    config_path = get_shared_indicators_path()
+    
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = yaml.safe_load(f)
+    
+    indicators = config.get('COMMON_INDICATORS', {})
+    
+    # Transform to match expected format (rename sdg_target to sdg if needed)
+    result = {}
+    for code, info in indicators.items():
+        result[code] = {
+            'code': info.get('code', code),
+            'name': info.get('name', code),
+            'dataflow': info.get('dataflow'),
+            'sdg': info.get('sdg'),  # Already named 'sdg' in common_indicators.yaml
+            'unit': info.get('unit'),
+            'description': info.get('description'),
+        }
+    
+    return result
+
+
 def get_config_path() -> Path:
     """Get path to the shared indicators.yaml config file.
     

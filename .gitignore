@@ -69,3 +69,32 @@ R/tests/output/
 python/examples/data/
 R/examples/data/
 validation/validation_results.csv
+
+# ============================================
+# Development/Testing artifacts (root level)
+# ============================================
+
+# Root-level test files and logs (development artifacts)
+/test_*.do
+/test_*.log
+/test_*.yaml
+/test_*.xml
+
+# Sync logs
+/unicefdata_sync.log
+/unicefdata_sync_log.txt
+/_run_sync.log
+
+# Temporary development files
+/analyze_diff.py
+/compare_outputs.py
+/update_metadata_current.do
+
+# Stata test artifacts
+stata/src/test_*.do
+stata/src/test_*.log
+stata/tests/output/*
+!stata/tests/output/.gitkeep
+
+# Generated package files
+*.tar.gz

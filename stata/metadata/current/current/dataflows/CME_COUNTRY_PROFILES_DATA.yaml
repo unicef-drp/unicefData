@@ -1,0 +1,22 @@
+id: CME_COUNTRY_PROFILES_DATA
+name: 'CME Country profiles data'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T12:36:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_REF_AREA_SDG
+- id: INDICATOR
+  position: 2
+  codelist: CL_CME_COUNTRY_PROFILES_INDICATORS
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: REF_PERIOD
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS

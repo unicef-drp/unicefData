@@ -312,7 +312,7 @@ def _save_cache(indicators: Dict[str, dict]) -> None:
     
     try:
         with open(cache_path, 'w', encoding='utf-8') as f:
-            yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=True)
+            yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False, width=10000)
         
         logger.info(f"Saved {len(indicators)} indicators to {cache_path}")
         

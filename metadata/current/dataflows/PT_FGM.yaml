@@ -1,0 +1,296 @@
+id: PT_FGM
+name: Child Protection FGM
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:12:28Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - KEN
+  - BFA
+  - GMB
+  - SEN
+  - MRT
+  - TZA
+  - NGA
+  - LBR
+  - SOM
+  - AU_EASTERN_AFRICA
+  is_exhaustive: no
+  total_values_count: 52
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - PT_F_0-14_FGM
+  - PT_F_15-19_FGM_TND
+  - PT_F_15-49_FGM
+  - PT_F_15-49_FGM_ELIM
+  - PT_M_15-49_FGM_ELIM
+  is_exhaustive: yes
+  total_values_count: 5
+- id: FGM_PRACTITIONER
+  position: 3
+  codelist: CL_FGM_PRACTITIONER
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: FGM_TYPE
+  position: 4
+  codelist: CL_TYPE_FGM
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: AGE
+  position: 5
+  codelist: CL_AGE
+  values:
+  - Y0T14
+  - Y0T4
+  - Y10T14
+  - Y15T19
+  - Y15T49
+  - Y20T24
+  - Y25T29
+  - Y30T34
+  - Y35T39
+  - Y40T44
+  - Y45T49
+  - Y5T9
+  is_exhaustive: yes
+  total_values_count: 12
+- id: AGE_FGM
+  position: 6
+  codelist: CL_AGE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: MTH_FGM_STATUS
+  position: 7
+  codelist: CL_MTH_FGM_STATUS
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: EDUCATION_LEVEL
+  position: 8
+  codelist: CL_EDU_LEVEL
+  values:
+  - _T
+  - ISCED11_1
+  - ISCED11A_01
+  - AGG_3S_H
+  is_exhaustive: yes
+  total_values_count: 4
+- id: WEALTH_QUINTILE
+  position: 9
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - Q5
+  is_exhaustive: yes
+  total_values_count: 6
+- id: MARITAL_STATUS
+  position: 10
+  codelist: CL_MARITAL_STATUS
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: RESIDENCE
+  position: 11
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  - R
+  - U
+  is_exhaustive: yes
+  total_values_count: 3
+- id: RELIGIOUS_GROUP
+  position: 12
+  codelist: CL_RELIGIOUS_GROUP
+  values:
+  - _T
+  - MU
+  - RC
+  - NR
+  - PR
+  - CR
+  - TR
+  - AI
+  - AN
+  - EV
+  is_exhaustive: no
+  total_values_count: 12
+- id: ETHNIC_GROUP
+  position: 13
+  codelist: CL_ETHNIC_GROUP
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_D
+  codelist: CL_OBS_SOWC_NOTES
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOWC_FLAG_C
+  codelist: CL_OBS_SOWC_NOTES
+  values:
+  - p
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOWC_FLAG_B
+  codelist: CL_OBS_SOWC_NOTES
+  values:
+  - 'y'
+  is_exhaustive: yes
+  total_values_count: 1
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - E
+  - RP
+  - RA
+  - U
+  is_exhaustive: yes
+  total_values_count: 4
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - DHS, MICS and other national surveys
+  - DHS 2022
+  - DHS 2019-20
+  - DHS 2021
+  - Continuous DHS 2023
+  - DHS 2019-21
+  - MICS 2021
+  - UNICEF estimates based on DHS, MICS and other national surveys
+  - SHDS 2020
+  - SPHPN 2021
+  is_exhaustive: no
+  total_values_count: 19
+- id: LOWER_BOUND
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UPPER_BOUND
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNWGTD_SAMPL_SIZE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: WGTD_SAMPL_SIZE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOURCE_LINK
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values:
+  - EOF
+  is_exhaustive: yes
+  total_values_count: 1
+- id: COVERAGE_TIME
+  codelist: ~
+  values:
+  - 2014-23
+  - '2022'
+  - '2021'
+  - 2019-20
+  - '2023'
+  - 2019-21
+  - '2020'
+  is_exhaustive: yes
+  total_values_count: 7
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values:
+  - Work is underway to populate the UNICEF global database with historical country-level
+    data.
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values:
+  - Mandera County could not be visited due to insecurity
+  - Some parts of Boucle Du Mouhoun, Cascades, Center North, East, North and Sahel
+    could not be visited due to insecurity
+  - Due to prolonged insecurity concerns, some parts of states, including Borno state,
+    were not sampled
+  - Based on 13 countries with a population coverage 94 per cent of the regional female
+    population aged 15-49 years
+  - Based on 12 countries with a population coverage 92 per cent of the regional population
+    of girls aged 0-14 years
+  - Based on 20 countries with a population coverage 58 per cent of the regional population
+    of girls aged 0-14 years
+  - Based on 23 countries with a population coverage 63 per cent of the regional female
+    population aged 15-49 years
+  - Based on 3 countries with a population coverage 56 per cent of the regional female
+    population aged 15-49 years
+  - Figure refers to ever-married women; 55 sampling strata in the country, 8 were
+    excluded due to security issues.
+  - The denominator of this value refers to girls and women who have heard of FGM,
+    rather than all girls and women. Given the widespread existence of the practice
+    in Somalia, the impact of this deviation from the standard indicator definition
+    is negligible. Due to security issues, some parts of the country were not sampled.
+  is_exhaustive: no
+  total_values_count: 220
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 99.8
+  total_count: 885
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2023.0
+  total_count: 4

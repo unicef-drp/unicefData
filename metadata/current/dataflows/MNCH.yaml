@@ -1,0 +1,288 @@
+id: MNCH
+name: Maternal, child and newborn health
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:12:01Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - NGA
+  - LBR
+  - KEN
+  - PER
+  - MLI
+  - IND
+  - GMB
+  - GHA
+  - BEN
+  - SEN
+  is_exhaustive: no
+  total_values_count: 181
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - MNCH_ABR
+  - MNCH_ADO_TOBACCO
+  - MNCH_ANC1
+  - MNCH_ANC4
+  - MNCH_BIRTH18
+  - MNCH_CSEC
+  - MNCH_DEMAND_FP
+  - MNCH_DIARCARE
+  - MNCH_INFDEC
+  - MNCH_INSTDEL
+  - MNCH_IPTP
+  - MNCH_ITN
+  - MNCH_ITN2
+  - MNCH_ITNOWN
+  - MNCH_ITNPREG
+  - MNCH_LIFE_EXPECTANCY
+  - MNCH_LTR_MATERNAL_DEATH
+  - MNCH_MATERNAL_DEATHS
+  - MNCH_MLRACT
+  - MNCH_MLRCARE
+  - MNCH_MLRDIAG
+  - MNCH_MMR
+  - MNCH_ORS
+  - MNCH_ORSZINC
+  - MNCH_ORTCF
+  - MNCH_PNCMOM
+  - MNCH_PNCNB
+  - MNCH_PNEUCARE
+  - MNCH_SAB
+  - MNCH_UHC
+  - MNCH_UHC_RMNCH
+  - MNCH_ZINC
+  is_exhaustive: yes
+  total_values_count: 32
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: AGE
+  position: 4
+  codelist: CL_AGE
+  values:
+  - _T
+  - Y0T4
+  - Y10T14
+  - Y13T15
+  - Y15T19
+  - Y15T49
+  - Y20T24
+  is_exhaustive: yes
+  total_values_count: 7
+- id: AGE_AT_BIRTH
+  position: 5
+  codelist: CL_AGE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: WEALTH_QUINTILE
+  position: 6
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - Q5
+  is_exhaustive: yes
+  total_values_count: 6
+- id: RESIDENCE
+  position: 7
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  - R
+  - U
+  is_exhaustive: yes
+  total_values_count: 3
+- id: MOTHER_EDUCATION
+  position: 8
+  codelist: CL_EDU_LEVEL
+  values:
+  - _T
+  - AGG_3S_H
+  - ISCED11_1
+  - ISCED11A_01
+  is_exhaustive: yes
+  total_values_count: 4
+- id: DATA_SOURCE
+  position: 9
+  codelist: CL_MATERNAL_SOURCE
+  values:
+  - MNCH_SRC_2919
+  - MNCH_SRC_2617
+  - MNCH_SRC_2564
+  - MNCH_SRC_116
+  - MNCH_SRC_2921
+  - MNCH_SRC_2566
+  - MNCH_SRC_2916
+  - MNCH_SRC_2940
+  - MNCH_SRC_1295
+  - MNCH_SRC_902
+  is_exhaustive: no
+  total_values_count: 319
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+  values:
+  - 'n'
+  is_exhaustive: yes
+  total_values_count: 1
+- id: DATA_SOURCE_PRIORITY
+  codelist: ~
+  values_min: 1.0
+  values_max: 1.0
+  total_values_count: 1
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - 1_IN_X
+  - BIRTHSPER1000WOMEN
+  - D_PER_100000_BIRTHS
+  - IDX
+  - NUMBER
+  - PCNT
+  is_exhaustive: yes
+  total_values_count: 6
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - RP
+  - MD
+  - E
+  is_exhaustive: yes
+  total_values_count: 3
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values_min: 0.0
+  values_max: 0.0
+  total_values_count: 1
+- id: LOWER_BOUND
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UPPER_BOUND
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: WGTD_SAMPL_SIZE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNWGTD_SAMPL_SIZE
+  codelist: ~
+  values:
+  - 'Cadres included align with the standard definition of: Doctor, nurse and/or midwife'
+  - 'Institutional Birth (IB): includes all deliveries that occurred at a health facility'
+  - Unclear definition of the cadres included (Skilled health personnel)
+  - Unclear definition of the cadres included
+  - Unclear definition of the cadres included (Trained personnel)
+  - Unclear definition of the cadres included (skilled health personnel); Women age
+    All ages
+  - 'Cadres included align with the standard definition of: Doctor, nurse and/or midwife
+    (¬†)'
+  - Unclear definition of the cadres included (Qualified medical personnel)
+  - 'Cadres included align with the standard definition of: Doctor, nurse and/or midwife
+    (doctor, midwife, delivery nurse, nurse)'
+  - 'Cadres included align with the standard definition of: Doctor, nurse and/or midwife
+    (doctor, midwife/nurse)'
+  is_exhaustive: no
+  total_values_count: 47
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values:
+  - Figures are based on 25-49 unweighted cases.
+  - Country-adjusted data
+  - Multiple Indicator Cluster Survey 2023 Kyrgyz Republic Survey Findings Report,
+    Table TM.8.2 and Table TM.8.3, does not capture within 2 days of giving birth
+  - At least 5 visits
+  - Figures that are based on 25-49 unweighted cases.
+  - Multiple Indicator Cluster Survey 2023 Kyrgyz Republic Survey Findings Report,
+    Table TM.8.7 and Table TM.8.8, does not capture within 2 days of giving birth
+  - 'N√∫mero de atenciones prenatales: 4-5, 6 y m√°s'
+  - Weighted average of Secondary and Higher prevalence
+  - 'Cadres included align with the standard definition of: Doctor, nurse and/or midwife'
+  - http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def
+  is_exhaustive: no
+  total_values_count: 28
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOURCE_LINK
+  codelist: ~
+  values:
+  - Statcompiler
+  - CRAVE 2025 - Template
+  - Data downloaded from SDG Database May 2025
+  - Joint UNICEF-WHO Database on Skilled Birth Attendance 2025 (SDG inclusion=1)
+  - Data downloaded from United Nations, Department of Economic and Social Affairs,
+    Population Division (2022). World Population Prospects 2022, Online Edition.
+  - Data downloaded from United Nations, Department of Economic and Social Affairs,
+    Population Division (2024). World Population Prospects 2024, Online Edition.
+  - CRAVE 2025
+  - Statcompiler data extracted for:GH2022DHS
+  - Statcompiler data extracted for:MZ2022DHS
+  - Data downloaded from WHO MCA Data Portal Oct 2025
+  is_exhaustive: no
+  total_values_count: 19
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values:
+  - EOF
+  is_exhaustive: yes
+  total_values_count: 1
+- id: COVERAGE_TIME
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SUB_SECTOR
+  codelist: ~
+  values:
+  - MALA
+  - MATERNAL_MORTALITY
+  - DIAR
+  - DELIVERY
+  - ANTENATAL
+  - FERTILITY
+  - POSTNATAL_CARE
+  - DEMOGRAPHY
+  - PNEU
+  - ADOLESCENTS
+  is_exhaustive: no
+  total_values_count: 12
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 550710.0
+  total_count: 2290
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 5

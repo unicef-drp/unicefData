@@ -1,0 +1,147 @@
+id: CCRI
+name: Children’s Climate and Environment Risk Index
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:09:46Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - AFG
+  - AGO
+  - ALB
+  - ARE
+  - ARG
+  - ARM
+  - AUS
+  - AUT
+  - BEL
+  - BEN
+  is_exhaustive: no
+  total_values_count: 163
+- id: INDICATOR
+  position: 2
+  codelist: CCRI_INDICATORS
+  values:
+  - CCRI_AEDES
+  - CCRI_CHLD_CLIMATE_ENV_RISK_INDEX
+  - CCRI_CHLD_HEALTH
+  - CCRI_CHLD_HEALTH_NUTRITION
+  - CCRI_CHLD_NUTRITION
+  - CCRI_CHLD_VULNERABILITY
+  - CCRI_CLIMATE_ENV_SHOCKS
+  - CCRI_COMM_ASSETS
+  - CCRI_DENGUE
+  - CCRI_EDUCATION
+  - CCRI_FLOODS_COASTAL
+  - CCRI_FLOODS_RIVERINE
+  - CCRI_HEATWAVES
+  - CCRI_MALARIA
+  - CCRI_MAT_HEALTH
+  - CCRI_POLLUTION_AIR
+  - CCRI_POLLUTION_LEAD
+  - CCRI_POLLUTION_PESTICIDE
+  - CCRI_POLLUTION_SOIL_WATER
+  - CCRI_POV_COMM_ASSETS_SOC_PROT
+  - CCRI_POV_INEQUITY
+  - CCRI_SOC_PROT_ECON_EMPOW
+  - CCRI_TROPICAL_CYCLONES
+  - CCRI_VECTOR_BORNE_DISEASE
+  - CCRI_WASH
+  - CCRI_WATER_SCARCITY
+  - CCRI_ZIKA
+  is_exhaustive: yes
+  total_values_count: 27
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values:
+  - 'Value: 0.0'
+  - 'Value: 10'
+  - 'Value: 7.3'
+  - 'Value: 10.0'
+  - 'Value: 3.8'
+  - 'Value: 4.1'
+  - 'Value: 8.3'
+  - 'Value: 9.4'
+  - 'Value: 3.4'
+  - 'Value: 7.7'
+  is_exhaustive: no
+  total_values_count: 112
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - Atmospheric Composition Analysis Group, CIESIN | Gridded Population of the World,
+    UN World Population Prospects
+  - Data for Children Collaborative - Heatwave frequency was created using the Global
+    gridded Berkley Earth Surface Temperature (BEST) observation dataset -, CIESIN
+    | Gridded Population of the World, UN World Population Prospects
+  - International Telecommunication Union (ITU), through the Global SDG Indicators
+    Database.
+  - 'Pure Earth, UNICEF: Data provided by the Institute for Health Metrics and Evaluation,
+    utilizing their Burden of Disease dataset for 2019 - Pure Earth, UNICEF: Data
+    provided by the Institute for Health Metrics and Evaluation, utilizing their Burden
+    of Disease dataset for 2019. UN World Population Prospects - Tang, F.H.M., Lenzen,
+    M., McBratney, A. and Maggi F. (2021) - Risk of pesticide pollution at the global
+    scale, NatureGeoscience -, CIESIN | Gridded Population of the World, UN World
+    Population Prospects'
+  - The Malaria Atlas Project, CIESIN | Gridded Population of the World, UN World
+    Population Prospects - Messina et al., CIESIN | Gridded Population of the World,
+    UN World Population Prospects - Kraemer et al., CIESIN | Gridded Population of
+    the World, UN World Population Prospects
+  - UNDRR, CIESIN | Gridded Population of the World - UNDRR, CIESIN | Gridded Population
+    of the World, UN World Population Prospects
+  - UNDRR, CIESIN | Gridded Population of the World (UN-Adjusted), UN World Population
+    Prospects
+  - 'World Bank, Global Poverty Working Group. Data are compiled from official government
+    sources or are computed by World Bank staff using national (i.e. country–specific)
+    poverty lines. - World Bank, Development Research Group. Data are based on primary
+    household survey data obtained from government statistical agencies and World
+    Bank country departments.  - International Telecommunication Union (ITU) World
+    Telecommunication/ICT Indicators Database, redistributed by the World Bank WDI
+    database. - World Bank Group, through the Global SDG Indicators Database. - ILO,
+    through the Global SDG Indicators Database. - World Bank ASPIRE (Atlas of Social
+    Protection: Indicators of Resilience and Equity) - World Bank Global Findex database'
+  - World Resources Institute (WRI) Aqueduct 3.0, CIESIN | Gridded Population of the
+    World (UN-Adjusted) - World Resources Institute (WRI) Aqueduct 3.0, CIESIN | Gridded
+    Population of the World (UN-Adjusted), UN World Population Prospects
+  - World Resources Institute (WRI) Aqueduct 3.0, UNEP/GRID-Europe, CIESIN | Gridded
+    Population of the World (UN-Adjusted), UN World Population Prospects - World Resources
+    Institute (WRI) Aqueduct 3.0, UNEP, CIESIN | Gridded Population of the World (UN-Adjusted),
+    UN World Population Prospects
+  is_exhaustive: no
+  total_values_count: 16
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - IDX
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+primary_measure_summary:
+  type: categorical
+  values:
+  - Extremely High
+  - Low
+  - Medium-High
+  - Low-Medium
+  - High
+  total_count: 5
+  is_exhaustive: yes
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2020.0
+  total_count: 1

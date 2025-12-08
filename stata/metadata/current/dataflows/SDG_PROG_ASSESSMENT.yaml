@@ -1,0 +1,29 @@
+id: SDG_PROG_ASSESSMENT
+name: 'SDG Progress assessment'
+version: '1.1'
+agency: UNICEF
+synced_at: '2025-12-08T10:53:00Z'
+dimensions:
+- id: COUNTRY
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_SDG_ASSESSMENT_INDICATOR
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: TARGET_2030
+- id: HISTORIC_PERFORMANCE
+  codelist: CL_HIST_PERF
+- id: FOOTNOTE
+- id: GOAL
+  codelist: CL_SP_GOAL
+- id: DATA_SOURCE
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: LATEST_DATA_POINT_YEAR
+- id: EFFORT_NEEDED
+  codelist: CL_EFFORT_NEEDED

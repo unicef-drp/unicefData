@@ -2,7 +2,7 @@ id: CME_SUBNAT_SEN
 name: CME Senegal
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-03T04:59:41.662026+00:00'
+synced_at: '2025-12-08T11:14:45.898407+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

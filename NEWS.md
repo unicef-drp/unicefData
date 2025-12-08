@@ -1,5 +1,12 @@
 # unicefData Changelog
 
+## 0.2.3 (2025-12-08)
+
+### Bug Fixes
+* **R**: Renamed `sync_indicators()` to `build_indicator_catalog()` in `R/metadata.R` to resolve function name conflict with `R/metadata_sync.R`
+  - The `sync_indicators()` function in `metadata_sync.R` (saves YAML files) is unchanged
+  - `build_indicator_catalog()` builds in-memory indicator catalog for runtime use
+
 ## 0.2.2 (2025-12-02)
 
 ### Vintage Control (NEW)
@@ -45,7 +52,7 @@
 ### Metadata Sync & Validation (NEW)
 * **R**: Added `R/metadata.R` with:
   - `sync_metadata()` - Download and cache API metadata as YAML files
-  - `sync_dataflows()`, `sync_codelists()`, `sync_indicators()` - Sync specific metadata types
+  - `sync_dataflows()`, `sync_codelists()`, `build_indicator_catalog()` - Sync specific metadata types
   - `validate_data()` - Validate DataFrames against cached metadata
   - `load_dataflows()`, `load_indicators()`, `load_codelists()` - Load cached metadata
   - `create_data_version()` - Create version records for data tracking

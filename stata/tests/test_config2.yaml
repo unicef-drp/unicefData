@@ -1,0 +1,4 @@
+name: Second Config
+settings:
+  debug: true
+  max_obs: 5000

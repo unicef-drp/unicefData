@@ -1,19 +1,20 @@
-﻿# unicefData
+# unicefData
 
-[![R-CMD-check](https://github.com/unicef-drp/unicefData/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions)
-[![Python Tests](https://github.com/unicef-drp/unicefData/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions)
+[![R-CMD-check](https://github.com/unicef-drp/unicefData/actions/workflows/check.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions) 
+[![Python Tests](https://github.com/unicef-drp/unicefData/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions) 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Stata 14+](https://img.shields.io/badge/Stata-14+-1a5276.svg)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Bilingual R and Python library for downloading UNICEF child welfare indicators via SDMX API**
+**Trilingual R, Python, and Stata library for downloading UNICEF child welfare indicators via SDMX API**
 
-The **unicefData** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in both **R** and **Python**. Inspired by `get_ilostat()` (ILO) and `wb_data()` (World Bank), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.
+The **unicefData** package provides lightweight, consistent interfaces to the [UNICEF SDMX Data Warehouse](https://sdmx.data.unicef.org/) in **R**, **Python**, and **Stata**. Inspired by `get_ilostat()` (ILO), `wb_data()` (World Bank), and `wbopendata` (World Bank for Stata), you can fetch any indicator series simply by specifying its SDMX key, date range, and optional filters.
 
 ---
 
 ## Quick Start
 
-Both R and Python use the **same functions** with identical parameter names.
+All three languages use **the same functions** with nearly identical parameter names.
 
 ### Python
 
@@ -57,6 +58,20 @@ df <- get_unicef(
 print(head(df))
 ```
 
+### Stata
+
+```stata
+* Fetch under-5 mortality for specific countries
+unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) ///
+    start_year(2015) end_year(2023) clear
+
+* View the data
+list iso3 country indicator period value in 1/10
+
+* For help and full syntax:
+help unicefdata
+```
+
 > **Note:** You don't need to specify `dataflow`! The package automatically detects it from the indicator code on first use, fetching the complete indicator codelist (733 indicators) from the UNICEF SDMX API.
 
 ---
@@ -77,6 +92,16 @@ library(unicefData)
 git clone https://github.com/unicef-drp/unicefData.git
 cd unicefData/python
 pip install -e .
+```
+
+### Stata Package
+
+```stata
+* Install from GitHub using net install
+net install unicefdata, from("https://raw.githubusercontent.com/unicef-drp/unicefData/main/stata") replace
+
+* Or manually: copy all files from stata/src/u/ and stata/src/_/ 
+* to your personal ado directory (type: sysdir)
 ```
 
 ---
@@ -433,23 +458,128 @@ Use `list_categories()` for the complete list.
 
 ---
 
+## Metadata Synchronization
+
+The unicefData package maintains synchronized YAML metadata files across all three platforms (Python, R, Stata). These files contain dataflow definitions, indicator catalogs, country codes, and codelist mappings.
+
+### Python
+
+```python
+import sys
+sys.path.insert(0, 'python')
+
+from unicef_api.metadata import MetadataSync
+from unicef_api.schema_sync import sync_dataflow_schemas
+from unicef_api.indicator_registry import refresh_indicator_cache
+
+# Sync core metadata files
+ms = MetadataSync()
+ms.sync_all(verbose=True)
+
+# Generate dataflow schemas (dataflows/*.yaml)
+sync_dataflow_schemas(output_dir='python/metadata/current')
+
+# Generate full indicator catalog (733 indicators)
+refresh_indicator_cache()
+```
+
+**Generated files:** `python/metadata/current/`
+- `_unicefdata_dataflows.yaml` - 69 dataflows
+- `_unicefdata_indicators.yaml` - 25 common SDG indicators
+- `_unicefdata_codelists.yaml` - 5 dimension codelists
+- `_unicefdata_countries.yaml` - 453 country codes
+- `_unicefdata_regions.yaml` - 111 regional codes
+- `unicef_indicators_metadata.yaml` - 733 indicators (full catalog)
+- `dataflow_index.yaml` - Dataflow schema index
+- `dataflows/*.yaml` - 69 individual dataflow schemas
+
+### R
+
+```r
+# Set working directory to R folder
+setwd("R")
+
+# Load and run metadata sync
+source("metadata_sync.R")
+sync_all_metadata(verbose = TRUE)
+
+# Generate full indicator catalog
+source("indicator_registry.R")
+refresh_indicator_cache()
+
+# Generate dataflow schemas (requires schema_sync.R)
+source("schema_sync.R")
+sync_dataflow_schemas()
+```
+
+**Generated files:** `R/metadata/current/`
+- Same file structure as Python
+
+### Stata
+
+```stata
+* Standard sync (uses Python for large XML files when available)
+unicefdata_sync, verbose
+
+* Pure Stata sync (with suffix for separate files)
+unicefdata_sync, suffix("_stataonly") verbose
+
+* View help for all options
+help unicefdata_sync
+```
+
+**Generated files:** `stata/metadata/current/`
+- Same file structure as Python/R
+- `*_stataonly.yaml` files when using suffix option
+
+#### ⚠️ Stata Limitations
+
+The pure Stata XML parser has limitations with large XML files due to Stata's macro length restrictions (error 920). This affects:
+- `dataflow_index.yaml` - May have empty dataflows list
+- `dataflows/*.yaml` - Individual schema files may not be generated
+
+**Recommended:** Use the standard `unicefdata_sync, verbose` command (without suffix) which uses Python assistance for complete metadata extraction. Or use Python directly:
+
+```stata
+python:
+from unicef_api.schema_sync import sync_dataflow_schemas
+sync_dataflow_schemas(output_dir='stata/metadata/current')
+end
+```
+
+### Metadata Consistency
+
+All platforms should generate matching metadata with:
+- Same record counts across Python, R, and Stata
+- Standardized `_metadata` headers with platform, version, timestamp
+- Shared indicator definitions from `config/common_indicators.yaml`
+
+Use the status script to verify consistency:
+
+```bash
+python tests/generate_metadata_status.py --detailed
+```
+
+---
+
 ## Features
 
-| Feature | R | Python |
-|---------|---|--------|
-| Unified `get_unicef()` API | ✅ | ✅ |
-| **`search_indicators()`** | ✅ | ✅ |
-| **`list_categories()`** | ✅ | ✅ |
-| Auto dataflow detection | ✅ | ✅ |
-| Filter by country, year, sex | ✅ | ✅ |
-| Automatic retries | ✅ | ✅ |
-| 733 indicators supported | ✅ | ✅ |
-| **Post-production: `format`** | ✅ | ✅ |
-| **Post-production: `latest`** | ✅ | ✅ |
-| **Post-production: `mrv`** | ✅ | ✅ |
-| **Post-production: `add_metadata`** | ✅ | ✅ |
-| Metadata versioning | ✅ | ✅ |
-| Disk-based caching | ✅ | No |
+| Feature | R | Python | Stata |
+|---------|---|--------|-------|
+| Unified `get_unicef()` / `unicefdata` API | ✅ | ✅ | ✅ |
+| **`search_indicators()`** | ✅ | ✅ | 🔜 |
+| **`list_categories()`** | ✅ | ✅ | 🔜 |
+| Auto dataflow detection | ✅ | ✅ | ✅ |
+| Filter by country, year, sex | ✅ | ✅ | ✅ |
+| Automatic retries | ✅ | ✅ | ✅ |
+| 733 indicators supported | ✅ | ✅ | ✅ |
+| **Post-production: `format`** | ✅ | ✅ | ✅ |
+| **Post-production: `latest`** | ✅ | ✅ | ✅ |
+| **Post-production: `mrv`** | ✅ | ✅ | ✅ |
+| **Post-production: `add_metadata`** | ✅ | ✅ | 🔜 |
+| Metadata versioning | ✅ | ✅ | ✅ |
+| Disk-based caching | ✅ | No | ✅ |
+| YAML metadata sync | ✅ | ✅ | ✅ |
 
 ---
 
@@ -473,6 +603,31 @@ See the examples directories:
 
 - **R**: `R/examples/00_quick_start.R`
 - **Python**: `python/examples/00_quick_start.py`
+- **Stata**: `stata/examples/` and `help unicefdata`
+
+---
+
+## Project Structure
+
+```
+unicefData/
+├── config/                 # Shared configuration
+│   └── common_indicators.yaml  # 25 SDG indicators (Python/R/Stata source)
+├── R/                      # R package source
+│   ├── metadata/current/   # R metadata files
+│   └── *.R                 # R source files
+├── python/                 # Python package source
+│   ├── metadata/current/   # Python metadata files
+│   └── unicef_api/         # Python package
+├── stata/                  # Stata package source
+│   ├── src/u/              # Main ado files (unicefdata.ado, etc.)
+│   ├── src/_/              # Internal subroutines
+│   ├── metadata/current/   # Stata metadata files
+│   └── examples/           # Stata examples
+├── tests/                  # Cross-platform test utilities
+│   └── generate_metadata_status.py  # Metadata consistency checker
+└── README.md
+```
 
 ---
 

@@ -1,0 +1,127 @@
+id: DM
+name: Demography
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:10:54Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+  values:
+  - ABW
+  - AFG
+  - AGO
+  - AIA
+  - ALB
+  - AND
+  - ARE
+  - ARG
+  - ARM
+  - ASM
+  is_exhaustive: no
+  total_values_count: 319
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - DM_POP_TOT
+  - DM_POP_U18
+  - DM_POP_U5
+  is_exhaustive: yes
+  total_values_count: 3
+- id: RESIDENCE
+  position: 3
+  codelist: CL_RESIDENCE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SEX
+  position: 4
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: AGE
+  position: 5
+  codelist: CL_AGE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - PRED
+  is_exhaustive: yes
+  total_values_count: 1
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DATA_SOURCE
+  codelist: ~
+  values:
+  - United Nations, Department of Economic and Social Affairs, Population Division
+    (2024). World Population Prospects 2024.
+  is_exhaustive: yes
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PS
+  is_exhaustive: yes
+  total_values_count: 1
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values_min: 3.0
+  values_max: 3.0
+  total_values_count: 1
+- id: COVERAGE_TIME
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SOURCE_LINK
+  codelist: ~
+  values:
+  - https://population.un.org/wpp/
+  is_exhaustive: yes
+  total_values_count: 1
+- id: TIME_PERIOD_METHOD
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SERIES_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_FOOTNOTE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+primary_measure_summary:
+  type: numerical
+  min: 0.005
+  max: 8091734.93
+  total_count: 9810
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2023.0
+  total_count: 4

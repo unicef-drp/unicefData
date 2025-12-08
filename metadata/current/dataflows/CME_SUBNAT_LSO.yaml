@@ -1,0 +1,184 @@
+id: CME_SUBNAT_LSO
+name: CME Lesotho
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:10:28Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_CME_REF_AREA_SUBNAT
+  values:
+  - LSO-1_1
+  - LSO-10_1
+  - LSO-2_1
+  - LSO-3_1
+  - LSO-4_1
+  - LSO-5_1
+  - LSO-6_1
+  - LSO-7_1
+  - LSO-8_1
+  - LSO-9_1
+  is_exhaustive: yes
+  total_values_count: 10
+- id: INDICATOR
+  position: 2
+  codelist: CL_INDICATOR_CME
+  values:
+  - MRM0
+  - MRY0T4
+  is_exhaustive: yes
+  total_values_count: 2
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: WEALTH_QUINTILE
+  position: 4
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SERIES_NAME
+  position: 5
+  codelist: CL_SERIES_CME
+  values:
+  - UN_IGME
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SERIES_YEAR
+  position: 6
+  codelist: CL_SERIES_YEAR_CME
+  values_min: 2021.0
+  values_max: 2021.0
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: COUNTRY_NOTES
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: REGIONAL_GROUP
+  codelist: CL_REGIONAL_GROUPS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: CONNECTION
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DEATH_CATEGORY
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: CATEGORY
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS_CME
+  values:
+  - A
+  is_exhaustive: yes
+  total_values_count: 1
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - D_PER_1000_B
+  is_exhaustive: yes
+  total_values_count: 1
+- id: SERIES_CATEGORY
+  codelist: CL_SERIES_CATEGORY_CME
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: SERIES_TYPE
+  codelist: CL_SERIES_TYPE_CME
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: STD_ERR
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: REF_DATE
+  codelist: ~
+  values_min: 2020.0
+  values_max: 2021.0
+  total_values_count: 2
+- id: AGE_GROUP_OF_WOMEN
+  codelist: CL_AGE
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: TIME_SINCE_FIRST_BIRTH
+  codelist: CL_TSFB_CME
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DEFINITION
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: INTERVAL
+  codelist: ~
+  values_min: 1.0
+  values_max: 1.0
+  total_values_count: 1
+- id: SERIES_METHOD
+  codelist: CL_METHOD_CME
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: LOWER_BOUND
+  codelist: ~
+  values_min: 23.9684384
+  values_max: 59.965029
+  total_values_count: 40
+- id: UPPER_BOUND
+  codelist: ~
+  values_min: 46.2453086
+  values_max: 106.5176217
+  total_values_count: 40
+- id: STATUS
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: YEAR_TO_ACHIEVE
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: MODEL
+  codelist: CL_MODEL
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: ADMIN_LEVEL
+  codelist: CL_ADMIN_LEVEL
+  values_min: 1.0
+  values_max: 1.0
+  total_values_count: 1
+primary_measure_summary:
+  type: numerical
+  min: 34.3479674
+  max: 79.6921617
+  total_count: 40
+time_dimension_summary:
+  type: categorical
+  values:
+  - 2020-01
+  - 2021-01
+  total_count: 2
+  is_exhaustive: yes

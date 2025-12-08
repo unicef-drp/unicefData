@@ -1,0 +1,14 @@
+v 3
+d UNICEF Data Warehouse Stata Package
+d
+d This package provides Stata commands to access the UNICEF Data Warehouse
+d via the SDMX REST API. Download hundreds of indicators covering child
+d health, nutrition, education, protection, HIV/AIDS, WASH, and more.
+d
+d Author: Joao Pedro Azevedo (jazevedo@unicef.org)
+d
+d For more information, visit:
+d https://github.com/unicef-drp/unicefData
+d
+
+p unicefdata Download indicators from UNICEF Data Warehouse

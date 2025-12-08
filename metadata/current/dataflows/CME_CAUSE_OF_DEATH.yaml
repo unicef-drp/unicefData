@@ -1,0 +1,101 @@
+id: CME_CAUSE_OF_DEATH
+name: CME Cause of death
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:09:56Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_REF_AREA_SDG
+  values:
+  - AFG
+  - AGO
+  - ALB
+  - AND
+  - ARE
+  - ARG
+  - ARM
+  - ATG
+  - AUS
+  - AUT
+  is_exhaustive: no
+  total_values_count: 204
+- id: INDICATOR
+  position: 2
+  codelist: CME_CAUSE_OF_DEATH_SER_TYPE
+  values:
+  - DEATHS
+  - FRACTION
+  - RATE
+  is_exhaustive: yes
+  total_values_count: 3
+- id: CAUSE_OF_DEATH
+  position: 3
+  codelist: CME_CAUSE_OF_DEATH_INDICATOR
+  values:
+  - DIARRHOEAL
+  - ASPHY_TRAUMA
+  is_exhaustive: yes
+  total_values_count: 2
+- id: SEX
+  position: 4
+  codelist: CME_CAUSE_OF_DEATH_SEX
+  values:
+  - _T
+  is_exhaustive: yes
+  total_values_count: 1
+- id: AGE_GROUP
+  position: 5
+  codelist: CL_CME_CAUSE_OF_DEATH_AGE
+  values:
+  - M1T59
+  - Y0T4
+  - M0
+  - Y10T14
+  - Y10T19
+  - Y5T14
+  - Y5T19
+  - Y5T9
+  is_exhaustive: yes
+  total_values_count: 8
+- id: SERIES_NAME
+  position: 6
+  codelist: ~
+  values:
+  - CA CODE
+  is_exhaustive: yes
+  total_values_count: 1
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - D
+  - D_PER_1000_10
+  - D_PER_1000_1M
+  - D_PER_1000_5
+  - D_PER_1000_B
+  - PCNT
+  is_exhaustive: yes
+  total_values_count: 6
+- id: LOWER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: 559000.0
+  total_values_count: 3973
+- id: UPPER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: .inf
+  total_values_count: 5270
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: .inf
+  total_count: 5933
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2021.0
+  total_count: 2

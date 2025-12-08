@@ -1,0 +1,100 @@
+# UNICEF SDMX Dataflows for Stata unicefdata command
+# Synced from: metadata/current/dataflows.yaml
+# Last updated: 2025-12-04
+#
+# This file contains available UNICEF SDMX dataflows.
+# Used by unicefdata.ado for dataflow validation and help.
+
+metadata_version: "1.0"
+synced_at: "2025-12-04T00:00:00Z"
+source: "unicefData/metadata/current/dataflows.yaml"
+
+dataflows:
+  # Child Mortality
+  CME:
+    name: Child Mortality
+    description: IGME child mortality estimates
+  CME_CAUSE_OF_DEATH:
+    name: CME Cause of death
+    description: Child mortality by cause of death (JHU data)
+  CME_SUBNATIONAL:
+    name: CME Subnational Data
+    description: Subnational child mortality estimates
+
+  # Nutrition
+  NUTRITION:
+    name: Nutrition
+    description: Child nutrition indicators (stunting, wasting, overweight)
+  NUTRITION_IYCF:
+    name: IYCF
+    description: Infant and young child feeding practices
+
+  # Immunization
+  IMMUNISATION:
+    name: Immunisation
+    description: Vaccination coverage estimates (WHO/UNICEF WUENIC)
+
+  # Education
+  EDUCATION:
+    name: Education
+    description: Education indicators from household surveys
+  EDUCATION_UIS_SDG:
+    name: Education UIS SDG
+    description: UIS education SDG indicators
+
+  # WASH
+  WASH_HOUSEHOLDS:
+    name: WASH Households
+    description: Water, sanitation, hygiene - household level
+  WASH_SCHOOLS:
+    name: WASH Schools
+    description: Water, sanitation, hygiene - schools
+  WASH_HEALTH:
+    name: WASH Health Care Facilities
+    description: Water, sanitation, hygiene - health facilities
+
+  # HIV/AIDS
+  HIV_AIDS:
+    name: HIV/AIDS
+    description: HIV/AIDS indicators
+
+  # Maternal and Child Health
+  MNCH:
+    name: MNCH
+    description: Maternal, newborn, child health indicators
+
+  # Child Protection
+  PT:
+    name: Child Protection
+    description: Child protection indicators (birth registration, violence)
+  PT_CM:
+    name: Child Marriage
+    description: Child marriage indicators
+  PT_FGM:
+    name: FGM
+    description: Female genital mutilation indicators
+
+  # Early Childhood Development
+  ECD:
+    name: ECD
+    description: Early childhood development indicators
+
+  # Child Poverty
+  CHLD_PVTY:
+    name: Child Poverty
+    description: Child poverty and deprivation indicators
+
+  # Climate
+  CCRI:
+    name: CCRI
+    description: Children's Climate and Environment Risk Index
+
+  # SDG
+  CHILD_RELATED_SDG:
+    name: Child-related SDGs
+    description: Child-related Sustainable Development Goal indicators
+
+  # Global
+  GLOBAL_DATAFLOW:
+    name: Global Dataflow
+    description: Default dataflow for unrecognized indicators

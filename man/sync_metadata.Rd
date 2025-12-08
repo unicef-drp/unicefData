@@ -15,8 +15,8 @@ sync_metadata(cache_dir = NULL, verbose = TRUE)
 List with sync summary including counts and timestamps
 }
 \description{
-Downloads dataflows, codelists, and indicator definitions,
-then saves them as YAML files in the cache directory.
+Downloads dataflows, codelists, countries, regions, and indicator definitions,
+then saves them as YAML files in the cache directory with standardized watermarks.
 }
 \examples{
 \dontrun{

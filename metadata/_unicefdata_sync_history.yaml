@@ -1,0 +1,25 @@
+vintages:
+- codelists: 5
+  countries: 453
+  dataflows: 69
+  errors: []
+  indicators: 25
+  regions: 111
+  synced_at: '2025-12-07T12:40:07.447559Z'
+  vintage_date: '2025-12-07'
+- codelists: 5
+  countries: 453
+  dataflows: 69
+  errors: []
+  indicators: 25
+  regions: 111
+  synced_at: '2025-12-07T08:52:29.516439Z'
+  vintage_date: '2025-12-07'
+- codelists: 5
+  countries: 453
+  dataflows: 69
+  errors: []
+  indicators: 25
+  regions: 111
+  synced_at: '2025-12-05T17:14:09.868294Z'
+  vintage_date: '2025-12-05'

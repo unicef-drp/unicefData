@@ -1,0 +1,293 @@
+id: CME_DF_2021_WQ
+name: IGME Child Mortality Estimates wq
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-08T13:10:04Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_REF_AREA_SDG
+  values:
+  - BLZ
+  - AZE
+  - BRA
+  - ARM
+  - BGD
+  - ARG
+  - ARE
+  - BHR
+  - AUT
+  - BGR
+  is_exhaustive: no
+  total_values_count: 28
+- id: INDICATOR
+  position: 2
+  codelist: CL_INDICATOR_CME
+  values:
+  - MRM0
+  - MRM1T11
+  - MRM1T59
+  - MRY0
+  - MRY0T4
+  - MRY10T14
+  - MRY10T19
+  - MRY15T19
+  - MRY15T24
+  - MRY1T4
+  - MRY20T24
+  - MRY5T14
+  - MRY5T24
+  - MRY5T9
+  - PR_MRM0
+  - PR_MRY0T4
+  - SB
+  - SBR
+  - TMM0
+  - TMM1T11
+  - TMM1T59
+  - TMY0
+  - TMY0T4
+  - TMY10T14
+  - TMY10T19
+  - TMY15T19
+  - TMY15T24
+  - TMY1T4
+  - TMY20T24
+  - TMY5T14
+  - TMY5T24
+  - TMY5T9
+  is_exhaustive: yes
+  total_values_count: 32
+- id: SEX
+  position: 3
+  codelist: CL_SEX
+  values:
+  - _T
+  - F
+  - M
+  is_exhaustive: yes
+  total_values_count: 3
+- id: WEALTH_QUINTILE
+  position: 4
+  codelist: CL_WEALTH_QUINTILE
+  values:
+  - _T
+  - Q1
+  - Q2
+  - Q3
+  - Q4
+  - Q5
+  is_exhaustive: yes
+  total_values_count: 6
+- id: SERIES_NAME
+  position: 5
+  codelist: CL_SERIES_CME
+  values:
+  - UN_IGME
+  - '2175'
+  - '2211'
+  - '2176'
+  - '2155'
+  - '2115'
+  - '2185'
+  - '2724'
+  - '2727'
+  - '2122'
+  is_exhaustive: no
+  total_values_count: 42
+- id: SERIES_YEAR
+  position: 6
+  codelist: CL_SERIES_YEAR_CME
+  values:
+  - '2023'
+  - '2024'
+  - '2022'
+  - '2021'
+  - '2020'
+  - 2021_2022
+  - 2022_2023
+  - '2025'
+  is_exhaustive: yes
+  total_values_count: 8
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: COUNTRY_NOTES
+  codelist: ~
+  values:
+  - The UN IGME estimates are not the official statistics of the United Arab Emirates.
+  is_exhaustive: yes
+  total_values_count: 1
+- id: REGIONAL_GROUP
+  codelist: CL_REGIONAL_GROUPS
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: CONNECTION
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DEATH_CATEGORY
+  codelist: ~
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: CATEGORY
+  codelist: ~
+  values:
+  - Already achieved by 2023
+  - '>=2050'
+  - 2031-2049
+  - 2024-2030
+  - Projected to achieve before 2050
+  is_exhaustive: yes
+  total_values_count: 5
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS_CME
+  values:
+  - A
+  - IN
+  - EX
+  is_exhaustive: yes
+  total_values_count: 3
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - D
+  - D_PER_1000_1
+  - D_PER_1000_10
+  - D_PER_1000_15
+  - D_PER_1000_1M
+  - D_PER_1000_20
+  - D_PER_1000_5
+  - D_PER_1000_B
+  - SB_PER_1000_B
+  - STILLBIRTHS
+  is_exhaustive: yes
+  total_values_count: 10
+- id: SERIES_CATEGORY
+  codelist: CL_SERIES_CATEGORY_CME
+  values:
+  - VR
+  - SVR
+  - MICS
+  - DHS
+  - HMIS
+  - SUB_LIT
+  is_exhaustive: yes
+  total_values_count: 6
+- id: SERIES_TYPE
+  codelist: CL_SERIES_TYPE_CME
+  values:
+  - VR
+  - D
+  is_exhaustive: yes
+  total_values_count: 2
+- id: STD_ERR
+  codelist: ~
+  values_min: 0.0174154
+  values_max: 6.0031527
+  total_values_count: 532
+- id: REF_DATE
+  codelist: ~
+  values_min: 2020.0
+  values_max: 2023.5
+  total_values_count: 10
+- id: AGE_GROUP_OF_WOMEN
+  codelist: CL_AGE
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: TIME_SINCE_FIRST_BIRTH
+  codelist: CL_TSFB_CME
+  values: []
+  is_exhaustive: yes
+  total_values_count: 0.0
+- id: DEFINITION
+  codelist: ~
+  values:
+  - GA 28wks
+  - BWT 500g
+  - BWT 1000g
+  - GA 20wks
+  - Any/Not Defined
+  is_exhaustive: yes
+  total_values_count: 5
+- id: INTERVAL
+  codelist: ~
+  values_min: 1.0
+  values_max: 5.0
+  total_values_count: 5
+- id: SERIES_METHOD
+  codelist: CL_METHOD_CME
+  values:
+  - VR
+  - SSH
+  - FBH
+  - HMIS
+  - PBS
+  is_exhaustive: yes
+  total_values_count: 5
+- id: LOWER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: 101475.0
+  total_values_count: 6105
+- id: UPPER_BOUND
+  codelist: ~
+  values_min: 0.0
+  values_max: 176138.0
+  total_values_count: 6317
+- id: STATUS
+  codelist: ~
+  values:
+  - Achieved
+  - Acceleration Needed
+  is_exhaustive: yes
+  total_values_count: 2
+- id: YEAR_TO_ACHIEVE
+  codelist: ~
+  values:
+  - <=1990
+  - '>=2050'
+  - '2001'
+  - '2005'
+  - '2049'
+  - '1992'
+  - '1994'
+  - '1995'
+  - '1997'
+  - '2000'
+  is_exhaustive: no
+  total_values_count: 21
+- id: MODEL
+  codelist: CL_MODEL
+  values:
+  - BSR
+  - B3
+  - BNUR
+  - BHTSRM
+  - NONSTANDARD
+  is_exhaustive: yes
+  total_values_count: 5
+primary_measure_summary:
+  type: numerical
+  min: 0.0
+  max: 105531.0
+  total_count: 7474
+time_dimension_summary:
+  type: categorical
+  values:
+  - 2020-06
+  - 2021-06
+  - 2022-06
+  - 2023-06
+  - 2023-01
+  - 2020-01
+  - 2022-01
+  - 2020-10
+  - 2020-12
+  - 2021-04
+  total_count: 11
+  is_exhaustive: no

@@ -2,7 +2,7 @@ id: CME_SUBNAT_TCD
 name: CME Chad
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-03T04:59:44.362487+00:00'
+synced_at: '2025-12-08T11:14:57.293747+00:00'
 dimensions:
 - id: REF_AREA
   position: 1
