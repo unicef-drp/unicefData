@@ -21,27 +21,71 @@ The `unicefData` repository is designed for managing, validating, and analyzing 
 
 #### R Environment
 - Use `unicefData.Rproj` to open the project in RStudio.
-- Ensure R is installed (download from https://cran.r-project.org/).
-- Add `Rscript` to your system PATH, or the scripts will auto-detect common installation paths:
-  - Windows: `C:\Program Files\R\R-x.x.x\bin\Rscript.exe`
-  - macOS: `/usr/local/bin/Rscript` or `/opt/homebrew/bin/Rscript`
-- Install required R packages by running in R:
+- **R Installation:**
+  - Download R from https://cran.r-project.org/
+  - **Windows:** Download the `.exe` installer from https://cran.r-project.org/bin/windows/base/
+  - **macOS:** Download the `.pkg` installer from https://cran.r-project.org/bin/macosx/
+  - **Linux (Ubuntu/Debian):**
+    ```bash
+    sudo apt update
+    sudo apt install r-base r-base-dev
+    ```
+- **Current installation on this machine:**
+  - **Path:** `C:\Program Files\R\R-4.5.1`
+  - **Rscript:** `C:\Program Files\R\R-4.5.1\bin\Rscript.exe`
+  - **Version:** R 4.5.1 (2025-06-13)
+- **Add R to PATH** (required for command-line scripts):
+  - **Windows:** Add `C:\Program Files\R\R-4.5.1\bin` to your system PATH environment variable
+    - Or use full path: `"C:\Program Files\R\R-4.5.1\bin\Rscript.exe"`
+  - **macOS:** R installer usually adds to PATH; verify with `which Rscript`
+    - Common paths: `/usr/local/bin/Rscript` or `/opt/homebrew/bin/Rscript`
+  - **Linux:** Usually available after installation; verify with `which Rscript`
+- **Verify installation:**
+  ```bash
+  Rscript --version
+  # Should output: R scripting front-end version 4.x.x
+  ```
+- **Install required R packages** by running in R or RStudio:
   ```R
-  install.packages(c("httr", "jsonlite", "yaml"))
+  install.packages(c("httr", "readr", "dplyr", "tibble", "xml2", "memoise", 
+                     "countrycode", "yaml", "jsonlite", "magrittr", "purrr", 
+                     "rlang", "digest", "tidyr", "devtools", "testthat"))
+  ```
+- **Install package in development mode:**
+  ```R
+  devtools::install(".")
+  # Or load without installing:
+  devtools::load_all(".")
   ```
 
 #### Python Environment
+- **Current installation on this machine:**
+  - **Path:** `C:\Users\jpazevedo\AppData\Local\Programs\Python\Python311\python.exe`
+  - **Version:** Python 3.11.5
+  - **Virtual environment:** `C:\GitHub\.venv`
 - Ensure the required Python packages are installed from `python/requirements.txt`.
 - Use a virtual environment (recommended: `C:\GitHub\.venv` or `<repo>\.venv`).
+- **Activate virtual environment:**
+  ```powershell
+  & C:\GitHub\.venv\Scripts\Activate.ps1
+  ```
 - Install dependencies:
   ```bash
   pip install -r python/requirements.txt
   ```
 
 #### Stata Environment
+- **Current installation on this machine:**
+  - **Path:** `C:\Program Files\Stata17`
+  - **Executable:** `C:\Program Files\Stata17\StataMP-64.exe`
+  - **Version:** Stata 17 MP (64-bit)
 - Run `.do` files in Stata for metadata generation.
 - The `unicefdata` ado files must be installed from `stata/src/` before running sync commands.
 - Common Stata paths searched: `C:\Program Files\Stata17\`, `C:\Program Files\Stata18\`
+- **Run Stata from command line:**
+  ```powershell
+  & "C:\Program Files\Stata17\StataMP-64.exe" /e do "path\to\script.do"
+  ```
 
 ### 2. Running Tests
 - **R Tests**: Use `testthat` to run unit tests:
