@@ -323,7 +323,8 @@ program define unicefdata_sync, rclass
         _unicefdata_sync_dataflow_index, ///
             outdir("`current_dir'") ///
             agency("`agency'") ///
-            suffix("`sfx'")
+            suffix("`sfx'") ///
+            `parser_opt'
         local n_schemas = r(count)
         local files_created "`files_created' `FILE_DF_INDEX'"
     }
@@ -347,11 +348,14 @@ program define unicefdata_sync, rclass
     }
     
     local n_full_indicators = 0
+    local ind_cached = 0
     capture noisily {
         _unicefdata_sync_ind_meta, ///
             outfile("`current_dir'`FILE_IND_META'") ///
-            agency("`agency'")
+            agency("`agency'") ///
+            `force' `parser_opt'
         local n_full_indicators = r(count)
+        local ind_cached = r(cached)
         local files_created "`files_created' `FILE_IND_META'"
     }
     
@@ -362,7 +366,12 @@ program define unicefdata_sync, rclass
         }
     }
     else if ("`verbose'" != "") {
-        di as text "     ✓ `FILE_IND_META' - " as result "`n_full_indicators'" as text " indicators"
+        if (`ind_cached' == 1) {
+            di as text "     ✓ `FILE_IND_META' - " as result "`n_full_indicators'" as text " indicators (cached)"
+        }
+        else {
+            di as text "     ✓ `FILE_IND_META' - " as result "`n_full_indicators'" as text " indicators"
+        }
     }
     
     *---------------------------------------------------------------------------
@@ -1253,11 +1262,14 @@ end
 
 *******************************************************************************
 * Extended Sync: Dataflow Index with dimension/attribute counts
-* Generates dataflow_index.yaml matching Python/R format
+* Generates dataflow_index.yaml and dataflows/*.yaml matching Python/R format
+* 
+* Uses Python helper (stata_schema_sync.py) when forcepython is specified
+* to avoid Stata's macro length limitations on large XML responses.
 *******************************************************************************
 
 program define _unicefdata_sync_dataflow_index, rclass
-    syntax, OUTDIR(string) AGENCY(string) [SUFFIX(string)]
+    syntax, OUTDIR(string) AGENCY(string) [SUFFIX(string) FORCEPYTHON FORCESTATA]
     
     * Get timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
@@ -1267,6 +1279,101 @@ program define _unicefdata_sync_dataflow_index, rclass
     
     * Set suffix for filenames
     local sfx "`suffix'"
+    
+    *---------------------------------------------------------------------------
+    * Use Python helper if forcepython is specified
+    *---------------------------------------------------------------------------
+    if ("`forcepython'" != "") {
+        * Find Python script location
+        local script_name "stata_schema_sync.py"
+        local script_path ""
+        
+        * Try common locations for the Python script
+        foreach trypath in "stata/src/u/`script_name'" "`script_name'" {
+            capture confirm file "`trypath'"
+            if (_rc == 0) {
+                local script_path "`trypath'"
+                continue, break
+            }
+        }
+        
+        * Check adopath locations if not found yet
+        if ("`script_path'" == "") {
+            foreach path in `c(adopath)' {
+                local trypath = "`path'/`script_name'"
+                local trypath = subinstr("`trypath'", "\", "/", .)
+                capture confirm file "`trypath'"
+                if (_rc == 0) {
+                    local script_path "`trypath'"
+                    continue, break
+                }
+            }
+        }
+        
+        if ("`script_path'" == "") {
+            di as err "     Python script not found: `script_name'"
+            di as err "     Ensure stata_schema_sync.py is in stata/src/u/ or adopath"
+            return scalar count = 0
+            error 601
+        }
+        
+        * Build Python command
+        local suffix_arg ""
+        if ("`sfx'" != "") {
+            local suffix_arg `"--suffix "`sfx'""'
+        }
+        
+        tempfile pyout
+        local cmd `"python "`script_path'" "`outdir'" `suffix_arg' --verbose"'
+        
+        di as text "  Script: `script_path'"
+        di as text "  Running Python schema sync..."
+        
+        if ("`c(os)'" == "Windows") {
+            shell `cmd' > "`pyout'" 2>&1
+        }
+        else {
+            shell `cmd' > "`pyout'" 2>&1
+        }
+        
+        * Read output to get count
+        local n_success = 0
+        tempname pyfh
+        capture file open `pyfh' using "`pyout'", read
+        if (_rc == 0) {
+            file read `pyfh' line
+            while !r(eof) {
+                * Look for "Success: Synced N dataflow schemas"
+                if (strmatch(`"`line'"', "*Success: Synced*")) {
+                    * Extract number
+                    local tmp = regexr(`"`line'"', ".*Synced ", "")
+                    local tmp = regexr("`tmp'", " dataflow.*", "")
+                    local n_success = real("`tmp'")
+                }
+                * Display Python output
+                di as text "  `line'"
+                file read `pyfh' line
+            }
+            file close `pyfh'
+        }
+        
+        * Verify output file was created
+        local index_file "`outdir'dataflow_index`sfx'.yaml"
+        capture confirm file "`index_file'"
+        if (_rc != 0) {
+            di as err "     Python schema sync failed to create index file"
+            return scalar count = 0
+            error 601
+        }
+        
+        return scalar count = `n_success'
+        exit
+    }
+    
+    *---------------------------------------------------------------------------
+    * Native Stata parsing (default or forcestata)
+    * NOTE: This may fail on large XML responses due to macro length limits
+    *---------------------------------------------------------------------------
     
     * First get list of all dataflows
     local df_url "`base_url'/dataflow/`agency'?references=none&detail=full"
@@ -1579,106 +1686,159 @@ end
 *******************************************************************************
 * Extended Sync: Full indicator catalog from CL_UNICEF_INDICATOR codelist
 * Generates unicef_indicators_metadata.yaml matching Python/R format
+* 
+* Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
+* that exceeds Stata's macro length limits when parsed inline.
+* 
+* Features aligned with Python/R:
+*   - metadata header with version, source, timestamp
+*   - URN field for each indicator
+*   - 30-day staleness check (skip fetch if file recent)
 *******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
-    syntax, OUTFILE(string) AGENCY(string)
+    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA]
+    
+    local cache_max_age_days = 30
+    local codelist_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
     
     * Get timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
     local synced_at = trim("`synced_at'") + "Z"
     
-    local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-    local url "`base_url'/codelist/`agency'/CL_UNICEF_INDICATOR/latest"
-    
-    tempfile xmlfile txtfile
-    capture copy "`url'" "`xmlfile'", public replace
-    
-    local n_indicators = 0
-    
-    tempname fh
-    file open `fh' using "`outfile'", write text replace
-    
-    file write `fh' "indicators:" _n
-    
-    if (_rc == 0) {
-        * Split XML into lines at each Code element
-        capture filefilter "`xmlfile'" "`txtfile'", from("<str:Code ") to("\n<str:Code ") replace
-        
+    *---------------------------------------------------------------------------
+    * Staleness check: skip if file exists and is less than 30 days old
+    *---------------------------------------------------------------------------
+    if ("`force'" == "") {
+        capture confirm file "`outfile'"
         if (_rc == 0) {
-            tempname infh
-            capture file open `infh' using "`txtfile'", read
-            
-            if (_rc == 0) {
-                file read `infh' line
-                while !r(eof) {
-                    * Match code elements (with space to exclude Codelist)
-                    if (strmatch(`"`line'"', `"*<str:Code *id=*"') == 1) {
-                        local tmp = `"`line'"'
-                        
-                        * Extract code ID
-                        local pos = strpos(`"`tmp'"', `"id=""')
-                        if (`pos' > 0) {
-                            local tmp2 = substr(`"`tmp'"', `pos' + 4, .)
-                            local pos2 = strpos(`"`tmp2'"', `"""')
-                            if (`pos2' > 0) {
-                                local code_id = substr(`"`tmp2'"', 1, `pos2' - 1)
-                                
-                                * Extract name
-                                local code_name = ""
-                                local pos3 = strpos(`"`tmp'"', `"<com:Name xml:lang="en">"')
-                                if (`pos3' > 0) {
-                                    local tmp3 = substr(`"`tmp'"', `pos3' + 24, .)
-                                    local pos4 = strpos(`"`tmp3'"', "</com:Name>")
-                                    if (`pos4' > 0) {
-                                        local code_name = substr(`"`tmp3'"', 1, `pos4' - 1)
-                                        local code_name = trim("`code_name'")
-                                        * Escape single quotes
-                                        local code_name = subinstr(`"`code_name'"', "'", "''", .)
-                                    }
+            * File exists - check its age using file modification date
+            quietly {
+                local finfo : dir "." files "`outfile'"
+                if (`"`finfo'"' != "") {
+                    tempname fh_check
+                    capture file open `fh_check' using "`outfile'", read
+                    if (_rc == 0) {
+                        * Read first few lines to check for synced_at/last_updated date
+                        local found_date = 0
+                        local line_count = 0
+                        file read `fh_check' line
+                        while !r(eof) & `line_count' < 20 {
+                            local line_count = `line_count' + 1
+                            * Check for both synced_at and last_updated (Python/R use last_updated)
+                            if (strmatch(`"`line'"', "*synced_at:*") | strmatch(`"`line'"', "*last_updated:*")) {
+                                * Extract date from timestamp field
+                                local synced_str = regexr(`"`line'"', ".*(synced_at|last_updated): *'?", "")
+                                local synced_str = regexr("`synced_str'", "'.*", "")
+                                local synced_str = substr("`synced_str'", 1, 10)
+                                * Parse YYYY-MM-DD format
+                                capture {
+                                    local sync_year = real(substr("`synced_str'", 1, 4))
+                                    local sync_month = real(substr("`synced_str'", 6, 2))
+                                    local sync_day = real(substr("`synced_str'", 9, 2))
+                                    local sync_date = mdy(`sync_month', `sync_day', `sync_year')
+                                    local today_date = date("`c(current_date)'", "DMY")
+                                    local file_age = `today_date' - `sync_date'
+                                    local found_date = 1
                                 }
-                                
-                                * Extract description (if available)
-                                local code_desc = ""
-                                local pos5 = strpos(`"`tmp'"', `"<com:Description xml:lang="en">"')
-                                if (`pos5' > 0) {
-                                    local tmp4 = substr(`"`tmp'"', `pos5' + 31, .)
-                                    local pos6 = strpos(`"`tmp4'"', "</com:Description>")
-                                    if (`pos6' > 0) {
-                                        local code_desc = substr(`"`tmp4'"', 1, `pos6' - 1)
-                                        local code_desc = trim("`code_desc'")
-                                        local code_desc = subinstr(`"`code_desc'"', "'", "''", .)
-                                    }
-                                }
-                                
-                                * Determine category (prefix before first underscore)
-                                local category = "`code_id'"
-                                local underscore_pos = strpos("`code_id'", "_")
-                                if (`underscore_pos' > 0) {
-                                    local category = substr("`code_id'", 1, `underscore_pos' - 1)
-                                }
-                                
-                                * Write indicator entry
-                                file write `fh' "  `code_id':" _n
-                                file write `fh' "    category: `category'" _n
-                                file write `fh' "    code: `code_id'" _n
-                                file write `fh' "    description: '`code_desc''" _n
-                                file write `fh' "    name: '`code_name''" _n
-                                
-                                local n_indicators = `n_indicators' + 1
+                                continue, break
                             }
+                            file read `fh_check' line
+                        }
+                        file close `fh_check'
+                        
+                        if (`found_date' == 1 & `file_age' < `cache_max_age_days') {
+                            * File is fresh enough - count existing indicators and return
+                            local n_cached = 0
+                            tempname infh
+                            capture file open `infh' using "`outfile'", read
+                            if (_rc == 0) {
+                                file read `infh' line
+                                while !r(eof) {
+                                    if (strmatch(`"`line'"', "  *:") & !strmatch(`"`line'"', "    *")) {
+                                        local n_cached = `n_cached' + 1
+                                    }
+                                    file read `infh' line
+                                }
+                                file close `infh'
+                            }
+                            * Subtract 1 for metadata entry
+                            local n_cached = `n_cached' - 1
+                            di as text "     → Using cached file (`file_age' days old, threshold: `cache_max_age_days' days)"
+                            return scalar count = `n_cached'
+                            return scalar cached = 1
+                            exit
                         }
                     }
-                    file read `infh' line
                 }
-                file close `infh'
             }
         }
     }
     
-    file close `fh'
+    *---------------------------------------------------------------------------
+    * Fetch XML from API
+    *---------------------------------------------------------------------------
+    local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+    local url "`base_url'/codelist/`agency'/CL_UNICEF_INDICATOR/latest"
     
-    return scalar count = `n_indicators'
+    tempfile xmlfile
+    capture copy "`url'" "`xmlfile'", public replace
+    
+    if (_rc != 0) {
+        di as err "     Failed to download indicator codelist from API"
+        return scalar count = 0
+        return scalar cached = 0
+        exit
+    }
+    
+    *---------------------------------------------------------------------------
+    * Determine parser to use
+    * Pure Stata parser has macro length limitations with large XML files
+    *---------------------------------------------------------------------------
+    local parser_option "forcepython"  // Default: use Python for robustness
+    
+    if ("`forcestata'" != "") {
+        * User explicitly requested pure Stata parser
+        * Warn about limitations but try anyway
+        di as text "     Note: Pure Stata parser requested for indicator metadata"
+        di as text "     Warning: Large XML files may hit Stata macro limits (~730+ indicators)"
+        local parser_option "forcestata"
+    }
+    else if ("`forcepython'" != "") {
+        local parser_option "forcepython"
+    }
+    
+    capture noisily unicefdata_xmltoyaml, ///
+        type(indicators) ///
+        xmlfile("`xmlfile'") ///
+        outfile("`outfile'") ///
+        agency("`agency'") ///
+        version("1.0") ///
+        source("`codelist_url'") ///
+        codelistid("CL_UNICEF_INDICATOR") ///
+        codelistname("UNICEF Indicator Codelist") ///
+        `parser_option'
+    
+    if (_rc == 0) {
+        local n_indicators = r(count)
+        return scalar count = `n_indicators'
+        return scalar cached = 0
+        exit
+    }
+    
+    * Parser failed
+    if ("`forcestata'" != "") {
+        di as err "     Pure Stata parser failed for indicator metadata"
+        di as err "     This file exceeds Stata's macro length limits (~730+ indicators)"
+        di as err "     Use 'forcepython' option or omit parser option for Python fallback"
+    }
+    else {
+        di as err "     Python parser required for indicator metadata (file too large for Stata)"
+        di as err "     Ensure Python 3.6+ is installed and unicefdata_xml2yaml.py is accessible"
+    }
+    return scalar count = 0
+    return scalar cached = 0
+    error 601
 end
 
 *******************************************************************************
