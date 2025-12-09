@@ -65,7 +65,7 @@ unicefdata, indicator(CME_MRY0T4) countries(ALB) verbose clear
 
 ## Output
 
-CSV files are saved to the `data/` subfolder when running examples.
+CSV files are saved to `validation/data/stata/` for cross-language comparison.
 
 ## Cross-Language Alignment
 

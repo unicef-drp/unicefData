@@ -17,8 +17,8 @@
 clear all
 set more off
 
-* Setup data directory
-local data_dir "data"
+* Setup data directory - centralized for cross-language validation
+local data_dir "../../validation/data/stata"
 capture mkdir "`data_dir'"
 
 display _n "======================================================================"

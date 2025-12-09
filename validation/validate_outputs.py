@@ -40,17 +40,17 @@ LANGUAGES = {
     "python": {
         "name": "Python",
         "test_output": os.path.join(BASE_DIR, "python", "tests", "output"),
-        "examples": os.path.join(BASE_DIR, "python", "examples", "data"),
+        "examples": os.path.join(SCRIPT_DIR, "data", "python"),
     },
     "r": {
         "name": "R",
         "test_output": os.path.join(BASE_DIR, "R", "tests", "output"),
-        "examples": os.path.join(BASE_DIR, "R", "examples", "data"),
+        "examples": os.path.join(SCRIPT_DIR, "data", "r"),
     },
     "stata": {
         "name": "Stata",
         "test_output": os.path.join(BASE_DIR, "stata", "tests", "output"),
-        "examples": os.path.join(BASE_DIR, "stata", "examples", "data"),
+        "examples": os.path.join(SCRIPT_DIR, "data", "stata"),
     },
 }
 

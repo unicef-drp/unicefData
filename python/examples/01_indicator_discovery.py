@@ -24,8 +24,8 @@ from unicef_api import (
     get_dataflow_for_indicator
 )
 
-# Setup data directory
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+# Setup data directory - centralized for cross-language validation
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'validation', 'data', 'python')
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
