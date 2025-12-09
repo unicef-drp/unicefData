@@ -11,20 +11,16 @@
 #   4. Get indicator info
 #   5. List dataflows
 
-# Adjust path if running from examples directory
-if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicef_api/unicefData.R")) {
-  source("R/unicef_api/unicefData.R")
-} else if (file.exists("unicefData/R/unicef_api/unicefData.R")) {
-  source("unicefData/R/unicef_api/unicefData.R")
+# Source common setup (handles path resolution)
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
-
-# Setup data directory - centralized for cross-language validation
-data_dir <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "validation", "data", "r")
-if (!dir.exists(data_dir)) dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 # source("../indicator_registry.R") # This file might not exist or need similar handling
 

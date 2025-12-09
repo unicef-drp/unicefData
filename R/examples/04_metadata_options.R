@@ -13,16 +13,16 @@
 #   5. Simplify output columns
 # ============================================================================
 
-# Adjust path if running from examples directory
-if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicef_api/unicefData.R")) {
-  source("R/unicef_api/unicefData.R")
-} else if (file.exists("unicefData/R/unicefData.R")) {
-  source("unicefData/R/unicefData.R")
+# Source common setup (handles path resolution)
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 cat(strrep("=", 70), "\n")
 cat("04_metadata_options.R - Add Metadata to Data\n")

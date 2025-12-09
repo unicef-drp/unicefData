@@ -302,9 +302,9 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       available_disaggregations <- c(available_disaggregations, 
                                      paste0("sex: ", paste(sex_values, collapse = ", ")))
     }
-    if (!is.null(sex) && sex != "ALL") {
-      df <- df %>% dplyr::filter(SEX == sex)
-      applied_filters <- c(applied_filters, paste0("sex: ", sex))
+    if (!is.null(sex) && !identical(sex, "ALL")) {
+      df <- df %>% dplyr::filter(SEX %in% sex)
+      applied_filters <- c(applied_filters, paste0("sex: ", paste(sex, collapse = ", ")))
     }
   }
   

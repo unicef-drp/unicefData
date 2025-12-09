@@ -102,10 +102,23 @@ def run_r_examples(examples=None, verbose=False):
         log(f"R examples directory not found: {examples_dir}", "ERROR")
         return False
     
-    # Check if Rscript is available
-    try:
-        subprocess.run(["Rscript", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    # Check if Rscript is available (try common Windows paths first)
+    rscript_exe = "Rscript"
+    r_paths = [
+        r"C:\Program Files\R\R-4.5.1\bin\Rscript.exe",
+        r"C:\Program Files\R\R-4.4.1\bin\Rscript.exe",
+        r"C:\Program Files\R\R-4.3.1\bin\Rscript.exe",
+        "Rscript",  # Try PATH last
+    ]
+    
+    for path in r_paths:
+        try:
+            subprocess.run([path, "--version"], capture_output=True, check=True)
+            rscript_exe = path
+            break
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            continue
+    else:
         log("Rscript not found. Skipping R examples.", "WARN")
         return False
     
@@ -119,7 +132,7 @@ def run_r_examples(examples=None, verbose=False):
         log(f"  Running {example}.R...")
         try:
             result = subprocess.run(
-                ["Rscript", str(script)],
+                [rscript_exe, str(script)],
                 cwd=str(examples_dir),
                 capture_output=not verbose,
                 text=True,
