@@ -1,14 +1,89 @@
 *******************************************************************************
 * unicefdata
-*! v 1.2.1   07Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.0   09Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
+*
+* NEW in v1.3.0: Discovery subcommands (flows, search, indicators, info)
 *******************************************************************************
 
 program define unicefdata, rclass
 
     version 14.0
+
+    *---------------------------------------------------------------------------
+    * Check for discovery subcommands FIRST (before regular syntax parsing)
+    *---------------------------------------------------------------------------
+    
+    * Check for FLOWS subcommand
+    if (substr("`0'", 1, 6) == "flows" | substr("`0'", 1, 7) == ", flows") {
+        local 0 = subinstr("`0'", "flows", "", 1)
+        local 0 = subinstr("`0'", ",", "", 1)
+        syntax [, DETail VERBOSE]
+        _unicef_list_dataflows, `detail' `verbose'
+        exit
+    }
+    
+    * Check for SEARCH subcommand
+    if (strpos("`0'", "search(") > 0) {
+        * Extract search keyword
+        local search_start = strpos("`0'", "search(") + 7
+        local search_end = strpos(substr("`0'", `search_start', .), ")") + `search_start' - 2
+        local search_keyword = substr("`0'", `search_start', `search_end' - `search_start' + 1)
+        
+        * Extract other options
+        local remaining = subinstr("`0'", "search(`search_keyword')", "", 1)
+        local remaining = subinstr("`remaining'", ",", "", 1)
+        
+        * Check for limit option
+        local limit_val = 20
+        if (strpos("`remaining'", "limit(") > 0) {
+            local limit_start = strpos("`remaining'", "limit(") + 6
+            local limit_end = strpos(substr("`remaining'", `limit_start', .), ")") + `limit_start' - 2
+            local limit_val = substr("`remaining'", `limit_start', `limit_end' - `limit_start' + 1)
+        }
+        
+        _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
+        exit
+    }
+    
+    * Check for INDICATORS subcommand (list indicators in a dataflow)
+    if (strpos("`0'", "indicators(") > 0) {
+        * Extract dataflow
+        local ind_start = strpos("`0'", "indicators(") + 11
+        local ind_end = strpos(substr("`0'", `ind_start', .), ")") + `ind_start' - 2
+        local ind_dataflow = substr("`0'", `ind_start', `ind_end' - `ind_start' + 1)
+        
+        * Extract other options
+        local remaining = subinstr("`0'", "indicators(`ind_dataflow')", "", 1)
+        
+        * Check for limit option
+        local limit_val = 50
+        if (strpos("`remaining'", "limit(") > 0) {
+            local limit_start = strpos("`remaining'", "limit(") + 6
+            local limit_end = strpos(substr("`remaining'", `limit_start', .), ")") + `limit_start' - 2
+            local limit_val = substr("`remaining'", `limit_start', `limit_end' - `limit_start' + 1)
+        }
+        
+        _unicef_list_indicators, dataflow("`ind_dataflow'") limit(`limit_val')
+        exit
+    }
+    
+    * Check for INFO subcommand (get indicator details)
+    if (strpos("`0'", "info(") > 0) {
+        * Extract indicator code
+        local info_start = strpos("`0'", "info(") + 5
+        local info_end = strpos(substr("`0'", `info_start', .), ")") + `info_start' - 2
+        local info_indicator = substr("`0'", `info_start', `info_end' - `info_start' + 1)
+        
+        _unicef_indicator_info, indicator("`info_indicator'")
+        exit
+    }
+
+    *---------------------------------------------------------------------------
+    * Regular syntax for data retrieval
+    *---------------------------------------------------------------------------
 
     syntax                                          ///
                  [,                                 ///
@@ -24,11 +99,13 @@ program define unicefdata, rclass
                         MATERNAL_edu(string)        /// Maternal education filter
                         LONG                        /// Long format (default)
                         WIDE                        /// Wide format
+                        WIDE_indicators             /// Wide format with indicators as columns
                         LATEST                      /// Most recent value only
                         MRV(integer 0)              /// N most recent values
                         DROPNA                      /// Drop missing values
                         SIMPLIFY                    /// Essential columns only
                         RAW                         /// Raw SDMX output
+                        ADDmeta(string)             /// Add metadata columns (region, income_group)
                         VERSION(string)             /// SDMX version
                         PAGE_size(integer 100000)   /// Rows per request
                         MAX_retries(integer 3)      /// Retry attempts
@@ -45,7 +122,16 @@ program define unicefdata, rclass
         *-----------------------------------------------------------------------
         
         if ("`indicator'" == "") & ("`dataflow'" == "") {
-            noi di as err "You must specify either indicator() or dataflow(). Please try again."
+            noi di as err "You must specify either indicator() or dataflow()."
+            noi di as text ""
+            noi di as text "Discovery commands:"
+            noi di as text "  unicefdata, flows                     - List available dataflows"
+            noi di as text "  unicefdata, search(mortality)         - Search indicators by keyword"
+            noi di as text "  unicefdata, indicators(CME)           - List indicators in a dataflow"
+            noi di as text "  unicefdata, info(CME_MRY0T4)          - Get indicator details"
+            noi di as text ""
+            noi di as text "Data retrieval:"
+            noi di as text "  unicefdata, indicator(CME_MRY0T4) countries(BRA USA)"
             exit 198
         }
         
@@ -403,11 +489,89 @@ program define unicefdata, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Format output (long/wide) - aligned with R/Python
+        * Add metadata columns (region, income_group) - NEW in v1.3.0
         *-----------------------------------------------------------------------
         
-        if ("`wide'" != "") {
-            * Reshape to wide format
+        if ("`addmeta'" != "") {
+            * Parse requested metadata columns
+            local addmeta_lower = lower("`addmeta'")
+            
+            capture confirm variable iso3
+            if (_rc == 0) {
+                * Add region
+                if (strpos("`addmeta_lower'", "region") > 0) {
+                    _unicef_add_region
+                }
+                
+                * Add income group
+                if (strpos("`addmeta_lower'", "income") > 0) {
+                    _unicef_add_income_group
+                }
+                
+                * Add continent
+                if (strpos("`addmeta_lower'", "continent") > 0) {
+                    _unicef_add_continent
+                }
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Add geo_type classification (country vs aggregate) - NEW in v1.3.0
+        *-----------------------------------------------------------------------
+        
+        capture confirm variable iso3
+        if (_rc == 0) {
+            gen geo_type = ""
+            * Mark known aggregates (regional and global)
+            replace geo_type = "aggregate" if inlist(iso3, "WLD", "WORLD", "UNICEF", "WB")
+            replace geo_type = "aggregate" if length(iso3) > 3
+            replace geo_type = "aggregate" if strpos(iso3, "_") > 0
+            replace geo_type = "country" if geo_type == ""
+            label variable geo_type "Geographic type (country/aggregate)"
+        }
+        
+        *-----------------------------------------------------------------------
+        * Format output (long/wide/wide_indicators) - aligned with R/Python
+        *-----------------------------------------------------------------------
+        
+        if ("`wide_indicators'" != "") {
+            * NEW: Reshape with indicators as columns (like Python wide_indicators)
+            capture confirm variable iso3
+            capture confirm variable period
+            capture confirm variable indicator
+            capture confirm variable value
+            if (_rc == 0) {
+                * Keep columns needed for reshape
+                local keep_vars "iso3 country period indicator value"
+                if ("`addmeta'" != "") {
+                    foreach v in region income_group continent geo_type {
+                        capture confirm variable `v'
+                        if (_rc == 0) local keep_vars "`keep_vars' `v'"
+                    }
+                }
+                keep `keep_vars'
+                
+                * Reshape: indicators become columns
+                capture reshape wide value, i(iso3 country period) j(indicator) string
+                if (_rc == 0) {
+                    * Clean up column names (remove "value" prefix)
+                    foreach v of varlist value* {
+                        local newname = subinstr("`v'", "value", "", 1)
+                        rename `v' `newname'
+                    }
+                    sort iso3 period
+                    
+                    if ("`verbose'" != "") {
+                        noi di as text "Reshaped to wide_indicators format."
+                    }
+                }
+                else {
+                    noi di as text "Note: Could not reshape to wide_indicators format."
+                }
+            }
+        }
+        else if ("`wide'" != "") {
+            * Reshape to wide format (years as columns)
             capture confirm variable iso3
             capture confirm variable period
             capture confirm variable indicator
@@ -438,6 +602,13 @@ program define unicefdata, rclass
                     local keepvars "`keepvars' `v'"
                 }
             }
+            * Also keep metadata if added
+            foreach v in region income_group continent geo_type {
+                capture confirm variable `v'
+                if (_rc == 0) {
+                    local keepvars "`keepvars' `v'"
+                }
+            }
             if ("`keepvars'" != "") {
                 keep `keepvars'
             }
@@ -453,6 +624,8 @@ program define unicefdata, rclass
         return local start_year "`start_year'"
         return local end_year "`end_year'"
         return local wide "`wide'"
+        return local wide_indicators "`wide_indicators'"
+        return local addmeta "`addmeta'"
         return local obs_count = _N
         return local url "`full_url'"
         
@@ -465,6 +638,192 @@ program define unicefdata, rclass
         
     }
 
+end
+
+
+*******************************************************************************
+* Helper program: Add region metadata
+*******************************************************************************
+
+program define _unicef_add_region
+    * UNICEF regions mapping (simplified - can be expanded)
+    gen region = ""
+    
+    * East Asia and Pacific
+    replace region = "East Asia and Pacific" if inlist(iso3, "AUS", "BRN", "KHM", "CHN", "FJI")
+    replace region = "East Asia and Pacific" if inlist(iso3, "IDN", "JPN", "KOR", "LAO", "MYS")
+    replace region = "East Asia and Pacific" if inlist(iso3, "MNG", "MMR", "NZL", "PNG", "PHL")
+    replace region = "East Asia and Pacific" if inlist(iso3, "SGP", "THA", "TLS", "VNM")
+    
+    * Europe and Central Asia
+    replace region = "Europe and Central Asia" if inlist(iso3, "ALB", "ARM", "AZE", "BLR", "BIH")
+    replace region = "Europe and Central Asia" if inlist(iso3, "BGR", "HRV", "CZE", "EST", "GEO")
+    replace region = "Europe and Central Asia" if inlist(iso3, "HUN", "KAZ", "KGZ", "LVA", "LTU")
+    replace region = "Europe and Central Asia" if inlist(iso3, "MDA", "MNE", "MKD", "POL", "ROU")
+    replace region = "Europe and Central Asia" if inlist(iso3, "RUS", "SRB", "SVK", "SVN", "TJK")
+    replace region = "Europe and Central Asia" if inlist(iso3, "TUR", "TKM", "UKR", "UZB")
+    
+    * Latin America and Caribbean
+    replace region = "Latin America and Caribbean" if inlist(iso3, "ARG", "BLZ", "BOL", "BRA", "CHL")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "COL", "CRI", "CUB", "DOM", "ECU")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "SLV", "GTM", "GUY", "HTI", "HND")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "JAM", "MEX", "NIC", "PAN", "PRY")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "PER", "SUR", "TTO", "URY", "VEN")
+    
+    * Middle East and North Africa
+    replace region = "Middle East and North Africa" if inlist(iso3, "DZA", "BHR", "EGY", "IRN", "IRQ")
+    replace region = "Middle East and North Africa" if inlist(iso3, "ISR", "JOR", "KWT", "LBN", "LBY")
+    replace region = "Middle East and North Africa" if inlist(iso3, "MAR", "OMN", "PSE", "QAT", "SAU")
+    replace region = "Middle East and North Africa" if inlist(iso3, "SYR", "TUN", "ARE", "YEM")
+    
+    * South Asia
+    replace region = "South Asia" if inlist(iso3, "AFG", "BGD", "BTN", "IND", "MDV")
+    replace region = "South Asia" if inlist(iso3, "NPL", "PAK", "LKA")
+    
+    * Sub-Saharan Africa
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "AGO", "BEN", "BWA", "BFA", "BDI")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "CMR", "CPV", "CAF", "TCD", "COM")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "COD", "COG", "CIV", "DJI", "GNQ")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "ERI", "SWZ", "ETH", "GAB", "GMB")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "GHA", "GIN", "GNB", "KEN", "LSO")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "LBR", "MDG", "MWI", "MLI", "MRT")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "MUS", "MOZ", "NAM", "NER", "NGA")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "RWA", "STP", "SEN", "SYC", "SLE")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "SOM", "ZAF", "SSD", "SDN", "TZA")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "TGO", "UGA", "ZMB", "ZWE")
+    
+    * North America
+    replace region = "North America" if inlist(iso3, "CAN", "USA")
+    
+    * Western Europe
+    replace region = "Western Europe" if inlist(iso3, "AUT", "BEL", "DNK", "FIN", "FRA")
+    replace region = "Western Europe" if inlist(iso3, "DEU", "GRC", "ISL", "IRL", "ITA")
+    replace region = "Western Europe" if inlist(iso3, "LUX", "NLD", "NOR", "PRT", "ESP")
+    replace region = "Western Europe" if inlist(iso3, "SWE", "CHE", "GBR")
+    
+    * Mark remaining as Unknown
+    replace region = "Unknown" if region == ""
+    
+    label variable region "UNICEF Region"
+end
+
+
+*******************************************************************************
+* Helper program: Add income group metadata
+*******************************************************************************
+
+program define _unicef_add_income_group
+    * World Bank income groups (2023 classification, simplified)
+    gen income_group = ""
+    
+    * High Income
+    replace income_group = "High income" if inlist(iso3, "AUS", "AUT", "BEL", "CAN", "CHE")
+    replace income_group = "High income" if inlist(iso3, "CHL", "CZE", "DEU", "DNK", "ESP")
+    replace income_group = "High income" if inlist(iso3, "EST", "FIN", "FRA", "GBR", "GRC")
+    replace income_group = "High income" if inlist(iso3, "HRV", "HUN", "IRL", "ISL", "ISR")
+    replace income_group = "High income" if inlist(iso3, "ITA", "JPN", "KOR", "KWT", "LTU")
+    replace income_group = "High income" if inlist(iso3, "LUX", "LVA", "NLD", "NOR", "NZL")
+    replace income_group = "High income" if inlist(iso3, "POL", "PRT", "QAT", "SAU", "SGP")
+    replace income_group = "High income" if inlist(iso3, "SVK", "SVN", "SWE", "TTO", "ARE")
+    replace income_group = "High income" if inlist(iso3, "URY", "USA")
+    
+    * Upper-Middle Income
+    replace income_group = "Upper middle income" if inlist(iso3, "ALB", "ARG", "ARM", "AZE", "BGR")
+    replace income_group = "Upper middle income" if inlist(iso3, "BIH", "BLR", "BRA", "BWA", "CHN")
+    replace income_group = "Upper middle income" if inlist(iso3, "COL", "CRI", "CUB", "DOM", "ECU")
+    replace income_group = "Upper middle income" if inlist(iso3, "GEO", "GTM", "IDN", "IRN", "IRQ")
+    replace income_group = "Upper middle income" if inlist(iso3, "JAM", "JOR", "KAZ", "LBN", "LBY")
+    replace income_group = "Upper middle income" if inlist(iso3, "MEX", "MKD", "MNE", "MYS", "NAM")
+    replace income_group = "Upper middle income" if inlist(iso3, "PER", "PRY", "ROU", "RUS", "SRB")
+    replace income_group = "Upper middle income" if inlist(iso3, "THA", "TUR", "TKM", "ZAF")
+    
+    * Lower-Middle Income
+    replace income_group = "Lower middle income" if inlist(iso3, "AGO", "BGD", "BEN", "BTN", "BOL")
+    replace income_group = "Lower middle income" if inlist(iso3, "CMR", "CIV", "COG", "DJI", "EGY")
+    replace income_group = "Lower middle income" if inlist(iso3, "GHA", "HND", "IND", "KEN", "KGZ")
+    replace income_group = "Lower middle income" if inlist(iso3, "KHM", "LAO", "LKA", "MAR", "MDA")
+    replace income_group = "Lower middle income" if inlist(iso3, "MMR", "MNG", "MRT", "NGA", "NIC")
+    replace income_group = "Lower middle income" if inlist(iso3, "NPL", "PAK", "PHL", "PNG", "PSE")
+    replace income_group = "Lower middle income" if inlist(iso3, "SEN", "SLV", "TJK", "TLS", "TUN")
+    replace income_group = "Lower middle income" if inlist(iso3, "TZA", "UKR", "UZB", "VNM", "ZMB")
+    replace income_group = "Lower middle income" if inlist(iso3, "ZWE")
+    
+    * Low Income
+    replace income_group = "Low income" if inlist(iso3, "AFG", "BDI", "BFA", "CAF", "TCD")
+    replace income_group = "Low income" if inlist(iso3, "COD", "ERI", "ETH", "GMB", "GIN")
+    replace income_group = "Low income" if inlist(iso3, "GNB", "HTI", "LBR", "MDG", "MLI")
+    replace income_group = "Low income" if inlist(iso3, "MOZ", "MWI", "NER", "RWA", "SLE")
+    replace income_group = "Low income" if inlist(iso3, "SOM", "SSD", "SDN", "SYR", "TGO")
+    replace income_group = "Low income" if inlist(iso3, "UGA", "YEM")
+    
+    * Mark remaining as Unknown
+    replace income_group = "Unknown" if income_group == ""
+    
+    label variable income_group "World Bank Income Group"
+end
+
+
+*******************************************************************************
+* Helper program: Add continent metadata
+*******************************************************************************
+
+program define _unicef_add_continent
+    gen continent = ""
+    
+    * Africa
+    replace continent = "Africa" if inlist(iso3, "DZA", "AGO", "BEN", "BWA", "BFA")
+    replace continent = "Africa" if inlist(iso3, "BDI", "CMR", "CPV", "CAF", "TCD")
+    replace continent = "Africa" if inlist(iso3, "COM", "COD", "COG", "CIV", "DJI")
+    replace continent = "Africa" if inlist(iso3, "EGY", "GNQ", "ERI", "SWZ", "ETH")
+    replace continent = "Africa" if inlist(iso3, "GAB", "GMB", "GHA", "GIN", "GNB")
+    replace continent = "Africa" if inlist(iso3, "KEN", "LSO", "LBR", "LBY", "MDG")
+    replace continent = "Africa" if inlist(iso3, "MWI", "MLI", "MRT", "MUS", "MAR")
+    replace continent = "Africa" if inlist(iso3, "MOZ", "NAM", "NER", "NGA", "RWA")
+    replace continent = "Africa" if inlist(iso3, "STP", "SEN", "SYC", "SLE", "SOM")
+    replace continent = "Africa" if inlist(iso3, "ZAF", "SSD", "SDN", "TZA", "TGO")
+    replace continent = "Africa" if inlist(iso3, "TUN", "UGA", "ZMB", "ZWE")
+    
+    * Asia
+    replace continent = "Asia" if inlist(iso3, "AFG", "ARM", "AZE", "BHR", "BGD")
+    replace continent = "Asia" if inlist(iso3, "BTN", "BRN", "KHM", "CHN", "CYP")
+    replace continent = "Asia" if inlist(iso3, "GEO", "IND", "IDN", "IRN", "IRQ")
+    replace continent = "Asia" if inlist(iso3, "ISR", "JPN", "JOR", "KAZ", "KWT")
+    replace continent = "Asia" if inlist(iso3, "KGZ", "LAO", "LBN", "MYS", "MDV")
+    replace continent = "Asia" if inlist(iso3, "MNG", "MMR", "NPL", "OMN", "PAK")
+    replace continent = "Asia" if inlist(iso3, "PSE", "PHL", "QAT", "SAU", "SGP")
+    replace continent = "Asia" if inlist(iso3, "KOR", "LKA", "SYR", "TWN", "TJK")
+    replace continent = "Asia" if inlist(iso3, "THA", "TLS", "TUR", "TKM", "ARE")
+    replace continent = "Asia" if inlist(iso3, "UZB", "VNM", "YEM")
+    
+    * Europe
+    replace continent = "Europe" if inlist(iso3, "ALB", "AND", "AUT", "BLR", "BEL")
+    replace continent = "Europe" if inlist(iso3, "BIH", "BGR", "HRV", "CZE", "DNK")
+    replace continent = "Europe" if inlist(iso3, "EST", "FIN", "FRA", "DEU", "GRC")
+    replace continent = "Europe" if inlist(iso3, "HUN", "ISL", "IRL", "ITA", "LVA")
+    replace continent = "Europe" if inlist(iso3, "LTU", "LUX", "MDA", "MCO", "MNE")
+    replace continent = "Europe" if inlist(iso3, "NLD", "MKD", "NOR", "POL", "PRT")
+    replace continent = "Europe" if inlist(iso3, "ROU", "RUS", "SMR", "SRB", "SVK")
+    replace continent = "Europe" if inlist(iso3, "SVN", "ESP", "SWE", "CHE", "UKR")
+    replace continent = "Europe" if inlist(iso3, "GBR")
+    
+    * North America
+    replace continent = "North America" if inlist(iso3, "CAN", "USA", "MEX", "GTM", "BLZ")
+    replace continent = "North America" if inlist(iso3, "HND", "SLV", "NIC", "CRI", "PAN")
+    replace continent = "North America" if inlist(iso3, "CUB", "DOM", "HTI", "JAM", "TTO")
+    
+    * South America
+    replace continent = "South America" if inlist(iso3, "ARG", "BOL", "BRA", "CHL", "COL")
+    replace continent = "South America" if inlist(iso3, "ECU", "GUY", "PRY", "PER", "SUR")
+    replace continent = "South America" if inlist(iso3, "URY", "VEN")
+    
+    * Oceania
+    replace continent = "Oceania" if inlist(iso3, "AUS", "FJI", "NZL", "PNG", "SLB")
+    replace continent = "Oceania" if inlist(iso3, "VUT", "WSM", "TON")
+    
+    * Mark remaining as Unknown
+    replace continent = "Unknown" if continent == ""
+    
+    label variable continent "Continent"
 end
 
 
@@ -634,6 +993,18 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.3.0   09Dec2025   by Joao Pedro Azevedo
+*   Cross-language parity improvements (aligned with Python unicef_api v0.3.0)
+*   - NEW: Discovery subcommands:
+*       unicefdata, flows              - List available dataflows
+*       unicefdata, search(keyword)    - Search indicators by keyword
+*       unicefdata, indicators(CME)    - List indicators in a dataflow
+*       unicefdata, info(CME_MRY0T4)   - Get indicator details
+*   - NEW: wide_indicators option for reshaping with indicators as columns
+*   - NEW: addmeta(region income_group continent) option
+*   - NEW: geo_type variable (country vs aggregate classification)
+*   - Improved error messages with usage hints
+*
 * v 1.2.0   04Dec2025   by Joao Pedro Azevedo
 *   YAML-based metadata loading (aligned with R/Python)
 *   - Added stata/metadata/*.yaml files for indicators, codelists, dataflows
