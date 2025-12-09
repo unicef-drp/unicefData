@@ -2,7 +2,7 @@ id: CME_DF_2021_WQ
 name: IGME Child Mortality Estimates wq
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-08T13:30:56Z'
+synced_at: '2025-12-08T23:57:50Z'
 dimensions:
 - id: REF_AREA
   position: 1
