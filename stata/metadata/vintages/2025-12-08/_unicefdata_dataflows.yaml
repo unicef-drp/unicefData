@@ -2,7 +2,7 @@ metadata:
   version: '2.0.0'
   source: UNICEF SDMX dataflow
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF/all/latest
-  last_updated: 2025-12-08T20:31:18
+  last_updated: 2025-12-08T20:39:24
   description: Comprehensive UNICEF dataflows dataflow with metadata (auto-generated)
   dataflow_count: 69
 dataflows:

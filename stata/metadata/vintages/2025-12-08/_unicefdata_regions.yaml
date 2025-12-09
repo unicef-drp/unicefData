@@ -2,7 +2,7 @@ metadata:
   version: '2.0.0'
   source: UNICEF SDMX Codelist CL_WORLD_REGIONS
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_REF_AREA_SDG/1.0
-  last_updated: 2025-12-08T20:31:35
+  last_updated: 2025-12-08T20:39:28
   description: Comprehensive UNICEF regions codelist with metadata (auto-generated)
   region_count: 111
 regions:
