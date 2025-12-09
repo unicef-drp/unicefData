@@ -60,13 +60,24 @@ tryCatch({
     include_schemas = TRUE
   )
   
+  # Also sync the full indicator registry (unicef_indicators_metadata.yaml)
+  cat("\n  Syncing full indicator registry...\n")
+  indicator_count <- tryCatch({
+    refresh_indicator_cache()
+  }, error = function(e) {
+    cat("    Warning: Indicator registry sync failed:", e$message, "\n")
+    0
+  })
+  results$indicator_registry <- indicator_count
+  
   cat("\n", paste(rep("-", 70), collapse = ""), "\n")
   cat("RESULTS\n")
   cat(paste(rep("-", 70), collapse = ""), "\n\n")
   
   cat("Summary:\n")
   cat("  Dataflows:  ", results$dataflows %||% 0, "\n")
-  cat("  Indicators: ", results$indicators %||% 0, "\n")
+  cat("  Indicators: ", results$indicators %||% 0, "(from config)\n")
+  cat("  Indicator Registry:", results$indicator_registry %||% 0, "(from API)\n")
   cat("  Countries:  ", results$countries %||% 0, "\n")
   cat("  Regions:    ", results$regions %||% 0, "\n")
   cat("  Codelists:  ", results$codelists %||% 0, "\n")
