@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-regenerate_all_metadata.py - Regenerate YAML metadata for Python, R, and Stata
-==============================================================================
+sync_metadata.py - Regenerate YAML metadata for Python, R, and Stata
+=====================================================================
 
 This script regenerates all metadata files for the trilingual unicefData package.
 It calls the appropriate sync functions for each language.
 
 Usage:
-    python tests/regenerate_all_metadata.py [--python] [--r] [--stata] [--all] [--verbose]
+    python tests/sync_metadata.py [--python] [--r] [--stata] [--all] [--verbose]
 
 Examples:
-    python tests/regenerate_all_metadata.py --all          # Regenerate all
-    python tests/regenerate_all_metadata.py --python       # Python only
-    python tests/regenerate_all_metadata.py --stata        # Stata only
-    python tests/regenerate_all_metadata.py -R           # R only
-    python tests/regenerate_all_metadata.py --python -R  # Python and R
+    python tests/sync_metadata.py --all          # Regenerate all
+    python tests/sync_metadata.py --python       # Python only
+    python tests/sync_metadata.py --stata        # Stata only
+    python tests/sync_metadata.py -R             # R only
+    python tests/sync_metadata.py --python -R    # Python and R
 """
 
 import os
@@ -22,25 +22,42 @@ import sys
 import subprocess
 import argparse
 import shutil
+import logging
 from pathlib import Path
 from datetime import datetime
 
 # Get repository root
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
+LOG_DIR = SCRIPT_DIR / "logs"
+
+# Ensure log directory exists
+LOG_DIR.mkdir(exist_ok=True)
+
+# Configure logging to file and console
+log_file = LOG_DIR / "sync_metadata.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.FileHandler(log_file, mode='w', encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 
 def print_header(title: str):
     """Print a formatted header."""
-    print("\n" + "=" * 60)
-    print(f" {title}")
-    print("=" * 60)
+    msg = "\n" + "=" * 60 + "\n" + f" {title}\n" + "=" * 60
+    logger.info(msg)
 
 
 def print_section(title: str):
     """Print a section header."""
-    print(f"\n[{title}]")
-    print("-" * 40)
+    msg = f"\n[{title}]\n" + "-" * 40
+    logger.info(msg)
 
 
 def clean_metadata_folder(folder: Path, verbose: bool = False) -> int:
@@ -56,7 +73,7 @@ def clean_metadata_folder(folder: Path, verbose: bool = False) -> int:
     # Clean YAML files in current folder
     for yaml_file in folder.glob("*.yaml"):
         if verbose:
-            print(f"  Removing: {yaml_file.name}")
+            logger.info(f"  Removing: {yaml_file.name}")
         yaml_file.unlink()
         deleted += 1
     
@@ -65,7 +82,7 @@ def clean_metadata_folder(folder: Path, verbose: bool = False) -> int:
     if dataflows_dir.exists():
         for yaml_file in dataflows_dir.glob("*.yaml"):
             if verbose:
-                print(f"  Removing: dataflows/{yaml_file.name}")
+                logger.info(f"  Removing: dataflows/{yaml_file.name}")
             yaml_file.unlink()
             deleted += 1
     
@@ -81,14 +98,14 @@ def regenerate_python(verbose: bool = False) -> bool:
     
     # Clean existing metadata
     deleted = clean_metadata_folder(metadata_dir, verbose)
-    print(f"  Cleaned {deleted} existing files")
+    logger.info(f"  Cleaned {deleted} existing files")
     
     # Add python directory to path
     sys.path.insert(0, str(python_dir))
     
     try:
         # Import and run the metadata sync
-        print("  Syncing metadata from UNICEF SDMX API...")
+        logger.info("  Syncing metadata from UNICEF SDMX API...")
         from unicef_api.metadata import MetadataSync
         
         sync = MetadataSync(cache_dir=str(python_dir / "metadata"))
@@ -98,20 +115,20 @@ def regenerate_python(verbose: bool = False) -> bool:
         file_count = len(list(metadata_dir.glob("*.yaml")))
         dataflow_count = len(list((metadata_dir / "dataflows").glob("*.yaml"))) if (metadata_dir / "dataflows").exists() else 0
         
-        print(f"  ✓ Generated {file_count} metadata files + {dataflow_count} dataflow schemas")
-        print(f"  ✓ Dataflows: {results.get('dataflows', 'N/A')}")
-        print(f"  ✓ Countries: {results.get('countries', 'N/A')}")
-        print(f"  ✓ Regions: {results.get('regions', 'N/A')}")
-        print(f"  ✓ Indicators: {results.get('indicators', 'N/A')}")
+        logger.info(f"  ✓ Generated {file_count} metadata files + {dataflow_count} dataflow schemas")
+        logger.info(f"  ✓ Dataflows: {results.get('dataflows', 'N/A')}")
+        logger.info(f"  ✓ Countries: {results.get('countries', 'N/A')}")
+        logger.info(f"  ✓ Regions: {results.get('regions', 'N/A')}")
+        logger.info(f"  ✓ Indicators: {results.get('indicators', 'N/A')}")
         
         return len(results.get('errors', [])) == 0
         
     except ImportError as e:
-        print(f"  ✗ Import error: {e}")
-        print("    Make sure you have the required packages: pip install requests pyyaml")
+        logger.info(f"  ✗ Import error: {e}")
+        logger.info("    Make sure you have the required packages: pip install requests pyyaml")
         return False
     except Exception as e:
-        print(f"  ✗ Error: {e}")
+        logger.info(f"  ✗ Error: {e}")
         return False
     finally:
         # Remove from path
@@ -128,7 +145,7 @@ def regenerate_r(verbose: bool = False) -> bool:
     
     # Clean existing metadata
     deleted = clean_metadata_folder(metadata_dir, verbose)
-    print(f"  Cleaned {deleted} existing files")
+    logger.info(f"  Cleaned {deleted} existing files")
     
     # Check if Rscript is available
     rscript = shutil.which("Rscript")
@@ -148,11 +165,11 @@ def regenerate_r(verbose: bool = False) -> bool:
                 break
     
     if not rscript:
-        print("  ✗ Rscript not found in PATH")
-        print("    Please install R and ensure Rscript is in your PATH")
+        logger.info("  ✗ Rscript not found in PATH")
+        logger.info("    Please install R and ensure Rscript is in your PATH")
         return False
     
-    print(f"  Using: {rscript}")
+    logger.info(f"  Using: {rscript}")
     
     # R code to run all three sync scripts
     r_code = f"""
@@ -216,19 +233,19 @@ if (file.exists('schema_sync.R')) {{
         
         if result.returncode == 0:
             file_count = len(list(metadata_dir.glob("*.yaml"))) if metadata_dir.exists() else 0
-            print(f"  ✓ Generated {file_count} metadata files")
+            logger.info(f"  ✓ Generated {file_count} metadata files")
             return True
         else:
-            print(f"  ✗ R sync failed (exit code {result.returncode})")
+            logger.info(f"  ✗ R sync failed (exit code {result.returncode})")
             if not verbose and result.stderr:
-                print(f"    {result.stderr[:200]}...")
+                logger.info(f"    {result.stderr[:200]}...")
             return False
             
     except subprocess.TimeoutExpired:
-        print("  ✗ R sync timed out after 10 minutes")
+        logger.info("  ✗ R sync timed out after 10 minutes")
         return False
     except Exception as e:
-        print(f"  ✗ Error running R: {e}")
+        logger.info(f"  ✗ Error running R: {e}")
         return False
 
 
@@ -241,7 +258,7 @@ def regenerate_stata(verbose: bool = False) -> bool:
     
     # Clean existing metadata
     deleted = clean_metadata_folder(metadata_dir, verbose)
-    print(f"  Cleaned {deleted} existing files")
+    logger.info(f"  Cleaned {deleted} existing files")
     
     # Find Stata executable
     stata_exe = None
@@ -266,14 +283,14 @@ def regenerate_stata(verbose: bool = False) -> bool:
         stata_exe = shutil.which("stata-mp") or shutil.which("stata-se") or shutil.which("stata")
     
     if not stata_exe:
-        print("  ✗ Stata executable not found")
-        print("    To run manually in Stata:")
+        logger.info("  ✗ Stata executable not found")
+        logger.info("    To run manually in Stata:")
         print(f'      adopath ++ "{stata_dir / "src" / "u"}"')
         print(f'      adopath ++ "{stata_dir / "src" / "_"}"')
-        print("      unicefdata_sync, verbose")
+        logger.info("      unicefdata_sync, verbose")
         return False
     
-    print(f"  Using Stata: {stata_exe}")
+    logger.info(f"  Using Stata: {stata_exe}")
     
     # Create temporary do-file
     temp_do = REPO_ROOT / "temp_sync.do"
@@ -298,8 +315,8 @@ exit, clear STATA
     try:
         temp_do.write_text(do_content, encoding='ascii')
         
-        print("  Running unicefdata_sync...")
-        print("  (This may take a few minutes to fetch from SDMX API)")
+        logger.info("  Running unicefdata_sync...")
+        logger.info("  (This may take a few minutes to fetch from SDMX API)")
         
         result = subprocess.run(
             [stata_exe, "/e", "do", str(temp_do)],
@@ -319,31 +336,31 @@ exit, clear STATA
             # Check for success indicators
             if "Sync complete" in log_content or "successfully" in log_content.lower():
                 file_count = len(list(metadata_dir.glob("*.yaml"))) if metadata_dir.exists() else 0
-                print(f"  ✓ Generated {file_count} metadata files")
+                logger.info(f"  ✓ Generated {file_count} metadata files")
                 return True
             elif "error" in log_content.lower():
-                print("  ✗ Stata sync encountered errors")
+                logger.info("  ✗ Stata sync encountered errors")
                 if not verbose:
                     # Show last few lines of log
                     lines = log_content.strip().split('\n')
                     for line in lines[-10:]:
-                        print(f"    {line}")
+                        logger.info(f"    {line}")
                 return False
         
         # Check if files were created
         file_count = len(list(metadata_dir.glob("*.yaml"))) if metadata_dir.exists() else 0
         if file_count > 0:
-            print(f"  ✓ Generated {file_count} metadata files")
+            logger.info(f"  ✓ Generated {file_count} metadata files")
             return True
         else:
-            print("  ✗ No metadata files generated")
+            logger.info("  ✗ No metadata files generated")
             return False
             
     except subprocess.TimeoutExpired:
-        print("  ✗ Stata sync timed out after 10 minutes")
+        logger.info("  ✗ Stata sync timed out after 10 minutes")
         return False
     except Exception as e:
-        print(f"  ✗ Error running Stata: {e}")
+        logger.info(f"  ✗ Error running Stata: {e}")
         return False
     finally:
         # Clean up temporary files
@@ -371,8 +388,8 @@ def main():
         args.all = True
     
     print_header("unicefData Metadata Regeneration")
-    print(f"Repository: {REPO_ROOT}")
-    print(f"Timestamp:  {datetime.now().isoformat()}")
+    logger.info(f"Repository: {REPO_ROOT}")
+    logger.info(f"Timestamp:  {datetime.now().isoformat()}")
     
     results = {}
     
@@ -391,19 +408,21 @@ def main():
     all_passed = True
     for lang, status in results.items():
         if status is None:
-            print(f"  {lang}: SKIPPED")
+            logger.info(f"  {lang}: SKIPPED")
         elif status:
-            print(f"  {lang}: ✓ PASSED")
+            logger.info(f"  {lang}: ✓ PASSED")
         else:
-            print(f"  {lang}: ✗ FAILED")
+            logger.info(f"  {lang}: ✗ FAILED")
             all_passed = False
     
-    print()
+    logger.info("")
     if all_passed:
-        print("All metadata regeneration completed successfully!")
+        logger.info("All metadata regeneration completed successfully!")
+        logger.info(f"Log saved to: {log_file}")
         return 0
     else:
-        print("Some regeneration tasks failed. Check output above.")
+        logger.info("Some regeneration tasks failed. Check output above.")
+        logger.info(f"Log saved to: {log_file}")
         return 1
 
 

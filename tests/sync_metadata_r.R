@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-# Test R metadata sync
+# Sync R metadata from UNICEF SDMX API
 # Run from: C:\GitHub\others\unicefData
-# Usage: Rscript tests/test_metadata_sync.R
+# Usage: Rscript tests/sync_metadata_r.R
 
 # ==============================================================================
 # Setup
@@ -11,7 +11,7 @@
 setwd("C:/GitHub/others/unicefData")
 
 # Start logging
-log_file <- "tests/test_metadata_sync_r.log"
+log_file <- "tests/logs/sync_metadata_r.log"
 sink(log_file, split = TRUE)
 
 cat(paste(rep("=", 70), collapse = ""), "\n")

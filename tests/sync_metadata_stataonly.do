@@ -1,7 +1,7 @@
-* Test indicator metadata sync with pure Stata parser (no Python)
+* Sync metadata with pure Stata parser (no Python)
 * Run from: C:\GitHub\others\unicefData
-* This tests the forcestata option to verify it properly handles
-* the indicator metadata file (which may hit macro limits)
+* Usage: do tests/sync_metadata_stataonly.do
+* Note: The forcestata option may hit macro limits for large files
 
 clear all
 set more off
@@ -12,7 +12,7 @@ cd "C:\GitHub\others\unicefData"
 
 * Close any existing log and start fresh
 capture log close _all
-log using "tests/logs/test_indicator_sync_stataonly.log", replace text name(stataonly)
+log using "tests/logs/sync_metadata_stataonly.log", replace text name(stataonly)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"

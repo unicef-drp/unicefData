@@ -1,5 +1,5 @@
 ﻿# ============================================================================
-# regenerate_metadata.ps1 - Regenerate all YAML metadata files
+# sync_metadata.ps1 - Regenerate all YAML metadata files
 # ============================================================================
 #
 # This script regenerates metadata for all three languages:
@@ -8,14 +8,15 @@
 # - Stata: Uses unicefdata_sync command
 #
 # Usage:
-#   .\tests\regenerate_metadata.ps1 [-Python] [-R] [-Stata] [-All] [-Verbose] [-Force]
+#   .\tests\sync_metadata.ps1 [-Python] [-R] [-Stata] [-All] [-Verbose] [-Force]
 #
 # Examples:
-#   .\tests\regenerate_metadata.ps1 -All          # Regenerate all (prompts if files exist)
-#   .\tests\regenerate_metadata.ps1 -Python       # Python only
-#   .\tests\regenerate_metadata.ps1 -Stata        # Stata only
-#   .\tests\regenerate_metadata.ps1 -All -Force   # Overwrite without prompting
+#   .\tests\sync_metadata.ps1 -All          # Regenerate all (prompts if files exist)
+#   .\tests\sync_metadata.ps1 -Python       # Python only
+#   .\tests\sync_metadata.ps1 -Stata        # Stata only
+#   .\tests\sync_metadata.ps1 -All -Force   # Overwrite without prompting
 #
+# Log output: tests/logs/sync_metadata_ps.log
 # ============================================================================
 
 param(
@@ -103,10 +104,21 @@ function Check-ExistingFiles {
 
 $RepoRoot = Get-RepoRoot
 
+# Setup logging
+$LogDir = Join-Path $RepoRoot "tests\logs"
+if (-Not (Test-Path $LogDir)) {
+    New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
+}
+$LogFile = Join-Path $LogDir "sync_metadata_ps.log"
+
+# Start transcript for logging
+Start-Transcript -Path $LogFile -Force | Out-Null
+
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host " unicefData Metadata Regeneration Script" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host "Repository: $RepoRoot"
+Write-Host "Log file:   $LogFile"
 if ($Force) {
     Write-Host "Mode: Force overwrite (no prompts)" -ForegroundColor Yellow
 }
@@ -850,6 +862,10 @@ foreach ($result in $results.Values) {
         break
     }
 }
+
+# Stop transcript
+Stop-Transcript | Out-Null
+Write-Host "Log saved to: $LogFile" -ForegroundColor Gray
 
 if ($allPassed) {
     Write-Host "All metadata regeneration completed successfully!" -ForegroundColor Green

@@ -67,6 +67,8 @@ Thumbs.db
 python/tests/output/
 R/tests/output/
 tests/metadata/
+tests/logs/
+!tests/logs/.gitkeep
 python/examples/data/
 R/examples/data/
 validation/validation_results.csv

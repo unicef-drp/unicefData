@@ -1,5 +1,6 @@
-* Test indicator metadata sync with Python helper
+* Sync metadata with Python helper
 * Run from: C:\GitHub\others\unicefData
+* Usage: do tests/sync_metadata_stata.do
 
 clear all
 set more off
@@ -10,7 +11,7 @@ cd "C:\GitHub\others\unicefData"
 
 * Close any existing log and start fresh
 capture log close _all
-log using "tests/logs/test_indicator_sync.log", replace text name(synctest)
+log using "tests/logs/sync_metadata_stata.log", replace text name(synctest)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"
