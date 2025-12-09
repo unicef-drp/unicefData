@@ -18,7 +18,10 @@ This directory contains the validation and metadata synchronization infrastructu
 validation/
 ├── README.md                          # This file
 ├── logs/                              # Log files from script executions
-├── metadata/                          # Test metadata snapshots
+├── data/                              # Example outputs for cross-language validation
+│   ├── python/                        # Python example outputs
+│   ├── r/                             # R example outputs
+│   └── stata/                         # Stata example outputs
 │
 ├── # === Orchestrators === #
 ├── orchestrator_metadata.py           # Master orchestrator (Python)
@@ -31,7 +34,7 @@ validation/
 ├── sync_metadata_stataonly.do         # Stata metadata sync (pure Stata)
 │
 ├── # === Validation === #
-├── validate_outputs.py                # Compare R vs Python outputs
+├── validate_outputs.py                # Compare R vs Python vs Stata outputs
 ├── report_metadata_status.py          # Metadata comparison report
 └── test_prod_sdg_indicators.py        # SDG indicator tests
 ```
@@ -144,21 +147,48 @@ python validation/orchestrator_metadata.py --python -R    # Python and R
 
 ## Output Validation
 
-### Compare R vs Python Outputs
+### Compare R vs Python vs Stata Outputs
 
-Validates that R and Python produce identical results:
+Validates that all language implementations produce identical results:
 
 ```powershell
+# Compare all languages (auto-detect available outputs)
 python validation/validate_outputs.py
+
+# Explicitly include all three languages
+python validation/validate_outputs.py --all
+
+# Compare only Python and R
+python validation/validate_outputs.py --python-r
 ```
 
 **What it checks:**
-1. Matching CSV files in `python/tests/output/` vs `R/tests/output/`
+1. Matching CSV files in `validation/data/python/`, `validation/data/r/`, `validation/data/stata/`
 2. Row counts and column names
 3. Key column values (iso3, indicator, period)
 4. Numeric values with tolerance (0.001)
 
 **Output:** `validation/validation_results.csv`
+
+### Generate Example Outputs
+
+Run the example scripts to generate CSV outputs for comparison:
+
+```powershell
+# Python examples
+cd python/examples && python 00_quick_start.py
+
+# R examples  
+Rscript R/examples/00_quick_start.R
+
+# Stata examples (in Stata)
+do stata/examples/00_quick_start.do
+```
+
+Outputs are saved to:
+- `validation/data/python/*.csv`
+- `validation/data/r/*.csv`
+- `validation/data/stata/*.csv`
 
 ### Metadata Status Report
 

@@ -22,13 +22,9 @@ if (file.exists("../unicef_api/unicefData.R")) {
   stop("Could not find unicefData.R")
 }
 
-# Setup data directory
-if (dir.exists(file.path("R", "examples"))) {
-  data_dir <- file.path("R", "examples", "data")
-} else {
-  data_dir <- "data"
-}
-dir.create(data_dir, showWarnings = FALSE)
+# Setup data directory - centralized for cross-language validation
+data_dir <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "validation", "data", "r")
+if (!dir.exists(data_dir)) dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 
 cat("======================================================================\n")
 cat("02_sdg_indicators.R - SDG Indicator Examples\n")

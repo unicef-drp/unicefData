@@ -1,7 +1,7 @@
-# UNICEF Data Examples
+# UNICEF Data Examples (R)
 
-This folder contains example scripts demonstrating how to use the `unicefdata` package.
-Each example has an identical counterpart in `python/examples/`.
+This folder contains example scripts demonstrating how to use the `unicefData` package.
+Each example has identical counterparts in `python/examples/` and `stata/examples/`.
 
 ## Example Files
 
@@ -21,6 +21,19 @@ Each example has an identical counterpart in `python/examples/`.
 setwd("R/examples")
 source("00_quick_start.R")
 ```
+
+## Output
+
+CSV files are saved to `validation/data/r/` for cross-language comparison.
+
+## Cross-Language Validation
+
+All examples produce equivalent output across R, Python, and Stata:
+- R: `validation/data/r/*.csv`
+- Python: `validation/data/python/*.csv`
+- Stata: `validation/data/stata/*.csv`
+
+Use `python validation/validate_outputs.py --all` to compare outputs.
 
 ## Quick Reference
 

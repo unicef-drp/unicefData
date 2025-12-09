@@ -1,7 +1,7 @@
-# UNICEF Data Examples
+# UNICEF Data Examples (Python)
 
 This folder contains example scripts demonstrating how to use the `unicef_api` package.
-Each example has an identical counterpart in `R/examples/`.
+Each example has identical counterparts in `R/examples/` and `stata/examples/`.
 
 ## Example Files
 
@@ -21,6 +21,19 @@ Each example has an identical counterpart in `R/examples/`.
 cd python/examples
 python 00_quick_start.py
 ```
+
+## Output
+
+CSV files are saved to `validation/data/python/` for cross-language comparison.
+
+## Cross-Language Validation
+
+All examples produce equivalent output across R, Python, and Stata:
+- Python: `validation/data/python/*.csv`
+- R: `validation/data/r/*.csv`
+- Stata: `validation/data/stata/*.csv`
+
+Use `python validation/validate_outputs.py --all` to compare outputs.
 
 ## Quick Reference
 
