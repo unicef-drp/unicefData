@@ -23,16 +23,19 @@ if (!requireNamespace("httr", quietly = TRUE)) {
 # Null coalescing operator
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
-# Source core functions
+# Source core functions (only needed when sourcing directly, not as a package)
+# When loaded as a package, unicefData_raw is already available via namespace
 if (!exists("unicefData_raw", mode = "function")) {
+  # Only try to source if we're running as a standalone script (not as package)
   script_file <- sys.frame(1)$ofile
-  script_dir <- if (is.null(script_file)) "." else dirname(script_file)
-  core_path <- file.path(script_dir, "unicef_core.R")
-  if (file.exists(core_path)) {
-    source(core_path, local = FALSE)
-  } else {
-    warning("unicef_core.R not found. Some functionality may be missing.")
+  if (!is.null(script_file)) {
+    script_dir <- dirname(script_file)
+    core_path <- file.path(script_dir, "unicef_core.R")
+    if (file.exists(core_path)) {
+      source(core_path, local = FALSE)
+    }
   }
+  # No warning needed - when loaded as package, unicef_core.R is loaded via NAMESPACE
 }
 
 # Internal helper to perform HTTP GET and return text
