@@ -1,6 +1,6 @@
 *******************************************************************************
 * _unicefdata_sync_ind_meta
-*! v 1.0.0   08Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.1.0   08Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Helper program for unicefdata_sync: Sync full indicator catalog
 *
 * Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
@@ -8,7 +8,7 @@
 *******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
-    syntax, OUTFILE(string) AGENCY(string) [FORCE]
+    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA]
     
     local cache_max_age_days = 30
     local codelist_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
@@ -106,6 +106,16 @@ program define _unicefdata_sync_ind_meta, rclass
     * Use Python-based unicefdata_xmltoyaml for robust parsing
     * This avoids Stata's macro length limitation with large XML files
     *---------------------------------------------------------------------------
+    
+    * Determine parser option (default to forcepython for large indicator files)
+    local parser_option "forcepython"
+    if ("`forcestata'" != "") {
+        local parser_option "forcestata"
+    }
+    else if ("`forcepython'" != "") {
+        local parser_option "forcepython"
+    }
+    
     capture noisily unicefdata_xmltoyaml, ///
         type(indicators) ///
         xmlfile("`xmlfile'") ///
@@ -115,7 +125,7 @@ program define _unicefdata_sync_ind_meta, rclass
         source("`codelist_url'") ///
         codelistid("CL_UNICEF_INDICATOR") ///
         codelistname("UNICEF Indicator Codelist") ///
-        forcepython
+        `parser_option'
     
     if (_rc == 0) {
         local n_indicators = r(count)
