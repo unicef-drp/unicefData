@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 sync_metadata_python.py - Sync Python metadata from UNICEF SDMX API
 ====================================================================
 
@@ -10,7 +10,7 @@ For syncing all languages, use the orchestrator:
 Usage:
     python tests/sync_metadata_python.py [--verbose]
 
-Run from: C:\GitHub\others\unicefData
+Run from repository root (e.g., C:\GitHub\others\unicefData)
 Log output: tests/logs/sync_metadata_python.log
 """
 
