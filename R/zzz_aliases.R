@@ -10,30 +10,10 @@
 #   Stata:    unicefdata - case insensitive
 # =============================================================================
 
-#' @title Fetch UNICEF Indicator Data (lowercase alias)
-#' @description Lowercase alias for \code{\link{unicefData}} for consistency with Stata.
-#' @inheritParams unicefData
-#' @return A tibble (data.frame) containing the requested data.
-#' @seealso \code{\link{unicefData}}
-#' @examples
-#' \dontrun{
-#' # These are equivalent:
-#' df <- unicefData(indicator = "CME_MRY0T4", countries = "AFG")
-#' df <- unicefdata(indicator = "CME_MRY0T4", countries = "AFG")
-#' }
+#' @rdname unicefData
 #' @export
 unicefdata <- unicefData
 
-#' @title Fetch Raw UNICEF Data (lowercase alias)
-#' @description Lowercase alias for \code{\link{unicefData_raw}} for consistency with Stata.
-#' @inheritParams unicefData_raw
-#' @return A tibble (data.frame) containing raw API data.
-#' @seealso \code{\link{unicefData_raw}}
-#' @examples
-#' \dontrun{
-#' # These are equivalent:
-#' df <- unicefData_raw(indicator = "CME_MRY0T4")
-#' df <- unicefdata_raw(indicator = "CME_MRY0T4")
-#' }
+#' @rdname unicefData_raw
 #' @export
 unicefdata_raw <- unicefData_raw
