@@ -5,13 +5,13 @@
 #
 # This is a standalone script for syncing R metadata only.
 # For syncing all languages, use the orchestrator:
-#     python tests/orchestrator_metadata.py --all
+#     python validation/orchestrator_metadata.py --all
 #
 # Usage:
-#     Rscript tests/sync_metadata_r.R
+#     Rscript validation/sync_metadata_r.R
 #
 # Run from: C:\GitHub\others\unicefData
-# Log output: tests/logs/sync_metadata_r.log
+# Log output: validation/logs/sync_metadata_r.log
 # ==============================================================================
 
 # ==============================================================================
@@ -22,7 +22,7 @@
 setwd("C:/GitHub/others/unicefData")
 
 # Start logging
-log_file <- "tests/logs/sync_metadata_r.log"
+log_file <- "validation/logs/sync_metadata_r.log"
 sink(log_file, split = TRUE)
 
 cat(paste(rep("=", 70), collapse = ""), "\n")

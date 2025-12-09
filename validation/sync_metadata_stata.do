@@ -4,13 +4,13 @@
 *
 * This is a standalone script for syncing Stata metadata using Python helpers.
 * For syncing all languages, use the orchestrator:
-*     python tests/orchestrator_metadata.py --all
+*     python validation/orchestrator_metadata.py --all
 *
 * Usage:
-*     do tests/sync_metadata_stata.do
+*     do validation/sync_metadata_stata.do
 *
 * Run from: C:\GitHub\others\unicefData
-* Log output: tests/logs/sync_metadata_stata.log
+* Log output: validation/logs/sync_metadata_stata.log
 * ==============================================================================
 
 clear all
@@ -22,7 +22,7 @@ cd "C:\GitHub\others\unicefData"
 
 * Close any existing log and start fresh
 capture log close _all
-log using "tests/logs/sync_metadata_stata.log", replace text name(synctest)
+log using "validation/logs/sync_metadata_stata.log", replace text name(synctest)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"

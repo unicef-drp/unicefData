@@ -10,14 +10,14 @@ by calling the standalone sync scripts:
   - sync_metadata_stata.do (and sync_metadata_stataonly.do)
 
 Usage:
-    python tests/orchestrator_metadata.py [--python] [--r] [--stata] [--all] [--verbose]
+    python validation/orchestrator_metadata.py [--python] [--r] [--stata] [--all] [--verbose]
 
 Examples:
-    python tests/orchestrator_metadata.py --all          # Sync all languages
-    python tests/orchestrator_metadata.py --python       # Python only
-    python tests/orchestrator_metadata.py --stata        # Stata only  
-    python tests/orchestrator_metadata.py -R             # R only
-    python tests/orchestrator_metadata.py --python -R    # Python and R
+    python validation/orchestrator_metadata.py --all          # Sync all languages
+    python validation/orchestrator_metadata.py --python       # Python only
+    python validation/orchestrator_metadata.py --stata        # Stata only  
+    python validation/orchestrator_metadata.py -R             # R only
+    python validation/orchestrator_metadata.py --python -R    # Python and R
 """
 
 import sys

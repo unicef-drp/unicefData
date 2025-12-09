@@ -1,7 +1,7 @@
 _metadata:
   platform: R
   version: 2.0.0
-  synced_at: '2025-12-09T01:57:49Z'
+  synced_at: '2025-12-09T02:25:53Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
   agency: UNICEF
   content_type: countries

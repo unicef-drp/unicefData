@@ -2,7 +2,7 @@ id: CME_SUBNAT_HTI
 name: CME Haiti
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:58:33Z'
+synced_at: '2025-12-09T02:26:24Z'
 dimensions:
 - id: REF_AREA
   position: 1

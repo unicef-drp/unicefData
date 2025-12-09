@@ -2,7 +2,7 @@ id: DM
 name: Demography
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:59:09Z'
+synced_at: '2025-12-09T02:26:51Z'
 dimensions:
 - id: REF_AREA
   position: 1

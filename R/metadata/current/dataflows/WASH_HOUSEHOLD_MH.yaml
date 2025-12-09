@@ -2,7 +2,7 @@ id: WASH_HOUSEHOLD_MH
 name: WASH Household Menstrual Health
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T02:01:02Z'
+synced_at: '2025-12-09T02:28:20Z'
 dimensions:
 - id: REF_AREA
   position: 1

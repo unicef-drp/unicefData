@@ -5,13 +5,13 @@ sync_metadata_python.py - Sync Python metadata from UNICEF SDMX API
 
 This is a standalone script for syncing Python metadata only.
 For syncing all languages, use the orchestrator:
-    python tests/orchestrator_metadata.py --all
+    python validation/orchestrator_metadata.py --all
 
 Usage:
-    python tests/sync_metadata_python.py [--verbose]
+    python validation/sync_metadata_python.py [--verbose]
 
 Run from repository root (e.g., C:/GitHub/others/unicefData)
-Log output: tests/logs/sync_metadata_python.log
+Log output: validation/logs/sync_metadata_python.log
 
 Output Files:
     python/metadata/current/

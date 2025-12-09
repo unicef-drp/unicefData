@@ -5,7 +5,7 @@ This directory contains test scripts and metadata synchronization utilities for 
 ## Directory Structure
 
 ```
-tests/
+validation/
 ├── README.md                          # This file
 ├── logs/                              # Log files from script executions
 │   └── .gitkeep
@@ -43,7 +43,7 @@ Use the orchestrator to sync metadata for all languages in one command:
 
 ```powershell
 # From repository root
-python tests/orchestrator_metadata.py --all
+python validation/orchestrator_metadata.py --all
 
 # Or using PowerShell orchestrator
 .\tests\orchestrator_metadata.ps1 -All
@@ -53,16 +53,16 @@ python tests/orchestrator_metadata.py --all
 
 ```powershell
 # Python only
-python tests/sync_metadata_python.py
+python validation/sync_metadata_python.py
 
 # R only
-Rscript tests/sync_metadata_r.R
+Rscript validation/sync_metadata_r.R
 
 # Stata only (with Python helper - recommended)
-do tests/sync_metadata_stata.do
+do validation/sync_metadata_stata.do
 
 # Stata only (pure Stata parser - may hit macro limits)
-do tests/sync_metadata_stataonly.do
+do validation/sync_metadata_stataonly.do
 ```
 
 ## Script Reference
@@ -78,12 +78,12 @@ These scripts coordinate metadata synchronization across all three languages.
 
 **Python Orchestrator Usage:**
 ```powershell
-python tests/orchestrator_metadata.py --all          # Sync all languages
-python tests/orchestrator_metadata.py --python       # Python only
-python tests/orchestrator_metadata.py --stata        # Stata only
-python tests/orchestrator_metadata.py -R             # R only
-python tests/orchestrator_metadata.py --python -R    # Python and R
-python tests/orchestrator_metadata.py --verbose      # Verbose output
+python validation/orchestrator_metadata.py --all          # Sync all languages
+python validation/orchestrator_metadata.py --python       # Python only
+python validation/orchestrator_metadata.py --stata        # Stata only
+python validation/orchestrator_metadata.py -R             # R only
+python validation/orchestrator_metadata.py --python -R    # Python and R
+python validation/orchestrator_metadata.py --verbose      # Verbose output
 ```
 
 **PowerShell Orchestrator Usage:**
@@ -116,10 +116,10 @@ Each language has its own standalone sync script that can be run independently.
 
 **Usage:**
 ```powershell
-python tests/report_metadata_status.py              # Default markdown output
-python tests/report_metadata_status.py --output csv # CSV output
-python tests/report_metadata_status.py --detailed   # Detailed per-file stats
-python tests/report_metadata_status.py --compare    # Compare record counts
+python validation/report_metadata_status.py              # Default markdown output
+python validation/report_metadata_status.py --output csv # CSV output
+python validation/report_metadata_status.py --detailed   # Detailed per-file stats
+python validation/report_metadata_status.py --compare    # Compare record counts
 ```
 
 ### Unit Tests (R)
@@ -145,7 +145,7 @@ R CMD check .
 
 ## Log Files
 
-All scripts write their output to `tests/logs/`:
+All scripts write their output to `validation/logs/`:
 
 | Log File | Source Script |
 |----------|---------------|

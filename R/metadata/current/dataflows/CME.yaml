@@ -2,7 +2,7 @@ id: CME
 name: Child Mortality
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:57:55Z'
+synced_at: '2025-12-09T02:25:59Z'
 dimensions:
 - id: REF_AREA
   position: 1

@@ -2,7 +2,7 @@ id: EDUCATION_UIS_SDG
 name: EDU - SDG Indicators (UIS Database)
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:59:52Z'
+synced_at: '2025-12-09T02:27:21Z'
 dimensions:
 - id: REF_AREA
   position: 1

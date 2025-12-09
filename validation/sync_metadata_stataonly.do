@@ -9,13 +9,13 @@
 * This separate folder makes it easy to track pure-Stata output in git commits.
 *
 * For syncing all languages, use the orchestrator:
-*     python tests/orchestrator_metadata.py --all
+*     python validation/orchestrator_metadata.py --all
 *
 * Usage:
-*     do tests/sync_metadata_stataonly.do
+*     do validation/sync_metadata_stataonly.do
 *
 * Run from: C:\GitHub\others\unicefData
-* Log output: tests/logs/sync_metadata_stataonly.log
+* Log output: validation/logs/sync_metadata_stataonly.log
 * ==============================================================================
 
 clear all
@@ -27,7 +27,7 @@ cd "C:\GitHub\others\unicefData"
 
 * Close any existing log and start fresh
 capture log close _all
-log using "tests/logs/sync_metadata_stataonly.log", replace text name(stataonly)
+log using "validation/logs/sync_metadata_stataonly.log", replace text name(stataonly)
 
 * Add stata source directories to adopath
 adopath ++ "stata/src/u"
