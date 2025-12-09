@@ -251,7 +251,7 @@ CACHE_MAX_AGE_DAYS <- 30
 #' Fetch indicator codelist from UNICEF SDMX API
 #' @return Named list of indicator metadata
 #' @keywords internal
-.fetch_codelist <- function() {
+.fetch_indicator_codelist <- function() {
   message("Fetching indicator codelist from UNICEF SDMX API...")
   
   if (!requireNamespace("httr", quietly = TRUE)) {
@@ -473,7 +473,7 @@ CACHE_MAX_AGE_DAYS <- 30
   
   # Fetch fresh data from API
   tryCatch({
-    fresh_indicators <- .fetch_codelist()
+    fresh_indicators <- .fetch_indicator_codelist()
     .save_cache(fresh_indicators)
     .indicator_cache$data <- fresh_indicators
     .indicator_cache$loaded <- TRUE
