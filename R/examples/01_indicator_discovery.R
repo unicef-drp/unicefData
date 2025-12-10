@@ -110,7 +110,7 @@ cat(sprintf("Total dataflows: %d\n", nrow(flows)))
 cat("\nKey dataflows:\n")
 key_flows <- c("CME", "NUTRITION", "EDUCATION_UIS_SDG", "IMMUNISATION", "MNCH", "PT", "PT_CM", "PT_FGM")
 print(flows[flows$id %in% key_flows, c("id", "agency")])
-write.csv(flows, file.path(data_dir, "01_ex6_dataflows.csv"), row.names = FALSE)
+# Note: Not saving to CSV - discovery examples don't produce validation data
 
 cat("\n======================================================================\n")
 cat("Indicator Discovery Complete!\n")
