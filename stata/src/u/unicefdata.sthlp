@@ -58,8 +58,8 @@
 {synopt:{opt ind:icator(string)}}indicator code(s) to download (e.g., CME_MRY0T4){p_end}
 {synopt:{opt data:flow(string)}}dataflow ID (e.g., CME, NUTRITION){p_end}
 {synopt:{opt count:ries(string)}}ISO3 country codes, space or comma separated{p_end}
-{synopt:{opt start_year(#)}}start year for data range{p_end}
-{synopt:{opt end_year(#)}}end year for data range{p_end}
+{synopt:{opt year(string)}}year(s): single (2020), range (2015:2023), or list (2015,2018,2020){p_end}
+{synopt:{opt circa}}find closest available year for each country{p_end}
 
 {syntab:Discovery (v1.3.0)}
 {synopt:{opt flows}}list available UNICEF SDMX dataflows{p_end}
@@ -183,8 +183,23 @@ Multiple indicators can be separated by spaces. Example indicators include:
 Multiple codes can be space or comma separated (e.g., {cmd:countries(ALB USA BRA)}).
 
 {phang}
-{opt start_year(#)} and {opt end_year(#)} specify the year range for data retrieval.
-(Aligned with R/Python syntax.)
+{opt year(string)} specifies the year(s) to retrieve. Supports three formats:
+{p_end}
+{phang2}{bf:Single year:} {cmd:year(2020)} - fetch only 2020{p_end}
+{phang2}{bf:Range:} {cmd:year(2015:2023)} - fetch years 2015 through 2023{p_end}
+{phang2}{bf:List:} {cmd:year(2015,2018,2020)} - fetch non-contiguous years{p_end}
+{pstd}
+If omitted, all available years are retrieved.
+
+{phang}
+{opt circa} finds the closest available year for each country when the exact 
+requested year is not available. This allows cross-country comparisons when 
+data availability varies. Different countries may have different actual years 
+in the result. Only applies when {opt year()} is specified.
+{p_end}
+{pstd}
+Example: {cmd:year(2015), circa} might return 2014 data for Country A and 
+2016 data for Country B if 2015 is not available for either.
 
 {dlgtab:Disaggregation Filters}
 

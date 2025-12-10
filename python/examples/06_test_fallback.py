@@ -66,7 +66,7 @@ for t in tests:
         df = unicefData(
             indicator=t["indicator"],
             countries=t["countries"],
-            start_year=2015
+            year="2015:2024"
         )
         
         elapsed = time.time() - start

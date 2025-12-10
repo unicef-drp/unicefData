@@ -28,7 +28,6 @@ cat("======================================================================\n")
 
 # Common parameters
 COUNTRIES <- c("AFG", "BGD", "BRA", "ETH", "IND", "NGA", "PAK")
-START_YEAR <- 2015
 
 # =============================================================================
 # Example 1: Child Mortality (SDG 3.2)
@@ -39,7 +38,7 @@ cat("Under-5 and Neonatal mortality rates\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),
   countries = COUNTRIES,
-  start_year = START_YEAR
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -55,7 +54,7 @@ cat("Stunting, Wasting, Overweight\n\n")
 df <- unicefData(
   indicator = c("NT_ANT_HAZ_NE2_MOD", "NT_ANT_WHZ_NE2", "NT_ANT_WHZ_PO2_MOD"),
   countries = COUNTRIES,
-  start_year = START_YEAR
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -70,7 +69,7 @@ cat("Completion rates - Primary, Lower Secondary, Upper Secondary\n\n")
 df <- unicefData(
   indicator = c("ED_CR_L1_UIS_MOD", "ED_CR_L2_UIS_MOD", "ED_CR_L3_UIS_MOD"),
   countries = COUNTRIES,
-  start_year = START_YEAR,
+  year = "2015:2024",
   dataflow = "EDUCATION_UIS_SDG" # Explicit dataflow for reliability
 )
 
@@ -86,7 +85,7 @@ cat("Women married before age 18\n\n")
 df <- unicefData(
   indicator = "PT_F_20-24_MRD_U18_TND",
   countries = COUNTRIES,
-  start_year = START_YEAR
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -101,7 +100,7 @@ cat("Safely managed water and sanitation\n\n")
 df <- unicefData(
   indicator = c("WS_PPL_W-SM", "WS_PPL_S-SM"),
   countries = COUNTRIES,
-  start_year = START_YEAR
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))

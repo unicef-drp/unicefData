@@ -31,7 +31,7 @@ print("UNICEF/World Bank regional classification\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["region"]
 )
@@ -48,7 +48,7 @@ print("World Bank income classification\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["income_group"]
 )
@@ -64,7 +64,7 @@ print("Full indicator description\n")
 df = unicefData(
     indicator=["CME_MRY0T4", "CME_MRM0"],
     countries=["ALB", "USA"],
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["indicator_name"]
 )
@@ -80,7 +80,7 @@ print("Combine region, income group, and indicator name\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["region", "income_group", "indicator_name"]
 )
@@ -97,7 +97,7 @@ print("Keep only essential columns\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     simplify=True
 )
 

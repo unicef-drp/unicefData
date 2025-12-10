@@ -37,7 +37,7 @@ display _n "--- Example 1: View Variable Labels ---"
 display "Stata includes descriptive labels on all variables" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) latest clear
+    year(2020:2024) latest clear
 
 describe
 
@@ -54,7 +54,7 @@ display _n "--- Example 2: Filter by Sex ---"
 display "Get female-only data" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) sex(F) clear
+    year(2020:2024) sex(F) clear
 
 display "Result: `=_N' rows (female only)"
 tab sex
@@ -69,14 +69,14 @@ display "Compare poorest vs richest quintiles" _n
 
 * Get poorest quintile
 unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(IND BGD) ///
-    start_year(2015) wealth(Q1) clear
+    year(2015:2024) wealth(Q1) clear
     
 display "Poorest quintile (Q1): `=_N' rows"
 list iso3 period wealth value if _n <= 5, clean
 
 * Get richest quintile
 unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(IND BGD) ///
-    start_year(2015) wealth(Q5) clear
+    year(2015:2024) wealth(Q5) clear
     
 display "Richest quintile (Q5): `=_N' rows"
 list iso3 period wealth value if _n <= 5, clean
@@ -88,7 +88,7 @@ display _n "--- Example 4: Raw SDMX Output ---"
 display "Original variable names without standardization" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB) ///
-    start_year(2020) raw clear
+    year(2020:2024) raw clear
 
 display "Raw variable names:"
 describe, short
@@ -102,7 +102,7 @@ display _n "--- Example 5: Simplified Output ---"
 display "Essential columns only" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) simplify clear
+    year(2020:2024) simplify clear
 
 display "Simplified columns:"
 describe, short
@@ -117,7 +117,7 @@ display _n "--- Example 6: Verbose Mode ---"
 display "Show API request details" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA) ///
-    start_year(2020) verbose clear
+    year(2020:2024) verbose clear
 
 display _n "======================================================================"
 display "Metadata Options Complete!"

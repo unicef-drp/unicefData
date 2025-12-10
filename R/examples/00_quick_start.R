@@ -38,8 +38,7 @@ cat("Years: 2015-2023\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
-  end_year = 2023
+  year = "2015:2023"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -56,8 +55,7 @@ cat("Years: 2020-2023\n\n")
 df <- unicefData(
   indicator = c("CME_MRM0", "CME_MRY0T4"),
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2020,
-  end_year = 2023
+  year = "2020:2023"
 )
 
 cat(sprintf("Result: %d rows\n", nrow(df)))
@@ -75,7 +73,7 @@ cat("Years: 2015+\n\n")
 df <- unicefData(
   indicator = "NT_ANT_HAZ_NE2_MOD",
   countries = c("AFG", "IND", "NGA"),
-  start_year = 2015
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -92,8 +90,7 @@ cat("Years: 2015-2023\n\n")
 df <- unicefData(
   indicator = "IM_DTP3",
   countries = c("NGA", "KEN", "ZAF"),
-  start_year = 2015,
-  end_year = 2023
+  year = "2015:2023"
 )
 
 cat(sprintf("Result: %d rows\n", nrow(df)))
@@ -109,7 +106,7 @@ cat("Years: 2020+\n\n")
 
 df <- unicefData(
   indicator = "CME_MRY0T4",
-  start_year = 2020
+  year = "2020:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))

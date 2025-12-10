@@ -37,7 +37,7 @@ timer clear 1
 timer on 1
 
 capture noisily unicefdata, indicator(CME_MRY0T4) countries(AFG ALB USA) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 timer off 1
 
@@ -62,7 +62,7 @@ timer clear 2
 timer on 2
 
 capture noisily unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(AFG ALB USA) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 timer off 2
 
@@ -87,7 +87,7 @@ timer clear 3
 timer on 3
 
 capture noisily unicefdata, indicator(ED_CR_L1_UIS_MOD) countries(AFG ALB USA) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 timer off 3
 
@@ -112,7 +112,7 @@ timer clear 4
 timer on 4
 
 capture noisily unicefdata, indicator(PT_F_20-24_MRD_U18_TND) countries(AFG ALB) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 timer off 4
 
@@ -137,7 +137,7 @@ timer clear 5
 timer on 5
 
 capture noisily unicefdata, indicator(PT_F_PS-SX_V_PTNR_12MNTH) countries(AFG ALB) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 timer off 5
 

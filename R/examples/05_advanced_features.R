@@ -80,8 +80,7 @@ cat("Mortality trends 2000-2023\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB"),
-  start_year = 2000,
-  end_year = 2023
+  year = "2000:2023"
 )
 
 cat("Time series:", nrow(df), "observations\n")
@@ -112,7 +111,7 @@ cat("Complex query with multiple filters\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),  # Multiple indicators
   countries = c("ALB", "USA", "BRA"),        # Multiple countries
-  start_year = 2020,                          # From 2020
+  year = 2020,                             # From 2020
   latest = TRUE,                              # Latest values only
   add_metadata = c("indicator_name")          # Include names
 )

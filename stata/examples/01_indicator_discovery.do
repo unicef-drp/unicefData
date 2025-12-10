@@ -70,7 +70,7 @@ unicefdata, indicator(NT_ANT_WHZ_NE2) countries(ETH) clear verbose
 display _n "--- Example 4: Get All Indicators from Dataflow ---" _n
 display "Download all indicators from a dataflow for specific country"
 
-unicefdata, dataflow(CME) countries(BRA) start_year(2020) clear
+unicefdata, dataflow(CME) countries(BRA) year(2020:2024) clear
 
 display "Indicators in CME dataflow:"
 tab indicator

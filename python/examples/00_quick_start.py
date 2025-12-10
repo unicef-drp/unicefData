@@ -38,8 +38,7 @@ print("Years: 2015-2023\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA", "BRA"],
-    start_year=2015,
-    end_year=2023
+    year="2015:2023"
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
@@ -56,8 +55,7 @@ print("Years: 2020-2023\n")
 df = unicefData(
     indicator=["CME_MRM0", "CME_MRY0T4"],
     countries=["ALB", "USA", "BRA"],
-    start_year=2020,
-    end_year=2023
+    year="2020:2023"
 )
 
 print(f"Result: {len(df)} rows")
@@ -75,7 +73,7 @@ print("Years: 2015+\n")
 df = unicefData(
     indicator="NT_ANT_HAZ_NE2_MOD",
     countries=["AFG", "IND", "NGA"],
-    start_year=2015
+    year="2015:2024"  # All years from 2015
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
@@ -92,8 +90,7 @@ print("Years: 2015-2023\n")
 df = unicefData(
     indicator="IM_DTP3",
     countries=["NGA", "KEN", "ZAF"],
-    start_year=2015,
-    end_year=2023
+    year="2015:2023"
 )
 
 print(f"Result: {len(df)} rows")
@@ -109,7 +106,7 @@ print("Years: 2020+\n")
 
 df = unicefData(
     indicator="CME_MRY0T4",
-    start_year=2020
+    year="2020:2024"  # All years from 2020
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")

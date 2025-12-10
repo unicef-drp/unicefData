@@ -29,7 +29,7 @@ print("Under-5 mortality by sex\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA", "BRA"],
-    start_year=2020,
+    year=2020,
     sex=["M", "F"]  # Male and Female
 )
 
@@ -46,7 +46,7 @@ print("Stunting by wealth quintile\n")
 df = unicefData(
     indicator="NT_ANT_HAZ_NE2_MOD",
     countries=["IND", "NGA", "ETH"],
-    start_year=2015,
+    year="2015:2024",
     raw=True  # Get raw data to access disaggregations
 )
 
@@ -66,8 +66,7 @@ print("Mortality trends 2000-2023\n")
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB"],
-    start_year=2000,
-    end_year=2023
+    year="2000:2023"
 )
 
 print(f"Time series: {len(df)} observations")
@@ -83,7 +82,7 @@ print("Latest immunization rates for many countries\n")
 df = unicefData(
     indicator="IM_DTP3",
     countries=["AFG", "ALB", "USA", "BRA", "IND", "CHN", "NGA", "ETH"],
-    start_year=2015,
+    year="2015:2024",
     latest=True
 )
 
@@ -98,7 +97,7 @@ print("Complex query with multiple filters\n")
 df = unicefData(
     indicator=["CME_MRY0T4", "CME_MRM0"],  # Multiple indicators
     countries=["ALB", "USA", "BRA"],        # Multiple countries
-    start_year=2020,                         # From 2020
+    year=2020,                               # From 2020
     latest=True,                             # Latest values only
     add_metadata=["indicator_name"]          # Include names
 )

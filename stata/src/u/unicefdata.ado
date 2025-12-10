@@ -88,8 +88,8 @@ program define unicefdata, rclass
                         INDICATOR(string)           /// Indicator code(s)
                         DATAFLOW(string)            /// SDMX dataflow ID
                         COUNTries(string)           /// ISO3 country codes
-                        START_year(integer 0)       /// Start year (R/Python aligned)
-                        END_year(integer 0)         /// End year (R/Python aligned)
+                        YEAR(string)                /// Year(s): single, range (2015:2023), or list (2015,2018,2020)
+                        CIRCA                       /// Find closest available year
                         SEX(string)                 /// Sex: _T, F, M, ALL
                         AGE(string)                 /// Age group filter
                         WEALTH(string)              /// Wealth quintile filter
@@ -155,6 +155,54 @@ program define unicefdata, rclass
         }
         
         local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+        
+        *-----------------------------------------------------------------------
+        * Parse year parameter
+        *-----------------------------------------------------------------------
+        * Supports: single (2020), range (2015:2023), list (2015,2018,2020)
+        
+        local start_year = 0
+        local end_year = 0
+        local year_list ""
+        local has_year_list = 0
+        
+        if ("`year'" != "") {
+            * Check for range format: 2015:2023
+            if (strpos("`year'", ":") > 0) {
+                local colon_pos = strpos("`year'", ":")
+                local start_year = real(substr("`year'", 1, `colon_pos' - 1))
+                local end_year = real(substr("`year'", `colon_pos' + 1, .))
+                if ("`verbose'" != "") {
+                    noi di as text "Year range: " as result "`start_year' to `end_year'"
+                }
+            }
+            * Check for list format: 2015,2018,2020
+            else if (strpos("`year'", ",") > 0) {
+                local year_list = subinstr("`year'", ",", " ", .)
+                local has_year_list = 1
+                * Get min and max for API query
+                local min_year = 9999
+                local max_year = 0
+                foreach yr of local year_list {
+                    if (`yr' < `min_year') local min_year = `yr'
+                    if (`yr' > `max_year') local max_year = `yr'
+                }
+                local start_year = `min_year'
+                local end_year = `max_year'
+                if ("`verbose'" != "") {
+                    noi di as text "Year list: " as result "`year_list'"
+                    noi di as text "Query range: " as result "`start_year' to `end_year'"
+                }
+            }
+            * Single year
+            else {
+                local start_year = real("`year'")
+                local end_year = `start_year'
+                if ("`verbose'" != "") {
+                    noi di as text "Single year: " as result "`start_year'"
+                }
+            }
+        }
         
         *-----------------------------------------------------------------------
         * Locate metadata directory
@@ -616,6 +664,163 @@ program define unicefdata, rclass
                 }
                 keep if _keep == 1
                 drop _keep
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Apply year list filter (non-contiguous years)
+        *-----------------------------------------------------------------------
+        
+        if (`has_year_list' == 1) {
+            capture confirm variable period
+            if (_rc == 0) {
+                if ("`circa'" != "") {
+                    * Circa mode: find closest year for each country
+                    * For each target year, find closest available period per country(-indicator)
+                    
+                    if ("`verbose'" != "") {
+                        noi di as text "Applying circa matching for years: " as result "`year_list'"
+                    }
+                    
+                    tempfile orig_data
+                    save "`orig_data'", replace
+                    
+                    * Drop missing values before finding closest
+                    capture confirm variable value
+                    if (_rc == 0) {
+                        drop if missing(value)
+                    }
+                    
+                    * Generate group id
+                    capture confirm variable indicator
+                    local has_indicator = (_rc == 0)
+                    
+                    tempfile closest_results
+                    local first_target = 1
+                    
+                    foreach target of local year_list {
+                        use "`orig_data'", clear
+                        capture confirm variable value
+                        if (_rc == 0) {
+                            drop if missing(value)
+                        }
+                        
+                        * Calculate distance from target
+                        gen double _dist = abs(period - `target')
+                        
+                        if (`has_indicator') {
+                            bysort iso3 indicator (_dist): keep if _n == 1
+                        }
+                        else {
+                            bysort iso3 (_dist): keep if _n == 1
+                        }
+                        
+                        gen _target_year = `target'
+                        drop _dist
+                        
+                        if (`first_target' == 1) {
+                            save "`closest_results'", replace
+                            local first_target = 0
+                        }
+                        else {
+                            append using "`closest_results'"
+                            save "`closest_results'", replace
+                        }
+                    }
+                    
+                    * Remove duplicates (same obs closest to multiple targets)
+                    use "`closest_results'", clear
+                    if (`has_indicator') {
+                        duplicates drop iso3 indicator period, force
+                    }
+                    else {
+                        duplicates drop iso3 period, force
+                    }
+                    drop _target_year
+                }
+                else {
+                    * Strict filter: keep only exact matches
+                    gen _keep_year = 0
+                    foreach yr of local year_list {
+                        replace _keep_year = 1 if period == `yr'
+                    }
+                    keep if _keep_year == 1
+                    drop _keep_year
+                    
+                    if ("`verbose'" != "") {
+                        noi di as text "Filtered to years: " as result "`year_list'"
+                    }
+                }
+            }
+        }
+        else if ("`circa'" != "" & `start_year' > 0) {
+            * Circa mode with single year or range (find closest to endpoints)
+            capture confirm variable period
+            if (_rc == 0) {
+                if (`start_year' == `end_year') {
+                    * Single year circa
+                    local target_years "`start_year'"
+                }
+                else {
+                    * Range circa - use start and end as targets
+                    local target_years "`start_year' `end_year'"
+                }
+                
+                if ("`verbose'" != "") {
+                    noi di as text "Applying circa matching for: " as result "`target_years'"
+                }
+                
+                tempfile orig_data
+                save "`orig_data'", replace
+                
+                capture confirm variable value
+                if (_rc == 0) {
+                    drop if missing(value)
+                }
+                
+                capture confirm variable indicator
+                local has_indicator = (_rc == 0)
+                
+                tempfile closest_results
+                local first_target = 1
+                
+                foreach target of local target_years {
+                    use "`orig_data'", clear
+                    capture confirm variable value
+                    if (_rc == 0) {
+                        drop if missing(value)
+                    }
+                    
+                    gen double _dist = abs(period - `target')
+                    
+                    if (`has_indicator') {
+                        bysort iso3 indicator (_dist): keep if _n == 1
+                    }
+                    else {
+                        bysort iso3 (_dist): keep if _n == 1
+                    }
+                    
+                    gen _target_year = `target'
+                    drop _dist
+                    
+                    if (`first_target' == 1) {
+                        save "`closest_results'", replace
+                        local first_target = 0
+                    }
+                    else {
+                        append using "`closest_results'"
+                        save "`closest_results'", replace
+                    }
+                }
+                
+                use "`closest_results'", clear
+                if (`has_indicator') {
+                    duplicates drop iso3 indicator period, force
+                }
+                else {
+                    duplicates drop iso3 period, force
+                }
+                drop _target_year
             }
         }
         

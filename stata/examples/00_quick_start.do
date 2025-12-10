@@ -34,7 +34,7 @@ display "Countries: Albania, USA, Brazil"
 display "Years: 2015-2023" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) ///
-    start_year(2015) end_year(2023) clear
+    year(2015:2023) clear
 
 display "Result: `=_N' rows, `=r(N_countries)' countries"
 list iso3 country period value in 1/6, clean
@@ -49,7 +49,7 @@ display "Indicators: CME_MRM0 (Neonatal), CME_MRY0T4 (Under-5)"
 display "Years: 2020-2023" _n
 
 unicefdata, indicator(CME_MRM0 CME_MRY0T4) countries(ALB USA BRA) ///
-    start_year(2020) end_year(2023) clear
+    year(2020:2023) clear
 
 display "Result: `=_N' rows"
 tab indicator
@@ -65,7 +65,7 @@ display "Countries: Afghanistan, India, Nigeria"
 display "Years: 2015+" _n
 
 unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(AFG IND NGA) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 display "Result: `=_N' rows"
 if (_N > 0) {
@@ -85,7 +85,7 @@ display "Countries: Nigeria, Kenya, South Africa"
 display "Years: 2015-2023" _n
 
 unicefdata, indicator(IM_DTP3) countries(NGA KEN ZAF) ///
-    start_year(2015) end_year(2023) clear
+    year(2015:2023) clear
 
 display "Result: `=_N' rows"
 if (_N > 0) {
@@ -103,7 +103,7 @@ display _n "--- Example 5: All Countries (Latest Values) ---"
 display "Indicator: CME_MRY0T4"
 display "Filter: latest value only" _n
 
-unicefdata, indicator(CME_MRY0T4) start_year(2020) latest clear
+unicefdata, indicator(CME_MRY0T4) year(2020:2024) latest clear
 
 display "Result: `=_N' observations"
 if (_N > 0) {

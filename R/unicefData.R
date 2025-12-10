@@ -23,6 +23,134 @@ if (!requireNamespace("httr", quietly = TRUE)) {
 # Null coalescing operator
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
+#' Parse year parameter into start_year, end_year, and year_list
+#'
+#' Supports multiple formats for specifying years:
+#' - NULL: All years (no filtering)
+#' - Single integer: Just that year (e.g., 2020)
+#' - String with colon: Range (e.g., "2015:2023")
+#' - String with comma: List (e.g., "2015,2018,2020")
+#' - Integer vector: Explicit list of years
+#'
+#' @param year Year specification in any supported format
+#' @return List with start_year, end_year, and year_list components
+#' @examples
+#' parse_year(2020)
+#' # $start_year: 2020, $end_year: 2020, $year_list: NULL
+#'
+#' parse_year("2015:2023")
+#' # $start_year: 2015, $end_year: 2023, $year_list: NULL
+#'
+#' parse_year("2015,2018,2020")
+#' # $start_year: 2015, $end_year: 2020, $year_list: c(2015, 2018, 2020)
+#' @export
+parse_year <- function(year) {
+  if (is.null(year)) {
+    return(list(start_year = NULL, end_year = NULL, year_list = NULL))
+  }
+  
+  # Single integer
+  if (is.numeric(year) && length(year) == 1) {
+    return(list(start_year = as.integer(year), end_year = as.integer(year), year_list = NULL))
+  }
+  
+  # Vector of integers (list of years)
+  if (is.numeric(year) && length(year) > 1) {
+    years <- as.integer(year)
+    return(list(
+      start_year = min(years),
+      end_year = max(years),
+      year_list = sort(years)
+    ))
+  }
+  
+  # String formats
+  if (is.character(year)) {
+    # Range format: "2015:2023"
+    if (grepl(":", year)) {
+      parts <- strsplit(year, ":")[[1]]
+      if (length(parts) == 2) {
+        start <- as.integer(trimws(parts[1]))
+        end <- as.integer(trimws(parts[2]))
+        return(list(start_year = start, end_year = end, year_list = NULL))
+      }
+    }
+    
+    # List format: "2015,2018,2020"
+    if (grepl(",", year)) {
+      years <- as.integer(trimws(strsplit(year, ",")[[1]]))
+      return(list(
+        start_year = min(years),
+        end_year = max(years),
+        year_list = sort(years)
+      ))
+    }
+    
+    # Single year as string: "2020"
+    yr <- as.integer(year)
+    return(list(start_year = yr, end_year = yr, year_list = NULL))
+  }
+  
+  stop(paste0(
+    "Invalid year format: ", year, ". ",
+    "Expected integer, 'YYYY:YYYY', 'YYYY,YYYY,YYYY', or integer vector."
+  ))
+}
+
+#' Apply circa matching to find closest available years
+#'
+#' For each country, find observations closest to the target year(s).
+#' Different countries may have different actual years in the result.
+#'
+#' @param df Data frame with iso3, period, value columns
+#' @param target_years Vector of target years to match
+#' @return Data frame with observations closest to each target year
+#' @keywords internal
+apply_circa <- function(df, target_years) {
+  if (!"period" %in% names(df) || !"iso3" %in% names(df)) {
+    return(df)
+  }
+  
+  if (nrow(df) == 0) {
+    return(df)
+  }
+  
+  # Drop NA values before finding closest
+  if ("value" %in% names(df)) {
+    df <- df %>% dplyr::filter(!is.na(value))
+  }
+  
+  # Determine grouping columns
+  group_cols <- "iso3"
+  if ("indicator" %in% names(df)) {
+    group_cols <- c("iso3", "indicator")
+  }
+  
+  results <- list()
+  
+  for (target in target_years) {
+    # For each group, find the observation closest to target
+    closest <- df %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(group_cols))) %>%
+      dplyr::mutate(dist = abs(period - target)) %>%
+      dplyr::filter(dist == min(dist)) %>%
+      dplyr::slice(1) %>%  # In case of ties, take first
+      dplyr::ungroup() %>%
+      dplyr::select(-dist) %>%
+      dplyr::mutate(target_year = target)
+    
+    results[[length(results) + 1]] <- closest
+  }
+  
+  result <- dplyr::bind_rows(results)
+  
+  # Remove duplicates if same observation is closest to multiple targets
+  result <- result %>%
+    dplyr::distinct(dplyr::across(-target_year), .keep_all = TRUE)
+  
+  return(result)
+}
+
 # Source core functions (only needed when sourcing directly, not as a package)
 # When loaded as a package, unicefData_raw is already available via namespace
 if (!exists("unicefData_raw", mode = "function")) {
@@ -122,15 +250,17 @@ list_unicef_codelist <- memoise::memoise(
 #' Formula: decimal_year = year + month/12
 #'
 #' @param indicator Character vector of indicator codes (e.g., "CME_MRY0T4").
-#'   Previously called 'key'. Both parameter names are supported.
 #' @param dataflow Character vector of dataflow IDs (e.g., "CME", "NUTRITION").
-#'   Previously called 'flow'. Both parameter names are supported.
 #' @param countries Character vector of ISO3 country codes (e.g., c("ALB", "USA")).
 #'   If NULL (default), fetches all countries.
-#' @param start_year Optional starting year (e.g., 2015).
-#'   Previously called 'start_period'. Both parameter names are supported.
-#' @param end_year Optional ending year (e.g., 2023).
-#'   Previously called 'end_period'. Both parameter names are supported.
+#' @param year Year specification. Supports multiple formats:
+#'   \itemize{
+#'     \item NULL: All available years (default)
+#'     \item Single integer: Just that year (e.g., 2020)
+#'     \item String with colon: Range (e.g., "2015:2023")
+#'     \item String with comma: Non-contiguous years (e.g., "2015,2018,2020")
+#'     \item Integer vector: Explicit list of years (e.g., c(2015, 2018, 2020))
+#'   }
 #' @param sex Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).
 #' @param age Filter by age group. Default is NULL (keeps totals).
 #' @param wealth Filter by wealth quintile. Default is NULL (keeps totals).
@@ -149,6 +279,10 @@ list_unicef_codelist <- memoise::memoise(
 #'   "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu".
 #' @param latest Logical; if TRUE, keep only the most recent non-missing value per country.
 #'   The year may differ by country. Useful for cross-sectional analysis.
+#' @param circa Logical; if TRUE, for each specified year find the closest available
+#'   data point. When exact years aren't available, returns observations with periods
+#'   closest to the requested year(s). Different countries may have different actual
+#'   years. Only applies when specific years are requested.
 #' @param add_metadata Character vector of metadata to add: "region", "income_group", 
 #'   "continent", "indicator_name", "indicator_category".
 #' @param dropna Logical; if TRUE, remove rows with missing values.
@@ -159,29 +293,36 @@ list_unicef_codelist <- memoise::memoise(
 #' @param ignore_duplicates Logical; if FALSE (default), raises an error when exact
 #'   duplicate rows are found (all column values identical). Set to TRUE to allow 
 #'   automatic removal of duplicates.
-#' @param flow Deprecated. Use 'dataflow' instead.
-#' @param key Deprecated. Use 'indicator' instead.
-#' @param start_period Deprecated. Use 'start_year' instead.
-#' @param end_period Deprecated. Use 'end_year' instead.
-#' @param retry Deprecated. Use 'max_retries' instead.
 #' @return Tibble with indicator data, or xml_document if detail="structure".
 #'   The 'period' column contains decimal years (see Time Period Handling section).
 #' 
 #' @examples
 #' \dontrun{
-#' # Fetch under-5 mortality for specific countries (clean output)
+#' # Fetch under-5 mortality for year range
 #' df <- unicefData(
 #'   indicator = "CME_MRY0T4",
 #'   countries = c("ALB", "USA", "BRA"),
-#'   start_year = 2015,
-#'   end_year = 2023
+#'   year = "2015:2023"
 #' )
 #' 
-#' # Get raw SDMX data with all original columns
-#' df_raw <- unicefData(
+#' # Single year
+#' df <- unicefData(
 #'   indicator = "CME_MRY0T4",
 #'   countries = c("ALB", "USA"),
-#'   raw = TRUE
+#'   year = 2020
+#' )
+#' 
+#' # Non-contiguous years
+#' df <- unicefData(
+#'   indicator = "CME_MRY0T4",
+#'   year = "2015,2018,2020"
+#' )
+#' 
+#' # Circa mode - find closest available year
+#' df <- unicefData(
+#'   indicator = "CME_MRY0T4",
+#'   year = 2015,
+#'   circa = TRUE  # Returns closest to 2015 for each country
 #' )
 #' 
 #' # Get latest value per country (cross-sectional)
@@ -203,9 +344,6 @@ list_unicef_codelist <- memoise::memoise(
 #'   format = "wide_indicators",
 #'   latest = TRUE
 #' )
-#' 
-#' # Legacy syntax (still supported)
-#' df <- unicefData(flow = "CME", key = "CME_MRY0T4")
 #' }
 #' @export
 unicefData <- function(
@@ -213,8 +351,7 @@ unicefData <- function(
     indicator     = NULL,
     dataflow      = NULL,
     countries     = NULL,
-    start_year    = NULL,
-    end_year      = NULL,
+    year          = NULL,
     sex           = "_T",
     age           = NULL,
     wealth        = NULL,
@@ -230,35 +367,19 @@ unicefData <- function(
     # NEW: Post-production options
     format        = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
     latest        = FALSE,
+    circa         = FALSE,
     add_metadata  = NULL,
     dropna        = FALSE,
     simplify      = FALSE,
     mrv           = NULL,
     raw           = FALSE,
-    ignore_duplicates = FALSE,
-    # Legacy parameter names (deprecated but supported)
-    flow          = NULL,
-    key           = NULL,
-    start_period  = NULL,
-    end_period    = NULL,
-    retry         = NULL
+    ignore_duplicates = FALSE
 ) {
-  # Handle legacy parameter names with deprecation warnings
-  if (!is.null(flow) && is.null(dataflow)) {
-    dataflow <- flow
-  }
-  if (!is.null(key) && is.null(indicator)) {
-    indicator <- key
-  }
-  if (!is.null(start_period) && is.null(start_year)) {
-    start_year <- start_period
-  }
-  if (!is.null(end_period) && is.null(end_year)) {
-    end_year <- end_period
-  }
-  if (!is.null(retry) && max_retries == 3) {
-    max_retries <- retry
-  }
+  # Parse the year parameter
+  year_spec <- parse_year(year)
+  start_year <- year_spec$start_year
+  end_year <- year_spec$end_year
+  year_list <- year_spec$year_list
   
   format <- match.arg(format)
   detail <- match.arg(detail)
@@ -374,6 +495,21 @@ unicefData <- function(
   }
   
   # 4. Post-processing (Metadata, MRV, Latest, Format)
+  
+  # Filter to specific years if year_list provided (non-contiguous years)
+  if (!is.null(year_list) && "period" %in% names(result)) {
+    if (circa) {
+      # Apply circa: find closest available year for each target
+      result <- apply_circa(result, year_list)
+    } else {
+      # Strict filter to only requested years
+      result <- result %>% dplyr::filter(period %in% year_list)
+    }
+  } else if (circa && !is.null(year) && "period" %in% names(result)) {
+    # Circa mode with single year or range
+    target_years <- if (start_year == end_year) c(start_year) else c(start_year, end_year)
+    result <- apply_circa(result, target_years)
+  }
   
   # Add metadata columns
   if (!is.null(add_metadata) && "iso3" %in% names(result)) {

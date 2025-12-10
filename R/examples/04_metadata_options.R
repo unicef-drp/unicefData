@@ -39,7 +39,7 @@ cat("UNICEF/World Bank regional classification\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("region")
 )
@@ -56,7 +56,7 @@ cat("World Bank income classification\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("income_group")
 )
@@ -72,7 +72,7 @@ cat("Full indicator description\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),
   countries = c("ALB", "USA"),
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("indicator_name")
 )
@@ -88,7 +88,7 @@ cat("Combine region, income group, and indicator name\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("region", "income_group", "indicator_name")
 )
@@ -105,7 +105,7 @@ cat("Keep only essential columns\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   simplify = TRUE
 )
 
