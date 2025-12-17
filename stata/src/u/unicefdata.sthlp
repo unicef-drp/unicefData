@@ -443,17 +443,13 @@ Net attendance rate, primary:{p_end}
 
 {pstd}
 Download and export to Excel:{p_end}
-{cmd}
-        . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
-        . export excel using "mortality_data.xlsx", firstrow(variables) replace
-{txt}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear" :. unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear}{p_end}
+{p 8 12}{stata `"export excel using "mortality_data.xlsx", firstrow(variables) replace"' :. export excel using "mortality_data.xlsx", firstrow(variables) replace}{p_end}
 
 {pstd}
 Download and export to CSV:{p_end}
-{cmd}
-        . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
-        . export delimited using "mortality_data.csv", replace
-{txt}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear" :. unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear}{p_end}
+{p 8 12}{stata `"export delimited using "mortality_data.csv", replace"' :. export delimited using "mortality_data.csv", replace}{p_end}
 
 {pstd}
 {ul:Metadata Sync}
