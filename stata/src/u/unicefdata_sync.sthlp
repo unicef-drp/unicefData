@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.1.0  07Dec2025}{...}
+{* *! version 1.2.0  17Dec2025}{...}
 {vieweralsosee "[R] unicefdata" "help unicefdata"}{...}
 {vieweralsosee "[R] yaml" "help yaml"}{...}
 {viewerjumpto "Syntax" "unicefdata_sync##syntax"}{...}
@@ -26,11 +26,21 @@
 {synoptset 20 tabbed}{...}
 {synopthdr}
 {synoptline}
-{syntab:Main}
+{syntab:What to sync}
+{synopt:{opt all}}sync all metadata types (default){p_end}
+{synopt:{opt dataflows}}sync dataflows only{p_end}
+{synopt:{opt codelists}}sync codelists only{p_end}
+{synopt:{opt countries}}sync country codes only{p_end}
+{synopt:{opt regions}}sync regional codes only{p_end}
+{synopt:{opt indicators}}sync indicators only{p_end}
+{synopt:{opt history}}display sync history{p_end}
+{syntab:Options}
 {synopt:{opt path(string)}}directory for metadata files{p_end}
 {synopt:{opt suffix(string)}}suffix for output filenames (e.g., "_stataonly"){p_end}
 {synopt:{opt verbose}}display detailed progress{p_end}
 {synopt:{opt force}}force sync even if cache is fresh{p_end}
+{synopt:{opt forcepython}}force use of Python parser{p_end}
+{synopt:{opt forcestata}}force use of pure Stata parser{p_end}
 {synoptline}
 
 
@@ -88,7 +98,32 @@ Each YAML file includes a {cmd:_metadata} block with:
 {marker options}{...}
 {title:Options}
 
-{dlgtab:Main}
+{dlgtab:What to sync}
+
+{phang}
+{opt all} syncs all metadata types. This is the default behavior if no specific 
+type is selected.
+
+{phang}
+{opt dataflows} syncs only the dataflows metadata from the API.
+
+{phang}
+{opt codelists} syncs only the codelists metadata (excluding CL_COUNTRY and 
+CL_WORLD_REGIONS which are handled separately).
+
+{phang}
+{opt countries} syncs only the country codes from CL_COUNTRY.
+
+{phang}
+{opt regions} syncs only the regional aggregate codes from CL_WORLD_REGIONS.
+
+{phang}
+{opt indicators} syncs only the indicator catalog metadata.
+
+{phang}
+{opt history} displays the sync history without performing any sync operation.
+
+{dlgtab:Options}
 
 {phang}
 {opt path(string)} specifies the directory where metadata files should be saved.
@@ -106,6 +141,14 @@ parsers. For example, {opt suffix("_stataonly")} creates files like
 {phang}
 {opt force} forces a sync operation even if the cached metadata is still fresh
 (less than 30 days old).
+
+{phang}
+{opt forcepython} forces use of the Python-based XML parser. Requires Python 3.6+
+with the {cmd:lxml} package installed.
+
+{phang}
+{opt forcestata} forces use of the pure Stata parser. No external dependencies 
+required but may be slower for large files.
 
 
 {marker examples}{...}
@@ -237,5 +280,9 @@ Part of the {cmd:unicefData} package for accessing UNICEF Data Warehouse.
 {title:Also see}
 
 {psee}
-{space 2}Help: {helpb unicefdata}, {helpb yaml}
+Online: {browse "https://data.unicef.org/":UNICEF Data Warehouse}, 
+{browse "https://sdmx.data.unicef.org/":UNICEF SDMX API}
+
+{psee}
+Help: {helpb unicefdata}, {helpb yaml}, {helpb wbopendata} (similar command for World Bank data)
 {p_end}

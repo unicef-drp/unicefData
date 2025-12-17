@@ -35,12 +35,13 @@ program define _unicef_search_indicators, rclass
             }
             
             * Fallback to PLUS directory _/
-            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators.yaml")) {
+            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
                 local metapath "`c(sysdir_plus)'_/"
             }
         }
         
-        local yaml_file "`metapath'_unicefdata_indicators.yaml"
+        * Use full indicator catalog (733 indicators)
+        local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
         
         *-----------------------------------------------------------------------
         * Check YAML file exists
@@ -105,10 +106,10 @@ program define _unicef_search_indicators, rclass
                     }
                     
                     if (`found' == 1) {
-                        * Get name and dataflow for this indicator
-                        capture yaml get indicators:`ind', attributes(name dataflow) quiet frame(`yaml_frame_base')
+                        * Get name and category for this indicator
+                        capture yaml get indicators:`ind', attributes(name category) quiet frame(`yaml_frame_base')
                         if (_rc == 0) {
-                            local ind_df = "`r(dataflow)'"
+                            local ind_df = "`r(category)'"
                             local ind_name = "`r(name)'"
                         }
                         else {
@@ -171,10 +172,10 @@ program define _unicef_search_indicators, rclass
                 }
                 
                 if (`found' == 1) {
-                    * Get name and dataflow for this indicator
-                    capture yaml get indicators:`ind', attributes(name dataflow) quiet
+                    * Get name and category for this indicator
+                    capture yaml get indicators:`ind', attributes(name category) quiet
                     if (_rc == 0) {
-                        local ind_df = "`r(dataflow)'"
+                        local ind_df = "`r(category)'"
                         local ind_name = "`r(name)'"
                     }
                     else {

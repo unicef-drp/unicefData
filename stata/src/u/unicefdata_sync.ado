@@ -1,8 +1,9 @@
 *******************************************************************************
 * unicefdata_sync
-*! v 1.1.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.2.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Sync UNICEF metadata from SDMX API to local YAML files
 * Creates standardized YAML files with watermarks matching R/Python format
+* v1.2.0: Added selective sync options (all, dataflows, codelists, countries, regions, indicators, history)
 * v1.1.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
 
@@ -64,12 +65,37 @@ SEE ALSO:
 program define unicefdata_sync, rclass
     version 14.0
     
-    syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA]
+    syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA ///
+              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY]
     
     * Validate parser options
     if ("`forcepython'" != "" & "`forcestata'" != "") {
         di as err "Cannot specify both forcepython and forcestata options"
         error 198
+    }
+    
+    * Handle HISTORY option - display sync history and exit
+    if ("`history'" != "") {
+        _unicefdata_show_history, path("`path'") suffix("`suffix'")
+        exit 0
+    }
+    
+    * Determine what to sync
+    * If no specific type is selected, or ALL is specified, sync everything
+    local any_specific = ("`dataflows'" != "" | "`codelists'" != "" | "`countries'" != "" | "`regions'" != "" | "`indicators'" != "")
+    if (`any_specific' == 0 | "`all'" != "") {
+        local do_dataflows 1
+        local do_codelists 1
+        local do_countries 1
+        local do_regions 1
+        local do_indicators 1
+    }
+    else {
+        local do_dataflows = ("`dataflows'" != "")
+        local do_codelists = ("`codelists'" != "")
+        local do_countries = ("`countries'" != "")
+        local do_regions = ("`regions'" != "")
+        local do_indicators = ("`indicators'" != "")
     }
     
     * Set parser option for helper functions
@@ -98,8 +124,8 @@ program define unicefdata_sync, rclass
     local FILE_COUNTRIES "_unicefdata_countries`sfx'.yaml"
     local FILE_REGIONS "_unicefdata_regions`sfx'.yaml"
     local FILE_SYNC_HISTORY "_unicefdata_sync_history`sfx'.yaml"
-    local FILE_IND_META "unicef_indicators_metadata`sfx'.yaml"
-    local FILE_DF_INDEX "dataflow_index`sfx'.yaml"
+    local FILE_IND_META "_unicefdata_indicators_metadata`sfx'.yaml"
+    local FILE_DF_INDEX "_dataflow_index`sfx'.yaml"
     
     * Get current timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
@@ -173,6 +199,8 @@ program define unicefdata_sync, rclass
     * 1. Sync Dataflows
     *---------------------------------------------------------------------------
     
+    if (`do_dataflows') {
+    
     if ("`verbose'" != "") {
         di as text "  📁 Fetching dataflows..."
         if ("`parser_opt'" != "") {
@@ -201,9 +229,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_DATAFLOWS' - " as result "`n_dataflows'" as text " dataflows"
     }
     
+    } // end do_dataflows
+    
     *---------------------------------------------------------------------------
     * 2. Sync Codelists (excluding CL_COUNTRY and CL_WORLD_REGIONS)
     *---------------------------------------------------------------------------
+    
+    if (`do_codelists') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching codelists..."
@@ -229,9 +261,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_CODELISTS' - " as result "`n_codelists'" as text " codelists"
     }
     
+    } // end do_codelists
+    
     *---------------------------------------------------------------------------
     * 3. Sync Countries (CL_COUNTRY)
     *---------------------------------------------------------------------------
+    
+    if (`do_countries') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching country codes..."
@@ -260,9 +296,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_COUNTRIES' - " as result "`n_countries'" as text " country codes"
     }
     
+    } // end do_countries
+    
     *---------------------------------------------------------------------------
     * 4. Sync Regions (CL_WORLD_REGIONS)
     *---------------------------------------------------------------------------
+    
+    if (`do_regions') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching regional codes..."
@@ -291,9 +331,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_REGIONS' - " as result "`n_regions'" as text " regional codes"
     }
     
+    } // end do_regions
+    
     *---------------------------------------------------------------------------
     * 5. Sync Indicators (from hardcoded catalog)
     *---------------------------------------------------------------------------
+    
+    if (`do_indicators') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Building indicator catalog..."
@@ -318,9 +362,14 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_INDICATORS' - " as result "`n_indicators'" as text " indicators"
     }
     
+    } // end do_indicators
+    
     *---------------------------------------------------------------------------
     * 6. Extended Sync: Dataflow Index and Schemas (dataflows/ folder)
+    *    Only run when syncing dataflows or all
     *---------------------------------------------------------------------------
+    
+    if (`do_dataflows') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Syncing dataflow schemas (extended)..."
@@ -347,9 +396,14 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_DF_INDEX' + " as result "`n_schemas'" as text " schema files"
     }
     
+    } // end do_dataflows extended
+    
     *---------------------------------------------------------------------------
     * 7. Extended Sync: Full indicator catalog from API
+    *    Only run when syncing indicators or all
     *---------------------------------------------------------------------------
+    
+    if (`do_indicators') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Syncing full indicator catalog..."
@@ -381,6 +435,8 @@ program define unicefdata_sync, rclass
             di as text "     ✓ `FILE_IND_META' - " as result "`n_full_indicators'" as text " indicators"
         }
     }
+    
+    } // end do_indicators extended
     
     *---------------------------------------------------------------------------
     * 8. Create vintage snapshot
@@ -470,6 +526,65 @@ program define unicefdata_sync, rclass
     return local vintage_date "`vintage_date'"
     return local synced_at "`synced_at'"
     return local path "`path'"
+    
+end
+
+*******************************************************************************
+* Helper: Show sync history
+*******************************************************************************
+
+program define _unicefdata_show_history
+    syntax [, PATH(string) SUFFIX(string)]
+    
+    * Determine path
+    if ("`path'" == "") {
+        capture findfile _unicef_list_dataflows.ado
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local path "`ado_dir'"
+        }
+        else {
+            local path "`c(sysdir_plus)'_/"
+        }
+    }
+    
+    * Ensure path ends with separator
+    if (substr("`path'", -1, 1) != "/" & substr("`path'", -1, 1) != "\") {
+        local path "`path'/"
+    }
+    
+    * Build history filename
+    local sfx "`suffix'"
+    local histfile "`path'_unicefdata_sync_history`sfx'.yaml"
+    
+    * Check if history file exists
+    capture confirm file "`histfile'"
+    if (_rc != 0) {
+        di as text "No sync history found."
+        di as text "Run {stata unicefdata_sync} to sync metadata."
+        exit 0
+    }
+    
+    * Display history file
+    di as text _dup(80) "="
+    di as text "UNICEF Metadata Sync History"
+    di as text _dup(80) "="
+    di as text "History file: " as result "`histfile'"
+    di as text _dup(80) "-"
+    
+    * Read and display the file
+    tempname fh
+    file open `fh' using "`histfile'", read text
+    file read `fh' line
+    while r(eof) == 0 {
+        di as text "`line'"
+        file read `fh' line
+    }
+    file close `fh'
+    
+    di as text _dup(80) "="
     
 end
 
@@ -1270,7 +1385,7 @@ end
 
 *******************************************************************************
 * Extended Sync: Dataflow Index with dimension/attribute counts
-* Generates dataflow_index.yaml and dataflows/*.yaml matching Python/R format
+* Generates _dataflow_index.yaml and dataflows/*.yaml matching Python/R format
 * 
 * Uses Python helper (stata_schema_sync.py) when forcepython is specified
 * to avoid Stata's macro length limitations on large XML responses.
@@ -1368,7 +1483,7 @@ program define _unicefdata_sync_dataflow_index, rclass
         }
         
         * Verify output file was created
-        local index_file "`outdir'dataflow_index`sfx'.yaml"
+        local index_file "`outdir'_dataflow_index`sfx'.yaml"
         capture confirm file "`index_file'"
         if (_rc != 0) {
             di as err "     Python schema sync failed to create index file"
@@ -1468,7 +1583,7 @@ program define _unicefdata_sync_dataflow_index, rclass
     capture mkdir "`dataflows_dir'"
     
     * Open index file
-    local index_file "`outdir'dataflow_index`sfx'.yaml"
+    local index_file "`outdir'_dataflow_index`sfx'.yaml"
     tempname fh
     file open `fh' using "`index_file'", write text replace
     
@@ -1695,7 +1810,7 @@ end
 
 *******************************************************************************
 * Extended Sync: Full indicator catalog from CL_UNICEF_INDICATOR codelist
-* Generates unicef_indicators_metadata.yaml matching Python/R format
+* Generates _unicefdata_indicators_metadata.yaml matching Python/R format
 * 
 * Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
 * that exceeds Stata's macro length limits when parsed inline.

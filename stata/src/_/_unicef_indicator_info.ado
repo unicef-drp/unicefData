@@ -32,12 +32,13 @@ program define _unicef_indicator_info, rclass
             }
             
             * Fallback to PLUS directory _/
-            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators.yaml")) {
+            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
                 local metapath "`c(sysdir_plus)'_/"
             }
         }
         
-        local yaml_file "`metapath'_unicefdata_indicators.yaml"
+        * Use full indicator catalog (733 indicators)
+        local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
         
         *-----------------------------------------------------------------------
         * Check YAML file exists
@@ -61,11 +62,12 @@ program define _unicef_indicator_info, rclass
         local indicator_upper = upper("`indicator'")
         local found = 0
         local ind_name ""
-        local ind_dataflow ""
+        local ind_category ""
         local ind_sdg ""
         local ind_unit ""
         local ind_desc ""
         local ind_source ""
+        local ind_urn ""
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
@@ -85,11 +87,9 @@ program define _unicef_indicator_info, rclass
                 
                 if (`found') {
                     local ind_name "`r(name)'"
-                    local ind_dataflow "`r(dataflow)'"
-                    local ind_sdg "`r(sdg_target)'"
-                    local ind_unit "`r(unit)'"
+                    local ind_category "`r(category)'"
                     local ind_desc "`r(description)'"
-                    local ind_source "`r(source)'"
+                    local ind_urn "`r(urn)'"
                 }
             }
             
@@ -108,11 +108,9 @@ program define _unicef_indicator_info, rclass
             
             if (`found') {
                 local ind_name "`r(name)'"
-                local ind_dataflow "`r(dataflow)'"
-                local ind_sdg "`r(sdg_target)'"
-                local ind_unit "`r(unit)'"
+                local ind_category "`r(category)'"
                 local ind_desc "`r(description)'"
-                local ind_source "`r(source)'"
+                local ind_urn "`r(urn)'"
             }
             
             restore
@@ -139,24 +137,17 @@ program define _unicef_indicator_info, rclass
     
     noi di as text _col(2) "Code:        " as result "`indicator_upper'"
     noi di as text _col(2) "Name:        " as result "`ind_name'"
-    noi di as text _col(2) "Dataflow:    " as result "`ind_dataflow'"
-    
-    if ("`ind_sdg'" != "" & "`ind_sdg'" != ".") {
-        noi di as text _col(2) "SDG Target:  " as result "`ind_sdg'"
-    }
-    
-    if ("`ind_unit'" != "" & "`ind_unit'" != ".") {
-        noi di as text _col(2) "Unit:        " as result "`ind_unit'"
-    }
-    
-    if ("`ind_source'" != "" & "`ind_source'" != ".") {
-        noi di as text _col(2) "Source:      " as result "`ind_source'"
-    }
+    noi di as text _col(2) "Category:    " as result "`ind_category'"
     
     if ("`ind_desc'" != "" & "`ind_desc'" != ".") {
         noi di ""
         noi di as text _col(2) "Description:"
         noi di as result _col(4) "`ind_desc'"
+    }
+    
+    if ("`ind_urn'" != "" & "`ind_urn'" != ".") {
+        noi di ""
+        noi di as text _col(2) "URN:         " as result "`ind_urn'"
     }
     
     noi di ""
@@ -170,10 +161,8 @@ program define _unicef_indicator_info, rclass
     
     return local indicator "`indicator_upper'"
     return local name "`ind_name'"
-    return local dataflow "`ind_dataflow'"
-    return local sdg_target "`ind_sdg'"
-    return local unit "`ind_unit'"
+    return local category "`ind_category'"
     return local description "`ind_desc'"
-    return local source "`ind_source'"
+    return local urn "`ind_urn'"
     
 end

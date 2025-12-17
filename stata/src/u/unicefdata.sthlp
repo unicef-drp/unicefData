@@ -2,6 +2,7 @@
 {* *! version 1.3.0  09Dec2025}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
+{vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "wbopendata" "help wbopendata"}{...}
 {vieweralsosee "yaml" "help yaml"}{...}
 {viewerjumpto "Syntax" "unicefdata##syntax"}{...}

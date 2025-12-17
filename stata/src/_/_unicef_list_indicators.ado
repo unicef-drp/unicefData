@@ -33,12 +33,13 @@ program define _unicef_list_indicators, rclass
             }
             
             * Fallback to PLUS directory _/
-            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators.yaml")) {
+            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
                 local metapath "`c(sysdir_plus)'_/"
             }
         }
         
-        local yaml_file "`metapath'_unicefdata_indicators.yaml"
+        * Use full indicator catalog (733 indicators)
+        local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
         
         *-----------------------------------------------------------------------
         * Check YAML file exists
@@ -56,7 +57,7 @@ program define _unicef_list_indicators, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Read YAML file and filter by dataflow (frames for Stata 16+)
+        * Read YAML file and filter by category (frames for Stata 16+)
         *-----------------------------------------------------------------------
         
         local dataflow_upper = upper("`dataflow'")
@@ -81,10 +82,10 @@ program define _unicef_list_indicators, rclass
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
-                    * Get dataflow attribute for this indicator
-                    capture yaml get indicators:`ind', attributes(dataflow name) quiet frame(`yaml_frame_base')
+                    * Get category attribute for this indicator
+                    capture yaml get indicators:`ind', attributes(category name) quiet frame(`yaml_frame_base')
                     if (_rc == 0) {
-                        local ind_df = upper("`r(dataflow)'")
+                        local ind_df = upper("`r(category)'")
                         if ("`ind_df'" == "`dataflow_upper'") {
                             local ++n_matches
                             local matches "`matches' `ind'"
@@ -108,10 +109,10 @@ program define _unicef_list_indicators, rclass
             local all_indicators "`r(keys)'"
             
             foreach ind of local all_indicators {
-                * Get dataflow attribute for this indicator
-                capture yaml get indicators:`ind', attributes(dataflow name) quiet
+                * Get category attribute for this indicator
+                capture yaml get indicators:`ind', attributes(category name) quiet
                 if (_rc == 0) {
-                    local ind_df = upper("`r(dataflow)'")
+                    local ind_df = upper("`r(category)'")
                     if ("`ind_df'" == "`dataflow_upper'") {
                         local ++n_matches
                         local matches "`matches' `ind'"

@@ -1,9 +1,10 @@
 *******************************************************************************
 * _unicef_list_categories.ado
-*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
-* List all available indicator categories (dataflows) with counts
+*! v 1.3.2   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+* List all available indicator categories with counts
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
+* v1.3.2: Use full indicator catalog (733 indicators) with category field
 * v1.3.1: Fixed frame naming (use explicit yaml_ prefix for clarity)
 * 
 * Aligned with Python list_categories() and R list_categories()
@@ -35,12 +36,13 @@ program define _unicef_list_categories, rclass
             }
             
             * Fallback to PLUS directory _/
-            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators.yaml")) {
+            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
                 local metapath "`c(sysdir_plus)'_/"
             }
         }
         
-        local yaml_file "`metapath'_unicefdata_indicators.yaml"
+        * Use full indicator catalog (733 indicators with category field)
+        local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
         
         *-----------------------------------------------------------------------
         * Check YAML file exists
@@ -86,10 +88,10 @@ program define _unicef_list_categories, rclass
                 foreach ind of local all_indicators {
                     local ++total_indicators
                     
-                    * Get dataflow for this indicator
-                    capture yaml get indicators:`ind', attributes(dataflow) quiet frame(`yaml_frame_base')
-                    if (_rc == 0 & "`r(dataflow)'" != "") {
-                        local cat_name = "`r(dataflow)'"
+                    * Get category for this indicator (from full catalog)
+                    capture yaml get indicators:`ind', attributes(category) quiet frame(`yaml_frame_base')
+                    if (_rc == 0 & "`r(category)'" != "") {
+                        local cat_name = "`r(category)'"
                     }
                     else {
                         local cat_name = "UNKNOWN"
@@ -127,10 +129,10 @@ program define _unicef_list_categories, rclass
             foreach ind of local all_indicators {
                 local ++total_indicators
                 
-                * Get dataflow for this indicator
-                capture yaml get indicators:`ind', attributes(dataflow) quiet
-                if (_rc == 0 & "`r(dataflow)'" != "") {
-                    local cat_name = "`r(dataflow)'"
+                * Get category for this indicator (from full catalog)
+                capture yaml get indicators:`ind', attributes(category) quiet
+                if (_rc == 0 & "`r(category)'" != "") {
+                    local cat_name = "`r(category)'"
                 }
                 else {
                     local cat_name = "UNKNOWN"
@@ -240,10 +242,18 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.3.2   17Dec2025   by Joao Pedro Azevedo
+*   - Use full indicator catalog (unicef_indicators_metadata.yaml, 733 indicators)
+*   - Read 'category' field instead of 'dataflow' for category grouping
+*
+* v 1.3.1   17Dec2025   by Joao Pedro Azevedo
+*   - Fixed frame naming (use explicit yaml_ prefix for clarity)
+*
 * v 1.3.0   17Dec2025   by Joao Pedro Azevedo
 *   Initial implementation
 *   - Lists all indicator categories (dataflows) with counts
 *   - Aligned with Python list_categories() and R list_categories()
 *   - Uses frames for Stata 16+ for better isolation
 *   - Returns r(categories) list and r(n_categories), r(n_indicators) scalars
+*******************************************************************************
 *******************************************************************************
