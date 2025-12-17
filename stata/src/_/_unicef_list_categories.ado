@@ -84,11 +84,11 @@ program define _unicef_list_categories, rclass
             * Work directly with the dataset in the frame
             frame `yaml_frame' {
                 * yaml.ado creates dataset with columns: key, value, level, parent, type
-                * Keys look like: indicators:HVA_EPI_LHIV:category
-                * We want all rows where key matches pattern: indicators:*:category
+                * Keys look like: indicators_HVA_EPI_LHIV_category (yaml.ado uses _ as separator)
+                * We want all rows where key ends with _category under indicators
                 
                 * Keep only category rows (one per indicator)
-                keep if regexm(key, "^indicators:[^:]+:category$")
+                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
                 
                 * Count total indicators
                 local total_indicators = _N
@@ -137,7 +137,8 @@ program define _unicef_list_categories, rclass
             yaml read using "`yaml_file'", replace
             
             * Keep only category rows (one per indicator)
-            keep if regexm(key, "^indicators:[^:]+:category$")
+            * yaml.ado uses underscores as key separator
+            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
             
             * Count total indicators
             local total_indicators = _N
