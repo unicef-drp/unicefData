@@ -1,10 +1,11 @@
 *******************************************************************************
 * _unicef_search_indicators.ado
-*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.2   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Search UNICEF indicators by keyword using YAML metadata
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
 *
+* v1.3.2: Fixed frame naming (use explicit yaml_ prefix for clarity)
 * v1.3.1: Added dataflow() filter option (aligned with Python/R category filter)
 *******************************************************************************
 
@@ -69,16 +70,17 @@ program define _unicef_search_indicators, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            local yaml_frame "_unicef_yaml_temp"
+            * Pass yaml_ prefix explicitly so no magic transformation
+            local yaml_frame "yaml_unicef_search"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame
-            yaml read using "`yaml_file'", frame(`yaml_frame')
+            * Read YAML into a frame (explicit yaml_ prefix = no transformation)
+            yaml read using "`yaml_file'", frame(yaml_unicef_search)
             
             * Work within the frame
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(`yaml_frame')
+                yaml list indicators, keys children frame(yaml_unicef_search)
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
@@ -92,7 +94,7 @@ program define _unicef_search_indicators, rclass
                     
                     * Also check name
                     if (`found' == 0) {
-                        capture yaml get indicators:`ind', attributes(name) quiet frame(`yaml_frame')
+                        capture yaml get indicators:`ind', attributes(name) quiet frame(yaml_unicef_search)
                         if (_rc == 0 & "`r(name)'" != "") {
                             local name_lower = lower("`r(name)'")
                             if (strpos("`name_lower'", "`keyword_lower'") > 0) {
@@ -103,7 +105,7 @@ program define _unicef_search_indicators, rclass
                     
                     if (`found' == 1) {
                         * Get name and dataflow for this indicator
-                        capture yaml get indicators:`ind', attributes(name dataflow) quiet frame(`yaml_frame')
+                        capture yaml get indicators:`ind', attributes(name dataflow) quiet frame(yaml_unicef_search)
                         if (_rc == 0) {
                             local ind_df = "`r(dataflow)'"
                             local ind_name = "`r(name)'"
