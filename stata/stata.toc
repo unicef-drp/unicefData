@@ -2,15 +2,22 @@ v 3
 d unicefData - UNICEF Data Warehouse Stata Package
 d
 d This package provides Stata commands to access the UNICEF Data Warehouse
-d via the SDMX REST API. Download hundreds of indicators covering child
-d health, nutrition, education, protection, HIV/AIDS, WASH, and more.
+d via the SDMX REST API. Download 733+ indicators covering child health,
+d nutrition, education, protection, HIV/AIDS, WASH, and more.
 d
-d Version: 1.3.0 (December 2024)
+d Version: 1.3.1 (December 2025)
 d
 d Commands:
 d   unicefdata - Main data download command with discovery features
+d     - unicefdata, categories       List indicator categories with counts
+d     - unicefdata, search(keyword)  Search indicators by keyword
+d     - unicefdata, flows            List available dataflows
+d     - unicefdata, indicators(CME)  List indicators in a dataflow
+d     - unicefdata, info(CODE)       Get indicator details
 d   unicefdata_sync - Synchronize local metadata from SDMX API
-d   yaml - YAML file parser (helper utility)
+d   yaml - YAML file parser (dependency)
+d
+d Requires: Stata 14.0+ (Stata 16+ recommended for frames support)
 d
 d Author: Joao Pedro Azevedo (jazevedo@unicef.org)
 d

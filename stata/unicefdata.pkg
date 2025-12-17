@@ -5,19 +5,22 @@ d Author: Joao Pedro Azevedo
 d Support: jazevedo@unicef.org
 d
 d unicefData downloads indicator data from the UNICEF Data Warehouse
-d using the SDMX REST API. It provides access to hundreds of indicators
+d using the SDMX REST API. It provides access to 733+ indicators
 d covering child health, nutrition, education, protection, HIV/AIDS, 
 d WASH, and more.
 d
 d Features:
 d   - Download data by indicator, geography, and time period
-d   - Discovery functions: list dataflows, search indicators, get metadata
-d   - Multiple output formats: long, wide by indicator
+d   - Discovery: categories, flows, search, indicators, info
+d   - Multiple output formats: long, wide, wide_indicators
 d   - Automatic dataflow detection from indicator codes
 d   - Geographic type classification (country vs aggregate)
-d   - YAML-based metadata system with sync capabilities
+d   - YAML-based metadata with sync capabilities
+d   - Stata 16+ frames support for better isolation
 d
-d Distribution-Date: 20251210
+d Requires: Stata 14.0+ (Stata 16+ recommended)
+d
+d Distribution-Date: 20251217
 d
 
 * Main command and help
@@ -37,6 +40,7 @@ f y/yaml.ado
 f y/yaml.sthlp
 
 * Discovery helper programs
+f _/_unicef_list_categories.ado
 f _/_unicef_list_dataflows.ado
 f _/_unicef_list_indicators.ado
 f _/_unicef_search_indicators.ado
@@ -62,8 +66,9 @@ f _/_unicefdata_indicators.yaml
 f _/_unicefdata_codelists.yaml
 f _/_unicefdata_countries.yaml
 f _/_unicefdata_regions.yaml
+f _/_unicefdata_sync_history.yaml
 
-* Python helper scripts
+* Python helper scripts (optional, for XML parsing during sync)
 f py/unicefdata_xml2yaml.py
 f py/stata_schema_sync.py
 f py/python_xml_helper.py
