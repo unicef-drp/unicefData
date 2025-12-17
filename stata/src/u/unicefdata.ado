@@ -1,10 +1,11 @@
 *******************************************************************************
 * unicefdata
-*! v 1.3.0   09Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
 *
+* NEW in v1.3.1: categories subcommand, dataflow() filter in search
 * NEW in v1.3.0: Discovery subcommands (flows, search, indicators, info)
 *******************************************************************************
 
@@ -15,6 +16,14 @@ program define unicefdata, rclass
     *---------------------------------------------------------------------------
     * Check for discovery subcommands FIRST (before regular syntax parsing)
     *---------------------------------------------------------------------------
+    
+    * Check for CATEGORIES subcommand (list categories with counts)
+    if (strpos("`0'", "categor") > 0) {
+        * Support both "categories" and "category"
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+        _unicef_list_categories `=cond(`has_verbose', ", verbose", "")'
+        exit
+    }
     
     * Check for FLOWS subcommand
     if (strpos("`0'", "flows") > 0) {
@@ -50,7 +59,20 @@ program define unicefdata, rclass
             local limit_val = substr("`remaining'", `limit_start', `limit_end' - `limit_start' + 1)
         }
         
-        _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
+        * Check for dataflow filter option
+        local dataflow_filter = ""
+        if (strpos("`remaining'", "dataflow(") > 0) {
+            local df_start = strpos("`remaining'", "dataflow(") + 9
+            local df_end = strpos(substr("`remaining'", `df_start', .), ")") + `df_start' - 2
+            local dataflow_filter = substr("`remaining'", `df_start', `df_end' - `df_start' + 1)
+        }
+        
+        if ("`dataflow_filter'" != "") {
+            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val') dataflow("`dataflow_filter'")
+        }
+        else {
+            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
+        }
         exit
     }
     
@@ -125,8 +147,10 @@ program define unicefdata, rclass
             noi di as err "You must specify either indicator() or dataflow()."
             noi di as text ""
             noi di as text "Discovery commands:"
+            noi di as text "  unicefdata, categories                - List categories with indicator counts"
             noi di as text "  unicefdata, flows                     - List available dataflows"
             noi di as text "  unicefdata, search(mortality)         - Search indicators by keyword"
+            noi di as text "  unicefdata, search(edu) dataflow(EDUCATION) - Search within a dataflow"
             noi di as text "  unicefdata, indicators(CME)           - List indicators in a dataflow"
             noi di as text "  unicefdata, info(CME_MRY0T4)          - Get indicator details"
             noi di as text ""
@@ -1408,6 +1432,14 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.3.1   17Dec2025   by Joao Pedro Azevedo
+*   Feature parity improvements (aligned with Python/R list_categories)
+*   - NEW: categories subcommand: unicefdata, categories
+*         Lists all indicator categories (dataflows) with indicator counts
+*   - NEW: dataflow() filter in search: unicefdata, search(edu) dataflow(EDUCATION)
+*         Filter search results by dataflow/category
+*   - Improved search results display with tips
+*
 * v 1.3.0   09Dec2025   by Joao Pedro Azevedo
 *   Cross-language parity improvements (aligned with Python unicef_api v0.3.0)
 *   - NEW: Discovery subcommands:
