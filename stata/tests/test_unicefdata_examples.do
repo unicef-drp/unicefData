@@ -85,11 +85,11 @@ end
 * =============================================================================
 
 di as text ""
-di as text "╔" "═" * 78 "╗"
-di as text "║" _col(5) as result "UNICEFDATA COMPREHENSIVE TEST SUITE" _col(80) as text "║"
-di as text "║" _col(5) as text "Version: 1.3.2" _col(80) "║"
-di as text "║" _col(5) as text "Date: `c(current_date)' `c(current_time)'" _col(80) "║"
-di as text "╚" "═" * 78 "╝"
+di as text "{hline 80}"
+di as text "|" _col(5) as result "UNICEFDATA COMPREHENSIVE TEST SUITE" _col(80) as text "|"
+di as text "|" _col(5) as text "Version: 1.3.2" _col(80) "|"
+di as text "|" _col(5) as text "Date: `c(current_date)' `c(current_time)'" _col(80) "|"
+di as text "{hline 80}"
 di ""
 
 * Initialize counters
@@ -1013,17 +1013,17 @@ local suite_end = clock("`c(current_date)' `c(current_time)'", "DMY hms")
 local suite_elapsed = (`suite_end' - `suite_start') / 1000
 
 di ""
-di as text "╔" "═" * 78 "╗"
-di as text "║" _col(5) as result "TEST SUITE SUMMARY" _col(80) as text "║"
-di as text "╠" "═" * 78 "╣"
-di as text "║" _col(5) as text "Total tests:  " as result %4.0f `test_num' _col(80) as text "║"
-di as text "║" _col(5) as text "Passed:       " as result %4.0f `pass_count' _col(30) as text " (" as result %5.1f 100*`pass_count'/`test_num' as text "%)" _col(80) "║"
-di as text "║" _col(5) as text "Failed:       " as error %4.0f `fail_count' _col(80) as text "║"
-di as text "║" _col(5) as text "Skipped:      " as text %4.0f `skip_count' _col(80) "║"
-di as text "╠" "═" * 78 "╣"
-di as text "║" _col(5) as text "Total time:   " as result %8.2f `suite_elapsed' as text " seconds" _col(80) "║"
-di as text "║" _col(5) as text "Completed:    " as result "`c(current_date)' `c(current_time)'" _col(80) as text "║"
-di as text "╚" "═" * 78 "╝"
+di as text "{hline 80}"
+di as text "|" _col(5) as result "TEST SUITE SUMMARY" _col(80) as text "|"
+di as text "{hline 80}"
+di as text "|" _col(5) as text "Total tests:  " as result %4.0f `test_num' _col(80) as text "|"
+di as text "|" _col(5) as text "Passed:       " as result %4.0f `pass_count' _col(30) as text " (" as result %5.1f 100*`pass_count'/`test_num' as text "%)" _col(80) "|"
+di as text "|" _col(5) as text "Failed:       " as error %4.0f `fail_count' _col(80) as text "|"
+di as text "|" _col(5) as text "Skipped:      " as text %4.0f `skip_count' _col(80) "|"
+di as text "{hline 80}"
+di as text "|" _col(5) as text "Total time:   " as result %8.2f `suite_elapsed' as text " seconds" _col(80) "|"
+di as text "|" _col(5) as text "Completed:    " as result "`c(current_date)' `c(current_time)'" _col(80) as text "|"
+di as text "{hline 80}"
 
 * Return summary
 return local total_tests = `test_num'

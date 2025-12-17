@@ -59,6 +59,8 @@ program define _unicef_list_indicators, rclass
         *-----------------------------------------------------------------------
         * Read YAML file and filter by category using direct dataset query
         * v1.4.0: Much faster than iterating with yaml get
+        * yaml.ado creates dataset with: key, value, level, parent, type
+        * Keys are flattened paths like: indicators_CME_MRY0T4_category
         *-----------------------------------------------------------------------
         
         local dataflow_upper = upper("`dataflow'")
@@ -77,29 +79,30 @@ program define _unicef_list_indicators, rclass
             
             * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
-                * v1.4.0: Direct dataset query - filter by category
-                * The yaml dataset has: key, value, parent, depth, attribute
-                * Indicators have parent="indicators" and depth=2
+                * v1.4.0: Direct dataset query using flattened key structure
+                * Category keys look like: indicators_CME_MRY0T4_category
+                * Name keys look like: indicators_CME_MRY0T4_name
                 
-                * First get all indicator keys (depth==2, parent=="indicators")
-                levelsof key if parent == "indicators" & depth == 2, local(all_indicators) clean
+                * Keep only rows where value matches the requested dataflow (category rows)
+                * First identify category rows for our dataflow
+                gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'"
                 
-                * For each indicator, find its category attribute
-                foreach ind of local all_indicators {
-                    * Get category: parent="ind", attribute="category"
-                    capture levelsof value if parent == "`ind'" & attribute == "category", local(ind_cat) clean
-                    if (_rc == 0) & ("`ind_cat'" != "") {
-                        local ind_cat_upper = upper("`ind_cat'")
-                        if ("`ind_cat_upper'" == "`dataflow_upper'") {
-                            * Get name attribute for this indicator
-                            capture levelsof value if parent == "`ind'" & attribute == "name", local(ind_name) clean
-                            if (_rc != 0) local ind_name ""
-                            
-                            local ++n_matches
-                            local matches "`matches' `ind'"
-                            local match_names `"`match_names' "`ind_name'""'
-                        }
-                    }
+                * Get the indicator codes from matching category rows
+                * Extract indicator code: indicators_CODE_category -> CODE
+                gen indicator_code = regexs(1) if regexm(key, "^indicators_([A-Za-z0-9_]+)_category$")
+                
+                * Save matching indicator codes
+                levelsof indicator_code if is_match == 1, local(matching_indicators) clean
+                
+                * For each matching indicator, get its name
+                foreach ind of local matching_indicators {
+                    local ++n_matches
+                    local matches "`matches' `ind'"
+                    
+                    * Get name: key = indicators_`ind'_name
+                    capture levelsof value if key == "indicators_`ind'_name", local(ind_name) clean
+                    if (_rc != 0) local ind_name ""
+                    local match_names `"`match_names' "`ind_name'""'
                 }
             }
             
@@ -112,26 +115,19 @@ program define _unicef_list_indicators, rclass
             
             yaml read using "`yaml_file'", replace
             
-            * v1.4.0: Direct dataset query - filter by category
-            * First get all indicator keys (depth==2, parent=="indicators")
-            levelsof key if parent == "indicators" & depth == 2, local(all_indicators) clean
+            * v1.4.0: Direct dataset query using flattened key structure
+            gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'"
+            gen indicator_code = regexs(1) if regexm(key, "^indicators_([A-Za-z0-9_]+)_category$")
             
-            * For each indicator, find its category attribute
-            foreach ind of local all_indicators {
-                * Get category: parent="ind", attribute="category"
-                capture levelsof value if parent == "`ind'" & attribute == "category", local(ind_cat) clean
-                if (_rc == 0) & ("`ind_cat'" != "") {
-                    local ind_cat_upper = upper("`ind_cat'")
-                    if ("`ind_cat_upper'" == "`dataflow_upper'") {
-                        * Get name attribute for this indicator
-                        capture levelsof value if parent == "`ind'" & attribute == "name", local(ind_name) clean
-                        if (_rc != 0) local ind_name ""
-                        
-                        local ++n_matches
-                        local matches "`matches' `ind'"
-                        local match_names `"`match_names' "`ind_name'""'
-                    }
-                }
+            levelsof indicator_code if is_match == 1, local(matching_indicators) clean
+            
+            foreach ind of local matching_indicators {
+                local ++n_matches
+                local matches "`matches' `ind'"
+                
+                capture levelsof value if key == "indicators_`ind'_name", local(ind_name) clean
+                if (_rc != 0) local ind_name ""
+                local match_names `"`match_names' "`ind_name'""'
             }
             
             restore
