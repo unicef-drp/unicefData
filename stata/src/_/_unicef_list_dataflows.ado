@@ -60,16 +60,18 @@ program define _unicef_list_dataflows, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            local yaml_frame "_unicef_yaml_temp"
+            * Note: yaml.ado prefixes frame names with "yaml_"
+            local yaml_frame_base "_unicef_yaml_temp"
+            local yaml_frame "yaml_`yaml_frame_base'"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame
-            yaml read using "`yaml_file'", frame(`yaml_frame')
+            * Read YAML into a frame (yaml.ado will prefix with "yaml_")
+            yaml read using "`yaml_file'", frame(`yaml_frame_base')
             
-            * Work within the frame
+            * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Get immediate children under 'dataflows' parent
-                yaml list dataflows, keys children frame(`yaml_frame')
+                yaml list dataflows, keys children frame(`yaml_frame_base')
                 local dataflow_ids "`r(keys)'"
                 
                 * Count dataflows
@@ -87,7 +89,7 @@ program define _unicef_list_dataflows, rclass
                     replace dataflow_id = "`id'" in `obs'
                     
                     * Get name attribute for this dataflow
-                    capture yaml get dataflows:`id', attributes(name) quiet frame(`yaml_frame')
+                    capture yaml get dataflows:`id', attributes(name) quiet frame(`yaml_frame_base')
                     if (_rc == 0 & "`r(name)'" != "") {
                         replace name = "`r(name)'" in `obs'
                     }

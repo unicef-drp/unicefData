@@ -69,16 +69,18 @@ program define _unicef_indicator_info, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            local yaml_frame "_unicef_yaml_temp"
+            * Note: yaml.ado prefixes frame names with "yaml_"
+            local yaml_frame_base "_unicef_yaml_temp"
+            local yaml_frame "yaml_`yaml_frame_base'"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame
-            yaml read using "`yaml_file'", frame(`yaml_frame')
+            * Read YAML into a frame (yaml.ado will prefix with "yaml_")
+            yaml read using "`yaml_file'", frame(`yaml_frame_base')
             
-            * Work within the frame
+            * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Try to get indicator metadata
-                capture yaml get indicators:`indicator_upper' frame(`yaml_frame')
+                capture yaml get indicators:`indicator_upper' frame(`yaml_frame_base')
                 local found = (_rc == 0 & "`r(found)'" == "1")
                 
                 if (`found') {
@@ -91,7 +93,7 @@ program define _unicef_indicator_info, rclass
                 }
             }
             
-            * Clean up frame
+            * Clean up frame (use the actual prefixed name)
             capture frame drop `yaml_frame'
         }
         else {

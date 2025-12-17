@@ -70,17 +70,18 @@ program define _unicef_search_indicators, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            * Pass yaml_ prefix explicitly so no magic transformation
-            local yaml_frame "yaml_unicef_search"
+            * Note: yaml.ado prefixes frame names with "yaml_"
+            local yaml_frame_base "unicef_search"
+            local yaml_frame "yaml_`yaml_frame_base'"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame (explicit yaml_ prefix = no transformation)
-            yaml read using "`yaml_file'", frame(yaml_unicef_search)
+            * Read YAML into a frame (yaml.ado will prefix with "yaml_")
+            yaml read using "`yaml_file'", frame(`yaml_frame_base')
             
-            * Work within the frame
+            * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(yaml_unicef_search)
+                yaml list indicators, keys children frame(`yaml_frame_base')
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
@@ -94,7 +95,7 @@ program define _unicef_search_indicators, rclass
                     
                     * Also check name
                     if (`found' == 0) {
-                        capture yaml get indicators:`ind', attributes(name) quiet frame(yaml_unicef_search)
+                        capture yaml get indicators:`ind', attributes(name) quiet frame(`yaml_frame_base')
                         if (_rc == 0 & "`r(name)'" != "") {
                             local name_lower = lower("`r(name)'")
                             if (strpos("`name_lower'", "`keyword_lower'") > 0) {
@@ -105,7 +106,7 @@ program define _unicef_search_indicators, rclass
                     
                     if (`found' == 1) {
                         * Get name and dataflow for this indicator
-                        capture yaml get indicators:`ind', attributes(name dataflow) quiet frame(yaml_unicef_search)
+                        capture yaml get indicators:`ind', attributes(name dataflow) quiet frame(`yaml_frame_base')
                         if (_rc == 0) {
                             local ind_df = "`r(dataflow)'"
                             local ind_name = "`r(name)'"

@@ -69,24 +69,25 @@ program define _unicef_list_categories, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            * Pass yaml_ prefix explicitly so no magic transformation
-            local yaml_frame "yaml_unicef_cat"
+            * Note: yaml.ado prefixes frame names with "yaml_"
+            local yaml_frame_base "unicef_cat"
+            local yaml_frame "yaml_`yaml_frame_base'"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame (explicit yaml_ prefix = no transformation)
-            yaml read using "`yaml_file'", frame(yaml_unicef_cat)
+            * Read YAML into a frame (yaml.ado will prefix with "yaml_")
+            yaml read using "`yaml_file'", frame(`yaml_frame_base')
             
-            * Work within the frame
+            * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(yaml_unicef_cat)
+                yaml list indicators, keys children frame(`yaml_frame_base')
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
                     local ++total_indicators
                     
                     * Get dataflow for this indicator
-                    capture yaml get indicators:`ind', attributes(dataflow) quiet frame(yaml_unicef_cat)
+                    capture yaml get indicators:`ind', attributes(dataflow) quiet frame(`yaml_frame_base')
                     if (_rc == 0 & "`r(dataflow)'" != "") {
                         local cat_name = "`r(dataflow)'"
                     }

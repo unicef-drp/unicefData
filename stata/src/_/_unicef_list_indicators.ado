@@ -1,9 +1,10 @@
 *******************************************************************************
 * _unicef_list_indicators.ado
-*! v 1.3.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.2   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * List UNICEF indicators for a specific dataflow using YAML metadata
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
+* v1.3.2: Fix frame naming - use explicit yaml_ prefix for frame() option
 *******************************************************************************
 
 program define _unicef_list_indicators, rclass
@@ -65,21 +66,23 @@ program define _unicef_list_indicators, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            local yaml_frame "_unicef_yaml_temp"
+            * Note: yaml.ado prefixes frame names with "yaml_"
+            local yaml_frame_base "unicef_indicators"
+            local yaml_frame "yaml_`yaml_frame_base'"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame
-            yaml read using "`yaml_file'", frame(`yaml_frame')
+            * Read YAML into a frame (yaml.ado will prefix with "yaml_")
+            yaml read using "`yaml_file'", frame(`yaml_frame_base')
             
-            * Work within the frame
+            * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(`yaml_frame')
+                yaml list indicators, keys children frame(`yaml_frame_base')
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
                     * Get dataflow attribute for this indicator
-                    capture yaml get indicators:`ind', attributes(dataflow name) quiet frame(`yaml_frame')
+                    capture yaml get indicators:`ind', attributes(dataflow name) quiet frame(`yaml_frame_base')
                     if (_rc == 0) {
                         local ind_df = upper("`r(dataflow)'")
                         if ("`ind_df'" == "`dataflow_upper'") {
