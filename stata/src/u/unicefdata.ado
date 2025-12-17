@@ -1,6 +1,6 @@
 *******************************************************************************
 * unicefdata
-*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.2   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
@@ -553,83 +553,99 @@ program define unicefdata, rclass
         
         if ("`raw'" == "") {
             
-            * Rename core columns to standardized short names
-            * Note: import delimited converts column names to lowercase in Stata 14+
-            * Handle both lowercase and uppercase variants for robustness
-            capture rename ref_area iso3
-            capture rename REF_AREA iso3
-            capture rename indicator indicator
-            capture rename INDICATOR indicator
-            capture rename time_period period
-            capture rename TIME_PERIOD period
-            capture rename obs_value value
-            capture rename OBS_VALUE value
-            capture rename geographicarea country
-            capture rename GEOGRAPHICAREA country
-            capture rename geographic_area country
+            * =================================================================
+            * OPTIMIZED: Batch rename, label, and destring operations
+            * v1.3.2: Reduced from ~50 individual commands to batch operations
+            * =================================================================
             
-            * Rename descriptive columns (from API's "label" columns)
-            * API returns pairs like INDICATOR/Indicator - Stata creates v4, v6 for duplicates
-            capture rename v4 indicator_name
-            capture rename unitofmeasure unit_name
-            capture rename v6 sex_name
-            capture rename wealthquintile wealth_name
-            capture rename observationstatus status_name
+            quietly {
+                * --- Batch rename: lowercase API columns to standard names ---
+                * Check and rename in single pass (avoids 30+ separate rename calls)
+                local renames ""
+                local renames "`renames' ref_area:iso3 REF_AREA:iso3"
+                local renames "`renames' time_period:period TIME_PERIOD:period"
+                local renames "`renames' obs_value:value OBS_VALUE:value"
+                local renames "`renames' geographicarea:country GEOGRAPHICAREA:country geographic_area:country"
+                local renames "`renames' unit_measure:unit UNIT_MEASURE:unit"
+                local renames "`renames' wealth_quintile:wealth WEALTH_QUINTILE:wealth"
+                local renames "`renames' lower_bound:lb LOWER_BOUND:lb"
+                local renames "`renames' upper_bound:ub UPPER_BOUND:ub"
+                local renames "`renames' obs_status:status OBS_STATUS:status"
+                local renames "`renames' data_source:source DATA_SOURCE:source"
+                local renames "`renames' ref_period:refper REF_PERIOD:refper"
+                local renames "`renames' country_notes:notes COUNTRY_NOTES:notes"
+                local renames "`renames' maternal_edu_lvl:matedu MATERNAL_EDU_LVL:matedu"
+                
+                foreach pair of local renames {
+                    gettoken oldname newname : pair, parse(":")
+                    local newname = subinstr("`newname'", ":", "", 1)
+                    capture confirm variable `oldname'
+                    if (_rc == 0) {
+                        rename `oldname' `newname'
+                    }
+                }
+                
+                * Handle special cases: API duplicate column naming creates v4, v6
+                capture confirm variable v4
+                if (_rc == 0) rename v4 indicator_name
+                capture confirm variable unitofmeasure
+                if (_rc == 0) rename unitofmeasure unit_name
+                capture confirm variable v6
+                if (_rc == 0) rename v6 sex_name
+                capture confirm variable wealthquintile
+                if (_rc == 0) rename wealthquintile wealth_name
+                capture confirm variable observationstatus
+                if (_rc == 0) rename observationstatus status_name
+                
+                * Handle case-sensitive columns (sex, age, residence)
+                foreach v in sex age residence {
+                    local V = upper("`v'")
+                    capture confirm variable `V'
+                    if (_rc == 0) rename `V' `v'
+                }
+            }
             
-            * Rename additional metadata columns (handle both cases)
-            capture rename unit_measure unit
-            capture rename UNIT_MEASURE unit
-            capture rename wealth_quintile wealth
-            capture rename WEALTH_QUINTILE wealth
-            capture rename lower_bound lb
-            capture rename LOWER_BOUND lb
-            capture rename upper_bound ub
-            capture rename UPPER_BOUND ub
-            capture rename obs_status status
-            capture rename OBS_STATUS status
-            capture rename data_source source
-            capture rename DATA_SOURCE source
-            capture rename ref_period refper
-            capture rename REF_PERIOD refper
-            capture rename country_notes notes
-            capture rename COUNTRY_NOTES notes
-            capture rename maternal_edu_lvl matedu
-            capture rename MATERNAL_EDU_LVL matedu
-            capture rename sex SEX_temp
-            capture rename SEX_temp sex
-            capture rename SEX sex
-            capture rename age AGE_temp
-            capture rename AGE_temp age
-            capture rename AGE age
-            capture rename residence RESIDENCE_temp
-            capture rename RESIDENCE_temp residence
-            capture rename RESIDENCE residence
+            * --- Batch label variables (single quietly block) ---
+            quietly {
+                * Define labels in compact format: varname "label"
+                local varlabels `""iso3" "ISO3 country code""'
+                local varlabels `"`varlabels' "country" "Country name""'
+                local varlabels `"`varlabels' "indicator" "Indicator code""'
+                local varlabels `"`varlabels' "indicator_name" "Indicator name""'
+                local varlabels `"`varlabels' "period" "Time period (year)""'
+                local varlabels `"`varlabels' "value" "Observation value""'
+                local varlabels `"`varlabels' "unit" "Unit of measure code""'
+                local varlabels `"`varlabels' "unit_name" "Unit of measure""'
+                local varlabels `"`varlabels' "sex" "Sex code""'
+                local varlabels `"`varlabels' "sex_name" "Sex""'
+                local varlabels `"`varlabels' "age" "Age group""'
+                local varlabels `"`varlabels' "wealth" "Wealth quintile code""'
+                local varlabels `"`varlabels' "wealth_name" "Wealth quintile""'
+                local varlabels `"`varlabels' "residence" "Residence type""'
+                local varlabels `"`varlabels' "matedu" "Maternal education level""'
+                local varlabels `"`varlabels' "lb" "Lower confidence bound""'
+                local varlabels `"`varlabels' "ub" "Upper confidence bound""'
+                local varlabels `"`varlabels' "status" "Observation status code""'
+                local varlabels `"`varlabels' "status_name" "Observation status""'
+                local varlabels `"`varlabels' "source" "Data source""'
+                local varlabels `"`varlabels' "refper" "Reference period""'
+                local varlabels `"`varlabels' "notes" "Country notes""'
+                
+                * Apply labels only if variable exists
+                local i = 1
+                while (`i' <= 22) {
+                    local varname : word `i' of `varlabels'
+                    local ++i
+                    local varlbl : word `i' of `varlabels'
+                    local ++i
+                    capture confirm variable `varname'
+                    if (_rc == 0) {
+                        label variable `varname' `"`varlbl'"'
+                    }
+                }
+            }
             
-            * Add descriptive variable labels
-            capture label variable iso3       "ISO3 country code"
-            capture label variable country    "Country name"
-            capture label variable indicator  "Indicator code"
-            capture label variable indicator_name "Indicator name"
-            capture label variable period     "Time period (year)"
-            capture label variable value      "Observation value"
-            capture label variable unit       "Unit of measure code"
-            capture label variable unit_name  "Unit of measure"
-            capture label variable sex        "Sex code"
-            capture label variable sex_name   "Sex"
-            capture label variable age        "Age group"
-            capture label variable wealth     "Wealth quintile code"
-            capture label variable wealth_name "Wealth quintile"
-            capture label variable residence  "Residence type"
-            capture label variable matedu     "Maternal education level"
-            capture label variable lb         "Lower confidence bound"
-            capture label variable ub         "Upper confidence bound"
-            capture label variable status     "Observation status code"
-            capture label variable status_name "Observation status"
-            capture label variable source     "Data source"
-            capture label variable refper     "Reference period"
-            capture label variable notes      "Country notes"
-            
-            * Convert period to numeric (handle YYYY-MM format)
+            * --- Optimized period conversion (handle YYYY-MM format) ---
             capture {
                 * Check if period contains "-" (YYYY-MM format)
                 gen _has_month = strpos(period, "-") > 0
@@ -642,19 +658,19 @@ program define unicefdata, rclass
                 label variable period "Time period (year)"
             }
             
-            * If the above fails, try simple numeric conversion
+            * --- OPTIMIZED: Single destring call for multiple variables ---
+            * v1.3.2: Replaced 4 separate destring calls with one
             capture {
-                destring period, replace force
+                * Build list of string variables that need conversion
+                local to_destring ""
+                foreach v in period value lb ub {
+                    capture confirm string variable `v'
+                    if (_rc == 0) local to_destring "`to_destring' `v'"
+                }
+                if ("`to_destring'" != "") {
+                    destring `to_destring', replace force
+                }
             }
-            
-            * Convert value to numeric
-            capture {
-                destring value, replace force
-            }
-            
-            * Convert bounds to numeric
-            capture destring lb, replace force
-            capture destring ub, replace force
             
             * Filter by sex if specified
             if ("`sex'" != "" & "`sex'" != "ALL") {
