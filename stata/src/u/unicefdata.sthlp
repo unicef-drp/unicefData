@@ -452,6 +452,99 @@ Download and export to CSV:{p_end}
 {p 8 12}{stata `"export delimited using "mortality_data.csv", replace"' :. export delimited using "mortality_data.csv", replace}{p_end}
 
 {pstd}
+{ul:Advanced Examples}
+
+{pstd}
+Under-5 mortality trend analysis for South Asian countries:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(AFG BGD BTN IND MDV NPL PAK LKA) clear
+        . keep if sex == "_T"
+        . graph twoway ///
+            (connected value period if iso3 == "AFG", lcolor(red)) ///
+            (connected value period if iso3 == "BGD", lcolor(blue)) ///
+            (connected value period if iso3 == "IND", lcolor(green)) ///
+            (connected value period if iso3 == "PAK", lcolor(orange)), ///
+                legend(order(1 "Afghanistan" 2 "Bangladesh" 3 "India" 4 "Pakistan")) ///
+                ytitle("Under-5 mortality rate") title("U5MR Trends in South Asia")
+{txt}      ({stata "unicefdata_examples example01":click to run})
+
+{pstd}
+Stunting prevalence by wealth quintile:{p_end}
+{cmd}
+        . unicefdata, indicator(NT_ANT_HAZ_NE2) sex(ALL) latest clear
+        . keep if inlist(wealth, "Q1", "Q2", "Q3", "Q4", "Q5")
+        . gen wealth_num = real(substr(wealth, 2, 1))
+        . collapse (mean) mean_stunting = value, by(wealth wealth_num)
+        . graph bar mean_stunting, over(wealth) ///
+            ytitle("Stunting prevalence (%)") ///
+            title("Child Stunting by Wealth Quintile")
+{txt}      ({stata "unicefdata_examples example02":click to run})
+
+{pstd}
+Multiple mortality indicators comparison for Latin America:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 CME_MRY0 CME_MRM0) ///
+            countries(BRA MEX ARG COL PER CHL) year(2020:2023) clear
+        . keep if sex == "_T"
+        . bysort iso3 indicator (period): keep if _n == _N
+        . keep iso3 country indicator value
+        . reshape wide value, i(iso3 country) j(indicator) string
+        . graph bar valueCME_MRY0T4 valueCME_MRY0 valueCME_MRM0, ///
+            over(country, label(angle(45))) ///
+            legend(order(1 "Under-5" 2 "Infant" 3 "Neonatal"))
+{txt}      ({stata "unicefdata_examples example03":click to run})
+
+{pstd}
+Global immunization coverage trends:{p_end}
+{cmd}
+        . unicefdata, indicator(IM_DTP3 IM_MCV1) year(2000:2023) clear
+        . keep if sex == "_T"
+        . collapse (mean) coverage = value, by(period indicator)
+        . reshape wide coverage, i(period) j(indicator) string
+        . graph twoway ///
+            (line coverageIM_DTP3 period, lcolor(blue)) ///
+            (line coverageIM_MCV1 period, lcolor(red)), ///
+                legend(order(1 "DTP3" 2 "MCV1")) ///
+                title("Global Immunization Coverage Trends")
+{txt}      ({stata "unicefdata_examples example04":click to run})
+
+{pstd}
+Regional comparison with metadata:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) latest clear
+        . keep if geo_type == "country" & sex == "_T"
+        . collapse (mean) avg_u5mr = value, by(region)
+        . gsort -avg_u5mr
+        . graph hbar avg_u5mr, over(region, sort(1) descending) ///
+            ytitle("Under-5 mortality rate") ///
+            title("U5MR by UNICEF Region")
+{txt}      ({stata "unicefdata_examples example05":click to run})
+
+{pstd}
+Export comprehensive data to Excel:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA IND CHN NGA) ///
+            year(2015:2023) addmeta(region income_group) clear
+        . keep iso3 country region income_group period value lb ub
+        . export excel using "unicef_mortality_data.xlsx", firstrow(variables) replace
+{txt}      ({stata "unicefdata_examples example06":click to run})
+
+{pstd}
+WASH urban-rural gap analysis:{p_end}
+{cmd}
+        . unicefdata, indicator(WS_PPL_W-B) sex(ALL) latest clear
+        . keep if inlist(residence, "U", "R", "URBAN", "RURAL")
+        . replace residence = "Urban" if inlist(residence, "U", "URBAN")
+        . replace residence = "Rural" if inlist(residence, "R", "RURAL")
+        . bysort iso3 : egen n_res = nvals(residence)
+        . keep if n_res == 2
+        . reshape wide value, i(iso3 country) j(residence) string
+        . gen gap = valueUrban - valueRural
+        . gsort -gap
+        . list iso3 country valueUrban valueRural gap in 1/10
+{txt}      ({stata "unicefdata_examples example07":click to run})
+
+{pstd}
 {ul:Metadata Sync}
 
 {pstd}
