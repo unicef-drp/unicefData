@@ -310,74 +310,161 @@ default when specifying an indicator.
 
 {pstd}
 List available dataflows:{p_end}
-{phang2}{cmd:. unicefdata, flows}{p_end}
+{p 8 12}{stata "unicefdata, flows" :. unicefdata, flows}{p_end}
+
+{pstd}
+List dataflows with names:{p_end}
+{p 8 12}{stata "unicefdata, flows detail" :. unicefdata, flows detail}{p_end}
+
+{pstd}
+List all indicator categories with counts:{p_end}
+{p 8 12}{stata "unicefdata, categories" :. unicefdata, categories}{p_end}
 
 {pstd}
 Search for mortality-related indicators:{p_end}
-{phang2}{cmd:. unicefdata, search(mortality)}{p_end}
+{p 8 12}{stata "unicefdata, search(mortality)" :. unicefdata, search(mortality)}{p_end}
+
+{pstd}
+Search within a specific dataflow:{p_end}
+{p 8 12}{stata "unicefdata, search(rate) dataflow(CME)" :. unicefdata, search(rate) dataflow(CME)}{p_end}
 
 {pstd}
 List indicators in the CME (Child Mortality Estimates) dataflow:{p_end}
-{phang2}{cmd:. unicefdata, indicators(CME)}{p_end}
+{p 8 12}{stata "unicefdata, indicators(CME)" :. unicefdata, indicators(CME)}{p_end}
 
 {pstd}
 Get detailed info about an indicator:{p_end}
-{phang2}{cmd:. unicefdata, info(CME_MRY0T4)}{p_end}
+{p 8 12}{stata "unicefdata, info(CME_MRY0T4)" :. unicefdata, info(CME_MRY0T4)}{p_end}
 
 {pstd}
 {ul:Data Retrieval}
 
 {pstd}
 Download under-5 mortality rate for all countries:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) clear" :. unicefdata, indicator(CME_MRY0T4) clear}{p_end}
 
 {pstd}
 Download for specific countries:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear" :. unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear}{p_end}
 
 {pstd}
-Download with year range (aligned R/Python syntax):{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) start_year(2010) end_year(2023) clear}{p_end}
+Download with year range:{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) year(2010:2023) clear" :. unicefdata, indicator(CME_MRY0T4) year(2010:2023) clear}{p_end}
+
+{pstd}
+Download specific years (non-contiguous):{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) year(2015,2018,2020) clear" :. unicefdata, indicator(CME_MRY0T4) year(2015,2018,2020) clear}{p_end}
 
 {pstd}
 Get latest value per country:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) latest clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) latest clear" :. unicefdata, indicator(CME_MRY0T4) latest clear}{p_end}
 
 {pstd}
 Get female-only data:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) sex(F) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) sex(F) clear" :. unicefdata, indicator(CME_MRY0T4) sex(F) clear}{p_end}
 
 {pstd}
 Download all indicators from a dataflow:{p_end}
-{phang2}{cmd:. unicefdata, dataflow(NUTRITION) countries(ETH) clear verbose}{p_end}
+{p 8 12}{stata "unicefdata, dataflow(CME) countries(ETH) clear verbose" :. unicefdata, dataflow(CME) countries(ETH) clear verbose}{p_end}
 
 {pstd}
 Get 5 most recent values per country:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) mrv(5) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) mrv(5) clear" :. unicefdata, indicator(CME_MRY0T4) mrv(5) clear}{p_end}
 
 {pstd}
-Simplify output to essential columns (like R/Python):{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) simplify dropna clear}{p_end}
-
-{pstd}
-Wide format output (years as columns):{p_end}
-{phang2}{cmd:. unicefdata, dataflow(CME) countries(BRA ARG) wide clear}{p_end}
+Simplify output to essential columns:{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) simplify dropna clear" :. unicefdata, indicator(CME_MRY0T4) simplify dropna clear}{p_end}
 
 {pstd}
 {ul:New v1.3.0 Features}
 
 {pstd}
 Wide format with indicators as columns:{p_end}
-{phang2}{cmd:. unicefdata, dataflow(CME) countries(AFG BGD) wide_indicators clear}{p_end}
+{p 8 12}{stata "unicefdata, dataflow(CME) countries(AFG BGD) wide_indicators clear" :. unicefdata, dataflow(CME) countries(AFG BGD) wide_indicators clear}{p_end}
 
 {pstd}
 Add regional and income group metadata:{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) clear" :. unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) clear}{p_end}
 
 {pstd}
-Analyze by geographic type (countries vs regional aggregates):{p_end}
-{phang2}{cmd:. unicefdata, indicator(CME_MRY0T4) start_year(2022) clear}{p_end}
-{phang2}{cmd:. tab geo_type}{p_end}
+Circa matching (find closest year):{p_end}
+{p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) year(2020) circa clear" :. unicefdata, indicator(CME_MRY0T4) year(2020) circa clear}{p_end}
+
+{pstd}
+{ul:Nutrition Indicators}
+
+{pstd}
+Stunting prevalence:{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) clear}{p_end}
+
+{pstd}
+Stunting by wealth quintile (Q1=poorest):{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1) clear}{p_end}
+
+{pstd}
+Stunting by residence (rural only):{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) residence(RURAL) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) residence(RURAL) clear}{p_end}
+
+{pstd}
+{ul:Immunization Indicators}
+
+{pstd}
+DTP3 immunization coverage:{p_end}
+{p 8 12}{stata "unicefdata, indicator(IM_DTP3) clear" :. unicefdata, indicator(IM_DTP3) clear}{p_end}
+
+{pstd}
+Measles immunization coverage:{p_end}
+{p 8 12}{stata "unicefdata, indicator(IM_MCV1) clear" :. unicefdata, indicator(IM_MCV1) clear}{p_end}
+
+{pstd}
+{ul:WASH Indicators}
+
+{pstd}
+Basic drinking water services:{p_end}
+{p 8 12}{stata "unicefdata, indicator(WS_PPL_W-B) clear" :. unicefdata, indicator(WS_PPL_W-B) clear}{p_end}
+
+{pstd}
+Basic sanitation services:{p_end}
+{p 8 12}{stata "unicefdata, indicator(WS_PPL_S-B) clear" :. unicefdata, indicator(WS_PPL_S-B) clear}{p_end}
+
+{pstd}
+{ul:Education Indicators}
+
+{pstd}
+Out-of-school rate, primary:{p_end}
+{p 8 12}{stata "unicefdata, indicator(EDUNF_OFST_L1) clear" :. unicefdata, indicator(EDUNF_OFST_L1) clear}{p_end}
+
+{pstd}
+Net attendance rate, primary:{p_end}
+{p 8 12}{stata "unicefdata, indicator(ED_ANAR_L1) clear" :. unicefdata, indicator(ED_ANAR_L1) clear}{p_end}
+
+{pstd}
+{ul:Export Examples}
+
+{pstd}
+Download and export to Excel:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
+        . export excel using "mortality_data.xlsx", firstrow(variables) replace
+{txt}
+
+{pstd}
+Download and export to CSV:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
+        . export delimited using "mortality_data.csv", replace
+{txt}
+
+{pstd}
+{ul:Metadata Sync}
+
+{pstd}
+Sync all metadata from UNICEF API:{p_end}
+{p 8 12}{stata "unicefdata_sync, all" :. unicefdata_sync, all}{p_end}
+
+{pstd}
+Sync indicators only:{p_end}
+{p 8 12}{stata "unicefdata_sync, indicators" :. unicefdata_sync, indicators}{p_end}
 
 
 {marker results}{...}

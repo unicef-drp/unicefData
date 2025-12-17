@@ -112,16 +112,31 @@ parsers. For example, {opt suffix("_stataonly")} creates files like
 {title:Examples}
 
 {pstd}Basic sync with minimal output{p_end}
-{phang2}{cmd:. unicefdata_sync}{p_end}
+{p 8 12}{stata "unicefdata_sync" :. unicefdata_sync}{p_end}
 
 {pstd}Sync with detailed progress{p_end}
-{phang2}{cmd:. unicefdata_sync, verbose}{p_end}
+{p 8 12}{stata "unicefdata_sync, verbose" :. unicefdata_sync, verbose}{p_end}
+
+{pstd}Sync all metadata types{p_end}
+{p 8 12}{stata "unicefdata_sync, all" :. unicefdata_sync, all}{p_end}
+
+{pstd}Sync indicators only{p_end}
+{p 8 12}{stata "unicefdata_sync, indicators" :. unicefdata_sync, indicators}{p_end}
+
+{pstd}Sync dataflows only{p_end}
+{p 8 12}{stata "unicefdata_sync, dataflows" :. unicefdata_sync, dataflows}{p_end}
+
+{pstd}Sync countries only{p_end}
+{p 8 12}{stata "unicefdata_sync, countries" :. unicefdata_sync, countries}{p_end}
+
+{pstd}View sync history{p_end}
+{p 8 12}{stata "unicefdata_sync, history" :. unicefdata_sync, history}{p_end}
+
+{pstd}Force sync even if cache is fresh{p_end}
+{p 8 12}{stata "unicefdata_sync, force verbose" :. unicefdata_sync, force verbose}{p_end}
 
 {pstd}Sync to specific directory{p_end}
 {phang2}{cmd:. unicefdata_sync, path("./metadata") verbose}{p_end}
-
-{pstd}Force sync even if cache is fresh{p_end}
-{phang2}{cmd:. unicefdata_sync, force verbose}{p_end}
 
 {pstd}Generate Stata-only metadata with suffix{p_end}
 {phang2}{cmd:. unicefdata_sync, suffix("_stataonly") verbose}{p_end}
