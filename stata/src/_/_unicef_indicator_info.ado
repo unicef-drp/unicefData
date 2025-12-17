@@ -188,7 +188,7 @@ program define _unicef_indicator_info, rclass
     
     noi di ""
     noi di as text "{hline 70}"
-    noi di as text "Usage: " as result "unicefdata, indicator(`indicator_upper') geo(AFG BGD) year(2020/2022)"
+    noi di as text "Usage: " as result "unicefdata, indicator(`indicator_upper') geo(AFG BGD) year(2020:2022)"
     noi di as text "{hline 70}"
     
     *---------------------------------------------------------------------------

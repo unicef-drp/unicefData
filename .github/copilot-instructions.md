@@ -1058,6 +1058,84 @@ Some indicators exist in different dataflows than their prefix suggests. All pla
 "ED_CR_L1_UIS_MOD" -> "EDUCATION_UIS_SDG" # UIS indicators (not EDUCATION)
 ```
 
+### yaml.ado Key Format and Best Practices
+
+**CRITICAL:** yaml.ado stores YAML data as a flattened key-value dataset with **underscores** as separators, NOT colons.
+
+#### Data Storage Format
+
+When you load YAML with `yaml read`, it creates a dataset with these columns:
+
+| Column | Type | Example |
+|--------|------|---------|
+| `key` | str244 | `indicators_CME_MRY0T4_category` |
+| `value` | str2000 | `CME` |
+| `level` | int | `2` |
+| `parent` | str244 | `indicators_CME_MRY0T4` |
+| `type` | str32 | `scalar` |
+
+**Key Format:** `parent_child_attribute` (underscores, NOT colons)
+- ✅ Correct: `indicators_CME_MRY0T4_category`
+- ❌ Wrong: `indicators:CME_MRY0T4:category`
+
+#### Recommended Pattern: Direct Dataset Queries
+
+**DON'T** loop through items calling `yaml get` repeatedly (slow, buggy with frames):
+
+```stata
+* BAD: 733 yaml get calls, very slow
+foreach ind of local all_indicators {
+    yaml get indicators:`ind', attributes(category)  // WRONG separator!
+}
+```
+
+**DO** use direct dataset operations (fast, robust):
+
+```stata
+* GOOD: Single pass through dataset
+frame yaml_frame {
+    * Filter to category rows
+    keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+    
+    * Count by category
+    rename value category
+    gen count = 1
+    collapse (sum) count, by(category)
+}
+```
+
+#### Common Patterns
+
+**Get all categories with counts:**
+```stata
+keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+collapse (count) n=key, by(value)
+```
+
+**Search indicators by keyword:**
+```stata
+keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category)$")
+gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category)$")
+reshape wide value, i(ind_id) j(attribute) string
+* Now search: gen found = strpos(lower(valuename), "mortality") > 0
+```
+
+**Get info for specific indicator:**
+```stata
+local indicator "CME_MRY0T4"
+keep if regexm(key, "^indicators_`indicator'_(code|name|category|description|urn)$")
+* Extract values from matching rows
+```
+
+#### Performance Comparison
+
+| Approach | Time | Method |
+|----------|------|--------|
+| 733 `yaml get` calls | ~10+ seconds | Loop + frame context issues |
+| Direct dataset query | ~0.7 seconds | Single `regexm` + `collapse` |
+
+**Why it's faster:** Stata's dataset operations are highly optimized; `yaml get` has to search the dataset for each call plus handle frame context switching.
+
 ### Orchestration Script
 
 The PowerShell script `tests/regenerate_metadata.ps1` orchestrates metadata generation across all platforms:
