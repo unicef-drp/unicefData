@@ -82,17 +82,19 @@ program define _unicef_list_indicators, rclass
                 * v1.4.0: Direct dataset query using flattened key structure
                 * Category keys look like: indicators_CME_MRY0T4_category
                 * Name keys look like: indicators_CME_MRY0T4_name
+                * EXCLUDE: description metadata like indicators_CME_ARR_U5MR_description_category
                 
                 * Keep only rows where value matches the requested dataflow (category rows)
                 * First identify category rows for our dataflow
-                gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'"
+                * Exclude keys containing "_description_" which are metadata entries
+                gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'" & !strpos(key, "_description_")
                 
                 * Get the indicator codes from matching category rows
                 * Extract indicator code: indicators_CODE_category -> CODE
                 gen indicator_code = regexs(1) if regexm(key, "^indicators_([A-Za-z0-9_]+)_category$")
                 
-                * Save matching indicator codes
-                levelsof indicator_code if is_match == 1, local(matching_indicators) clean
+                * Save matching indicator codes (exclude any that end with _description)
+                levelsof indicator_code if is_match == 1 & !regexm(indicator_code, "_description$"), local(matching_indicators) clean
                 
                 * For each matching indicator, get its name
                 foreach ind of local matching_indicators {
@@ -116,10 +118,11 @@ program define _unicef_list_indicators, rclass
             yaml read using "`yaml_file'", replace
             
             * v1.4.0: Direct dataset query using flattened key structure
-            gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'"
+            * Exclude keys containing "_description_" which are metadata entries
+            gen is_match = regexm(key, "^indicators_[A-Za-z0-9_]+_category$") & upper(value) == "`dataflow_upper'" & !strpos(key, "_description_")
             gen indicator_code = regexs(1) if regexm(key, "^indicators_([A-Za-z0-9_]+)_category$")
             
-            levelsof indicator_code if is_match == 1, local(matching_indicators) clean
+            levelsof indicator_code if is_match == 1 & !regexm(indicator_code, "_description$"), local(matching_indicators) clean
             
             foreach ind of local matching_indicators {
                 local ++n_matches
