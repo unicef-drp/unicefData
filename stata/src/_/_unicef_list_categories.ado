@@ -1,9 +1,10 @@
 *******************************************************************************
 * _unicef_list_categories.ado
-*! v 1.3.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * List all available indicator categories (dataflows) with counts
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
+* v1.3.1: Fixed frame naming (use explicit yaml_ prefix for clarity)
 * 
 * Aligned with Python list_categories() and R list_categories()
 *******************************************************************************
@@ -68,23 +69,24 @@ program define _unicef_list_categories, rclass
         
         if (`use_frames') {
             * Stata 16+ - use frames for better isolation
-            local yaml_frame "_unicef_yaml_cat"
+            * Pass yaml_ prefix explicitly so no magic transformation
+            local yaml_frame "yaml_unicef_cat"
             capture frame drop `yaml_frame'
             
-            * Read YAML into a frame
-            yaml read using "`yaml_file'", frame(`yaml_frame')
+            * Read YAML into a frame (explicit yaml_ prefix = no transformation)
+            yaml read using "`yaml_file'", frame(yaml_unicef_cat)
             
             * Work within the frame
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(`yaml_frame')
+                yaml list indicators, keys children frame(yaml_unicef_cat)
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
                     local ++total_indicators
                     
                     * Get dataflow for this indicator
-                    capture yaml get indicators:`ind', attributes(dataflow) quiet frame(`yaml_frame')
+                    capture yaml get indicators:`ind', attributes(dataflow) quiet frame(yaml_unicef_cat)
                     if (_rc == 0 & "`r(dataflow)'" != "") {
                         local cat_name = "`r(dataflow)'"
                     }
