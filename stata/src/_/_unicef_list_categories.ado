@@ -1,9 +1,11 @@
 *******************************************************************************
 * _unicef_list_categories.ado
-*! v 1.3.2   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.3   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * List all available indicator categories with counts
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
+* v1.3.3: Remove redundant frame() option when already inside frame block
+*         to avoid nested frame re-entry issues with return values
 * v1.3.2: Use full indicator catalog (733 indicators) with category field
 * v1.3.1: Fixed frame naming (use explicit yaml_ prefix for clarity)
 * 
@@ -82,14 +84,17 @@ program define _unicef_list_categories, rclass
             * Use the actual frame name (with yaml_ prefix)
             frame `yaml_frame' {
                 * Get all indicator codes under 'indicators' parent
-                yaml list indicators, keys children frame(`yaml_frame_base')
+                * NOTE: Don't pass frame() option when already inside the frame
+                * as nested frame re-entry causes return value issues
+                yaml list indicators, keys children
                 local all_indicators "`r(keys)'"
                 
                 foreach ind of local all_indicators {
                     local ++total_indicators
                     
                     * Get category for this indicator (from full catalog)
-                    capture yaml get indicators:`ind', attributes(category) quiet frame(`yaml_frame_base')
+                    * NOTE: Don't pass frame() option when already inside the frame
+                    capture yaml get indicators:`ind', attributes(category) quiet
                     if (_rc == 0 & "`r(category)'" != "") {
                         local cat_name = "`r(category)'"
                     }
