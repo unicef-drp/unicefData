@@ -1131,256 +1131,48 @@ end
 *******************************************************************************
 
 program define _unicefdata_sync_indicators, rclass
-    syntax, OUTFILE(string) VERSION(string) AGENCY(string)
+    syntax, OUTFILE(string) VERSION(string) AGENCY(string) ///
+        [FORCEPYTHON FORCESTATA]
     
-    * Get timestamp
-    local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
-    local synced_at = trim("`synced_at'") + "Z"
+    * =========================================================================
+    * API-based indicator sync (replaces hardcoded file writes)
+    * Fetches from SDMX codelist CL_UNICEF_INDICATOR and converts to YAML
+    * =========================================================================
     
-    * Write YAML with watermark
-    tempname fh
-    file open `fh' using "`outfile'", write text replace
+    local api_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/`agency'/CL_UNICEF_INDICATOR/latest"
     
-    * Write watermark
-    file write `fh' "_metadata:" _n
-    file write `fh' "  platform: Stata" _n
-    file write `fh' "  version: '`version''" _n
-    file write `fh' "  synced_at: '`synced_at''" _n
-    file write `fh' "  source: unicef_api.config + SDMX API" _n
-    file write `fh' "  agency: `agency'" _n
-    file write `fh' "  content_type: indicators" _n
-    file write `fh' "  total_indicators: 25" _n
-    file write `fh' "  dataflows_covered: 12" _n
-    file write `fh' "  indicators_per_dataflow:" _n
-    file write `fh' "    CME: 2" _n
-    file write `fh' "    NUTRITION: 3" _n
-    file write `fh' "    EDUCATION_UIS_SDG: 5" _n
-    file write `fh' "    IMMUNISATION: 2" _n
-    file write `fh' "    HIV_AIDS: 1" _n
-    file write `fh' "    WASH_HOUSEHOLDS: 3" _n
-    file write `fh' "    MNCH: 3" _n
-    file write `fh' "    PT: 2" _n
-    file write `fh' "    PT_CM: 1" _n
-    file write `fh' "    PT_FGM: 1" _n
-    file write `fh' "    ECD: 1" _n
-    file write `fh' "    CHLD_PVTY: 1" _n
-    file write `fh' "indicators:" _n
+    di as text "  Fetching indicator codelist from SDMX API..."
+    di as text "    URL: `api_url'"
     
-    * Child Mortality (CME: 2)
-    file write `fh' "  CME_MRM0:" _n
-    file write `fh' "    code: CME_MRM0" _n
-    file write `fh' "    name: Neonatal mortality rate" _n
-    file write `fh' "    dataflow: CME" _n
-    file write `fh' "    sdg_target: '3.2.2'" _n
-    file write `fh' "    unit: Deaths per 1,000 live births" _n
-    file write `fh' "    source: config" _n
+    * Fetch XML from API
+    tempfile xml_data
+    capture copy "`api_url'" "`xml_data'", public
+    if (_rc != 0) {
+        di as err "  Error: Failed to fetch indicator codelist from API"
+        di as err "  URL: `api_url'"
+        error 631
+    }
     
-    file write `fh' "  CME_MRY0T4:" _n
-    file write `fh' "    code: CME_MRY0T4" _n
-    file write `fh' "    name: Under-5 mortality rate" _n
-    file write `fh' "    dataflow: CME" _n
-    file write `fh' "    sdg_target: '3.2.1'" _n
-    file write `fh' "    unit: Deaths per 1,000 live births" _n
-    file write `fh' "    source: config" _n
+    * Determine parser to use
+    local parser_opts ""
+    if ("`forcepython'" != "") {
+        local parser_opts "forcepython"
+    }
+    else if ("`forcestata'" != "") {
+        local parser_opts "forcestata"
+    }
     
-    * Nutrition (NUTRITION: 3)
-    file write `fh' "  NT_ANT_HAZ_NE2_MOD:" _n
-    file write `fh' "    code: NT_ANT_HAZ_NE2_MOD" _n
-    file write `fh' "    name: Stunting prevalence (moderate + severe)" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    * Parse XML to YAML using the standard parser
+    di as text "  Parsing indicator codelist to YAML..."
+    unicefdata_xmltoyaml, type(indicators) xmlfile("`xml_data'") ///
+        outfile("`outfile'") agency(`agency') version(`version') ///
+        source("`api_url'") `parser_opts'
     
-    file write `fh' "  NT_ANT_WHZ_NE2:" _n
-    file write `fh' "    code: NT_ANT_WHZ_NE2" _n
-    file write `fh' "    name: Wasting prevalence" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    local count = r(count)
     
-    file write `fh' "  NT_ANT_WHZ_PO2_MOD:" _n
-    file write `fh' "    code: NT_ANT_WHZ_PO2_MOD" _n
-    file write `fh' "    name: Overweight prevalence (moderate + severe)" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    di as result "  Synced `count' indicators from API"
     
-    * Education (EDUCATION_UIS_SDG: 5)
-    file write `fh' "  ED_ANAR_L02:" _n
-    file write `fh' "    code: ED_ANAR_L02" _n
-    file write `fh' "    name: Adjusted net attendance rate, primary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_CR_L1_UIS_MOD:" _n
-    file write `fh' "    code: ED_CR_L1_UIS_MOD" _n
-    file write `fh' "    name: Completion rate, primary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_CR_L2_UIS_MOD:" _n
-    file write `fh' "    code: ED_CR_L2_UIS_MOD" _n
-    file write `fh' "    name: Completion rate, lower secondary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_READ_L2:" _n
-    file write `fh' "    code: ED_READ_L2" _n
-    file write `fh' "    name: Reading proficiency, end of lower secondary" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_MAT_L2:" _n
-    file write `fh' "    code: ED_MAT_L2" _n
-    file write `fh' "    name: Mathematics proficiency, end of lower secondary" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Immunization (IMMUNISATION: 2)
-    file write `fh' "  IM_DTP3:" _n
-    file write `fh' "    code: IM_DTP3" _n
-    file write `fh' "    name: DTP3 immunization coverage" _n
-    file write `fh' "    dataflow: IMMUNISATION" _n
-    file write `fh' "    sdg_target: '3.b.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  IM_MCV1:" _n
-    file write `fh' "    code: IM_MCV1" _n
-    file write `fh' "    name: Measles immunization coverage (MCV1)" _n
-    file write `fh' "    dataflow: IMMUNISATION" _n
-    file write `fh' "    sdg_target: '3.b.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * HIV/AIDS (HIV_AIDS: 1)
-    file write `fh' "  HVA_EPI_INF_RT:" _n
-    file write `fh' "    code: HVA_EPI_INF_RT" _n
-    file write `fh' "    name: HIV incidence rate" _n
-    file write `fh' "    dataflow: HIV_AIDS" _n
-    file write `fh' "    sdg_target: '3.3.1'" _n
-    file write `fh' "    unit: Per 1,000 uninfected population" _n
-    file write `fh' "    source: config" _n
-    
-    * WASH (WASH_HOUSEHOLDS: 3)
-    file write `fh' "  WS_PPL_W-SM:" _n
-    file write `fh' "    code: WS_PPL_W-SM" _n
-    file write `fh' "    name: Population using safely managed drinking water services" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  WS_PPL_S-SM:" _n
-    file write `fh' "    code: WS_PPL_S-SM" _n
-    file write `fh' "    name: Population using safely managed sanitation services" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  WS_PPL_H-B:" _n
-    file write `fh' "    code: WS_PPL_H-B" _n
-    file write `fh' "    name: Population with basic handwashing facilities" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Maternal & Newborn Health (MNCH: 3)
-    file write `fh' "  MNCH_MMR:" _n
-    file write `fh' "    code: MNCH_MMR" _n
-    file write `fh' "    name: Maternal mortality ratio" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.1.1'" _n
-    file write `fh' "    unit: Deaths per 100,000 live births" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  MNCH_SAB:" _n
-    file write `fh' "    code: MNCH_SAB" _n
-    file write `fh' "    name: Skilled attendance at birth" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.1.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  MNCH_ABR:" _n
-    file write `fh' "    code: MNCH_ABR" _n
-    file write `fh' "    name: Adolescent birth rate" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.7.2'" _n
-    file write `fh' "    unit: Births per 1,000 women aged 15-19" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Protection (PT: 2)
-    file write `fh' "  PT_CHLD_Y0T4_REG:" _n
-    file write `fh' "    code: PT_CHLD_Y0T4_REG" _n
-    file write `fh' "    name: Birth registration (children under 5)" _n
-    file write `fh' "    dataflow: PT" _n
-    file write `fh' "    sdg_target: '16.9.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  PT_CHLD_1-14_PS-PSY-V_CGVR:" _n
-    file write `fh' "    code: PT_CHLD_1-14_PS-PSY-V_CGVR" _n
-    file write `fh' "    name: Violent discipline (children 1-14)" _n
-    file write `fh' "    dataflow: PT" _n
-    file write `fh' "    sdg_target: '16.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Marriage (PT_CM: 1)
-    file write `fh' "  PT_F_20-24_MRD_U18_TND:" _n
-    file write `fh' "    code: PT_F_20-24_MRD_U18_TND" _n
-    file write `fh' "    name: Child marriage before age 18 (women 20-24)" _n
-    file write `fh' "    dataflow: PT_CM" _n
-    file write `fh' "    sdg_target: '5.3.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * FGM (PT_FGM: 1)
-    file write `fh' "  PT_F_15-49_FGM:" _n
-    file write `fh' "    code: PT_F_15-49_FGM" _n
-    file write `fh' "    name: Female genital mutilation prevalence (women 15-49)" _n
-    file write `fh' "    dataflow: PT_FGM" _n
-    file write `fh' "    sdg_target: '5.3.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Early Childhood Development (ECD: 1)
-    file write `fh' "  ECD_CHLD_LMPSL:" _n
-    file write `fh' "    code: ECD_CHLD_LMPSL" _n
-    file write `fh' "    name: Children developmentally on track (literacy-numeracy, physical, social-emotional)" _n
-    file write `fh' "    dataflow: ECD" _n
-    file write `fh' "    sdg_target: '4.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Poverty (CHLD_PVTY: 1)
-    file write `fh' "  PV_CHLD_DPRV-S-L1-HS:" _n
-    file write `fh' "    code: PV_CHLD_DPRV-S-L1-HS" _n
-    file write `fh' "    name: Child multidimensional poverty (severe deprivation in at least 1 dimension)" _n
-    file write `fh' "    dataflow: CHLD_PVTY" _n
-    file write `fh' "    sdg_target: '1.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file close `fh'
-    
-    return scalar count = 25
+    return scalar count = `count'
 end
 
 *******************************************************************************

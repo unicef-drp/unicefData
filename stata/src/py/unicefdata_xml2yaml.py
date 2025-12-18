@@ -230,10 +230,13 @@ def write_yaml(
                 urn = item.get('urn', '')
                 if urn:
                     f.write(f'    urn: {urn}\n')
-                # Category field
+                # Category field (also serves as dataflow for most indicators)
                 category = item.get('category', '')
                 if category:
                     f.write(f'    category: {category}\n')
+                    # Also output dataflow field for compatibility with unicefdata.ado
+                    # dataflow is typically the same as category for UNICEF indicators
+                    f.write(f'    dataflow: {category}\n')
             
             elif data_type == 'dataflows':
                 if item.get('version'):
