@@ -449,6 +449,56 @@ program define unicefdata, rclass
                     }
                 }
             }
+            
+            *-------------------------------------------------------------------
+            * Check and warn about supported disaggregations
+            *-------------------------------------------------------------------
+            
+            * Get indicator info to check supported disaggregations
+            capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
+            if (_rc == 0) {
+                local has_sex = "`r(has_sex)'"
+                local has_age = "`r(has_age)'"
+                local has_wealth = "`r(has_wealth)'"
+                local has_residence = "`r(has_residence)'"
+                local has_maternal_edu = "`r(has_maternal_edu)'"
+                
+                * Warn if user specified a filter that's not supported
+                local unsupported_filters ""
+                
+                if ("`age'" != "" & "`age'" != "_T" & "`has_age'" == "0") {
+                    local unsupported_filters "`unsupported_filters' age"
+                }
+                if ("`wealth'" != "" & "`wealth'" != "_T" & "`has_wealth'" == "0") {
+                    local unsupported_filters "`unsupported_filters' wealth"
+                }
+                if ("`residence'" != "" & "`residence'" != "_T" & "`has_residence'" == "0") {
+                    local unsupported_filters "`unsupported_filters' residence"
+                }
+                if ("`maternal_edu'" != "" & "`maternal_edu'" != "_T" & "`has_maternal_edu'" == "0") {
+                    local unsupported_filters "`unsupported_filters' maternal_edu"
+                }
+                
+                if ("`unsupported_filters'" != "") {
+                    noi di ""
+                    noi di as error "Warning: The following disaggregation(s) are NOT supported by `indicator':"
+                    noi di as error "        `unsupported_filters'"
+                    noi di as text "  This indicator's dataflow (`dataflow') does not include these dimensions."
+                    noi di as text "  Your filter(s) will be ignored. Use 'unicefdata, info(`indicator')' for details."
+                    noi di ""
+                }
+                
+                * Show brief info about what IS supported (in verbose mode)
+                if ("`verbose'" != "") {
+                    noi di as text "Supported disaggregations: " _continue
+                    if ("`has_sex'" == "1") noi di as result "sex " _continue
+                    if ("`has_age'" == "1") noi di as result "age " _continue
+                    if ("`has_wealth'" == "1") noi di as result "wealth " _continue
+                    if ("`has_residence'" == "1") noi di as result "residence " _continue
+                    if ("`has_maternal_edu'" == "1") noi di as result "maternal_edu " _continue
+                    noi di ""
+                }
+            }
         }
         
         *-----------------------------------------------------------------------

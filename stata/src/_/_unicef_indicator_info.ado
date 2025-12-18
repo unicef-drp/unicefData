@@ -1,10 +1,11 @@
 *******************************************************************************
 * _unicef_indicator_info.ado
-*! v 1.4.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.5.0   18Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Display detailed info about a specific UNICEF indicator using YAML metadata
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
 *
+* v1.5.0: Added supported disaggregations display from dataflow schema
 * v1.4.0: MAJOR REWRITE - Direct dataset query instead of yaml get calls
 *         - Much faster and more robust
 *         - Avoids frame context/return value issues
@@ -13,7 +14,7 @@
 program define _unicef_indicator_info, rclass
     version 14.0
     
-    syntax , Indicator(string) [VERBOSE METApath(string)]
+    syntax , Indicator(string) [VERBOSE METApath(string) BRIEF]
     
     * Check if frames are available (Stata 16+)
     local use_frames = (c(stata_version) >= 16)
@@ -152,17 +153,115 @@ program define _unicef_indicator_info, rclass
             restore
         }
         
+        *-----------------------------------------------------------------------
+        * Get supported disaggregations from dataflow schema
+        *-----------------------------------------------------------------------
+        
+        local supported_dims ""
+        local has_sex = 0
+        local has_age = 0
+        local has_wealth = 0
+        local has_residence = 0
+        local has_maternal_edu = 0
+        
+        if ("`ind_category'" != "" & "`ind_category'" != ".") {
+            * Try to find dataflow schema file
+            local schema_file "`metapath'../metadata/current/dataflows/`ind_category'.yaml"
+            capture confirm file "`schema_file'"
+            if (_rc != 0) {
+                * Try alternative path
+                local schema_file "`metapath'../../metadata/current/dataflows/`ind_category'.yaml"
+                capture confirm file "`schema_file'"
+            }
+            
+            if (_rc == 0) {
+                * Read schema to get dimensions
+                if (`use_frames') {
+                    local schema_frame "yaml_schema_temp"
+                    capture frame drop `schema_frame'
+                    capture yaml read using "`schema_file'", frame(schema_temp)
+                    
+                    if (_rc == 0) {
+                        frame yaml_schema_temp {
+                            * Look for dimension entries
+                            gen is_dim = regexm(key, "^dimensions_[0-9]+_id$")
+                            levelsof value if is_dim == 1, local(dims) clean
+                            
+                            foreach d of local dims {
+                                if ("`d'" == "SEX") {
+                                    local has_sex = 1
+                                    local supported_dims "`supported_dims' sex"
+                                }
+                                else if ("`d'" == "AGE") {
+                                    local has_age = 1
+                                    local supported_dims "`supported_dims' age"
+                                }
+                                else if ("`d'" == "WEALTH_QUINTILE") {
+                                    local has_wealth = 1
+                                    local supported_dims "`supported_dims' wealth"
+                                }
+                                else if ("`d'" == "RESIDENCE") {
+                                    local has_residence = 1
+                                    local supported_dims "`supported_dims' residence"
+                                }
+                                else if ("`d'" == "MATERNAL_EDU_LVL") {
+                                    local has_maternal_edu = 1
+                                    local supported_dims "`supported_dims' maternal_edu"
+                                }
+                            }
+                        }
+                        capture frame drop yaml_schema_temp
+                    }
+                }
+                else {
+                    * Stata 14/15: use preserve/restore
+                    preserve
+                    capture yaml read using "`schema_file'", replace
+                    if (_rc == 0) {
+                        gen is_dim = regexm(key, "^dimensions_[0-9]+_id$")
+                        levelsof value if is_dim == 1, local(dims) clean
+                        
+                        foreach d of local dims {
+                            if ("`d'" == "SEX") {
+                                local has_sex = 1
+                                local supported_dims "`supported_dims' sex"
+                            }
+                            else if ("`d'" == "AGE") {
+                                local has_age = 1
+                                local supported_dims "`supported_dims' age"
+                            }
+                            else if ("`d'" == "WEALTH_QUINTILE") {
+                                local has_wealth = 1
+                                local supported_dims "`supported_dims' wealth"
+                            }
+                            else if ("`d'" == "RESIDENCE") {
+                                local has_residence = 1
+                                local supported_dims "`supported_dims' residence"
+                            }
+                            else if ("`d'" == "MATERNAL_EDU_LVL") {
+                                local has_maternal_edu = 1
+                                local supported_dims "`supported_dims' maternal_edu"
+                            }
+                        }
+                    }
+                    restore
+                }
+            }
+        }
+        
     } // end quietly
     
     *---------------------------------------------------------------------------
     * Display results
     *---------------------------------------------------------------------------
     
-    noi di ""
-    noi di as text "{hline 70}"
-    noi di as text "Indicator Information: " as result "`indicator_upper'"
-    noi di as text "{hline 70}"
-    noi di ""
+    if ("`brief'" == "") {
+        noi di ""
+        noi di as text "{hline 70}"
+        noi di as text "Indicator Information: " as result "`indicator_upper'"
+        noi di as text "{hline 70}"
+        noi di ""
+    }
     
     if (!`found') {
         noi di as err "  Indicator '`indicator_upper'' not found in metadata."
@@ -175,21 +274,37 @@ program define _unicef_indicator_info, rclass
     noi di as text _col(2) "Name:        " as result "`ind_name'"
     noi di as text _col(2) "Category:    " as result "`ind_category'"
     
-    if ("`ind_desc'" != "" & "`ind_desc'" != ".") {
+    if ("`ind_desc'" != "" & "`ind_desc'" != "." & "`brief'" == "") {
         noi di ""
         noi di as text _col(2) "Description:"
         noi di as result _col(4) "`ind_desc'"
     }
     
-    if ("`ind_urn'" != "" & "`ind_urn'" != ".") {
+    if ("`ind_urn'" != "" & "`ind_urn'" != "." & "`brief'" == "") {
         noi di ""
         noi di as text _col(2) "URN:         " as result "`ind_urn'"
     }
     
+    * Display supported disaggregations
     noi di ""
-    noi di as text "{hline 70}"
-    noi di as text "Usage: " as result "unicefdata, indicator(`indicator_upper') geo(AFG BGD) year(2020:2022)"
-    noi di as text "{hline 70}"
+    noi di as text _col(2) "Supported Disaggregations:"
+    if ("`supported_dims'" != "") {
+        noi di as text _col(4) "sex:          " as result cond(`has_sex', "Yes (SEX)", "No")
+        noi di as text _col(4) "age:          " as result cond(`has_age', "Yes (AGE)", "No")
+        noi di as text _col(4) "wealth:       " as result cond(`has_wealth', "Yes (WEALTH_QUINTILE)", "No")
+        noi di as text _col(4) "residence:    " as result cond(`has_residence', "Yes (RESIDENCE)", "No")
+        noi di as text _col(4) "maternal_edu: " as result cond(`has_maternal_edu', "Yes (MATERNAL_EDU_LVL)", "No")
+    }
+    else {
+        noi di as text _col(4) "(Could not determine - run 'unicefdata, sync' to update metadata)"
+    }
+    
+    if ("`brief'" == "") {
+        noi di ""
+        noi di as text "{hline 70}"
+        noi di as text "Usage: " as result "unicefdata, indicator(`indicator_upper') countries(AFG BGD) year(2020:2022)"
+        noi di as text "{hline 70}"
+    }
     
     *---------------------------------------------------------------------------
     * Return values
@@ -200,5 +315,11 @@ program define _unicef_indicator_info, rclass
     return local category "`ind_category'"
     return local description "`ind_desc'"
     return local urn "`ind_urn'"
+    return local has_sex "`has_sex'"
+    return local has_age "`has_age'"
+    return local has_wealth "`has_wealth'"
+    return local has_residence "`has_residence'"
+    return local has_maternal_edu "`has_maternal_edu'"
+    return local supported_dims "`supported_dims'"
     
 end
