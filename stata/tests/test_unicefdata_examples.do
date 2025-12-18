@@ -906,8 +906,8 @@ capture noisily {
     * Clear any existing data
     clear
     
-    * Fresh fetch
-    unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
+    * Fresh fetch - use IM_DTP3 which is more reliably available
+    unicefdata, indicator(IM_DTP3) countries(ALB USA BRA) clear
     local fetch_obs = _N
     di as text "DEBUG: Export test - fetched `fetch_obs' observations"
     
