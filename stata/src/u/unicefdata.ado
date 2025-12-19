@@ -442,11 +442,10 @@ program define unicefdata, rclass
                 _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
                 local dataflow "`s(dataflow)'"
                 local indicator_name "`s(indicator_name)'"
-                if ("`verbose'" != "") {
-                    noi di as text "Auto-detected dataflow: " as result "`dataflow'"
-                    if ("`indicator_name'" != "") {
-                        noi di as text "Indicator: " as result "`indicator_name'"
-                    }
+                * Always show auto-detected dataflow (matches R/Python behavior)
+                noi di as text "Auto-detected dataflow '" as result "`dataflow'" as text "'"
+                if ("`verbose'" != "" & "`indicator_name'" != "") {
+                    noi di as text "Indicator: " as result "`indicator_name'"
                 }
             }
             
@@ -549,6 +548,9 @@ program define unicefdata, rclass
         
         * Determine if we should use fallback
         local use_fallback = ("`fallback'" != "" | ("`nofallback'" == "" & "`indicator'" != ""))
+        
+        * Show fetching message (matches R/Python behavior)
+        noi di as text "Fetching page 1..."
         
         * Try to copy the file with retries
         local success 0
@@ -748,6 +750,81 @@ program define unicefdata, rclass
                 }
                 if ("`to_destring'" != "") {
                     destring `to_destring', replace force
+                }
+            }
+            
+            *-------------------------------------------------------------------
+            * Show available disaggregations and applied filters
+            * (Matches R/Python informative output)
+            *-------------------------------------------------------------------
+            
+            * Build note about available disaggregations
+            local avail_disagg ""
+            local applied_filters ""
+            
+            * Check sex disaggregation
+            capture confirm variable sex
+            if (_rc == 0) {
+                quietly levelsof sex, local(sex_vals) clean
+                local n_sex : word count `sex_vals'
+                if (`n_sex' > 1) {
+                    local avail_disagg "`avail_disagg'sex: `sex_vals'; "
+                }
+            }
+            
+            * Check wealth disaggregation
+            capture confirm variable wealth
+            if (_rc == 0) {
+                quietly levelsof wealth, local(wealth_vals) clean
+                local n_wealth : word count `wealth_vals'
+                if (`n_wealth' > 1) {
+                    local avail_disagg "`avail_disagg'wealth_quintile: `wealth_vals'; "
+                }
+            }
+            
+            * Check age disaggregation
+            capture confirm variable age
+            if (_rc == 0) {
+                quietly levelsof age, local(age_vals) clean
+                local n_age : word count `age_vals'
+                if (`n_age' > 1) {
+                    local avail_disagg "`avail_disagg'age: `age_vals'; "
+                }
+            }
+            
+            * Check residence disaggregation
+            capture confirm variable residence
+            if (_rc == 0) {
+                quietly levelsof residence, local(res_vals) clean
+                local n_res : word count `res_vals'
+                if (`n_res' > 1) {
+                    local avail_disagg "`avail_disagg'residence: `res_vals'; "
+                }
+            }
+            
+            * Show note if disaggregations are available
+            if ("`avail_disagg'" != "") {
+                noi di as text "Note: Disaggregated data available: " as result "`avail_disagg'"
+                
+                * Show applied filters
+                local applied_filters ""
+                if ("`sex'" != "" & "`sex'" != "ALL") {
+                    local is_default = cond("`sex'" == "_T", " (Default)", "")
+                    local applied_filters "`applied_filters'sex: `sex'`is_default'; "
+                }
+                if ("`wealth'" != "" & "`wealth'" != "ALL") {
+                    local is_default = cond("`wealth'" == "_T", " (Default)", "")
+                    local applied_filters "`applied_filters'wealth_quintile: `wealth'`is_default'; "
+                }
+                if ("`age'" != "" & "`age'" != "ALL") {
+                    local applied_filters "`applied_filters'age: `age'; "
+                }
+                if ("`residence'" != "" & "`residence'" != "ALL") {
+                    local applied_filters "`applied_filters'residence: `residence'; "
+                }
+                
+                if ("`applied_filters'" != "") {
+                    noi di as text "Applied filters: " as result "`applied_filters'"
                 }
             }
             
@@ -1077,6 +1154,15 @@ program define unicefdata, rclass
         
         if ("`wide_indicators'" != "") {
             * NEW: Reshape with indicators as columns (like Python wide_indicators)
+            
+            * Warn if only one indicator (matches R/Python behavior)
+            if (`n_indicators' <= 1) {
+                noi di ""
+                noi di as error "Warning: 'wide_indicators' format is designed for multiple indicators."
+                noi di as text "  Consider using 'wide' format instead for a single indicator."
+                noi di ""
+            }
+            
             capture confirm variable iso3
             capture confirm variable period
             capture confirm variable indicator
