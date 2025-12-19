@@ -99,11 +99,18 @@ pip install -e .
 ### Stata Package
 
 ```stata
-* Install from GitHub using net install
-net install unicefdata, from("https://raw.githubusercontent.com/unicef-drp/unicefData/main/stata") replace
+* Option 1: Install using the github package (recommended)
+* First install github package (one-time): net install github, from("https://haghish.github.io/github/")
+github install unicef-drp/unicefData, package(stata)
 
-* Or manually: copy all files from stata/src/u/ and stata/src/_/ 
-* to your personal ado directory (type: sysdir)
+* Option 2: Install from local clone
+* Clone repo first: git clone https://github.com/unicef-drp/unicefData.git
+cd "path/to/unicefData/stata"
+do install_local.do
+
+* Option 3: Manual installation
+* Copy files from stata/src/u/, stata/src/_/, stata/src/y/, stata/src/py/
+* to your PLUS ado directory (find path with: sysdir)
 ```
 
 ---
