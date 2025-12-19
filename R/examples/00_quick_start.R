@@ -11,20 +11,17 @@
 #   4. Immunization data  
 #   5. All countries (large download)
 
-# Adjust path if running from examples directory
-if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicef_api/unicefData.R")) {
-  source("R/unicef_api/unicefData.R")
-} else if (file.exists("unicefData/R/unicef_api/unicefData.R")) {
-  source("unicefData/R/unicef_api/unicefData.R")
+# Source common setup (handles path resolution)
+# Get directory of this script
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
-
-# Setup data directory - centralized for cross-language validation
-data_dir <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "validation", "data", "r")
-if (!dir.exists(data_dir)) dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 cat("======================================================================\n")
 cat("00_quick_start.R - UNICEF API Quick Start Guide\n")
@@ -41,8 +38,7 @@ cat("Years: 2015-2023\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
-  end_year = 2023
+  year = "2015:2023"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
@@ -59,12 +55,12 @@ cat("Years: 2020-2023\n\n")
 df <- unicefData(
   indicator = c("CME_MRM0", "CME_MRY0T4"),
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2020,
-  end_year = 2023
+  year = "2020:2023"
 )
 
 cat(sprintf("Result: %d rows\n", nrow(df)))
 cat(sprintf("Indicators: %s\n", paste(unique(df$indicator), collapse = ", ")))
+write.csv(df, file.path(data_dir, "00_ex2_multi_indicators.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 3: Nutrition - Stunting Prevalence
@@ -77,27 +73,28 @@ cat("Years: 2015+\n\n")
 df <- unicefData(
   indicator = "NT_ANT_HAZ_NE2_MOD",
   countries = c("AFG", "IND", "NGA"),
-  start_year = 2015
+  year = "2015:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
+write.csv(df, file.path(data_dir, "00_ex3_nutrition.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 4: Immunization - DTP3 Coverage
 # =============================================================================
 cat("\n--- Example 4: Immunization (DTP3) ---\n")
 cat("Indicator: IM_DTP3\n")
-cat("Countries: Albania, USA, Brazil\n")
+cat("Countries: Nigeria, Kenya, South Africa\n")
 cat("Years: 2015-2023\n\n")
 
 df <- unicefData(
   indicator = "IM_DTP3",
-  countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
-  end_year = 2023
+  countries = c("NGA", "KEN", "ZAF"),
+  year = "2015:2023"
 )
 
 cat(sprintf("Result: %d rows\n", nrow(df)))
+write.csv(df, file.path(data_dir, "00_ex4_immunization.csv"), row.names = FALSE)
 
 # =============================================================================
 # Example 5: All Countries (Large Download)
@@ -109,12 +106,12 @@ cat("Years: 2020+\n\n")
 
 df <- unicefData(
   indicator = "CME_MRY0T4",
-  start_year = 2020
+  year = "2020:2024"
 )
 
 cat(sprintf("Result: %d rows, %d countries\n", nrow(df), length(unique(df$iso3))))
 cat(sprintf("Years: %d - %d\n", min(df$period), max(df$period)))
-write.csv(df, file.path(data_dir, "00_ex2_mult_mortality.csv"), row.names = FALSE)
+write.csv(df, file.path(data_dir, "00_ex5_all_countries.csv"), row.names = FALSE)
 
 cat("\n======================================================================\n")
 # Example 6: Minimal Call (Only Indicator)

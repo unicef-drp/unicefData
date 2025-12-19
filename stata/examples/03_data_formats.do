@@ -34,7 +34,7 @@ display _n "--- Example 1: Long Format (Default) ---"
 display "One row per observation" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) clear
+    year(2020:2024) clear
 
 display "Shape: `=_N' rows x `=c(k)' columns"
 list iso3 country period value in 1/10, clean
@@ -48,7 +48,7 @@ display _n "--- Example 2: Wide Format (Indicators as Columns) ---"
 display "Multiple indicators reshaped to columns" _n
 
 unicefdata, indicator(CME_MRY0T4 CME_MRM0) countries(`COUNTRIES') ///
-    start_year(2020) wide clear
+    year(2020:2024) wide clear
 
 display "Shape: `=_N' rows x `=c(k)' columns"
 describe, short
@@ -63,7 +63,7 @@ display _n "--- Example 3: Simplified Output ---"
 display "Essential columns only (iso3, country, indicator, period, value, lb, ub)" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) simplify clear
+    year(2020:2024) simplify clear
 
 display "Shape: `=_N' rows x `=c(k)' columns"
 describe, short
@@ -78,7 +78,7 @@ display _n "--- Example 4: Latest Value Per Country ---"
 display "Cross-sectional analysis (one value per country)" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2015) latest clear
+    year(2015:2024) latest clear
 
 display "Shape: `=_N' rows (one row per country)"
 list iso3 country period value, clean
@@ -92,7 +92,7 @@ display _n "--- Example 5: Most Recent 3 Values (MRV=3) ---"
 display "Keep only 3 most recent years per country" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA) ///
-    start_year(2010) mrv(3) clear
+    year(2010:2024) mrv(3) clear
 
 display "Result: `=_N' rows"
 bysort iso3 (period): list iso3 country period value, sepby(iso3)
@@ -106,7 +106,7 @@ display _n "--- Example 6: Drop Missing Values ---"
 display "Remove observations with missing values" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
-    start_year(2020) dropna clear
+    year(2020:2024) dropna clear
 
 display "Result: `=_N' rows (no missing values)"
 summarize value

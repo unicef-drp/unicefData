@@ -1,5 +1,4 @@
-"""
-03_data_formats.py - Output Format Options
+"""03_data_formats.py - Output Format Options
 ==========================================
 
 Demonstrates different output formats and data transformations.
@@ -15,7 +14,7 @@ Examples:
 import sys
 sys.path.insert(0, '..')
 
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 print("=" * 70)
 print("03_data_formats.py - Output Format Options")
@@ -29,7 +28,7 @@ COUNTRIES = ["ALB", "USA", "BRA", "IND", "NGA"]
 print("\n--- Example 1: Long Format (Default) ---")
 print("One row per observation\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
     start_year=2020,
@@ -45,7 +44,7 @@ print(df[["iso3", "country", "period", "value"]].head(10))
 print("\n--- Example 2: Wide Format (Years as Columns) ---")
 print("Countries as rows, years as columns\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
     start_year=2020,
@@ -61,7 +60,7 @@ print(df)
 print("\n--- Example 3: Wide Indicators ---")
 print("Indicators as columns (for comparison)\n")
 
-df = get_unicef(
+df = unicefData(
     indicator=["CME_MRY0T4", "CME_MRM0"],
     countries=COUNTRIES,
     start_year=2020,
@@ -77,7 +76,7 @@ print(df.head(10))
 print("\n--- Example 4: Latest Value Per Country ---")
 print("Cross-sectional analysis (one value per country)\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
     start_year=2015,
@@ -93,7 +92,7 @@ print(df[["iso3", "country", "period", "value"]])
 print("\n--- Example 5: Most Recent 3 Values (MRV=3) ---")
 print("Keep only 3 most recent years per country\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA"],
     start_year=2010,

@@ -1,8 +1,9 @@
 *******************************************************************************
 * unicefdata_xmltoyaml_py
-*! v 1.0.0   05Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.0.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * SDMX XML to YAML converter using Python backend
 * Handles large XML files that Stata cannot process natively
+* v1.0.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
 
 /*
@@ -64,15 +65,11 @@ program define unicefdata_xmltoyaml_py, rclass
     }
     
     * Find Python script location
-    * Look in the same directory as this ado file
-    local script_dir = subinstr("`c(sysdir_personal)'", "\", "/", .)
-    
-    * Try common locations for the Python script
     local script_name "unicefdata_xml2yaml.py"
     local script_path ""
     
     * First try the location relative to the current working directory
-    foreach trypath in "stata/src/u/`script_name'" "stata/src/p/python_xml_helper.py" "`script_name'" {
+    foreach trypath in "stata/src/py/`script_name'" "`script_name'" {
         capture confirm file "`trypath'"
         if (_rc == 0) {
             local script_path "`trypath'"
@@ -80,30 +77,41 @@ program define unicefdata_xmltoyaml_py, rclass
         }
     }
     
-    * Check adopath locations if not found yet
+    * Check Stata system directories for py/ subfolder
+    * Use actual sysdir paths instead of symbolic adopath names
     if ("`script_path'" == "") {
-        foreach path in `c(adopath)' {
-            local trypath = "`path'/`script_name'"
-            local trypath = subinstr("`trypath'", "\", "/", .)
-            capture confirm file "`trypath'"
-            if (_rc == 0) {
-                local script_path "`trypath'"
-                continue, break
+        foreach sysdir in plus personal site base {
+            local basepath = subinstr("`c(sysdir_`sysdir')'", "\", "/", .)
+            if ("`basepath'" != "") {
+                local trypath = "`basepath'py/`script_name'"
+                capture confirm file "`trypath'"
+                if (_rc == 0) {
+                    local script_path "`trypath'"
+                    continue, break
+                }
             }
-            * Also try in u subfolder
-            local trypath = "`path'/u/`script_name'"
-            local trypath = subinstr("`trypath'", "\", "/", .)
-            capture confirm file "`trypath'"
-            if (_rc == 0) {
-                local script_path "`trypath'"
-                continue, break
+        }
+    }
+    
+    * Also try the u/ directory where this ado lives (same location pattern)
+    if ("`script_path'" == "") {
+        foreach sysdir in plus personal site {
+            local basepath = subinstr("`c(sysdir_`sysdir')'", "\", "/", .)
+            if ("`basepath'" != "") {
+                local trypath = "`basepath'u/`script_name'"
+                capture confirm file "`trypath'"
+                if (_rc == 0) {
+                    local script_path "`trypath'"
+                    continue, break
+                }
             }
         }
     }
     
     if ("`script_path'" == "") {
         di as err "Python script not found: `script_name'"
-        di as err "Please ensure unicefdata_xml2yaml.py is in your adopath"
+        di as err "Searched in: sysdir_plus/py/, sysdir_personal/py/, sysdir_plus/u/"
+        di as err "Please ensure unicefdata_xml2yaml.py is installed with the package"
         error 601
     }
     

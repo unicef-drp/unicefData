@@ -21,14 +21,15 @@ program define _xmltoyaml_parse_python, rclass
         local python_script "`r(fn)'"
     }
     
-    * Strategy 2: Find relative to unicefdata_xmltoyaml.ado location
+    * Strategy 2: Find relative to unicefdata_xmltoyaml.ado location (look in py/ sibling)
     if ("`python_script'" == "") {
         capture findfile unicefdata_xmltoyaml.ado
         if (_rc == 0) {
             local ado_path "`r(fn)'"
             * Get directory: remove filename to get directory
             local ado_dir = substr("`ado_path'", 1, strlen("`ado_path'") - strlen("unicefdata_xmltoyaml.ado"))
-            local trypath "`ado_dir'unicefdata_xml2yaml.py"
+            * Look in sibling py/ folder
+            local trypath "`ado_dir'../py/unicefdata_xml2yaml.py"
             capture confirm file "`trypath'"
             if (_rc == 0) {
                 local python_script "`trypath'"
@@ -38,7 +39,7 @@ program define _xmltoyaml_parse_python, rclass
     
     * Strategy 3: Hardcoded development path (fallback)
     if ("`python_script'" == "") {
-        local dev_paths `""D:/jazevedo/GitHub/unicefData/stata/src/u/unicefdata_xml2yaml.py" "D:\jazevedo\GitHub\unicefData\stata\src\u\unicefdata_xml2yaml.py""'
+        local dev_paths `""D:/jazevedo/GitHub/unicefData/stata/src/py/unicefdata_xml2yaml.py" "D:\jazevedo\GitHub\unicefData\stata\src\py\unicefdata_xml2yaml.py""'
         foreach path in `dev_paths' {
             capture confirm file `path'
             if (_rc == 0) {
@@ -50,7 +51,7 @@ program define _xmltoyaml_parse_python, rclass
     
     * Strategy 4: Search in common locations relative to pwd
     if ("`python_script'" == "") {
-        local rel_paths `""stata/src/u/unicefdata_xml2yaml.py" "src/u/unicefdata_xml2yaml.py" "unicefdata_xml2yaml.py""'
+        local rel_paths `""stata/src/py/unicefdata_xml2yaml.py" "src/py/unicefdata_xml2yaml.py" "py/unicefdata_xml2yaml.py" "unicefdata_xml2yaml.py""'
         foreach path in `rel_paths' {
             capture confirm file "`path'"
             if (_rc == 0) {

@@ -6,7 +6,7 @@ Main functions for retrieving data from the UNICEF SDMX API.
 """
 
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 import pandas as pd
 
 from unicef_api.sdmx import get_sdmx
@@ -34,7 +34,146 @@ from unicef_api.metadata import MetadataSync
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-__all__ = ['unicefData', 'unicefdata']
+__all__ = ['unicefData', 'unicefdata', 'parse_year']
+
+
+# =============================================================================
+# Year Parameter Parsing
+# =============================================================================
+
+def parse_year(year: Union[int, str, List[int], Tuple[int, int], None]) -> dict:
+    """
+    Parse the flexible year parameter into start_year, end_year, and year_list.
+    
+    Supported formats:
+        - None: All years (no filtering)
+        - int: Single year (e.g., 2020)
+        - str with colon: Range (e.g., "2015:2023")
+        - str with comma: List (e.g., "2015,2018,2020")
+        - tuple: Range as (start, end)
+        - list: Explicit list of years
+    
+    Args:
+        year: Year specification in any supported format
+        
+    Returns:
+        dict with keys:
+            - start_year: int or None
+            - end_year: int or None
+            - year_list: List[int] or None (for non-contiguous years)
+            
+    Examples:
+        >>> parse_year(2020)
+        {'start_year': 2020, 'end_year': 2020, 'year_list': None}
+        
+        >>> parse_year("2015:2023")
+        {'start_year': 2015, 'end_year': 2023, 'year_list': None}
+        
+        >>> parse_year("2015,2018,2020")
+        {'start_year': 2015, 'end_year': 2020, 'year_list': [2015, 2018, 2020]}
+        
+        >>> parse_year(None)
+        {'start_year': None, 'end_year': None, 'year_list': None}
+    """
+    if year is None:
+        return {'start_year': None, 'end_year': None, 'year_list': None}
+    
+    # Single integer
+    if isinstance(year, int):
+        return {'start_year': year, 'end_year': year, 'year_list': None}
+    
+    # Tuple (start, end)
+    if isinstance(year, tuple) and len(year) == 2:
+        return {'start_year': int(year[0]), 'end_year': int(year[1]), 'year_list': None}
+    
+    # List of years
+    if isinstance(year, list):
+        years = [int(y) for y in year]
+        return {
+            'start_year': min(years),
+            'end_year': max(years),
+            'year_list': sorted(years)
+        }
+    
+    # String formats
+    if isinstance(year, str):
+        # Range format: "2015:2023"
+        if ':' in year:
+            parts = year.split(':')
+            if len(parts) == 2:
+                start = int(parts[0].strip())
+                end = int(parts[1].strip())
+                return {'start_year': start, 'end_year': end, 'year_list': None}
+        
+        # List format: "2015,2018,2020"
+        if ',' in year:
+            years = [int(y.strip()) for y in year.split(',')]
+            return {
+                'start_year': min(years),
+                'end_year': max(years),
+                'year_list': sorted(years)
+            }
+        
+        # Single year as string: "2020"
+        return {'start_year': int(year), 'end_year': int(year), 'year_list': None}
+    
+    raise ValueError(
+        f"Invalid year format: {year}. "
+        f"Expected int, 'YYYY:YYYY', 'YYYY,YYYY,YYYY', tuple, or list."
+    )
+
+
+def _apply_circa(df: pd.DataFrame, target_years: List[int]) -> pd.DataFrame:
+    """
+    For each country, find observations closest to the target year(s).
+    
+    When data for the exact target year isn't available, this finds the
+    observation with the period closest to each target year. Different
+    countries may have different actual years in the result.
+    
+    Args:
+        df: DataFrame with iso3, period, value columns
+        target_years: List of target years to match
+        
+    Returns:
+        DataFrame with one observation per country per target year (approximately)
+    """
+    if 'period' not in df.columns or 'iso3' not in df.columns:
+        return df
+    
+    if df.empty:
+        return df
+    
+    # Drop NA values before finding closest
+    df = df.dropna(subset=['value']) if 'value' in df.columns else df
+    
+    results = []
+    
+    # Group by indicator if present
+    group_cols = ['iso3']
+    if 'indicator' in df.columns:
+        group_cols.append('indicator')
+    
+    for target in target_years:
+        # For each country(-indicator), find the observation closest to target
+        for _, group in df.groupby(group_cols):
+            if group.empty:
+                continue
+            # Find index of closest period to target
+            idx = (group['period'] - target).abs().idxmin()
+            closest_row = group.loc[[idx]].copy()
+            closest_row['target_year'] = target
+            results.append(closest_row)
+    
+    if not results:
+        return df.head(0)  # Empty with same columns
+    
+    result = pd.concat(results, ignore_index=True)
+    
+    # Remove duplicates if same observation is closest to multiple targets
+    result = result.drop_duplicates(subset=[c for c in result.columns if c != 'target_year'])
+    
+    return result
 
 
 # =============================================================================
@@ -228,8 +367,7 @@ def _fetch_with_fallback(
 def unicefData(
     indicator: Union[str, List[str]],
     countries: Optional[List[str]] = None,
-    start_year: Optional[int] = None,
-    end_year: Optional[int] = None,
+    year: Union[int, str, List[int], Tuple[int, int], None] = None,
     dataflow: Optional[str] = None,
     sex: str = "_T",
     tidy: bool = True,
@@ -238,6 +376,7 @@ def unicefData(
     # NEW: Post-production options
     format: str = "long",
     latest: bool = False,
+    circa: bool = False,
     add_metadata: Optional[List[str]] = None,
     dropna: bool = False,
     simplify: bool = False,
@@ -256,8 +395,13 @@ def unicefData(
             Examples: "CME_MRY0T4" (under-5 mortality), "NT_ANT_HAZ_NE2_MOD" (stunting)
         countries: ISO 3166-1 alpha-3 country codes. If None, fetches all countries.
             Examples: ["ALB", "USA", "BRA"]
-        start_year: First year of data (e.g., 2015). If None, fetches from earliest.
-        end_year: Last year of data (e.g., 2023). If None, fetches to latest.
+        year: Year specification. Supports multiple formats:
+            - None: All available years (default)
+            - int: Single year (e.g., 2020)
+            - str range: "2015:2023" for years 2015-2023
+            - str list: "2015,2018,2020" for non-contiguous years
+            - tuple: (2015, 2023) equivalent to "2015:2023"
+            - list: [2015, 2018, 2020] equivalent to "2015,2018,2020"
         dataflow: SDMX dataflow ID. If None, auto-detected from indicator.
             Examples: "CME", "NUTRITION", "EDUCATION_UIS_SDG"
         sex: Sex disaggregation filter.
@@ -276,6 +420,12 @@ def unicefData(
             - "wide_indicators": Years as rows, indicators as columns
         latest: If True, keep only the most recent non-missing value per country.
             The year may differ by country. Useful for cross-sectional analysis.
+        circa: If True, for each specified year find the closest available data point.
+            When exact years aren't available, returns observations with periods
+            closest to the requested year(s). Different countries may have different
+            actual years. Only applies when specific years are requested.
+            Example: year=2015, circa=True might return 2014 data for Country A
+            and 2016 data for Country B if 2015 isn't available.
         add_metadata: List of metadata columns to add. Options:
             - "region": UNICEF/World Bank region
             - "income_group": World Bank income classification
@@ -328,19 +478,31 @@ def unicefData(
     Examples:
         >>> from unicef_api import unicefData
         >>> 
-        >>> # Basic usage - under-5 mortality for specific countries
+        >>> # Basic usage - under-5 mortality for year range
         >>> df = unicefData(
         ...     indicator="CME_MRY0T4",
         ...     countries=["ALB", "USA", "BRA"],
-        ...     start_year=2015,
-        ...     end_year=2023
+        ...     year="2015:2023"
         ... )
         >>> 
-        >>> # Get raw SDMX data with all original columns
-        >>> df_raw = unicefData(
+        >>> # Single year
+        >>> df = unicefData(
         ...     indicator="CME_MRY0T4",
         ...     countries=["ALB", "USA"],
-        ...     raw=True
+        ...     year=2020
+        ... )
+        >>> 
+        >>> # Non-contiguous years
+        >>> df = unicefData(
+        ...     indicator="CME_MRY0T4",
+        ...     year="2015,2018,2020"
+        ... )
+        >>> 
+        >>> # Circa mode - find closest available year
+        >>> df = unicefData(
+        ...     indicator="CME_MRY0T4",
+        ...     year=2015,
+        ...     circa=True  # Returns closest to 2015 for each country
         ... )
         >>> 
         >>> # Get latest value per country (cross-sectional)
@@ -380,6 +542,12 @@ def unicefData(
 
     # Handle single indicator or list
     indicators = [indicator] if isinstance(indicator, str) else indicator
+    
+    # Parse the year parameter
+    year_spec = parse_year(year)
+    start_year = year_spec['start_year']
+    end_year = year_spec['end_year']
+    year_list = year_spec['year_list']
     
     # Auto-detect dataflow if not provided
     if dataflow is None:
@@ -431,6 +599,21 @@ def unicefData(
     # Ensure period is numeric
     if 'period' in result.columns:
         result['period'] = pd.to_numeric(result['period'], errors='coerce')
+    
+    # Filter to specific years if year_list provided (non-contiguous years)
+    if year_list is not None and 'period' in result.columns:
+        # For non-contiguous years, filter to exact matches OR apply circa
+        if circa:
+            # Apply circa: find closest available year for each target
+            result = _apply_circa(result, year_list)
+        else:
+            # Strict filter to only requested years
+            result = result[result['period'].isin(year_list)]
+    elif circa and year is not None and 'period' in result.columns:
+        # Circa mode with single year or range
+        # For ranges, circa finds closest to start and end
+        target_years = [start_year] if start_year == end_year else [start_year, end_year]
+        result = _apply_circa(result, target_years)
     
     # 0. Detect and remove duplicates
     # Duplicates are rows where ALL column values are identical

@@ -1,7 +1,9 @@
 *******************************************************************************
 * yaml
-*! v 1.3.0   04Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.3.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Read and write YAML files in Stata
+* v1.3.1: Fixed return value propagation from frame context in yaml_get and yaml_list
+*         Fixed hyphen-to-underscore normalization in yaml_get search prefix
 *******************************************************************************
 
 /*
@@ -798,11 +800,26 @@ program define yaml_get, rclass
     
     * Search for attributes
     if (`use_frame' == 1) {
+        * Capture return values from frame context - they don't persist after frame block exits
         frame `frame' {
             _yaml_get_impl "`search_prefix'", attributes(`attributes') `quiet'
+            * Save return values to locals before exiting frame block
+            local _found = r(found)
+            local _n_attrs = r(n_attrs)
+            * Capture all returned attributes
+            local _return_names : r(macros)
+            foreach _rn of local _return_names {
+                local _rv_`_rn' `"`r(`_rn')'"'
+            }
         }
-        * Return values are set by _yaml_get_impl via return add
-        return add
+        * Restore return values outside frame block
+        return scalar found = `_found'
+        return scalar n_attrs = `_n_attrs'
+        foreach _rn of local _return_names {
+            if (!inlist("`_rn'", "found", "n_attrs")) {
+                return local `_rn' `"`_rv_`_rn''"'
+            }
+        }
     }
     else {
         _yaml_get_impl "`search_prefix'", attributes(`attributes') `quiet'
@@ -958,11 +975,19 @@ program define yaml_list, rclass
             di as err "frame `frame' not found"
             exit 198
         }
+        * Capture return values from frame context - they don't persist after frame block exits
         frame `frame' {
             _yaml_list_impl `anything', `noheader' `keys' `values' separator(`separator') `children' `stata'
+            * Save return values to locals before exiting frame block
+            local _return_names : r(macros)
+            foreach _rn of local _return_names {
+                local _rv_`_rn' `"`r(`_rn')'"'
+            }
         }
-        * Copy return values from frame execution
-        return add
+        * Restore return values outside frame block
+        foreach _rn of local _return_names {
+            return local `_rn' `"`_rv_`_rn''"'
+        }
     }
     else {
         * Use current dataset (default)

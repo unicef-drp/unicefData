@@ -13,16 +13,16 @@
 #   5. Simplify output columns
 # ============================================================================
 
-# Adjust path if running from examples directory
-if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicef_api/unicefData.R")) {
-  source("R/unicef_api/unicefData.R")
-} else if (file.exists("unicefData/R/unicefData.R")) {
-  source("unicefData/R/unicefData.R")
+# Source common setup (handles path resolution)
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 cat(strrep("=", 70), "\n")
 cat("04_metadata_options.R - Add Metadata to Data\n")
@@ -39,7 +39,7 @@ cat("UNICEF/World Bank regional classification\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("region")
 )
@@ -56,7 +56,7 @@ cat("World Bank income classification\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("income_group")
 )
@@ -72,7 +72,7 @@ cat("Full indicator description\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),
   countries = c("ALB", "USA"),
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("indicator_name")
 )
@@ -88,7 +88,7 @@ cat("Combine region, income group, and indicator name\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   latest = TRUE,
   add_metadata = c("region", "income_group", "indicator_name")
 )
@@ -105,7 +105,7 @@ cat("Keep only essential columns\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   simplify = TRUE
 )
 

@@ -5,6 +5,8 @@
 *******************************************************************************
 
 program define _unicefdata_sync_df_schema
+    version 14.0
+    
     syntax, DSDXML(string) OUTFILE(string) DFID(string) DFNAME(string) ///
             DFVER(string) AGENCY(string) SYNCEDAT(string)
     

@@ -5,6 +5,8 @@
 *******************************************************************************
 
 program define _unicefdata_update_sync_history
+    version 14.0
+    
     syntax, FILEPATH(string) VINTAGEDATE(string) SYNCEDAT(string) ///
             DATAFLOWS(integer) INDICATORS(integer) CODELISTS(integer) ///
             COUNTRIES(integer) REGIONS(integer)

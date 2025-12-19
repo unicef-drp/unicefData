@@ -1,5 +1,4 @@
-"""
-05_advanced_features.py - Advanced Features
+"""05_advanced_features.py - Advanced Features
 =============================================
 
 Demonstrates advanced query features.
@@ -15,7 +14,7 @@ Examples:
 import sys
 sys.path.insert(0, "..")
 
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 print("=" * 70)
 print("05_advanced_features.py - Advanced Features")
@@ -27,10 +26,10 @@ print("=" * 70)
 print("\n--- Example 1: Disaggregation by Sex ---")
 print("Under-5 mortality by sex\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA", "BRA"],
-    start_year=2020,
+    year=2020,
     sex=["M", "F"]  # Male and Female
 )
 
@@ -44,10 +43,10 @@ print("Stunting by wealth quintile\n")
 
 # Note: wealth_quintile filter is not yet supported in get_unicef arguments
 # We fetch raw data and filter manually
-df = get_unicef(
+df = unicefData(
     indicator="NT_ANT_HAZ_NE2_MOD",
     countries=["IND", "NGA", "ETH"],
-    start_year=2015,
+    year="2015:2024",
     raw=True  # Get raw data to access disaggregations
 )
 
@@ -64,11 +63,10 @@ else:
 print("\n--- Example 3: Time Series ---")
 print("Mortality trends 2000-2023\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB"],
-    start_year=2000,
-    end_year=2023
+    year="2000:2023"
 )
 
 print(f"Time series: {len(df)} observations")
@@ -81,10 +79,10 @@ print("\n--- Example 4: Multiple Countries Latest ---")
 print("Latest immunization rates for many countries\n")
 
 # Get latest DPT3 coverage for multiple countries
-df = get_unicef(
+df = unicefData(
     indicator="IM_DTP3",
     countries=["AFG", "ALB", "USA", "BRA", "IND", "CHN", "NGA", "ETH"],
-    start_year=2015,
+    year="2015:2024",
     latest=True
 )
 
@@ -96,10 +94,10 @@ print(df[["iso3", "country", "period", "value"]])
 print("\n--- Example 5: Combining Filters ---")
 print("Complex query with multiple filters\n")
 
-df = get_unicef(
+df = unicefData(
     indicator=["CME_MRY0T4", "CME_MRM0"],  # Multiple indicators
     countries=["ALB", "USA", "BRA"],        # Multiple countries
-    start_year=2020,                         # From 2020
+    year=2020,                               # From 2020
     latest=True,                             # Latest values only
     add_metadata=["indicator_name"]          # Include names
 )

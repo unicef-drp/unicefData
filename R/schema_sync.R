@@ -16,11 +16,8 @@
 #
 # =============================================================================
 
-library(httr)
-library(xml2)
-library(yaml)
-library(tibble)
-library(dplyr)
+# Note: Dependencies (httr, xml2, yaml, tibble, dplyr) declared in DESCRIPTION
+# Use namespaced calls when needed
 
 # =============================================================================
 # Configuration

@@ -1,5 +1,4 @@
-"""
-04_metadata_options.py - Add Metadata to Data
+"""04_metadata_options.py - Add Metadata to Data
 ==============================================
 
 Demonstrates adding metadata columns to output.
@@ -15,7 +14,7 @@ Examples:
 import sys
 sys.path.insert(0, '..')
 
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 print("=" * 70)
 print("04_metadata_options.py - Add Metadata to Data")
@@ -29,10 +28,10 @@ COUNTRIES = ["ALB", "USA", "BRA", "IND", "NGA", "ETH", "CHN"]
 print("\n--- Example 1: Add Region ---")
 print("UNICEF/World Bank regional classification\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["region"]
 )
@@ -46,10 +45,10 @@ print(df[["iso3", "country", "region", "value"]])
 print("\n--- Example 2: Add Income Group ---")
 print("World Bank income classification\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["income_group"]
 )
@@ -62,10 +61,10 @@ print(df[["iso3", "country", "income_group", "value"]])
 print("\n--- Example 3: Add Indicator Name ---")
 print("Full indicator description\n")
 
-df = get_unicef(
+df = unicefData(
     indicator=["CME_MRY0T4", "CME_MRM0"],
     countries=["ALB", "USA"],
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["indicator_name"]
 )
@@ -78,10 +77,10 @@ print(df[["iso3", "indicator", "indicator_name", "value"]])
 print("\n--- Example 4: Multiple Metadata ---")
 print("Combine region, income group, and indicator name\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     latest=True,
     add_metadata=["region", "income_group", "indicator_name"]
 )
@@ -95,10 +94,10 @@ print(df[["iso3", "region", "income_group", "value"]].head())
 print("\n--- Example 5: Simplify Output ---")
 print("Keep only essential columns\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=COUNTRIES,
-    start_year=2020,
+    year=2020,
     simplify=True
 )
 

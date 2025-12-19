@@ -9,8 +9,7 @@ unicefData(
   indicator = NULL,
   dataflow = NULL,
   countries = NULL,
-  start_year = NULL,
-  end_year = NULL,
+  year = NULL,
   sex = "_T",
   age = NULL,
   wealth = NULL,
@@ -26,25 +25,20 @@ unicefData(
   format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
     "wide_residence", "wide_maternal_edu"),
   latest = FALSE,
+  circa = FALSE,
   add_metadata = NULL,
   dropna = FALSE,
   simplify = FALSE,
   mrv = NULL,
   raw = FALSE,
-  ignore_duplicates = FALSE,
-  flow = NULL,
-  key = NULL,
-  start_period = NULL,
-  end_period = NULL,
-  retry = NULL
+  ignore_duplicates = FALSE
 )
 
 unicefdata(
   indicator = NULL,
   dataflow = NULL,
   countries = NULL,
-  start_year = NULL,
-  end_year = NULL,
+  year = NULL,
   sex = "_T",
   age = NULL,
   wealth = NULL,
@@ -60,34 +54,31 @@ unicefdata(
   format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
     "wide_residence", "wide_maternal_edu"),
   latest = FALSE,
+  circa = FALSE,
   add_metadata = NULL,
   dropna = FALSE,
   simplify = FALSE,
   mrv = NULL,
   raw = FALSE,
-  ignore_duplicates = FALSE,
-  flow = NULL,
-  key = NULL,
-  start_period = NULL,
-  end_period = NULL,
-  retry = NULL
+  ignore_duplicates = FALSE
 )
 }
 \arguments{
-\item{indicator}{Character vector of indicator codes (e.g., "CME_MRY0T4").
-Previously called 'key'. Both parameter names are supported.}
+\item{indicator}{Character vector of indicator codes (e.g., "CME_MRY0T4").}
 
-\item{dataflow}{Character vector of dataflow IDs (e.g., "CME", "NUTRITION").
-Previously called 'flow'. Both parameter names are supported.}
+\item{dataflow}{Character vector of dataflow IDs (e.g., "CME", "NUTRITION").}
 
 \item{countries}{Character vector of ISO3 country codes (e.g., c("ALB", "USA")).
 If NULL (default), fetches all countries.}
 
-\item{start_year}{Optional starting year (e.g., 2015).
-Previously called 'start_period'. Both parameter names are supported.}
-
-\item{end_year}{Optional ending year (e.g., 2023).
-Previously called 'end_period'. Both parameter names are supported.}
+\item{year}{Year specification. Supports multiple formats:
+\itemize{
+\item NULL: All available years (default)
+\item Single integer: Just that year (e.g., 2020)
+\item String with colon: Range (e.g., "2015:2023")
+\item String with comma: Non-contiguous years (e.g., "2015,2018,2020")
+\item Integer vector: Explicit list of years (e.g., c(2015, 2018, 2020))
+}}
 
 \item{sex}{Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).}
 
@@ -121,6 +112,11 @@ Previously called 'retry'. Both parameter names are supported.}
 \item{latest}{Logical; if TRUE, keep only the most recent non-missing value per country.
 The year may differ by country. Useful for cross-sectional analysis.}
 
+\item{circa}{Logical; if TRUE, for each specified year find the closest available
+data point. When exact years aren't available, returns observations with periods
+closest to the requested year(s). Different countries may have different actual
+years. Only applies when specific years are requested.}
+
 \item{add_metadata}{Character vector of metadata to add: "region", "income_group",
 "continent", "indicator_name", "indicator_category".}
 
@@ -136,16 +132,6 @@ Default is FALSE (clean, standardized output matching Python package).}
 \item{ignore_duplicates}{Logical; if FALSE (default), raises an error when exact
 duplicate rows are found (all column values identical). Set to TRUE to allow
 automatic removal of duplicates.}
-
-\item{flow}{Deprecated. Use 'dataflow' instead.}
-
-\item{key}{Deprecated. Use 'indicator' instead.}
-
-\item{start_period}{Deprecated. Use 'start_year' instead.}
-
-\item{end_period}{Deprecated. Use 'end_year' instead.}
-
-\item{retry}{Deprecated. Use 'max_retries' instead.}
 }
 \value{
 Tibble with indicator data, or xml_document if detail="structure".
@@ -173,19 +159,31 @@ Formula: decimal_year = year + month/12
 
 \examples{
 \dontrun{
-# Fetch under-5 mortality for specific countries (clean output)
+# Fetch under-5 mortality for year range
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
-  end_year = 2023
+  year = "2015:2023"
 )
 
-# Get raw SDMX data with all original columns
-df_raw <- unicefData(
+# Single year
+df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA"),
-  raw = TRUE
+  year = 2020
+)
+
+# Non-contiguous years
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  year = "2015,2018,2020"
+)
+
+# Circa mode - find closest available year
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  year = 2015,
+  circa = TRUE  # Returns closest to 2015 for each country
 )
 
 # Get latest value per country (cross-sectional)
@@ -207,8 +205,5 @@ df <- unicefData(
   format = "wide_indicators",
   latest = TRUE
 )
-
-# Legacy syntax (still supported)
-df <- unicefData(flow = "CME", key = "CME_MRY0T4")
 }
 }

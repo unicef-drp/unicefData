@@ -59,3 +59,12 @@
 
 # Hidden files (.gitkeep)
 .*\.gitkeep$
+
+# Python artifacts
+^\.pytest_cache$
+
+# Log files and temp outputs
+^check_output\.txt$
+^stata\.log$
+^test_multi_indicator\.log$
+^.*\.log$

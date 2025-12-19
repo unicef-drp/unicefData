@@ -11,16 +11,16 @@
 #   4. Latest value per country
 #   5. Most recent N values (MRV)
 
-# Adjust path if running from examples directory
-if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicef_api/unicefData.R")) {
-  source("R/unicef_api/unicefData.R")
-} else if (file.exists("unicefData/R/unicef_api/unicefData.R")) {
-  source("unicefData/R/unicef_api/unicefData.R")
+# Source common setup (handles path resolution)
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 cat("======================================================================\n")
 cat("03_data_formats.R - Output Format Options\n")
@@ -37,7 +37,7 @@ cat("One row per observation\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   format = "long"  # default
 )
 
@@ -53,7 +53,7 @@ cat("Countries as rows, years as columns\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   format = "wide"
 )
 
@@ -69,7 +69,7 @@ cat("Indicators as columns (for comparison)\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),
   countries = COUNTRIES,
-  start_year = 2020,
+  year = 2020,
   format = "wide_indicators"
 )
 
@@ -85,7 +85,7 @@ cat("Cross-sectional analysis (one value per country)\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = COUNTRIES,
-  start_year = 2015,
+  year = "2015:2024",
   latest = TRUE
 )
 
@@ -101,7 +101,7 @@ cat("Keep only 3 most recent years per country\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA"),
-  start_year = 2010,
+  year = "2010:2024",
   mrv = 3
 )
 
@@ -117,7 +117,7 @@ cat("Only indicator specified -> All countries, all years, totals only\n\n")
 # Note: Limiting to a short time range to avoid fetching too much data for the example
 df <- unicefData(
   indicator = "CME_MRY0T4",
-  start_year = 2021
+  year = 2021
 )
 
 cat(sprintf("Shape: %d x %d\n", nrow(df), ncol(df)))
@@ -139,7 +139,7 @@ cat("1. Wide by Wealth Quintile:\n")
 df_wealth <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("COL", "PER"),
-  start_year = 2015,
+  year = "2015:2024",
   format = "wide_wealth"
 )
 print(head(df_wealth))
@@ -149,7 +149,7 @@ cat("\n2. Wide by Sex:\n")
 df_sex <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ZWE", "KEN"),
-  start_year = 2019,
+  year = "2019:2024",
   format = "wide_sex"
 )
 print(head(df_sex))

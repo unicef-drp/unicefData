@@ -32,7 +32,7 @@ display _n "--- Example 1: Disaggregation by Sex ---"
 display "Under-5 mortality by sex" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) ///
-    start_year(2020) sex(M F) clear
+    year(2020:2024) sex(M F) clear
 
 display "Result: `=_N' rows"
 list iso3 period sex value in 1/15, clean
@@ -47,7 +47,7 @@ display "Stunting by wealth quintile (poorest vs richest)" _n
 
 * Get all wealth quintiles
 unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(IND NGA ETH) ///
-    start_year(2015) clear
+    year(2015:2024) clear
 
 * Check if wealth data is available
 capture confirm variable wealth
@@ -72,7 +72,7 @@ display _n "--- Example 3: Time Series ---"
 display "Mortality trends 2000-2023" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB) ///
-    start_year(2000) end_year(2023) clear
+    year(2000:2023) clear
 
 display "Time series: `=_N' observations"
 list period value in 1/10, clean
@@ -95,7 +95,7 @@ display "Latest immunization rates for many countries" _n
 
 unicefdata, indicator(IM_DTP3) ///
     countries(AFG ALB USA BRA IND CHN NGA ETH) ///
-    start_year(2015) latest clear
+    year(2015:2024) latest clear
 
 display "Result: `=_N' countries"
 list iso3 country period value, clean
@@ -110,7 +110,7 @@ display "Complex query with multiple filters" _n
 
 unicefdata, indicator(CME_MRY0T4 CME_MRM0) ///
     countries(ALB USA BRA IND) ///
-    start_year(2015) end_year(2023) ///
+    year(2015:2023) ///
     sex(_T) ///
     simplify clear
 
@@ -130,7 +130,7 @@ display _n "--- Example 6: Urban vs Rural ---"
 display "Nutrition by residence type" _n
 
 unicefdata, indicator(NT_ANT_HAZ_NE2_MOD) countries(IND BGD) ///
-    start_year(2015) residence(URBAN RURAL) clear
+    year(2015:2024) residence(URBAN RURAL) clear
 
 capture confirm variable residence
 if _rc == 0 {

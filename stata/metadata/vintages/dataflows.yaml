@@ -1,100 +1,81 @@
-# UNICEF SDMX Dataflows for Stata unicefdata command
-# Synced from: metadata/current/dataflows.yaml
-# Last updated: 2025-12-04
-#
-# This file contains available UNICEF SDMX dataflows.
-# Used by unicefdata.ado for dataflow validation and help.
+# UNICEF SDMX API Dataflow Metadata
+# Source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF
+# This file is a subset of UNICEF dataflows for demonstration purposes
 
-metadata_version: "1.0"
-synced_at: "2025-12-04T00:00:00Z"
-source: "unicefData/metadata/current/dataflows.yaml"
+metadata_version: '1.0'
+synced_at: '2025-12-03T04:56:55.606900Z'
+source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF
+agency: UNICEF
 
 dataflows:
-  # Child Mortality
   CME:
+    id: CME
     name: Child Mortality
-    description: IGME child mortality estimates
-  CME_CAUSE_OF_DEATH:
-    name: CME Cause of death
-    description: Child mortality by cause of death (JHU data)
-  CME_SUBNATIONAL:
-    name: CME Subnational Data
-    description: Subnational child mortality estimates
-
-  # Nutrition
+    agency: UNICEF
+    version: '1.0'
+    description: Child mortality estimates from UN IGME
+    indicators:
+      - CME_MRY0T4
+      - CME_MRM0
+      - CME_MRY0
+      - CME_MRY5T14
+      - CME_MRY15T24
+    
   NUTRITION:
-    name: Nutrition
-    description: Child nutrition indicators (stunting, wasting, overweight)
-  NUTRITION_IYCF:
-    name: IYCF
-    description: Infant and young child feeding practices
-
-  # Immunization
+    id: NUTRITION
+    name: Child Nutrition
+    agency: UNICEF
+    version: '1.0'
+    description: Malnutrition estimates for children under 5
+    indicators:
+      - NT_ANT_HAZ_NE2_MOD
+      - NT_ANT_WHZ_NE2
+      - NT_ANT_WHZ_PO2_MOD
+      - NT_BF_EXBF
+      
   IMMUNISATION:
-    name: Immunisation
-    description: Vaccination coverage estimates (WHO/UNICEF WUENIC)
-
-  # Education
-  EDUCATION:
-    name: Education
-    description: Education indicators from household surveys
+    id: IMMUNISATION
+    name: Child Immunization
+    agency: UNICEF
+    version: '1.0'
+    description: WHO/UNICEF Estimates of National Immunization Coverage
+    indicators:
+      - IM_DTP3
+      - IM_MCV1
+      - IM_MCV2
+      - IM_PCV3
+      
   EDUCATION_UIS_SDG:
-    name: Education UIS SDG
-    description: UIS education SDG indicators
-
-  # WASH
-  WASH_HOUSEHOLDS:
-    name: WASH Households
-    description: Water, sanitation, hygiene - household level
-  WASH_SCHOOLS:
-    name: WASH Schools
-    description: Water, sanitation, hygiene - schools
-  WASH_HEALTH:
-    name: WASH Health Care Facilities
-    description: Water, sanitation, hygiene - health facilities
-
-  # HIV/AIDS
-  HIV_AIDS:
-    name: HIV/AIDS
-    description: HIV/AIDS indicators
-
-  # Maternal and Child Health
-  MNCH:
-    name: MNCH
-    description: Maternal, newborn, child health indicators
-
-  # Child Protection
-  PT:
-    name: Child Protection
-    description: Child protection indicators (birth registration, violence)
-  PT_CM:
-    name: Child Marriage
-    description: Child marriage indicators
-  PT_FGM:
-    name: FGM
-    description: Female genital mutilation indicators
-
-  # Early Childhood Development
-  ECD:
-    name: ECD
-    description: Early childhood development indicators
-
-  # Child Poverty
+    id: EDUCATION_UIS_SDG
+    name: Education SDG Indicators
+    agency: UNICEF
+    version: '1.0'
+    description: UNESCO/UIS education indicators for SDG monitoring
+    indicators:
+      - ED_ANAR_L02
+      - ED_CR_L1_UIS_MOD
+      - ED_CR_L2_UIS_MOD
+      - ED_READ_L2
+      - ED_MAT_L2
+      
+  WASH:
+    id: WASH
+    name: Water Sanitation and Hygiene
+    agency: UNICEF
+    version: '1.0'
+    description: JMP estimates for WASH SDG indicators
+    indicators:
+      - WS_PPL_W-SM
+      - WS_PPL_S-SM
+      - WS_PPL_H-B
+      
   CHLD_PVTY:
+    id: CHLD_PVTY
     name: Child Poverty
-    description: Child poverty and deprivation indicators
+    agency: UNICEF
+    version: '1.0'
+    description: Multidimensional child poverty estimates
+    indicators:
+      - PT_CHLD_1-17_MDP-HHH
+      - PT_CHLD_Y0T17_MDP
 
-  # Climate
-  CCRI:
-    name: CCRI
-    description: Children's Climate and Environment Risk Index
-
-  # SDG
-  CHILD_RELATED_SDG:
-    name: Child-related SDGs
-    description: Child-related Sustainable Development Goal indicators
-
-  # Global
-  GLOBAL_DATAFLOW:
-    name: Global Dataflow
-    description: Default dataflow for unrecognized indicators

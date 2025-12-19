@@ -1,4 +1,4 @@
-"""
+r"""
 Test Script: Replicate PROD-SDG-REP-2025 Indicator Downloads
 =============================================================
 
@@ -157,8 +157,8 @@ PROD_SDG_INDICATORS = {
 }
 
 
-def test_single_indicator_download(category_name, category_info, verbose=True):
-    """Test downloading a single category of indicators."""
+def _download_single_category(category_name, category_info, verbose=True):
+    """Download a single category of indicators (helper function)."""
     
     indicators = category_info["indicators"]
     expected_dataflow = category_info["dataflow"]
@@ -263,7 +263,7 @@ def run_all_tests(verbose=True):
     total_start = time.time()
     
     for category_name, category_info in PROD_SDG_INDICATORS.items():
-        result = test_single_indicator_download(category_name, category_info, verbose)
+        result = _download_single_category(category_name, category_info, verbose)
         results.append(result)
         
         # Small delay between API calls to be nice to the server
@@ -380,7 +380,7 @@ if __name__ == "__main__":
         test_indicator_discovery()
     elif args.category:
         if args.category in PROD_SDG_INDICATORS:
-            test_single_indicator_download(
+            _download_single_category(
                 args.category, 
                 PROD_SDG_INDICATORS[args.category],
                 verbose=not args.quiet

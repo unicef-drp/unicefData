@@ -1,5 +1,4 @@
-"""
-06_test_fallback.py - Test Dataflow Fallback Mechanism
+"""06_test_fallback.py - Test Dataflow Fallback Mechanism
 =========================================================
 
 Tests 5 key indicators demonstrating:
@@ -13,7 +12,7 @@ import sys
 import time
 sys.path.insert(0, '..')
 
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 print("=" * 70)
 print("06_test_fallback.py - Test Dataflow Fallback Mechanism")
@@ -64,10 +63,10 @@ for t in tests:
     start = time.time()
     
     try:
-        df = get_unicef(
+        df = unicefData(
             indicator=t["indicator"],
             countries=t["countries"],
-            start_year=2015
+            year="2015:2024"
         )
         
         elapsed = time.time() - start

@@ -95,7 +95,7 @@ print(f"Total dataflows: {len(flows)}")
 print("\nKey dataflows:")
 key_flows = ["CME", "NUTRITION", "EDUCATION_UIS_SDG", "IMMUNISATION", "MNCH", "PT", "PT_CM", "PT_FGM"]
 print(flows[flows['id'].isin(key_flows)][['id', 'agency']].to_string(index=False))
-flows.to_csv(os.path.join(DATA_DIR, '01_ex6_dataflows.csv'), index=False)
+# Note: Not saving to CSV - discovery examples don't produce validation data
 
 print("\n" + "=" * 70)
 print("Indicator Discovery Complete!")

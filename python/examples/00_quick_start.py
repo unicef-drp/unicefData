@@ -2,7 +2,7 @@
 00_quick_start.py - Quick Start Guide
 ======================================
 
-Demonstrates the basic get_unicef() API with 5 simple examples.
+Demonstrates the basic unicefData() API with 5 simple examples.
 Matches: R/examples/00_quick_start.R
 
 Examples:
@@ -16,7 +16,7 @@ import sys
 import os
 sys.path.insert(0, '..')
 
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 # Setup data directory - centralized for cross-language validation
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'validation', 'data', 'python')
@@ -35,11 +35,10 @@ print("Indicator: CME_MRY0T4")
 print("Countries: Albania, USA, Brazil")
 print("Years: 2015-2023\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA", "BRA"],
-    start_year=2015,
-    end_year=2023
+    year="2015:2023"
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
@@ -53,15 +52,15 @@ print("\n--- Example 2: Multiple Indicators (Mortality) ---")
 print("Indicators: CME_MRM0 (Neonatal), CME_MRY0T4 (Under-5)")
 print("Years: 2020-2023\n")
 
-df = get_unicef(
+df = unicefData(
     indicator=["CME_MRM0", "CME_MRY0T4"],
     countries=["ALB", "USA", "BRA"],
-    start_year=2020,
-    end_year=2023
+    year="2020:2023"
 )
 
 print(f"Result: {len(df)} rows")
 print(f"Indicators: {df['indicator'].unique().tolist()}")
+df.to_csv(os.path.join(DATA_DIR, '00_ex2_multi_indicators.csv'), index=False)
 
 # =============================================================================
 # Example 3: Nutrition - Stunting Prevalence
@@ -71,30 +70,31 @@ print("Indicator: NT_ANT_HAZ_NE2_MOD")
 print("Countries: Afghanistan, India, Nigeria")
 print("Years: 2015+\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="NT_ANT_HAZ_NE2_MOD",
     countries=["AFG", "IND", "NGA"],
-    start_year=2015
+    year="2015:2024"  # All years from 2015
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
+df.to_csv(os.path.join(DATA_DIR, '00_ex3_nutrition.csv'), index=False)
 
 # =============================================================================
 # Example 4: Immunization - DTP3 Coverage
 # =============================================================================
 print("\n--- Example 4: Immunization (DTP3) ---")
 print("Indicator: IM_DTP3")
-print("Countries: Albania, USA, Brazil")
+print("Countries: Nigeria, Kenya, South Africa")
 print("Years: 2015-2023\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="IM_DTP3",
-    countries=["ALB", "USA", "BRA"],
-    start_year=2015,
-    end_year=2023
+    countries=["NGA", "KEN", "ZAF"],
+    year="2015:2023"
 )
 
 print(f"Result: {len(df)} rows")
+df.to_csv(os.path.join(DATA_DIR, '00_ex4_immunization.csv'), index=False)
 
 # =============================================================================
 # Example 5: All Countries (Large Download)
@@ -104,14 +104,14 @@ print("Indicator: CME_MRY0T4 (Under-5 mortality)")
 print("Countries: ALL")
 print("Years: 2020+\n")
 
-df = get_unicef(
+df = unicefData(
     indicator="CME_MRY0T4",
-    start_year=2020
+    year="2020:2024"  # All years from 2020
 )
 
 print(f"Result: {len(df)} rows, {df['iso3'].nunique()} countries")
 print(f"Years: {df['period'].min()} - {df['period'].max()}")
-df.to_csv(os.path.join(DATA_DIR, '00_ex2_mult_mortality.csv'), index=False)
+df.to_csv(os.path.join(DATA_DIR, '00_ex5_all_countries.csv'), index=False)
 
 print("\n" + "=" * 70)
 print("Quick Start Complete!")

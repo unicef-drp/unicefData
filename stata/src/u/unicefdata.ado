@@ -1,22 +1,146 @@
 *******************************************************************************
 * unicefdata
-*! v 1.2.1   07Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.4.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Download indicators from UNICEF Data Warehouse via SDMX API
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
+*
+* NEW in v1.4.0: sync subcommand (routes to unicefdata_sync)
+* NEW in v1.3.1: categories subcommand, dataflow() filter in search
+* NEW in v1.3.0: Discovery subcommands (flows, search, indicators, info)
 *******************************************************************************
 
 program define unicefdata, rclass
 
     version 14.0
 
+    *---------------------------------------------------------------------------
+    * Check for discovery subcommands FIRST (before regular syntax parsing)
+    *---------------------------------------------------------------------------
+    
+    * Check for CATEGORIES subcommand (list categories with counts)
+    if (strpos("`0'", "categor") > 0) {
+        * Support both "categories" and "category"
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+        _unicef_list_categories `=cond(`has_verbose', ", verbose", "")'
+        exit
+    }
+    
+    * Check for FLOWS subcommand
+    if (strpos("`0'", "flows") > 0) {
+        * Parse options (detail, verbose)
+        local has_detail = (strpos("`0'", "detail") > 0)
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+        
+        if (`has_detail') {
+            _unicef_list_dataflows, detail `=cond(`has_verbose', "verbose", "")'
+        }
+        else {
+            _unicef_list_dataflows `=cond(`has_verbose', ", verbose", "")'
+        }
+        exit
+    }
+    
+    * Check for SEARCH subcommand
+    if (strpos("`0'", "search(") > 0) {
+        * Extract search keyword
+        local search_start = strpos("`0'", "search(") + 7
+        local search_end = strpos(substr("`0'", `search_start', .), ")") + `search_start' - 2
+        local search_keyword = substr("`0'", `search_start', `search_end' - `search_start' + 1)
+        
+        * Extract other options
+        local remaining = subinstr("`0'", "search(`search_keyword')", "", 1)
+        local remaining = subinstr("`remaining'", ",", "", 1)
+        
+        * Check for limit option
+        local limit_val = 20
+        if (strpos("`remaining'", "limit(") > 0) {
+            local limit_start = strpos("`remaining'", "limit(") + 6
+            local limit_end = strpos(substr("`remaining'", `limit_start', .), ")") + `limit_start' - 2
+            local limit_val = substr("`remaining'", `limit_start', `limit_end' - `limit_start' + 1)
+        }
+        
+        * Check for dataflow filter option
+        local dataflow_filter = ""
+        if (strpos("`remaining'", "dataflow(") > 0) {
+            local df_start = strpos("`remaining'", "dataflow(") + 9
+            local df_end = strpos(substr("`remaining'", `df_start', .), ")") + `df_start' - 2
+            local dataflow_filter = substr("`remaining'", `df_start', `df_end' - `df_start' + 1)
+        }
+        
+        if ("`dataflow_filter'" != "") {
+            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val') dataflow("`dataflow_filter'")
+        }
+        else {
+            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
+        }
+        exit
+    }
+    
+    * Check for INDICATORS subcommand (list indicators in a dataflow)
+    if (strpos("`0'", "indicators(") > 0) {
+        * Extract dataflow
+        local ind_start = strpos("`0'", "indicators(") + 11
+        local ind_end = strpos(substr("`0'", `ind_start', .), ")") + `ind_start' - 2
+        local ind_dataflow = substr("`0'", `ind_start', `ind_end' - `ind_start' + 1)
+        
+        * Check for verbose option
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+        
+        _unicef_list_indicators, dataflow("`ind_dataflow'") `=cond(`has_verbose', "verbose", "")'
+        exit
+    }
+    
+    * Check for INFO subcommand (get indicator details)
+    if (strpos("`0'", "info(") > 0) {
+        * Extract indicator code
+        local info_start = strpos("`0'", "info(") + 5
+        local info_end = strpos(substr("`0'", `info_start', .), ")") + `info_start' - 2
+        local info_indicator = substr("`0'", `info_start', `info_end' - `info_start' + 1)
+        
+        _unicef_indicator_info, indicator("`info_indicator'")
+        exit
+    }
+    
+    * Check for SYNC subcommand (route to unicefdata_sync)
+    if (strpos("`0'", "sync") > 0) {
+        * Parse sync options: sync(all), sync(indicators), sync(dataflows), etc.
+        local sync_target = "all"  // default
+        if (strpos("`0'", "sync(") > 0) {
+            local sync_start = strpos("`0'", "sync(") + 5
+            local sync_end = strpos(substr("`0'", `sync_start', .), ")") + `sync_start' - 2
+            local sync_target = substr("`0'", `sync_start', `sync_end' - `sync_start' + 1)
+        }
+        
+        * Check for other options
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+        local has_force = (strpos("`0'", "force") > 0)
+        local has_forcepython = (strpos("`0'", "forcepython") > 0)
+        local has_forcestata = (strpos("`0'", "forcestata") > 0)
+        
+        * Build option string
+        local sync_opts ""
+        if (`has_verbose') local sync_opts "`sync_opts' verbose"
+        if (`has_force') local sync_opts "`sync_opts' force"
+        if (`has_forcepython') local sync_opts "`sync_opts' forcepython"
+        if (`has_forcestata') local sync_opts "`sync_opts' forcestata"
+        
+        * Route to unicefdata_sync
+        unicefdata_sync, `sync_target' `sync_opts'
+        exit
+    }
+
+    *---------------------------------------------------------------------------
+    * Regular syntax for data retrieval
+    *---------------------------------------------------------------------------
+
     syntax                                          ///
                  [,                                 ///
                         INDICATOR(string)           /// Indicator code(s)
                         DATAFLOW(string)            /// SDMX dataflow ID
                         COUNTries(string)           /// ISO3 country codes
-                        START_year(integer 0)       /// Start year (R/Python aligned)
-                        END_year(integer 0)         /// End year (R/Python aligned)
+                        YEAR(string)                /// Year(s): single, range (2015:2023), or list (2015,2018,2020)
+                        CIRCA                       /// Find closest available year
                         SEX(string)                 /// Sex: _T, F, M, ALL
                         AGE(string)                 /// Age group filter
                         WEALTH(string)              /// Wealth quintile filter
@@ -24,17 +148,21 @@ program define unicefdata, rclass
                         MATERNAL_edu(string)        /// Maternal education filter
                         LONG                        /// Long format (default)
                         WIDE                        /// Wide format
+                        WIDE_indicators             /// Wide format with indicators as columns
                         LATEST                      /// Most recent value only
                         MRV(integer 0)              /// N most recent values
                         DROPNA                      /// Drop missing values
                         SIMPLIFY                    /// Essential columns only
                         RAW                         /// Raw SDMX output
+                        ADDmeta(string)             /// Add metadata columns (region, income_group)
                         VERSION(string)             /// SDMX version
                         PAGE_size(integer 100000)   /// Rows per request
                         MAX_retries(integer 3)      /// Retry attempts
                         CLEAR                       /// Replace data in memory
                         VERBOSE                     /// Show progress
                         VALIDATE                    /// Validate inputs against codelists
+                        FALLBACK                    /// Try alternative dataflows on 404
+                        NOFallback                  /// Disable dataflow fallback
                         *                           /// Legacy options
                  ]
 
@@ -45,7 +173,18 @@ program define unicefdata, rclass
         *-----------------------------------------------------------------------
         
         if ("`indicator'" == "") & ("`dataflow'" == "") {
-            noi di as err "You must specify either indicator() or dataflow(). Please try again."
+            noi di as err "You must specify either indicator() or dataflow()."
+            noi di as text ""
+            noi di as text "Discovery commands:"
+            noi di as text "  unicefdata, categories                - List categories with indicator counts"
+            noi di as text "  unicefdata, flows                     - List available dataflows"
+            noi di as text "  unicefdata, search(mortality)         - Search indicators by keyword"
+            noi di as text "  unicefdata, search(edu) dataflow(EDUCATION) - Search within a dataflow"
+            noi di as text "  unicefdata, indicators(CME)           - List indicators in a dataflow"
+            noi di as text "  unicefdata, info(CME_MRY0T4)          - Get indicator details"
+            noi di as text ""
+            noi di as text "Data retrieval:"
+            noi di as text "  unicefdata, indicator(CME_MRY0T4) countries(BRA USA)"
             exit 198
         }
         
@@ -71,25 +210,73 @@ program define unicefdata, rclass
         local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
         
         *-----------------------------------------------------------------------
-        * Locate metadata directory
+        * Parse year parameter
         *-----------------------------------------------------------------------
+        * Supports: single (2020), range (2015:2023), list (2015,2018,2020)
         
-        * Find the package installation path
-        local metadata_path ""
+        local start_year = 0
+        local end_year = 0
+        local year_list ""
+        local has_year_list = 0
         
-        * Try to find metadata relative to this ado file
-        findfile unicefdata.ado
-        if (_rc == 0) {
-            local ado_path "`r(fn)'"
-            * Extract directory (go up from src/u/ to find metadata/)
-            local ado_dir = subinstr("`ado_path'", "src/u/unicefdata.ado", "", .)
-            local ado_dir = subinstr("`ado_dir'", "src\u\unicefdata.ado", "", .)
-            local metadata_path "`ado_dir'metadata/"
+        if ("`year'" != "") {
+            * Check for range format: 2015:2023
+            if (strpos("`year'", ":") > 0) {
+                local colon_pos = strpos("`year'", ":")
+                local start_year = real(substr("`year'", 1, `colon_pos' - 1))
+                local end_year = real(substr("`year'", `colon_pos' + 1, .))
+                if ("`verbose'" != "") {
+                    noi di as text "Year range: " as result "`start_year' to `end_year'"
+                }
+            }
+            * Check for list format: 2015,2018,2020
+            else if (strpos("`year'", ",") > 0) {
+                local year_list = subinstr("`year'", ",", " ", .)
+                local has_year_list = 1
+                * Get min and max for API query
+                local min_year = 9999
+                local max_year = 0
+                foreach yr of local year_list {
+                    if (`yr' < `min_year') local min_year = `yr'
+                    if (`yr' > `max_year') local max_year = `yr'
+                }
+                local start_year = `min_year'
+                local end_year = `max_year'
+                if ("`verbose'" != "") {
+                    noi di as text "Year list: " as result "`year_list'"
+                    noi di as text "Query range: " as result "`start_year' to `end_year'"
+                }
+            }
+            * Single year
+            else {
+                local start_year = real("`year'")
+                local end_year = `start_year'
+                if ("`verbose'" != "") {
+                    noi di as text "Single year: " as result "`start_year'"
+                }
+            }
         }
         
-        * If not found, try PLUS directory
-        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'indicators.yaml")) {
-            local metadata_path "`c(sysdir_plus)'u/metadata/"
+        *-----------------------------------------------------------------------
+        * Locate metadata directory (YAML files in src/_/ alongside helper ado)
+        *-----------------------------------------------------------------------
+        
+        * Find the helper programs location (src/_/)
+        local metadata_path ""
+        
+        * Try to find metadata relative to helper ado files in src/_/
+        capture findfile _unicef_list_dataflows.ado
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            * Extract directory containing the helper ado file
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local metadata_path "`ado_dir'"
+        }
+        
+        * Fallback to PLUS directory _/
+        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'_unicefdata_indicators.yaml")) {
+            local metadata_path "`c(sysdir_plus)'_/"
         }
         
         if ("`verbose'" != "") {
@@ -100,14 +287,216 @@ program define unicefdata, rclass
         * Auto-detect dataflow from indicator using YAML metadata
         *-----------------------------------------------------------------------
         
-        if ("`dataflow'" == "") & ("`indicator'" != "") {
-            _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
-            local dataflow "`s(dataflow)'"
-            local indicator_name "`s(indicator_name)'"
+        * Check for multiple indicators (space-separated)
+        local n_indicators : word count `indicator'
+        
+        if (`n_indicators' > 1) {
+            * Multiple indicators: fetch each separately and append
+            * (This matches Python/R behavior where each indicator is fetched individually)
+            
             if ("`verbose'" != "") {
-                noi di as text "Auto-detected dataflow: " as result "`dataflow'"
-                if ("`indicator_name'" != "") {
-                    noi di as text "Indicator: " as result "`indicator_name'"
+                noi di as text "Multiple indicators detected (`n_indicators'). Fetching each separately..."
+            }
+            
+            tempfile combined_data
+            local first_indicator = 1
+            
+            foreach ind of local indicator {
+                if ("`verbose'" != "") {
+                    noi di as text "  Fetching indicator: " as result "`ind'"
+                }
+                
+                * Detect dataflow for this indicator
+                _unicef_detect_dataflow_yaml "`ind'" "`metadata_path'"
+                local ind_dataflow "`s(dataflow)'"
+                
+                * Build URL for this indicator
+                local ind_key ".`ind'."
+                local ind_rel_path "data/UNICEF,`ind_dataflow',`version'/`ind_key'"
+                
+                local ind_query "format=csv&labels=both"
+                if (`start_year' > 0) {
+                    local ind_query "`ind_query'&startPeriod=`start_year'"
+                }
+                if (`end_year' > 0) {
+                    local ind_query "`ind_query'&endPeriod=`end_year'"
+                }
+                local ind_query "`ind_query'&startIndex=0&count=`page_size'"
+                
+                local ind_url "`base_url'/`ind_rel_path'?`ind_query'"
+                
+                * Try to fetch this indicator
+                tempfile ind_tempdata
+                local ind_success 0
+                forvalues attempt = 1/`max_retries' {
+                    capture copy "`ind_url'" "`ind_tempdata'", replace public
+                    if (_rc == 0) {
+                        local ind_success 1
+                        continue, break
+                    }
+                    sleep 1000
+                }
+                
+                * Try fallback if primary failed
+                if (`ind_success' == 0) {
+                    _unicef_fetch_with_fallback, indicator("`ind'") ///
+                        dataflow("`ind_dataflow'") ///
+                        base_url("`base_url'") ///
+                        version("`version'") ///
+                        start_year("`start_year'") ///
+                        end_year("`end_year'") ///
+                        page_size(`page_size') ///
+                        max_retries(`max_retries') ///
+                        `verbose'
+                    
+                    if ("`r(success)'" == "1") {
+                        local ind_success 1
+                        * Data is now in memory from fallback helper
+                        * Convert types for safe appending
+                        capture confirm variable time_period
+                        if (_rc == 0) {
+                            capture confirm string variable time_period
+                            if (_rc != 0) {
+                                tostring time_period, replace force
+                            }
+                        }
+                        capture confirm variable obs_value
+                        if (_rc == 0) {
+                            capture confirm string variable obs_value
+                            if (_rc != 0) {
+                                tostring obs_value, replace force
+                            }
+                        }
+                        
+                        if (`first_indicator' == 1) {
+                            save "`combined_data'", replace
+                            local first_indicator = 0
+                        }
+                        else {
+                            append using "`combined_data'", force
+                            save "`combined_data'", replace
+                        }
+                        continue
+                    }
+                }
+                
+                if (`ind_success' == 1) {
+                    * Import the data
+                    preserve
+                    import delimited using "`ind_tempdata'", clear varnames(1) encoding("utf-8")
+                    
+                    if (_N > 0) {
+                        * Convert time_period to string to avoid type mismatch when appending
+                        capture confirm variable time_period
+                        if (_rc == 0) {
+                            capture confirm string variable time_period
+                            if (_rc != 0) {
+                                tostring time_period, replace force
+                            }
+                        }
+                        
+                        * Convert obs_value to string initially for safe appending
+                        capture confirm variable obs_value
+                        if (_rc == 0) {
+                            capture confirm string variable obs_value
+                            if (_rc != 0) {
+                                tostring obs_value, replace force
+                            }
+                        }
+                        
+                        if (`first_indicator' == 1) {
+                            save "`combined_data'", replace
+                            local first_indicator = 0
+                        }
+                        else {
+                            append using "`combined_data'", force
+                            save "`combined_data'", replace
+                        }
+                    }
+                    restore
+                }
+                else {
+                    if ("`verbose'" != "") {
+                        noi di as text "  Warning: Could not fetch `ind'" as error " (skipped)"
+                    }
+                }
+            }
+            
+            * Load combined data
+            if (`first_indicator' == 0) {
+                use "`combined_data'", clear
+            }
+            else {
+                noi di as err "Could not fetch data for any of the specified indicators."
+                exit 677
+            }
+            
+            * Skip the single-indicator fetch logic below
+            local skip_single_fetch 1
+        }
+        else {
+            * Single indicator - use normal flow
+            local skip_single_fetch 0
+            
+            if ("`dataflow'" == "") & ("`indicator'" != "") {
+                _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
+                local dataflow "`s(dataflow)'"
+                local indicator_name "`s(indicator_name)'"
+                if ("`verbose'" != "") {
+                    noi di as text "Auto-detected dataflow: " as result "`dataflow'"
+                    if ("`indicator_name'" != "") {
+                        noi di as text "Indicator: " as result "`indicator_name'"
+                    }
+                }
+            }
+            
+            *-------------------------------------------------------------------
+            * Check and warn about supported disaggregations
+            *-------------------------------------------------------------------
+            
+            * Get indicator info to check supported disaggregations
+            capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
+            if (_rc == 0) {
+                local has_sex = "`r(has_sex)'"
+                local has_age = "`r(has_age)'"
+                local has_wealth = "`r(has_wealth)'"
+                local has_residence = "`r(has_residence)'"
+                local has_maternal_edu = "`r(has_maternal_edu)'"
+                
+                * Warn if user specified a filter that's not supported
+                local unsupported_filters ""
+                
+                if ("`age'" != "" & "`age'" != "_T" & "`has_age'" == "0") {
+                    local unsupported_filters "`unsupported_filters' age"
+                }
+                if ("`wealth'" != "" & "`wealth'" != "_T" & "`has_wealth'" == "0") {
+                    local unsupported_filters "`unsupported_filters' wealth"
+                }
+                if ("`residence'" != "" & "`residence'" != "_T" & "`has_residence'" == "0") {
+                    local unsupported_filters "`unsupported_filters' residence"
+                }
+                if ("`maternal_edu'" != "" & "`maternal_edu'" != "_T" & "`has_maternal_edu'" == "0") {
+                    local unsupported_filters "`unsupported_filters' maternal_edu"
+                }
+                
+                if ("`unsupported_filters'" != "") {
+                    noi di ""
+                    noi di as error "Warning: The following disaggregation(s) are NOT supported by `indicator':"
+                    noi di as error "        `unsupported_filters'"
+                    noi di as text "  This indicator's dataflow (`dataflow') does not include these dimensions."
+                    noi di as text "  Your filter(s) will be ignored. Use 'unicefdata, info(`indicator')' for details."
+                    noi di ""
+                }
+                
+                * Show brief info about what IS supported (in verbose mode)
+                if ("`verbose'" != "") {
+                    noi di as text "Supported disaggregations: " _continue
+                    if ("`has_sex'" == "1") noi di as result "sex " _continue
+                    if ("`has_age'" == "1") noi di as result "age " _continue
+                    if ("`has_wealth'" == "1") noi di as result "wealth " _continue
+                    if ("`has_residence'" == "1") noi di as result "residence " _continue
+                    if ("`has_maternal_edu'" == "1") noi di as result "maternal_edu " _continue
+                    noi di ""
                 }
             }
         }
@@ -121,8 +510,10 @@ program define unicefdata, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Build the API query URL
+        * Build the API query URL (single indicator only)
         *-----------------------------------------------------------------------
+        
+        if (`skip_single_fetch' == 0) {
         
         * Base path: data/UNICEF,{dataflow},{version}/{indicator_key}
         local indicator_key = cond("`indicator'" != "", "." + "`indicator'" + ".", ".")
@@ -149,12 +540,15 @@ program define unicefdata, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Download data
+        * Download data (with optional fallback)
         *-----------------------------------------------------------------------
         
         set checksum off
         
         tempfile tempdata
+        
+        * Determine if we should use fallback
+        local use_fallback = ("`fallback'" != "" | ("`nofallback'" == "" & "`indicator'" != ""))
         
         * Try to copy the file with retries
         local success 0
@@ -170,6 +564,32 @@ program define unicefdata, rclass
             sleep 1000
         }
         
+        * If primary download failed and fallback is enabled, try alternatives
+        if (`success' == 0 & `use_fallback' == 1 & "`indicator'" != "") {
+            if ("`verbose'" != "") {
+                noi di as text "Primary dataflow failed, trying alternatives..."
+            }
+            
+            _unicef_fetch_with_fallback, indicator("`indicator'") ///
+                dataflow("`dataflow'") ///
+                base_url("`base_url'") ///
+                version("`version'") ///
+                start_year("`start_year'") ///
+                end_year("`end_year'") ///
+                page_size(`page_size') ///
+                max_retries(`max_retries') ///
+                `verbose'
+            
+            if ("`r(success)'" == "1") {
+                local success 1
+                local dataflow "`r(dataflow)'"
+                local full_url "`r(url)'"
+                if ("`verbose'" != "") {
+                    noi di as text "Successfully used fallback dataflow: " as result "`dataflow'"
+                }
+            }
+        }
+        
         if (`success' == 0) {
             noi di ""
             noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
@@ -177,14 +597,22 @@ program define unicefdata, rclass
             noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
             noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
             noi di as text `"{p 4 4 2}(4) Consider adjusting Stata timeout: {help netio}.{p_end}"'
+            if ("`indicator'" != "" & "`nofallback'" == "") {
+                noi di as text `"{p 4 4 2}(5) Try specifying a different dataflow().{p_end}"'
+            }
             exit 677
         }
         
         *-----------------------------------------------------------------------
-        * Import the CSV data
+        * Import the CSV data (if not already loaded by fallback)
         *-----------------------------------------------------------------------
         
-        import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+        * Check if data is already loaded (from fallback helper)
+        if (_N == 0) {
+            import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+        }
+        
+        } // end skip_single_fetch
         
         local obs_count = _N
         if ("`verbose'" != "") {
@@ -204,58 +632,99 @@ program define unicefdata, rclass
         
         if ("`raw'" == "") {
             
-            * Rename core columns to standardized short names
-            * Note: import delimited converts column names to lowercase
-            capture rename ref_area iso3
-            capture rename indicator indicator
-            capture rename time_period period
-            capture rename obs_value value
-            capture rename geographicarea country
+            * =================================================================
+            * OPTIMIZED: Batch rename, label, and destring operations
+            * v1.3.2: Reduced from ~50 individual commands to batch operations
+            * =================================================================
             
-            * Rename descriptive columns (from API's "label" columns)
-            * API returns pairs like INDICATOR/Indicator - Stata creates v4, v6 for duplicates
-            capture rename v4 indicator_name
-            capture rename unitofmeasure unit_name
-            capture rename v6 sex_name
-            capture rename wealthquintile wealth_name
-            capture rename observationstatus status_name
+            quietly {
+                * --- Batch rename: lowercase API columns to standard names ---
+                * Check and rename in single pass (avoids 30+ separate rename calls)
+                local renames ""
+                local renames "`renames' ref_area:iso3 REF_AREA:iso3"
+                local renames "`renames' time_period:period TIME_PERIOD:period"
+                local renames "`renames' obs_value:value OBS_VALUE:value"
+                local renames "`renames' geographicarea:country GEOGRAPHICAREA:country geographic_area:country"
+                local renames "`renames' unit_measure:unit UNIT_MEASURE:unit"
+                local renames "`renames' wealth_quintile:wealth WEALTH_QUINTILE:wealth"
+                local renames "`renames' lower_bound:lb LOWER_BOUND:lb"
+                local renames "`renames' upper_bound:ub UPPER_BOUND:ub"
+                local renames "`renames' obs_status:status OBS_STATUS:status"
+                local renames "`renames' data_source:source DATA_SOURCE:source"
+                local renames "`renames' ref_period:refper REF_PERIOD:refper"
+                local renames "`renames' country_notes:notes COUNTRY_NOTES:notes"
+                local renames "`renames' maternal_edu_lvl:matedu MATERNAL_EDU_LVL:matedu"
+                
+                foreach pair of local renames {
+                    gettoken oldname newname : pair, parse(":")
+                    local newname = subinstr("`newname'", ":", "", 1)
+                    capture confirm variable `oldname'
+                    if (_rc == 0) {
+                        rename `oldname' `newname'
+                    }
+                }
+                
+                * Handle special cases: API duplicate column naming creates v4, v6
+                capture confirm variable v4
+                if (_rc == 0) rename v4 indicator_name
+                capture confirm variable unitofmeasure
+                if (_rc == 0) rename unitofmeasure unit_name
+                capture confirm variable v6
+                if (_rc == 0) rename v6 sex_name
+                capture confirm variable wealthquintile
+                if (_rc == 0) rename wealthquintile wealth_name
+                capture confirm variable observationstatus
+                if (_rc == 0) rename observationstatus status_name
+                
+                * Handle case-sensitive columns (sex, age, residence)
+                foreach v in sex age residence {
+                    local V = upper("`v'")
+                    capture confirm variable `V'
+                    if (_rc == 0) rename `V' `v'
+                }
+            }
             
-            * Rename additional metadata columns (lowercase after import delimited)
-            capture rename unit_measure unit
-            capture rename wealth_quintile wealth
-            capture rename lower_bound lb
-            capture rename upper_bound ub
-            capture rename obs_status status
-            capture rename data_source source
-            capture rename ref_period refper
-            capture rename country_notes notes
-            capture rename maternal_edu_lvl matedu
+            * --- Batch label variables (single quietly block) ---
+            quietly {
+                * Define labels in compact format: varname "label"
+                local varlabels `""iso3" "ISO3 country code""'
+                local varlabels `"`varlabels' "country" "Country name""'
+                local varlabels `"`varlabels' "indicator" "Indicator code""'
+                local varlabels `"`varlabels' "indicator_name" "Indicator name""'
+                local varlabels `"`varlabels' "period" "Time period (year)""'
+                local varlabels `"`varlabels' "value" "Observation value""'
+                local varlabels `"`varlabels' "unit" "Unit of measure code""'
+                local varlabels `"`varlabels' "unit_name" "Unit of measure""'
+                local varlabels `"`varlabels' "sex" "Sex code""'
+                local varlabels `"`varlabels' "sex_name" "Sex""'
+                local varlabels `"`varlabels' "age" "Age group""'
+                local varlabels `"`varlabels' "wealth" "Wealth quintile code""'
+                local varlabels `"`varlabels' "wealth_name" "Wealth quintile""'
+                local varlabels `"`varlabels' "residence" "Residence type""'
+                local varlabels `"`varlabels' "matedu" "Maternal education level""'
+                local varlabels `"`varlabels' "lb" "Lower confidence bound""'
+                local varlabels `"`varlabels' "ub" "Upper confidence bound""'
+                local varlabels `"`varlabels' "status" "Observation status code""'
+                local varlabels `"`varlabels' "status_name" "Observation status""'
+                local varlabels `"`varlabels' "source" "Data source""'
+                local varlabels `"`varlabels' "refper" "Reference period""'
+                local varlabels `"`varlabels' "notes" "Country notes""'
+                
+                * Apply labels only if variable exists (22 pairs = 44 words)
+                local i = 1
+                while (`i' <= 44) {
+                    local varname : word `i' of `varlabels'
+                    local ++i
+                    local varlbl : word `i' of `varlabels'
+                    local ++i
+                    capture confirm variable `varname'
+                    if (_rc == 0) {
+                        label variable `varname' `"`varlbl'"'
+                    }
+                }
+            }
             
-            * Add descriptive variable labels
-            capture label variable iso3       "ISO3 country code"
-            capture label variable country    "Country name"
-            capture label variable indicator  "Indicator code"
-            capture label variable indicator_name "Indicator name"
-            capture label variable period     "Time period (year)"
-            capture label variable value      "Observation value"
-            capture label variable unit       "Unit of measure code"
-            capture label variable unit_name  "Unit of measure"
-            capture label variable sex        "Sex code"
-            capture label variable sex_name   "Sex"
-            capture label variable age        "Age group"
-            capture label variable wealth     "Wealth quintile code"
-            capture label variable wealth_name "Wealth quintile"
-            capture label variable residence  "Residence type"
-            capture label variable matedu     "Maternal education level"
-            capture label variable lb         "Lower confidence bound"
-            capture label variable ub         "Upper confidence bound"
-            capture label variable status     "Observation status code"
-            capture label variable status_name "Observation status"
-            capture label variable source     "Data source"
-            capture label variable refper     "Reference period"
-            capture label variable notes      "Country notes"
-            
-            * Convert period to numeric (handle YYYY-MM format)
+            * --- Optimized period conversion (handle YYYY-MM format) ---
             capture {
                 * Check if period contains "-" (YYYY-MM format)
                 gen _has_month = strpos(period, "-") > 0
@@ -268,19 +737,19 @@ program define unicefdata, rclass
                 label variable period "Time period (year)"
             }
             
-            * If the above fails, try simple numeric conversion
+            * --- OPTIMIZED: Single destring call for multiple variables ---
+            * v1.3.2: Replaced 4 separate destring calls with one
             capture {
-                destring period, replace force
+                * Build list of string variables that need conversion
+                local to_destring ""
+                foreach v in period value lb ub {
+                    capture confirm string variable `v'
+                    if (_rc == 0) local to_destring "`to_destring' `v'"
+                }
+                if ("`to_destring'" != "") {
+                    destring `to_destring', replace force
+                }
             }
-            
-            * Convert value to numeric
-            capture {
-                destring value, replace force
-            }
-            
-            * Convert bounds to numeric
-            capture destring lb, replace force
-            capture destring ub, replace force
             
             * Filter by sex if specified
             if ("`sex'" != "" & "`sex'" != "ALL") {
@@ -339,6 +808,163 @@ program define unicefdata, rclass
                 }
                 keep if _keep == 1
                 drop _keep
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Apply year list filter (non-contiguous years)
+        *-----------------------------------------------------------------------
+        
+        if (`has_year_list' == 1) {
+            capture confirm variable period
+            if (_rc == 0) {
+                if ("`circa'" != "") {
+                    * Circa mode: find closest year for each country
+                    * For each target year, find closest available period per country(-indicator)
+                    
+                    if ("`verbose'" != "") {
+                        noi di as text "Applying circa matching for years: " as result "`year_list'"
+                    }
+                    
+                    tempfile orig_data
+                    save "`orig_data'", replace
+                    
+                    * Drop missing values before finding closest
+                    capture confirm variable value
+                    if (_rc == 0) {
+                        drop if missing(value)
+                    }
+                    
+                    * Generate group id
+                    capture confirm variable indicator
+                    local has_indicator = (_rc == 0)
+                    
+                    tempfile closest_results
+                    local first_target = 1
+                    
+                    foreach target of local year_list {
+                        use "`orig_data'", clear
+                        capture confirm variable value
+                        if (_rc == 0) {
+                            drop if missing(value)
+                        }
+                        
+                        * Calculate distance from target
+                        gen double _dist = abs(period - `target')
+                        
+                        if (`has_indicator') {
+                            bysort iso3 indicator (_dist): keep if _n == 1
+                        }
+                        else {
+                            bysort iso3 (_dist): keep if _n == 1
+                        }
+                        
+                        gen _target_year = `target'
+                        drop _dist
+                        
+                        if (`first_target' == 1) {
+                            save "`closest_results'", replace
+                            local first_target = 0
+                        }
+                        else {
+                            append using "`closest_results'"
+                            save "`closest_results'", replace
+                        }
+                    }
+                    
+                    * Remove duplicates (same obs closest to multiple targets)
+                    use "`closest_results'", clear
+                    if (`has_indicator') {
+                        duplicates drop iso3 indicator period, force
+                    }
+                    else {
+                        duplicates drop iso3 period, force
+                    }
+                    drop _target_year
+                }
+                else {
+                    * Strict filter: keep only exact matches
+                    gen _keep_year = 0
+                    foreach yr of local year_list {
+                        replace _keep_year = 1 if period == `yr'
+                    }
+                    keep if _keep_year == 1
+                    drop _keep_year
+                    
+                    if ("`verbose'" != "") {
+                        noi di as text "Filtered to years: " as result "`year_list'"
+                    }
+                }
+            }
+        }
+        else if ("`circa'" != "" & `start_year' > 0) {
+            * Circa mode with single year or range (find closest to endpoints)
+            capture confirm variable period
+            if (_rc == 0) {
+                if (`start_year' == `end_year') {
+                    * Single year circa
+                    local target_years "`start_year'"
+                }
+                else {
+                    * Range circa - use start and end as targets
+                    local target_years "`start_year' `end_year'"
+                }
+                
+                if ("`verbose'" != "") {
+                    noi di as text "Applying circa matching for: " as result "`target_years'"
+                }
+                
+                tempfile orig_data
+                save "`orig_data'", replace
+                
+                capture confirm variable value
+                if (_rc == 0) {
+                    drop if missing(value)
+                }
+                
+                capture confirm variable indicator
+                local has_indicator = (_rc == 0)
+                
+                tempfile closest_results
+                local first_target = 1
+                
+                foreach target of local target_years {
+                    use "`orig_data'", clear
+                    capture confirm variable value
+                    if (_rc == 0) {
+                        drop if missing(value)
+                    }
+                    
+                    gen double _dist = abs(period - `target')
+                    
+                    if (`has_indicator') {
+                        bysort iso3 indicator (_dist): keep if _n == 1
+                    }
+                    else {
+                        bysort iso3 (_dist): keep if _n == 1
+                    }
+                    
+                    gen _target_year = `target'
+                    drop _dist
+                    
+                    if (`first_target' == 1) {
+                        save "`closest_results'", replace
+                        local first_target = 0
+                    }
+                    else {
+                        append using "`closest_results'"
+                        save "`closest_results'", replace
+                    }
+                }
+                
+                use "`closest_results'", clear
+                if (`has_indicator') {
+                    duplicates drop iso3 indicator period, force
+                }
+                else {
+                    duplicates drop iso3 period, force
+                }
+                drop _target_year
             }
         }
         
@@ -403,11 +1029,187 @@ program define unicefdata, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Format output (long/wide) - aligned with R/Python
+        * Add metadata columns (region, income_group) - NEW in v1.3.0
         *-----------------------------------------------------------------------
         
-        if ("`wide'" != "") {
-            * Reshape to wide format
+        if ("`addmeta'" != "") {
+            * Parse requested metadata columns
+            local addmeta_lower = lower("`addmeta'")
+            
+            capture confirm variable iso3
+            if (_rc == 0) {
+                * Add region
+                if (strpos("`addmeta_lower'", "region") > 0) {
+                    _unicef_add_region
+                }
+                
+                * Add income group
+                if (strpos("`addmeta_lower'", "income") > 0) {
+                    _unicef_add_income_group
+                }
+                
+                * Add continent
+                if (strpos("`addmeta_lower'", "continent") > 0) {
+                    _unicef_add_continent
+                }
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Add geo_type classification (country vs aggregate) - NEW in v1.3.0
+        *-----------------------------------------------------------------------
+        
+        capture confirm variable iso3
+        if (_rc == 0) {
+            capture drop geo_type
+            gen geo_type = ""
+            * Mark known aggregates (regional and global)
+            replace geo_type = "aggregate" if inlist(iso3, "WLD", "WORLD", "UNICEF", "WB")
+            replace geo_type = "aggregate" if length(iso3) > 3
+            replace geo_type = "aggregate" if strpos(iso3, "_") > 0
+            replace geo_type = "country" if geo_type == ""
+            label variable geo_type "Geographic type (country/aggregate)"
+        }
+        
+        *-----------------------------------------------------------------------
+        * Format output (long/wide/wide_indicators) - aligned with R/Python
+        *-----------------------------------------------------------------------
+        
+        if ("`wide_indicators'" != "") {
+            * NEW: Reshape with indicators as columns (like Python wide_indicators)
+            capture confirm variable iso3
+            capture confirm variable period
+            capture confirm variable indicator
+            capture confirm variable value
+            if (_rc == 0) {
+                local pre_filter_n = _N
+                
+                if ("`verbose'" != "") {
+                    noi di as text "wide_indicators: Starting with `pre_filter_n' observations"
+                }
+                
+                * First, collapse to handle duplicate disaggregations
+                * Keep only the total/aggregate values where possible
+                * Use capture to avoid dropping all data if filter doesn't match
+                capture confirm variable sex
+                if (_rc == 0) {
+                    tempvar sex_match
+                    gen `sex_match' = inlist(upper(sex), "_T", "T", "TOTAL", "BOTHSEX", "") | missing(sex)
+                    count if `sex_match'
+                    local sex_match_n = r(N)
+                    if (`sex_match_n' > 0) {
+                        keep if `sex_match'
+                        if ("`verbose'" != "") {
+                            noi di as text "  sex filter: kept `sex_match_n' of `pre_filter_n' obs"
+                        }
+                    }
+                    else if ("`verbose'" != "") {
+                        noi di as text "  sex filter: no matches for _T/TOTAL/BOTHSEX, keeping all"
+                    }
+                    drop `sex_match'
+                    local pre_filter_n = _N
+                }
+                capture confirm variable age
+                if (_rc == 0) {
+                    tempvar age_match
+                    * Expanded age filter to include CME-specific codes
+                    * CME uses detailed age codes like Y0T4 (0-4), Y5T14 (5-14), etc.
+                    gen `age_match' = inlist(upper(age), "_T", "T", "TOTAL", "") | missing(age) | ///
+                                      inlist(upper(age), "Y0T4", "Y0T17", "LT5", "0-4", "Y00T04") | ///
+                                      inlist(upper(age), "Y0T0", "Y1T4", "Y5T9", "Y5T14", "Y10T14") | ///
+                                      inlist(upper(age), "Y10T19", "Y15T24", "Y15T19", "Y20T24")
+                    count if `age_match'
+                    local age_match_n = r(N)
+                    if (`age_match_n' > 0) {
+                        keep if `age_match'
+                        if ("`verbose'" != "") {
+                            noi di as text "  age filter: kept `age_match_n' of `pre_filter_n' obs"
+                        }
+                    }
+                    else if ("`verbose'" != "") {
+                        noi di as text "  age filter: no matches for standard/CME age codes, keeping all"
+                        noi di as text "  NOTE: Unique age values in data:"
+                        noi tab age, missing
+                    }
+                    drop `age_match'
+                    local pre_filter_n = _N
+                }
+                capture confirm variable wealth
+                if (_rc == 0) {
+                    tempvar wealth_match
+                    gen `wealth_match' = inlist(upper(wealth), "_T", "T", "TOTAL", "_Z", "") | missing(wealth)
+                    count if `wealth_match'
+                    local wealth_match_n = r(N)
+                    if (`wealth_match_n' > 0) {
+                        keep if `wealth_match'
+                        if ("`verbose'" != "") {
+                            noi di as text "  wealth filter: kept `wealth_match_n' of `pre_filter_n' obs"
+                        }
+                    }
+                    else if ("`verbose'" != "") {
+                        noi di as text "  wealth filter: no matches for _T/TOTAL/_Z, keeping all"
+                    }
+                    drop `wealth_match'
+                    local pre_filter_n = _N
+                }
+                capture confirm variable residence
+                if (_rc == 0) {
+                    tempvar res_match
+                    gen `res_match' = inlist(upper(residence), "_T", "T", "TOTAL", "_Z", "") | missing(residence)
+                    count if `res_match'
+                    local res_match_n = r(N)
+                    if (`res_match_n' > 0) {
+                        keep if `res_match'
+                        if ("`verbose'" != "") {
+                            noi di as text "  residence filter: kept `res_match_n' of `pre_filter_n' obs"
+                        }
+                    }
+                    else if ("`verbose'" != "") {
+                        noi di as text "  residence filter: no matches for _T/TOTAL/_Z, keeping all"
+                    }
+                    drop `res_match'
+                }
+                
+                * Keep columns needed for reshape
+                local keep_vars "iso3 country period indicator value"
+                if ("`addmeta'" != "") {
+                    foreach v in region income_group continent geo_type {
+                        capture confirm variable `v'
+                        if (_rc == 0) local keep_vars "`keep_vars' `v'"
+                    }
+                }
+                keep `keep_vars'
+                
+                * Drop duplicates to ensure unique combinations
+                duplicates drop iso3 country period indicator, force
+                
+                if (_N > 0) {
+                    * Reshape: indicators become columns
+                    capture reshape wide value, i(iso3 country period) j(indicator) string
+                    if (_rc == 0) {
+                        * Clean up column names (remove "value" prefix)
+                        foreach v of varlist value* {
+                            local newname = subinstr("`v'", "value", "", 1)
+                            rename `v' `newname'
+                        }
+                        sort iso3 period
+                        
+                        if ("`verbose'" != "") {
+                            noi di as text "Reshaped to wide_indicators format."
+                        }
+                    }
+                    else {
+                        noi di as text "Note: Could not reshape to wide_indicators format (may have duplicate observations)."
+                    }
+                }
+                else {
+                    noi di as error "Warning: No data remaining after applying disaggregation filters for wide_indicators."
+                    noi di as text "Try without wide_indicators option or check data disaggregations."
+                }
+            }
+        }
+        else if ("`wide'" != "") {
+            * Reshape to wide format (years as columns)
             capture confirm variable iso3
             capture confirm variable period
             capture confirm variable indicator
@@ -422,7 +1224,22 @@ program define unicefdata, rclass
         }
         else {
             * Data is already in long format from SDMX CSV (default)
-            sort iso3 period
+            * Sort by available key variables
+            capture confirm variable iso3
+            local has_iso3 = (_rc == 0)
+            capture confirm variable period
+            local has_period = (_rc == 0)
+            
+            if (`has_iso3' & `has_period') {
+                sort iso3 period
+            }
+            else if (`has_iso3') {
+                sort iso3
+            }
+            else if (`has_period') {
+                sort period
+            }
+            * If neither exists, leave data unsorted
         }
         
         *-----------------------------------------------------------------------
@@ -433,6 +1250,13 @@ program define unicefdata, rclass
             * Keep only essential columns like R's simplify option
             local keepvars ""
             foreach v in iso3 country indicator period value lb ub {
+                capture confirm variable `v'
+                if (_rc == 0) {
+                    local keepvars "`keepvars' `v'"
+                }
+            }
+            * Also keep metadata if added
+            foreach v in region income_group continent geo_type {
                 capture confirm variable `v'
                 if (_rc == 0) {
                     local keepvars "`keepvars' `v'"
@@ -453,6 +1277,8 @@ program define unicefdata, rclass
         return local start_year "`start_year'"
         return local end_year "`end_year'"
         return local wide "`wide'"
+        return local wide_indicators "`wide_indicators'"
+        return local addmeta "`addmeta'"
         return local obs_count = _N
         return local url "`full_url'"
         
@@ -469,6 +1295,192 @@ end
 
 
 *******************************************************************************
+* Helper program: Add region metadata
+*******************************************************************************
+
+program define _unicef_add_region
+    * UNICEF regions mapping (simplified - can be expanded)
+    gen region = ""
+    
+    * East Asia and Pacific
+    replace region = "East Asia and Pacific" if inlist(iso3, "AUS", "BRN", "KHM", "CHN", "FJI")
+    replace region = "East Asia and Pacific" if inlist(iso3, "IDN", "JPN", "KOR", "LAO", "MYS")
+    replace region = "East Asia and Pacific" if inlist(iso3, "MNG", "MMR", "NZL", "PNG", "PHL")
+    replace region = "East Asia and Pacific" if inlist(iso3, "SGP", "THA", "TLS", "VNM")
+    
+    * Europe and Central Asia
+    replace region = "Europe and Central Asia" if inlist(iso3, "ALB", "ARM", "AZE", "BLR", "BIH")
+    replace region = "Europe and Central Asia" if inlist(iso3, "BGR", "HRV", "CZE", "EST", "GEO")
+    replace region = "Europe and Central Asia" if inlist(iso3, "HUN", "KAZ", "KGZ", "LVA", "LTU")
+    replace region = "Europe and Central Asia" if inlist(iso3, "MDA", "MNE", "MKD", "POL", "ROU")
+    replace region = "Europe and Central Asia" if inlist(iso3, "RUS", "SRB", "SVK", "SVN", "TJK")
+    replace region = "Europe and Central Asia" if inlist(iso3, "TUR", "TKM", "UKR", "UZB")
+    
+    * Latin America and Caribbean
+    replace region = "Latin America and Caribbean" if inlist(iso3, "ARG", "BLZ", "BOL", "BRA", "CHL")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "COL", "CRI", "CUB", "DOM", "ECU")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "SLV", "GTM", "GUY", "HTI", "HND")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "JAM", "MEX", "NIC", "PAN", "PRY")
+    replace region = "Latin America and Caribbean" if inlist(iso3, "PER", "SUR", "TTO", "URY", "VEN")
+    
+    * Middle East and North Africa
+    replace region = "Middle East and North Africa" if inlist(iso3, "DZA", "BHR", "EGY", "IRN", "IRQ")
+    replace region = "Middle East and North Africa" if inlist(iso3, "ISR", "JOR", "KWT", "LBN", "LBY")
+    replace region = "Middle East and North Africa" if inlist(iso3, "MAR", "OMN", "PSE", "QAT", "SAU")
+    replace region = "Middle East and North Africa" if inlist(iso3, "SYR", "TUN", "ARE", "YEM")
+    
+    * South Asia
+    replace region = "South Asia" if inlist(iso3, "AFG", "BGD", "BTN", "IND", "MDV")
+    replace region = "South Asia" if inlist(iso3, "NPL", "PAK", "LKA")
+    
+    * Sub-Saharan Africa
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "AGO", "BEN", "BWA", "BFA", "BDI")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "CMR", "CPV", "CAF", "TCD", "COM")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "COD", "COG", "CIV", "DJI", "GNQ")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "ERI", "SWZ", "ETH", "GAB", "GMB")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "GHA", "GIN", "GNB", "KEN", "LSO")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "LBR", "MDG", "MWI", "MLI", "MRT")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "MUS", "MOZ", "NAM", "NER", "NGA")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "RWA", "STP", "SEN", "SYC", "SLE")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "SOM", "ZAF", "SSD", "SDN", "TZA")
+    replace region = "Sub-Saharan Africa" if inlist(iso3, "TGO", "UGA", "ZMB", "ZWE")
+    
+    * North America
+    replace region = "North America" if inlist(iso3, "CAN", "USA")
+    
+    * Western Europe
+    replace region = "Western Europe" if inlist(iso3, "AUT", "BEL", "DNK", "FIN", "FRA")
+    replace region = "Western Europe" if inlist(iso3, "DEU", "GRC", "ISL", "IRL", "ITA")
+    replace region = "Western Europe" if inlist(iso3, "LUX", "NLD", "NOR", "PRT", "ESP")
+    replace region = "Western Europe" if inlist(iso3, "SWE", "CHE", "GBR")
+    
+    * Mark remaining as Unknown
+    replace region = "Unknown" if region == ""
+    
+    label variable region "UNICEF Region"
+end
+
+
+*******************************************************************************
+* Helper program: Add income group metadata
+*******************************************************************************
+
+program define _unicef_add_income_group
+    * World Bank income groups (2023 classification, simplified)
+    gen income_group = ""
+    
+    * High Income
+    replace income_group = "High income" if inlist(iso3, "AUS", "AUT", "BEL", "CAN", "CHE")
+    replace income_group = "High income" if inlist(iso3, "CHL", "CZE", "DEU", "DNK", "ESP")
+    replace income_group = "High income" if inlist(iso3, "EST", "FIN", "FRA", "GBR", "GRC")
+    replace income_group = "High income" if inlist(iso3, "HRV", "HUN", "IRL", "ISL", "ISR")
+    replace income_group = "High income" if inlist(iso3, "ITA", "JPN", "KOR", "KWT", "LTU")
+    replace income_group = "High income" if inlist(iso3, "LUX", "LVA", "NLD", "NOR", "NZL")
+    replace income_group = "High income" if inlist(iso3, "POL", "PRT", "QAT", "SAU", "SGP")
+    replace income_group = "High income" if inlist(iso3, "SVK", "SVN", "SWE", "TTO", "ARE")
+    replace income_group = "High income" if inlist(iso3, "URY", "USA")
+    
+    * Upper-Middle Income
+    replace income_group = "Upper middle income" if inlist(iso3, "ALB", "ARG", "ARM", "AZE", "BGR")
+    replace income_group = "Upper middle income" if inlist(iso3, "BIH", "BLR", "BRA", "BWA", "CHN")
+    replace income_group = "Upper middle income" if inlist(iso3, "COL", "CRI", "CUB", "DOM", "ECU")
+    replace income_group = "Upper middle income" if inlist(iso3, "GEO", "GTM", "IDN", "IRN", "IRQ")
+    replace income_group = "Upper middle income" if inlist(iso3, "JAM", "JOR", "KAZ", "LBN", "LBY")
+    replace income_group = "Upper middle income" if inlist(iso3, "MEX", "MKD", "MNE", "MYS", "NAM")
+    replace income_group = "Upper middle income" if inlist(iso3, "PER", "PRY", "ROU", "RUS", "SRB")
+    replace income_group = "Upper middle income" if inlist(iso3, "THA", "TUR", "TKM", "ZAF")
+    
+    * Lower-Middle Income
+    replace income_group = "Lower middle income" if inlist(iso3, "AGO", "BGD", "BEN", "BTN", "BOL")
+    replace income_group = "Lower middle income" if inlist(iso3, "CMR", "CIV", "COG", "DJI", "EGY")
+    replace income_group = "Lower middle income" if inlist(iso3, "GHA", "HND", "IND", "KEN", "KGZ")
+    replace income_group = "Lower middle income" if inlist(iso3, "KHM", "LAO", "LKA", "MAR", "MDA")
+    replace income_group = "Lower middle income" if inlist(iso3, "MMR", "MNG", "MRT", "NGA", "NIC")
+    replace income_group = "Lower middle income" if inlist(iso3, "NPL", "PAK", "PHL", "PNG", "PSE")
+    replace income_group = "Lower middle income" if inlist(iso3, "SEN", "SLV", "TJK", "TLS", "TUN")
+    replace income_group = "Lower middle income" if inlist(iso3, "TZA", "UKR", "UZB", "VNM", "ZMB")
+    replace income_group = "Lower middle income" if inlist(iso3, "ZWE")
+    
+    * Low Income
+    replace income_group = "Low income" if inlist(iso3, "AFG", "BDI", "BFA", "CAF", "TCD")
+    replace income_group = "Low income" if inlist(iso3, "COD", "ERI", "ETH", "GMB", "GIN")
+    replace income_group = "Low income" if inlist(iso3, "GNB", "HTI", "LBR", "MDG", "MLI")
+    replace income_group = "Low income" if inlist(iso3, "MOZ", "MWI", "NER", "RWA", "SLE")
+    replace income_group = "Low income" if inlist(iso3, "SOM", "SSD", "SDN", "SYR", "TGO")
+    replace income_group = "Low income" if inlist(iso3, "UGA", "YEM")
+    
+    * Mark remaining as Unknown
+    replace income_group = "Unknown" if income_group == ""
+    
+    label variable income_group "World Bank Income Group"
+end
+
+
+*******************************************************************************
+* Helper program: Add continent metadata
+*******************************************************************************
+
+program define _unicef_add_continent
+    gen continent = ""
+    
+    * Africa
+    replace continent = "Africa" if inlist(iso3, "DZA", "AGO", "BEN", "BWA", "BFA")
+    replace continent = "Africa" if inlist(iso3, "BDI", "CMR", "CPV", "CAF", "TCD")
+    replace continent = "Africa" if inlist(iso3, "COM", "COD", "COG", "CIV", "DJI")
+    replace continent = "Africa" if inlist(iso3, "EGY", "GNQ", "ERI", "SWZ", "ETH")
+    replace continent = "Africa" if inlist(iso3, "GAB", "GMB", "GHA", "GIN", "GNB")
+    replace continent = "Africa" if inlist(iso3, "KEN", "LSO", "LBR", "LBY", "MDG")
+    replace continent = "Africa" if inlist(iso3, "MWI", "MLI", "MRT", "MUS", "MAR")
+    replace continent = "Africa" if inlist(iso3, "MOZ", "NAM", "NER", "NGA", "RWA")
+    replace continent = "Africa" if inlist(iso3, "STP", "SEN", "SYC", "SLE", "SOM")
+    replace continent = "Africa" if inlist(iso3, "ZAF", "SSD", "SDN", "TZA", "TGO")
+    replace continent = "Africa" if inlist(iso3, "TUN", "UGA", "ZMB", "ZWE")
+    
+    * Asia
+    replace continent = "Asia" if inlist(iso3, "AFG", "ARM", "AZE", "BHR", "BGD")
+    replace continent = "Asia" if inlist(iso3, "BTN", "BRN", "KHM", "CHN", "CYP")
+    replace continent = "Asia" if inlist(iso3, "GEO", "IND", "IDN", "IRN", "IRQ")
+    replace continent = "Asia" if inlist(iso3, "ISR", "JPN", "JOR", "KAZ", "KWT")
+    replace continent = "Asia" if inlist(iso3, "KGZ", "LAO", "LBN", "MYS", "MDV")
+    replace continent = "Asia" if inlist(iso3, "MNG", "MMR", "NPL", "OMN", "PAK")
+    replace continent = "Asia" if inlist(iso3, "PSE", "PHL", "QAT", "SAU", "SGP")
+    replace continent = "Asia" if inlist(iso3, "KOR", "LKA", "SYR", "TWN", "TJK")
+    replace continent = "Asia" if inlist(iso3, "THA", "TLS", "TUR", "TKM", "ARE")
+    replace continent = "Asia" if inlist(iso3, "UZB", "VNM", "YEM")
+    
+    * Europe
+    replace continent = "Europe" if inlist(iso3, "ALB", "AND", "AUT", "BLR", "BEL")
+    replace continent = "Europe" if inlist(iso3, "BIH", "BGR", "HRV", "CZE", "DNK")
+    replace continent = "Europe" if inlist(iso3, "EST", "FIN", "FRA", "DEU", "GRC")
+    replace continent = "Europe" if inlist(iso3, "HUN", "ISL", "IRL", "ITA", "LVA")
+    replace continent = "Europe" if inlist(iso3, "LTU", "LUX", "MDA", "MCO", "MNE")
+    replace continent = "Europe" if inlist(iso3, "NLD", "MKD", "NOR", "POL", "PRT")
+    replace continent = "Europe" if inlist(iso3, "ROU", "RUS", "SMR", "SRB", "SVK")
+    replace continent = "Europe" if inlist(iso3, "SVN", "ESP", "SWE", "CHE", "UKR")
+    replace continent = "Europe" if inlist(iso3, "GBR")
+    
+    * North America
+    replace continent = "North America" if inlist(iso3, "CAN", "USA", "MEX", "GTM", "BLZ")
+    replace continent = "North America" if inlist(iso3, "HND", "SLV", "NIC", "CRI", "PAN")
+    replace continent = "North America" if inlist(iso3, "CUB", "DOM", "HTI", "JAM", "TTO")
+    
+    * South America
+    replace continent = "South America" if inlist(iso3, "ARG", "BOL", "BRA", "CHL", "COL")
+    replace continent = "South America" if inlist(iso3, "ECU", "GUY", "PRY", "PER", "SUR")
+    replace continent = "South America" if inlist(iso3, "URY", "VEN")
+    
+    * Oceania
+    replace continent = "Oceania" if inlist(iso3, "AUS", "FJI", "NZL", "PNG", "SLB")
+    replace continent = "Oceania" if inlist(iso3, "VUT", "WSM", "TON")
+    
+    * Mark remaining as Unknown
+    replace continent = "Unknown" if continent == ""
+    
+    label variable continent "Continent"
+end
+
+
+*******************************************************************************
 * Helper program: Auto-detect dataflow from indicator code using YAML metadata
 *******************************************************************************
 
@@ -478,8 +1490,8 @@ program define _unicef_detect_dataflow_yaml, sclass
     local dataflow ""
     local indicator_name ""
     
-    * Try to load from YAML metadata first
-    local yaml_file "`metadata_path'indicators.yaml"
+    * Try to load from YAML metadata first (files have _unicefdata_ prefix)
+    local yaml_file "`metadata_path'_unicefdata_indicators.yaml"
     
     capture confirm file "`yaml_file'"
     if (_rc == 0) {
@@ -578,7 +1590,7 @@ end
 program define _unicef_validate_filters, sclass
     args sex age wealth residence maternal_edu metadata_path
     
-    local yaml_file "`metadata_path'codelists.yaml"
+    local yaml_file "`metadata_path'_unicefdata_codelists.yaml"
     local warnings ""
     
     capture confirm file "`yaml_file'"
@@ -634,6 +1646,26 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.3.1   17Dec2025   by Joao Pedro Azevedo
+*   Feature parity improvements (aligned with Python/R list_categories)
+*   - NEW: categories subcommand: unicefdata, categories
+*         Lists all indicator categories (dataflows) with indicator counts
+*   - NEW: dataflow() filter in search: unicefdata, search(edu) dataflow(EDUCATION)
+*         Filter search results by dataflow/category
+*   - Improved search results display with tips
+*
+* v 1.3.0   09Dec2025   by Joao Pedro Azevedo
+*   Cross-language parity improvements (aligned with Python unicef_api v0.3.0)
+*   - NEW: Discovery subcommands:
+*       unicefdata, flows              - List available dataflows
+*       unicefdata, search(keyword)    - Search indicators by keyword
+*       unicefdata, indicators(CME)    - List indicators in a dataflow
+*       unicefdata, info(CME_MRY0T4)   - Get indicator details
+*   - NEW: wide_indicators option for reshaping with indicators as columns
+*   - NEW: addmeta(region income_group continent) option
+*   - NEW: geo_type variable (country vs aggregate classification)
+*   - Improved error messages with usage hints
+*
 * v 1.2.0   04Dec2025   by Joao Pedro Azevedo
 *   YAML-based metadata loading (aligned with R/Python)
 *   - Added stata/metadata/*.yaml files for indicators, codelists, dataflows

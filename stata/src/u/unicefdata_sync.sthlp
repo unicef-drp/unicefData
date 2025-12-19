@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.1.0  07Dec2025}{...}
+{* *! version 1.2.0  17Dec2025}{...}
 {vieweralsosee "[R] unicefdata" "help unicefdata"}{...}
 {vieweralsosee "[R] yaml" "help yaml"}{...}
 {viewerjumpto "Syntax" "unicefdata_sync##syntax"}{...}
@@ -26,11 +26,21 @@
 {synoptset 20 tabbed}{...}
 {synopthdr}
 {synoptline}
-{syntab:Main}
+{syntab:What to sync}
+{synopt:{opt all}}sync all metadata types (default){p_end}
+{synopt:{opt dataflows}}sync dataflows only{p_end}
+{synopt:{opt codelists}}sync codelists only{p_end}
+{synopt:{opt countries}}sync country codes only{p_end}
+{synopt:{opt regions}}sync regional codes only{p_end}
+{synopt:{opt indicators}}sync indicators only{p_end}
+{synopt:{opt history}}display sync history{p_end}
+{syntab:Options}
 {synopt:{opt path(string)}}directory for metadata files{p_end}
 {synopt:{opt suffix(string)}}suffix for output filenames (e.g., "_stataonly"){p_end}
 {synopt:{opt verbose}}display detailed progress{p_end}
 {synopt:{opt force}}force sync even if cache is fresh{p_end}
+{synopt:{opt forcepython}}force use of Python parser{p_end}
+{synopt:{opt forcestata}}force use of pure Stata parser{p_end}
 {synoptline}
 
 
@@ -45,7 +55,7 @@ country codes, regional aggregates, and indicator mappings.
 {pstd}
 All generated YAML files follow the standardized {cmd:_unicefdata_<name>.yaml} 
 naming convention and include watermark headers matching the R and Python 
-implementations.
+implementations. Files are saved to {cmd:src/_/} alongside the helper ado files.
 
 {pstd}
 {bf:Note:} For complete metadata extraction, especially for large XML files 
@@ -57,7 +67,7 @@ Python library directly. See {help unicefdata_sync##limitations:Limitations} bel
 {title:Generated Files}
 
 {pstd}
-The following files are created in the metadata directory:
+The following files are created in the {cmd:src/_/} directory:
 
 {p2colset 8 40 42 2}{...}
 {p2col:{cmd:_unicefdata_dataflows.yaml}}SDMX dataflow definitions{p_end}
@@ -88,7 +98,32 @@ Each YAML file includes a {cmd:_metadata} block with:
 {marker options}{...}
 {title:Options}
 
-{dlgtab:Main}
+{dlgtab:What to sync}
+
+{phang}
+{opt all} syncs all metadata types. This is the default behavior if no specific 
+type is selected.
+
+{phang}
+{opt dataflows} syncs only the dataflows metadata from the API.
+
+{phang}
+{opt codelists} syncs only the codelists metadata (excluding CL_COUNTRY and 
+CL_WORLD_REGIONS which are handled separately).
+
+{phang}
+{opt countries} syncs only the country codes from CL_COUNTRY.
+
+{phang}
+{opt regions} syncs only the regional aggregate codes from CL_WORLD_REGIONS.
+
+{phang}
+{opt indicators} syncs only the indicator catalog metadata.
+
+{phang}
+{opt history} displays the sync history without performing any sync operation.
+
+{dlgtab:Options}
 
 {phang}
 {opt path(string)} specifies the directory where metadata files should be saved.
@@ -107,21 +142,44 @@ parsers. For example, {opt suffix("_stataonly")} creates files like
 {opt force} forces a sync operation even if the cached metadata is still fresh
 (less than 30 days old).
 
+{phang}
+{opt forcepython} forces use of the Python-based XML parser. Requires Python 3.6+
+with the {cmd:lxml} package installed.
+
+{phang}
+{opt forcestata} forces use of the pure Stata parser. No external dependencies 
+required but may be slower for large files.
+
 
 {marker examples}{...}
 {title:Examples}
 
 {pstd}Basic sync with minimal output{p_end}
-{phang2}{cmd:. unicefdata_sync}{p_end}
+{p 8 12}{stata "unicefdata_sync" :. unicefdata_sync}{p_end}
 
 {pstd}Sync with detailed progress{p_end}
-{phang2}{cmd:. unicefdata_sync, verbose}{p_end}
+{p 8 12}{stata "unicefdata_sync, verbose" :. unicefdata_sync, verbose}{p_end}
+
+{pstd}Sync all metadata types{p_end}
+{p 8 12}{stata "unicefdata_sync, all" :. unicefdata_sync, all}{p_end}
+
+{pstd}Sync indicators only{p_end}
+{p 8 12}{stata "unicefdata_sync, indicators" :. unicefdata_sync, indicators}{p_end}
+
+{pstd}Sync dataflows only{p_end}
+{p 8 12}{stata "unicefdata_sync, dataflows" :. unicefdata_sync, dataflows}{p_end}
+
+{pstd}Sync countries only{p_end}
+{p 8 12}{stata "unicefdata_sync, countries" :. unicefdata_sync, countries}{p_end}
+
+{pstd}View sync history{p_end}
+{p 8 12}{stata "unicefdata_sync, history" :. unicefdata_sync, history}{p_end}
+
+{pstd}Force sync even if cache is fresh{p_end}
+{p 8 12}{stata "unicefdata_sync, force verbose" :. unicefdata_sync, force verbose}{p_end}
 
 {pstd}Sync to specific directory{p_end}
 {phang2}{cmd:. unicefdata_sync, path("./metadata") verbose}{p_end}
-
-{pstd}Force sync even if cache is fresh{p_end}
-{phang2}{cmd:. unicefdata_sync, force verbose}{p_end}
 
 {pstd}Generate Stata-only metadata with suffix{p_end}
 {phang2}{cmd:. unicefdata_sync, suffix("_stataonly") verbose}{p_end}
@@ -222,5 +280,9 @@ Part of the {cmd:unicefData} package for accessing UNICEF Data Warehouse.
 {title:Also see}
 
 {psee}
-{space 2}Help: {helpb unicefdata}, {helpb yaml}
+Online: {browse "https://data.unicef.org/":UNICEF Data Warehouse}, 
+{browse "https://sdmx.data.unicef.org/":UNICEF SDMX API}
+
+{psee}
+Help: {helpb unicefdata}, {helpb yaml}, {helpb wbopendata} (similar command for World Bank data)
 {p_end}

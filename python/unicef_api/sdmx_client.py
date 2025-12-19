@@ -544,6 +544,7 @@ class UNICEFSDMXClient:
             column_mapping = {
                 "REF_AREA": "iso3",
                 "Geographic area": "country",
+                "GEO_TYPE": "geo_type",  # Geographic type (country, region, etc.)
                 "INDICATOR": "indicator",
                 "Indicator": "indicator_name",
                 "TIME_PERIOD": "period",
@@ -732,6 +733,7 @@ class UNICEFSDMXClient:
                 "indicator_name",
                 "iso3",
                 "country",
+                "geo_type",  # Geographic type (country, region, etc.)
                 "period",
                 "value",
                 "unit",

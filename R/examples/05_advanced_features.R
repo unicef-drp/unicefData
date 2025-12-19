@@ -13,18 +13,16 @@
 #   5. Combining filters
 # ============================================================================
 
-# Adjust path if running from examples directory
-if (file.exists("unicef_api/unicefData.R")) {
-  source("unicef_api/unicefData.R")
-} else if (file.exists("../unicef_api/unicefData.R")) {
-  source("../unicef_api/unicefData.R")
-} else if (file.exists("R/unicefData.R")) {
-  source("R/unicefData.R")
-} else if (file.exists("unicefData/R/unicefData.R")) {
-  source("unicefData/R/unicefData.R")
+# Source common setup (handles path resolution)
+.args <- commandArgs(trailingOnly = FALSE)
+.file_arg <- grep("^--file=", .args, value = TRUE)
+.script_dir <- if (length(.file_arg) > 0) {
+  dirname(normalizePath(sub("^--file=", "", .file_arg[1])))
 } else {
-  stop("Could not find unicefData.R")
+  "."
 }
+source(file.path(.script_dir, "_setup.R"))
+data_dir <- get_validation_data_dir()
 
 cat(strrep("=", 70), "\n")
 cat("05_advanced_features.R - Advanced Features\n")
@@ -82,8 +80,7 @@ cat("Mortality trends 2000-2023\n\n")
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB"),
-  start_year = 2000,
-  end_year = 2023
+  year = "2000:2023"
 )
 
 cat("Time series:", nrow(df), "observations\n")
@@ -114,7 +111,7 @@ cat("Complex query with multiple filters\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),  # Multiple indicators
   countries = c("ALB", "USA", "BRA"),        # Multiple countries
-  start_year = 2020,                          # From 2020
+  year = 2020,                             # From 2020
   latest = TRUE,                              # Latest values only
   add_metadata = c("indicator_name")          # Include names
 )

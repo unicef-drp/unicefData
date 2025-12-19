@@ -1,8 +1,10 @@
 *******************************************************************************
 * unicefdata_sync
-*! v 1.1.0   07Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.2.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
 * Sync UNICEF metadata from SDMX API to local YAML files
 * Creates standardized YAML files with watermarks matching R/Python format
+* v1.2.0: Added selective sync options (all, dataflows, codelists, countries, regions, indicators, history)
+* v1.1.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
 
 /*
@@ -63,12 +65,37 @@ SEE ALSO:
 program define unicefdata_sync, rclass
     version 14.0
     
-    syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA]
+    syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA ///
+              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY]
     
     * Validate parser options
     if ("`forcepython'" != "" & "`forcestata'" != "") {
         di as err "Cannot specify both forcepython and forcestata options"
         error 198
+    }
+    
+    * Handle HISTORY option - display sync history and exit
+    if ("`history'" != "") {
+        _unicefdata_show_history, path("`path'") suffix("`suffix'")
+        exit 0
+    }
+    
+    * Determine what to sync
+    * If no specific type is selected, or ALL is specified, sync everything
+    local any_specific = ("`dataflows'" != "" | "`codelists'" != "" | "`countries'" != "" | "`regions'" != "" | "`indicators'" != "")
+    if (`any_specific' == 0 | "`all'" != "") {
+        local do_dataflows 1
+        local do_codelists 1
+        local do_countries 1
+        local do_regions 1
+        local do_indicators 1
+    }
+    else {
+        local do_dataflows = ("`dataflows'" != "")
+        local do_codelists = ("`codelists'" != "")
+        local do_countries = ("`countries'" != "")
+        local do_regions = ("`regions'" != "")
+        local do_indicators = ("`indicators'" != "")
     }
     
     * Set parser option for helper functions
@@ -97,8 +124,8 @@ program define unicefdata_sync, rclass
     local FILE_COUNTRIES "_unicefdata_countries`sfx'.yaml"
     local FILE_REGIONS "_unicefdata_regions`sfx'.yaml"
     local FILE_SYNC_HISTORY "_unicefdata_sync_history`sfx'.yaml"
-    local FILE_IND_META "unicef_indicators_metadata`sfx'.yaml"
-    local FILE_DF_INDEX "dataflow_index`sfx'.yaml"
+    local FILE_IND_META "_unicefdata_indicators_metadata`sfx'.yaml"
+    local FILE_DF_INDEX "_dataflow_index`sfx'.yaml"
     
     * Get current timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
@@ -107,21 +134,31 @@ program define unicefdata_sync, rclass
     local vintage_date = trim("`vintage_date'")
     
     *---------------------------------------------------------------------------
-    * Locate/create metadata directory
+    * Locate/create metadata directory (src/_/ alongside helper ado files)
     *---------------------------------------------------------------------------
     
     if ("`path'" == "") {
-        * Auto-detect: look relative to ado file location
-        findfile unicefdata.ado
+        * Auto-detect: look relative to helper ado file location (src/_/)
+        capture findfile _unicef_list_dataflows.ado
         if (_rc == 0) {
             local ado_path "`r(fn)'"
-            local ado_dir = subinstr("`ado_path'", "src/u/unicefdata.ado", "", .)
-            local ado_dir = subinstr("`ado_dir'", "src\u\unicefdata.ado", "", .)
-            local path "`ado_dir'metadata/"
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local path "`ado_dir'"
         }
         else {
-            * Fallback to current directory
-            local path "`c(pwd)'/metadata/"
+            * Fallback: look relative to main unicefdata.ado, go to src/_/
+            capture findfile unicefdata.ado
+            if (_rc == 0) {
+                local ado_path "`r(fn)'"
+                local ado_dir = subinstr("`ado_path'", "\", "/", .)
+                local ado_dir = subinstr("`ado_dir'", "u/unicefdata.ado", "", .)
+                local path "`ado_dir'_/"
+            }
+            else {
+                * Final fallback to PLUS directory
+                local path "`c(sysdir_plus)'_/"
+            }
         }
     }
     
@@ -130,11 +167,8 @@ program define unicefdata_sync, rclass
         local path "`path'/"
     }
     
-    * Create directories if needed
-    local current_dir "`path'current/"
-    capture mkdir "`path'"
-    capture mkdir "`current_dir'"
-    capture mkdir "`path'vintages/"
+    * Use the path directly for output (no subdirectories)
+    local current_dir "`path'"
     
     *---------------------------------------------------------------------------
     * Display header
@@ -165,6 +199,8 @@ program define unicefdata_sync, rclass
     * 1. Sync Dataflows
     *---------------------------------------------------------------------------
     
+    if (`do_dataflows') {
+    
     if ("`verbose'" != "") {
         di as text "  📁 Fetching dataflows..."
         if ("`parser_opt'" != "") {
@@ -193,9 +229,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_DATAFLOWS' - " as result "`n_dataflows'" as text " dataflows"
     }
     
+    } // end do_dataflows
+    
     *---------------------------------------------------------------------------
     * 2. Sync Codelists (excluding CL_COUNTRY and CL_WORLD_REGIONS)
     *---------------------------------------------------------------------------
+    
+    if (`do_codelists') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching codelists..."
@@ -221,9 +261,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_CODELISTS' - " as result "`n_codelists'" as text " codelists"
     }
     
+    } // end do_codelists
+    
     *---------------------------------------------------------------------------
     * 3. Sync Countries (CL_COUNTRY)
     *---------------------------------------------------------------------------
+    
+    if (`do_countries') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching country codes..."
@@ -252,9 +296,13 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_COUNTRIES' - " as result "`n_countries'" as text " country codes"
     }
     
+    } // end do_countries
+    
     *---------------------------------------------------------------------------
     * 4. Sync Regions (CL_WORLD_REGIONS)
     *---------------------------------------------------------------------------
+    
+    if (`do_regions') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Fetching regional codes..."
@@ -283,19 +331,24 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_REGIONS' - " as result "`n_regions'" as text " regional codes"
     }
     
+    } // end do_regions
+    
     *---------------------------------------------------------------------------
-    * 5. Sync Indicators (from hardcoded catalog)
+    * 5. Sync Indicators (from SDMX API - CL_UNICEF_INDICATOR codelist)
     *---------------------------------------------------------------------------
+    
+    if (`do_indicators') {
     
     if ("`verbose'" != "") {
-        di as text "  📁 Building indicator catalog..."
+        di as text "  📁 Syncing indicator catalog from API..."
     }
     
-    capture {
+    capture noisily {
         _unicefdata_sync_indicators, ///
             outfile("`current_dir'`FILE_INDICATORS'") ///
             version("`metadata_version'") ///
-            agency("`agency'")
+            agency("`agency'") ///
+            `parser_opt'
         local n_indicators = r(count)
         local files_created "`files_created' `FILE_INDICATORS'"
     }
@@ -310,9 +363,14 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_INDICATORS' - " as result "`n_indicators'" as text " indicators"
     }
     
+    } // end do_indicators
+    
     *---------------------------------------------------------------------------
     * 6. Extended Sync: Dataflow Index and Schemas (dataflows/ folder)
+    *    Only run when syncing dataflows or all
     *---------------------------------------------------------------------------
+    
+    if (`do_dataflows') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Syncing dataflow schemas (extended)..."
@@ -339,9 +397,14 @@ program define unicefdata_sync, rclass
         di as text "     ✓ `FILE_DF_INDEX' + " as result "`n_schemas'" as text " schema files"
     }
     
+    } // end do_dataflows extended
+    
     *---------------------------------------------------------------------------
     * 7. Extended Sync: Full indicator catalog from API
+    *    Only run when syncing indicators or all
     *---------------------------------------------------------------------------
+    
+    if (`do_indicators') {
     
     if ("`verbose'" != "") {
         di as text "  📁 Syncing full indicator catalog..."
@@ -373,6 +436,8 @@ program define unicefdata_sync, rclass
             di as text "     ✓ `FILE_IND_META' - " as result "`n_full_indicators'" as text " indicators"
         }
     }
+    
+    } // end do_indicators extended
     
     *---------------------------------------------------------------------------
     * 8. Create vintage snapshot
@@ -462,6 +527,65 @@ program define unicefdata_sync, rclass
     return local vintage_date "`vintage_date'"
     return local synced_at "`synced_at'"
     return local path "`path'"
+    
+end
+
+*******************************************************************************
+* Helper: Show sync history
+*******************************************************************************
+
+program define _unicefdata_show_history
+    syntax [, PATH(string) SUFFIX(string)]
+    
+    * Determine path
+    if ("`path'" == "") {
+        capture findfile _unicef_list_dataflows.ado
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local path "`ado_dir'"
+        }
+        else {
+            local path "`c(sysdir_plus)'_/"
+        }
+    }
+    
+    * Ensure path ends with separator
+    if (substr("`path'", -1, 1) != "/" & substr("`path'", -1, 1) != "\") {
+        local path "`path'/"
+    }
+    
+    * Build history filename
+    local sfx "`suffix'"
+    local histfile "`path'_unicefdata_sync_history`sfx'.yaml"
+    
+    * Check if history file exists
+    capture confirm file "`histfile'"
+    if (_rc != 0) {
+        di as text "No sync history found."
+        di as text "Run {stata unicefdata_sync} to sync metadata."
+        exit 0
+    }
+    
+    * Display history file
+    di as text _dup(80) "="
+    di as text "UNICEF Metadata Sync History"
+    di as text _dup(80) "="
+    di as text "History file: " as result "`histfile'"
+    di as text _dup(80) "-"
+    
+    * Read and display the file
+    tempname fh
+    file open `fh' using "`histfile'", read text
+    file read `fh' line
+    while r(eof) == 0 {
+        di as text "`line'"
+        file read `fh' line
+    }
+    file close `fh'
+    
+    di as text _dup(80) "="
     
 end
 
@@ -1008,261 +1132,53 @@ end
 *******************************************************************************
 
 program define _unicefdata_sync_indicators, rclass
-    syntax, OUTFILE(string) VERSION(string) AGENCY(string)
+    syntax, OUTFILE(string) VERSION(string) AGENCY(string) ///
+        [FORCEPYTHON FORCESTATA]
     
-    * Get timestamp
-    local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
-    local synced_at = trim("`synced_at'") + "Z"
+    * =========================================================================
+    * API-based indicator sync (replaces hardcoded file writes)
+    * Fetches from SDMX codelist CL_UNICEF_INDICATOR and converts to YAML
+    * =========================================================================
     
-    * Write YAML with watermark
-    tempname fh
-    file open `fh' using "`outfile'", write text replace
+    local api_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/`agency'/CL_UNICEF_INDICATOR/latest"
     
-    * Write watermark
-    file write `fh' "_metadata:" _n
-    file write `fh' "  platform: Stata" _n
-    file write `fh' "  version: '`version''" _n
-    file write `fh' "  synced_at: '`synced_at''" _n
-    file write `fh' "  source: unicef_api.config + SDMX API" _n
-    file write `fh' "  agency: `agency'" _n
-    file write `fh' "  content_type: indicators" _n
-    file write `fh' "  total_indicators: 25" _n
-    file write `fh' "  dataflows_covered: 12" _n
-    file write `fh' "  indicators_per_dataflow:" _n
-    file write `fh' "    CME: 2" _n
-    file write `fh' "    NUTRITION: 3" _n
-    file write `fh' "    EDUCATION_UIS_SDG: 5" _n
-    file write `fh' "    IMMUNISATION: 2" _n
-    file write `fh' "    HIV_AIDS: 1" _n
-    file write `fh' "    WASH_HOUSEHOLDS: 3" _n
-    file write `fh' "    MNCH: 3" _n
-    file write `fh' "    PT: 2" _n
-    file write `fh' "    PT_CM: 1" _n
-    file write `fh' "    PT_FGM: 1" _n
-    file write `fh' "    ECD: 1" _n
-    file write `fh' "    CHLD_PVTY: 1" _n
-    file write `fh' "indicators:" _n
+    di as text "  Fetching indicator codelist from SDMX API..."
+    di as text "    URL: `api_url'"
     
-    * Child Mortality (CME: 2)
-    file write `fh' "  CME_MRM0:" _n
-    file write `fh' "    code: CME_MRM0" _n
-    file write `fh' "    name: Neonatal mortality rate" _n
-    file write `fh' "    dataflow: CME" _n
-    file write `fh' "    sdg_target: '3.2.2'" _n
-    file write `fh' "    unit: Deaths per 1,000 live births" _n
-    file write `fh' "    source: config" _n
+    * Fetch XML from API
+    tempfile xml_data
+    capture copy "`api_url'" "`xml_data'", public
+    if (_rc != 0) {
+        di as err "  Error: Failed to fetch indicator codelist from API"
+        di as err "  URL: `api_url'"
+        error 631
+    }
     
-    file write `fh' "  CME_MRY0T4:" _n
-    file write `fh' "    code: CME_MRY0T4" _n
-    file write `fh' "    name: Under-5 mortality rate" _n
-    file write `fh' "    dataflow: CME" _n
-    file write `fh' "    sdg_target: '3.2.1'" _n
-    file write `fh' "    unit: Deaths per 1,000 live births" _n
-    file write `fh' "    source: config" _n
+    * Determine parser to use
+    local parser_opts ""
+    if ("`forcepython'" != "") {
+        local parser_opts "forcepython"
+    }
+    else if ("`forcestata'" != "") {
+        local parser_opts "forcestata"
+    }
     
-    * Nutrition (NUTRITION: 3)
-    file write `fh' "  NT_ANT_HAZ_NE2_MOD:" _n
-    file write `fh' "    code: NT_ANT_HAZ_NE2_MOD" _n
-    file write `fh' "    name: Stunting prevalence (moderate + severe)" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    * Parse XML to YAML using the standard parser
+    di as text "  Parsing indicator codelist to YAML..."
+    unicefdata_xmltoyaml, type(indicators) xmlfile("`xml_data'") ///
+        outfile("`outfile'") agency(`agency') version(`version') ///
+        source("`api_url'") `parser_opts'
     
-    file write `fh' "  NT_ANT_WHZ_NE2:" _n
-    file write `fh' "    code: NT_ANT_WHZ_NE2" _n
-    file write `fh' "    name: Wasting prevalence" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    local count = r(count)
     
-    file write `fh' "  NT_ANT_WHZ_PO2_MOD:" _n
-    file write `fh' "    code: NT_ANT_WHZ_PO2_MOD" _n
-    file write `fh' "    name: Overweight prevalence (moderate + severe)" _n
-    file write `fh' "    dataflow: NUTRITION" _n
-    file write `fh' "    sdg_target: '2.2.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
+    di as result "  Synced `count' indicators from API"
     
-    * Education (EDUCATION_UIS_SDG: 5)
-    file write `fh' "  ED_ANAR_L02:" _n
-    file write `fh' "    code: ED_ANAR_L02" _n
-    file write `fh' "    name: Adjusted net attendance rate, primary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_CR_L1_UIS_MOD:" _n
-    file write `fh' "    code: ED_CR_L1_UIS_MOD" _n
-    file write `fh' "    name: Completion rate, primary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_CR_L2_UIS_MOD:" _n
-    file write `fh' "    code: ED_CR_L2_UIS_MOD" _n
-    file write `fh' "    name: Completion rate, lower secondary education" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_READ_L2:" _n
-    file write `fh' "    code: ED_READ_L2" _n
-    file write `fh' "    name: Reading proficiency, end of lower secondary" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  ED_MAT_L2:" _n
-    file write `fh' "    code: ED_MAT_L2" _n
-    file write `fh' "    name: Mathematics proficiency, end of lower secondary" _n
-    file write `fh' "    dataflow: EDUCATION_UIS_SDG" _n
-    file write `fh' "    sdg_target: '4.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Immunization (IMMUNISATION: 2)
-    file write `fh' "  IM_DTP3:" _n
-    file write `fh' "    code: IM_DTP3" _n
-    file write `fh' "    name: DTP3 immunization coverage" _n
-    file write `fh' "    dataflow: IMMUNISATION" _n
-    file write `fh' "    sdg_target: '3.b.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  IM_MCV1:" _n
-    file write `fh' "    code: IM_MCV1" _n
-    file write `fh' "    name: Measles immunization coverage (MCV1)" _n
-    file write `fh' "    dataflow: IMMUNISATION" _n
-    file write `fh' "    sdg_target: '3.b.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * HIV/AIDS (HIV_AIDS: 1)
-    file write `fh' "  HVA_EPI_INF_RT:" _n
-    file write `fh' "    code: HVA_EPI_INF_RT" _n
-    file write `fh' "    name: HIV incidence rate" _n
-    file write `fh' "    dataflow: HIV_AIDS" _n
-    file write `fh' "    sdg_target: '3.3.1'" _n
-    file write `fh' "    unit: Per 1,000 uninfected population" _n
-    file write `fh' "    source: config" _n
-    
-    * WASH (WASH_HOUSEHOLDS: 3)
-    file write `fh' "  WS_PPL_W-SM:" _n
-    file write `fh' "    code: WS_PPL_W-SM" _n
-    file write `fh' "    name: Population using safely managed drinking water services" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.1.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  WS_PPL_S-SM:" _n
-    file write `fh' "    code: WS_PPL_S-SM" _n
-    file write `fh' "    name: Population using safely managed sanitation services" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  WS_PPL_H-B:" _n
-    file write `fh' "    code: WS_PPL_H-B" _n
-    file write `fh' "    name: Population with basic handwashing facilities" _n
-    file write `fh' "    dataflow: WASH_HOUSEHOLDS" _n
-    file write `fh' "    sdg_target: '6.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Maternal & Newborn Health (MNCH: 3)
-    file write `fh' "  MNCH_MMR:" _n
-    file write `fh' "    code: MNCH_MMR" _n
-    file write `fh' "    name: Maternal mortality ratio" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.1.1'" _n
-    file write `fh' "    unit: Deaths per 100,000 live births" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  MNCH_SAB:" _n
-    file write `fh' "    code: MNCH_SAB" _n
-    file write `fh' "    name: Skilled attendance at birth" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.1.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  MNCH_ABR:" _n
-    file write `fh' "    code: MNCH_ABR" _n
-    file write `fh' "    name: Adolescent birth rate" _n
-    file write `fh' "    dataflow: MNCH" _n
-    file write `fh' "    sdg_target: '3.7.2'" _n
-    file write `fh' "    unit: Births per 1,000 women aged 15-19" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Protection (PT: 2)
-    file write `fh' "  PT_CHLD_Y0T4_REG:" _n
-    file write `fh' "    code: PT_CHLD_Y0T4_REG" _n
-    file write `fh' "    name: Birth registration (children under 5)" _n
-    file write `fh' "    dataflow: PT" _n
-    file write `fh' "    sdg_target: '16.9.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file write `fh' "  PT_CHLD_1-14_PS-PSY-V_CGVR:" _n
-    file write `fh' "    code: PT_CHLD_1-14_PS-PSY-V_CGVR" _n
-    file write `fh' "    name: Violent discipline (children 1-14)" _n
-    file write `fh' "    dataflow: PT" _n
-    file write `fh' "    sdg_target: '16.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Marriage (PT_CM: 1)
-    file write `fh' "  PT_F_20-24_MRD_U18_TND:" _n
-    file write `fh' "    code: PT_F_20-24_MRD_U18_TND" _n
-    file write `fh' "    name: Child marriage before age 18 (women 20-24)" _n
-    file write `fh' "    dataflow: PT_CM" _n
-    file write `fh' "    sdg_target: '5.3.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * FGM (PT_FGM: 1)
-    file write `fh' "  PT_F_15-49_FGM:" _n
-    file write `fh' "    code: PT_F_15-49_FGM" _n
-    file write `fh' "    name: Female genital mutilation prevalence (women 15-49)" _n
-    file write `fh' "    dataflow: PT_FGM" _n
-    file write `fh' "    sdg_target: '5.3.2'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Early Childhood Development (ECD: 1)
-    file write `fh' "  ECD_CHLD_LMPSL:" _n
-    file write `fh' "    code: ECD_CHLD_LMPSL" _n
-    file write `fh' "    name: Children developmentally on track (literacy-numeracy, physical, social-emotional)" _n
-    file write `fh' "    dataflow: ECD" _n
-    file write `fh' "    sdg_target: '4.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    * Child Poverty (CHLD_PVTY: 1)
-    file write `fh' "  PV_CHLD_DPRV-S-L1-HS:" _n
-    file write `fh' "    code: PV_CHLD_DPRV-S-L1-HS" _n
-    file write `fh' "    name: Child multidimensional poverty (severe deprivation in at least 1 dimension)" _n
-    file write `fh' "    dataflow: CHLD_PVTY" _n
-    file write `fh' "    sdg_target: '1.2.1'" _n
-    file write `fh' "    unit: Percentage" _n
-    file write `fh' "    source: config" _n
-    
-    file close `fh'
-    
-    return scalar count = 25
+    return scalar count = `count'
 end
 
 *******************************************************************************
 * Extended Sync: Dataflow Index with dimension/attribute counts
-* Generates dataflow_index.yaml and dataflows/*.yaml matching Python/R format
+* Generates _dataflow_index.yaml and dataflows/*.yaml matching Python/R format
 * 
 * Uses Python helper (stata_schema_sync.py) when forcepython is specified
 * to avoid Stata's macro length limitations on large XML responses.
@@ -1281,15 +1197,29 @@ program define _unicefdata_sync_dataflow_index, rclass
     local sfx "`suffix'"
     
     *---------------------------------------------------------------------------
-    * Use Python helper if forcepython is specified
+    * Auto-detect Python and use it by default (Stata hits macro length limits)
+    * Only use Stata if forcestata is explicitly specified
     *---------------------------------------------------------------------------
+    local use_python = 0
+    if ("`forcestata'" == "") {
+        * Check if Python is available
+        tempfile pycheck
+        capture shell python --version > "`pycheck'" 2>&1
+        if (_rc == 0) {
+            local use_python = 1
+        }
+    }
     if ("`forcepython'" != "") {
+        local use_python = 1
+    }
+    
+    if (`use_python') {
         * Find Python script location
         local script_name "stata_schema_sync.py"
         local script_path ""
         
         * Try common locations for the Python script
-        foreach trypath in "stata/src/u/`script_name'" "`script_name'" {
+        foreach trypath in "stata/src/py/`script_name'" "`script_name'" {
             capture confirm file "`trypath'"
             if (_rc == 0) {
                 local script_path "`trypath'"
@@ -1297,22 +1227,24 @@ program define _unicefdata_sync_dataflow_index, rclass
             }
         }
         
-        * Check adopath locations if not found yet
+        * Check Stata system directories for py/ subfolder
         if ("`script_path'" == "") {
-            foreach path in `c(adopath)' {
-                local trypath = "`path'/`script_name'"
-                local trypath = subinstr("`trypath'", "\", "/", .)
-                capture confirm file "`trypath'"
-                if (_rc == 0) {
-                    local script_path "`trypath'"
-                    continue, break
+            foreach sysdir in plus personal site base {
+                local basepath = subinstr("`c(sysdir_`sysdir')'", "\", "/", .)
+                if ("`basepath'" != "") {
+                    local trypath = "`basepath'py/`script_name'"
+                    capture confirm file "`trypath'"
+                    if (_rc == 0) {
+                        local script_path "`trypath'"
+                        continue, break
+                    }
                 }
             }
         }
         
         if ("`script_path'" == "") {
             di as err "     Python script not found: `script_name'"
-            di as err "     Ensure stata_schema_sync.py is in stata/src/u/ or adopath"
+            di as err "     Ensure stata_schema_sync.py is in sysdir_plus/py/ or sysdir_personal/py/"
             return scalar count = 0
             error 601
         }
@@ -1358,7 +1290,7 @@ program define _unicefdata_sync_dataflow_index, rclass
         }
         
         * Verify output file was created
-        local index_file "`outdir'dataflow_index`sfx'.yaml"
+        local index_file "`outdir'_dataflow_index`sfx'.yaml"
         capture confirm file "`index_file'"
         if (_rc != 0) {
             di as err "     Python schema sync failed to create index file"
@@ -1371,9 +1303,11 @@ program define _unicefdata_sync_dataflow_index, rclass
     }
     
     *---------------------------------------------------------------------------
-    * Native Stata parsing (default or forcestata)
-    * NOTE: This may fail on large XML responses due to macro length limits
+    * Native Stata parsing (only if forcestata or Python unavailable)
+    * WARNING: Will fail on large XML responses due to macro length limits
     *---------------------------------------------------------------------------
+    
+    di as text "  Note: Using Stata parser (may hit macro length limits with many dataflows)"
     
     * First get list of all dataflows
     local df_url "`base_url'/dataflow/`agency'?references=none&detail=full"
@@ -1458,7 +1392,7 @@ program define _unicefdata_sync_dataflow_index, rclass
     capture mkdir "`dataflows_dir'"
     
     * Open index file
-    local index_file "`outdir'dataflow_index`sfx'.yaml"
+    local index_file "`outdir'_dataflow_index`sfx'.yaml"
     tempname fh
     file open `fh' using "`index_file'", write text replace
     
@@ -1685,7 +1619,7 @@ end
 
 *******************************************************************************
 * Extended Sync: Full indicator catalog from CL_UNICEF_INDICATOR codelist
-* Generates unicef_indicators_metadata.yaml matching Python/R format
+* Generates _unicefdata_indicators_metadata.yaml matching Python/R format
 * 
 * Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
 * that exceeds Stata's macro length limits when parsed inline.

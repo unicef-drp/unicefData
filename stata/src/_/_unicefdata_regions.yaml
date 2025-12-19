@@ -1,0 +1,452 @@
+metadata:
+  version: '2.0.0'
+  source: UNICEF SDMX Codelist CL_WORLD_REGIONS
+  url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_REF_AREA_SDG/1.0
+  last_updated: 2025-12-08T20:39:28
+  description: Comprehensive UNICEF regions codelist with metadata (auto-generated)
+  region_count: 111
+regions:
+  FAO_LIFDC:
+    code: FAO_LIFDC
+    name: 'Low-Income Food-Deficit Countries'
+    description: ''
+  UNDEV_002:
+    code: UNDEV_002
+    name: 'Africa'
+    description: ''
+  UNDEV_005:
+    code: UNDEV_005
+    name: 'South America'
+    description: ''
+  UNDEV_009:
+    code: UNDEV_009
+    name: 'Oceania excluding Australia and New Zealand'
+    description: ''
+  UNDEV_011:
+    code: UNDEV_011
+    name: 'Western Africa'
+    description: ''
+  UNDEV_013:
+    code: UNDEV_013
+    name: 'Central America'
+    description: ''
+  UNDEV_014:
+    code: UNDEV_014
+    name: 'Eastern Africa'
+    description: ''
+  UNDEV_015:
+    code: UNDEV_015
+    name: 'Northern Africa'
+    description: ''
+  UNDEV_017:
+    code: UNDEV_017
+    name: 'Middle Africa'
+    description: ''
+  UNDEV_018:
+    code: UNDEV_018
+    name: 'Southern Africa'
+    description: ''
+  UNDEV_021:
+    code: UNDEV_021
+    name: 'Northern America'
+    description: ''
+  UNDEV_029:
+    code: UNDEV_029
+    name: 'Caribbean'
+    description: ''
+  UNDEV_030:
+    code: UNDEV_030
+    name: 'Eastern Asia'
+    description: ''
+  UNDEV_034:
+    code: UNDEV_034
+    name: 'Southern Asia'
+    description: ''
+  UNDEV_035:
+    code: UNDEV_035
+    name: 'South-Eastern Asia'
+    description: ''
+  UNDEV_053:
+    code: UNDEV_053
+    name: 'Australia/New Zealand'
+    description: ''
+  UNDEV_142:
+    code: UNDEV_142
+    name: 'Asia excluding Japan'
+    description: ''
+  UNDEV_143:
+    code: UNDEV_143
+    name: 'Central Asia'
+    description: ''
+  UNDEV_145:
+    code: UNDEV_145
+    name: 'Western Asia'
+    description: ''
+  UNDEV_150:
+    code: UNDEV_150
+    name: 'Europe'
+    description: ''
+  UNDEV_419:
+    code: UNDEV_419
+    name: 'Latin America and the Caribbean'
+    description: ''
+  UNDEV_LD:
+    code: UNDEV_LD
+    name: 'Less Developed regions'
+    description: ''
+  UNDEV_MD:
+    code: UNDEV_MD
+    name: 'More Developed regions'
+    description: ''
+  UNICEF_EAP:
+    code: UNICEF_EAP
+    name: 'East Asia and Pacific'
+    description: ''
+  UNICEF_ECA:
+    code: UNICEF_ECA
+    name: 'Europe and Central Asia'
+    description: ''
+  UNICEF_EECA:
+    code: UNICEF_EECA
+    name: 'Eastern Europe and Central Asia'
+    description: ''
+  UNICEF_ESA:
+    code: UNICEF_ESA
+    name: 'Eastern and Southern Africa'
+    description: ''
+  UNICEF_LAC:
+    code: UNICEF_LAC
+    name: 'Latin America and Caribbean'
+    description: ''
+  UNICEF_MENA:
+    code: UNICEF_MENA
+    name: 'Middle East and North Africa'
+    description: ''
+  UNICEF_NA:
+    code: UNICEF_NA
+    name: 'North America'
+    description: ''
+  UNICEF_REP_REG_GLOBAL:
+    code: UNICEF_REP_REG_GLOBAL
+    name: 'UNICEF Reporting Region - Global'
+    description: ''
+  UNICEF_SA:
+    code: UNICEF_SA
+    name: 'South Asia'
+    description: ''
+  UNICEF_SSA:
+    code: UNICEF_SSA
+    name: 'Sub-Saharan Africa'
+    description: ''
+  UNICEF_WCA:
+    code: UNICEF_WCA
+    name: 'West and Central Africa'
+    description: ''
+  UNICEF_WE:
+    code: UNICEF_WE
+    name: 'Western Europe'
+    description: ''
+  UNICEF_XCH:
+    code: UNICEF_XCH
+    name: 'World excluding China'
+    description: ''
+  UNICEF_PROG_REG_GLOBAL:
+    code: UNICEF_PROG_REG_GLOBAL
+    name: 'UNICEF Programme Regions - Global'
+    description: ''
+  UNICEF_EAPRO:
+    code: UNICEF_EAPRO
+    name: 'East Asia and Pacific'
+    description: ''
+  UNICEF_ECARO:
+    code: UNICEF_ECARO
+    name: 'Europe and Central Asia'
+    description: ''
+  UNICEF_ESARO:
+    code: UNICEF_ESARO
+    name: 'Eastern and Southern Africa'
+    description: ''
+  UNICEF_LACRO:
+    code: UNICEF_LACRO
+    name: 'Latin America and Caribbean'
+    description: ''
+  UNICEF_MENARO:
+    code: UNICEF_MENARO
+    name: 'Middle East and North Africa'
+    description: ''
+  UNICEF_WCARO:
+    code: UNICEF_WCARO
+    name: 'West and Central Africa'
+    description: ''
+  UNSDG_AUSTRALIANEWZEALAND:
+    code: UNSDG_AUSTRALIANEWZEALAND
+    name: 'Australia and New Zealand'
+    description: ''
+  UNSDG_CARIBBEAN:
+    code: UNSDG_CARIBBEAN
+    name: 'Caribbean'
+    description: ''
+  UNSDG_CENTRALAMR:
+    code: UNSDG_CENTRALAMR
+    name: 'Central America'
+    description: ''
+  UNSDG_CENTRALASIA:
+    code: UNSDG_CENTRALASIA
+    name: 'Central Asia'
+    description: ''
+  UNSDG_CENTRALASIASOUTHERNASIA:
+    code: UNSDG_CENTRALASIASOUTHERNASIA
+    name: 'Central and Southern Asia'
+    description: ''
+  UNSDG_EASTERNAFR:
+    code: UNSDG_EASTERNAFR
+    name: 'Eastern Africa'
+    description: ''
+  UNSDG_EASTERNASIA:
+    code: UNSDG_EASTERNASIA
+    name: 'Eastern Asia'
+    description: ''
+  UNSDG_EASTERNASIASOUTHEASTERNASIA:
+    code: UNSDG_EASTERNASIASOUTHEASTERNASIA
+    name: 'Eastern and South-Eastern Asia'
+    description: ''
+  UNSDG_EUROPE:
+    code: UNSDG_EUROPE
+    name: 'Europe'
+    description: ''
+  UNSDG_EUROPENORTHERNAMR:
+    code: UNSDG_EUROPENORTHERNAMR
+    name: 'Europe and Northern America'
+    description: ''
+  UNSDG_LAC:
+    code: UNSDG_LAC
+    name: 'Latin America & the Caribbean'
+    description: ''
+  UNSDG_LDC:
+    code: UNSDG_LDC
+    name: 'Least developed countries (LDCs)'
+    description: ''
+  UNSDG_LLDC:
+    code: UNSDG_LLDC
+    name: 'Landlocked developing countries (LLDCs)'
+    description: ''
+  UNSDG_MIDDLEAFR:
+    code: UNSDG_MIDDLEAFR
+    name: 'Middle Africa'
+    description: ''
+  UNSDG_NORTHAFR:
+    code: UNSDG_NORTHAFR
+    name: 'Northern Africa'
+    description: ''
+  UNSDG_NORTHERNAMR:
+    code: UNSDG_NORTHERNAMR
+    name: 'North America'
+    description: ''
+  UNSDG_OCEANIA:
+    code: UNSDG_OCEANIA
+    name: 'Oceania'
+    description: ''
+  UNSDG_OCEANIAexAUSNZL:
+    code: UNSDG_OCEANIAexAUSNZL
+    name: 'Oceania excluding Australia and New Zealand'
+    description: ''
+  UNSDG_REGION_GLOBAL:
+    code: UNSDG_REGION_GLOBAL
+    name: 'SDG Regions - Global'
+    description: ''
+  UNSDG_SIDS:
+    code: UNSDG_SIDS
+    name: 'Small island developing States (SIDS)'
+    description: ''
+  UNSDG_SOUTHAMR:
+    code: UNSDG_SOUTHAMR
+    name: 'South America'
+    description: ''
+  UNSDG_SOUTHASIA:
+    code: UNSDG_SOUTHASIA
+    name: 'Southern Asia'
+    description: ''
+  UNSDG_SOUTHEASTERNASIA:
+    code: UNSDG_SOUTHEASTERNASIA
+    name: 'South-Eastern Asia'
+    description: ''
+  UNSDG_SOUTHERNAFR:
+    code: UNSDG_SOUTHERNAFR
+    name: 'Southern Africa'
+    description: ''
+  UNSDG_SUBSAHARANAFRICA:
+    code: UNSDG_SUBSAHARANAFRICA
+    name: 'Sub-Saharan Africa'
+    description: ''
+  UNSDG_WESTERNAFR:
+    code: UNSDG_WESTERNAFR
+    name: 'Western Africa'
+    description: ''
+  UNSDG_WESTERNASIA:
+    code: UNSDG_WESTERNASIA
+    name: 'Western Asia'
+    description: ''
+  UNSDG_WESTERNASIANORTHERNAFR:
+    code: UNSDG_WESTERNASIANORTHERNAFR
+    name: 'Northern Africa and Western Asia'
+    description: ''
+  UNDEV_GLOBAL:
+    code: UNDEV_GLOBAL
+    name: 'UN Development Regions - Global'
+    description: ''
+  WB_EAP:
+    code: WB_EAP
+    name: 'East Asia and Pacific'
+    description: ''
+  WB_ECA:
+    code: WB_ECA
+    name: 'Europe and Central Asia'
+    description: ''
+  WB_REG_GLOBAL:
+    code: WB_REG_GLOBAL
+    name: 'World Bank Regions - Global'
+    description: ''
+  WB_HI:
+    code: WB_HI
+    name: 'High income'
+    description: ''
+  WB_INCOME:
+    code: WB_INCOME
+    name: 'World Bank Income Groups'
+    description: ''
+  WB_LAC:
+    code: WB_LAC
+    name: 'Latin America and the Caribbean'
+    description: ''
+  WB_LI:
+    code: WB_LI
+    name: 'Low income'
+    description: ''
+  WB_LMI:
+    code: WB_LMI
+    name: 'Lower-middle income'
+    description: ''
+  WB_MI:
+    code: WB_MI
+    name: 'Middle Income'
+    description: ''
+  WB_MNA:
+    code: WB_MNA
+    name: 'Middle East and North Africa'
+    description: ''
+  WB_NAR:
+    code: WB_NAR
+    name: 'North America'
+    description: ''
+  WB_SAR:
+    code: WB_SAR
+    name: 'South Asia'
+    description: ''
+  WB_SSA:
+    code: WB_SSA
+    name: 'Sub-Saharan Africa'
+    description: ''
+  WB_UMI:
+    code: WB_UMI
+    name: 'Upper-middle income'
+    description: ''
+  WHO_REG_GLOBAL:
+    code: WHO_REG_GLOBAL
+    name: 'World Health Organisation Region - Global'
+    description: ''
+  WHO_AFRO:
+    code: WHO_AFRO
+    name: 'Africa'
+    description: ''
+  WHO_AMRO:
+    code: WHO_AMRO
+    name: 'Americas'
+    description: ''
+  WHO_EMRO:
+    code: WHO_EMRO
+    name: 'Eastern Mediterranean'
+    description: ''
+  WHO_EURO:
+    code: WHO_EURO
+    name: 'Europe'
+    description: ''
+  WHO_SEARO:
+    code: WHO_SEARO
+    name: 'South-East Asia'
+    description: ''
+  WHO_WPRO:
+    code: WHO_WPRO
+    name: 'Western Pacific'
+    description: ''
+  UNFPA_REGIONS:
+    code: UNFPA_REGIONS
+    name: 'UNFPA Regions'
+    description: ''
+  UNFPA_AP:
+    code: UNFPA_AP
+    name: 'Asia and the Pacific'
+    description: ''
+  UNFPA_EECA:
+    code: UNFPA_EECA
+    name: 'Eastern Europe and Central Asia'
+    description: ''
+  UNFPA_AS:
+    code: UNFPA_AS
+    name: 'Arab States'
+    description: ''
+  UNFPA_ESA:
+    code: UNFPA_ESA
+    name: 'East and Southern Africa'
+    description: ''
+  UNFPA_LAC:
+    code: UNFPA_LAC
+    name: 'Latin America and the Caribbean'
+    description: ''
+  UNFPA_WCA:
+    code: UNFPA_WCA
+    name: 'West and Central Africa'
+    description: ''
+  FAO_GLOBAL:
+    code: FAO_GLOBAL
+    name: 'SOFI World'
+    description: ''
+  UNSDG_NORTHAMR_EUROPE_AUSNZL:
+    code: UNSDG_NORTHAMR_EUROPE_AUSNZL
+    name: 'North America, Europe, Australia and New Zealand'
+    description: ''
+  UNSDG_SOUTHEASTERNASIAexAUSNZL:
+    code: UNSDG_SOUTHEASTERNASIAexAUSNZL
+    name: 'South Eastern Asia and Oceania (excl. Australia and New Zealand)'
+    description: ''
+  UNDEV_SSA:
+    code: UNDEV_SSA
+    name: 'Sub-Saharan Africa'
+    description: ''
+  UNDEV_151:
+    code: UNDEV_151
+    name: 'Eastern Europe'
+    description: ''
+  UNDEV_154:
+    code: UNDEV_154
+    name: 'Northern Europe'
+    description: ''
+  UNDEV_39:
+    code: UNDEV_39
+    name: 'Southern Europe'
+    description: ''
+  UNDEV_155:
+    code: UNDEV_155
+    name: 'Western Europe'
+    description: ''
+  UNDEV_054:
+    code: UNDEV_054
+    name: 'Melanesia'
+    description: ''
+  UNDEV_057:
+    code: UNDEV_057
+    name: 'Micronesia'
+    description: ''
+  UNDEV_061:
+    code: UNDEV_061
+    name: 'Polynesia'
+    description: ''

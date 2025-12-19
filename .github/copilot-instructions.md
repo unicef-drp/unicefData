@@ -1,108 +1,89 @@
-# GitHub Copilot Instructions for `unicefData`
+# unicefData Repository - AI Agent Instructions
 
-This document provides guidance for AI coding agents working within the `unicefData` repository. The goal is to ensure productive and context-aware contributions to the codebase.
+This file provides high-level guidance for AI coding agents working within this repository. **For detailed language-specific instructions, see the `.copilot-context.md` files in each language directory.**
 
-## Repository Overview
+## Overview
 
-The `unicefData` repository is designed for managing, validating, and analyzing UNICEF-related datasets. It includes workflows for data processing, metadata generation, and statistical analysis. The repository is structured as an R package, with additional support for Python and Stata scripts.
+- **Repository Purpose**: Provides tools for accessing UNICEF data from the SDMX API across multiple platforms (R, Python, Stata).
+- **Key Features**:
+  - R package for downloading UNICEF datasets
+  - Python module for metadata generation and API access
+  - Stata ado-files for command-line data access
 
-### Key Directories
-- **`R/`**: Contains R scripts for data processing and analysis.
-- **`python/`**: Python scripts for automation and data manipulation.
-- **`stata/`**: Stata scripts, including metadata generation.
-- **`tests/` and `testthat/`**: Unit tests for validating code functionality.
-- **`docs/`**: Documentation for workflows and methodologies.
-- **`metadata/`**: Stores metadata files for datasets.
-- **`validation/`**: Scripts and data for validating workflows.
+## Language-Specific Context Files
 
-## Development Workflows
+Detailed instructions for each language are maintained in separate files:
 
-### 1. Setting Up the Environment
+| Language | Context File | Key Content |
+|----------|-------------|-------------|
+| **R** | [R/.copilot-context.md](../R/.copilot-context.md) | roxygen2 workflow, devtools commands, documentation guardrails |
+| **Python** | [python/.copilot-context.md](../python/.copilot-context.md) | virtual environment, pytest, module structure |
+| **Stata** | [stata/.copilot-context.md](../stata/.copilot-context.md) | ado-file system, PyStata integration, SMCL help files |
 
-#### R Environment
-- Use `unicefData.Rproj` to open the project in RStudio.
-- **R Installation:**
-  - Download R from https://cran.r-project.org/
-  - **Windows:** Download the `.exe` installer from https://cran.r-project.org/bin/windows/base/
-  - **macOS:** Download the `.pkg` installer from https://cran.r-project.org/bin/macosx/
-  - **Linux (Ubuntu/Debian):**
-    ```bash
-    sudo apt update
-    sudo apt install r-base r-base-dev
-    ```
-- **Current installation on this machine:**
-  - **Path:** `C:\Program Files\R\R-4.5.1`
-  - **Rscript:** `C:\Program Files\R\R-4.5.1\bin\Rscript.exe`
-  - **Version:** R 4.5.1 (2025-06-13)
-- **Add R to PATH** (required for command-line scripts):
-  - **Windows:** Add `C:\Program Files\R\R-4.5.1\bin` to your system PATH environment variable
-    - Or use full path: `"C:\Program Files\R\R-4.5.1\bin\Rscript.exe"`
-  - **macOS:** R installer usually adds to PATH; verify with `which Rscript`
-    - Common paths: `/usr/local/bin/Rscript` or `/opt/homebrew/bin/Rscript`
-  - **Linux:** Usually available after installation; verify with `which Rscript`
-- **Verify installation:**
-  ```bash
-  Rscript --version
-  # Should output: R scripting front-end version 4.x.x
-  ```
-- **Install required R packages** by running in R or RStudio:
-  ```R
-  install.packages(c("httr", "readr", "dplyr", "tibble", "xml2", "memoise", 
-                     "countrycode", "yaml", "jsonlite", "magrittr", "purrr", 
-                     "rlang", "digest", "tidyr", "devtools", "testthat"))
-  ```
-- **Install package in development mode:**
-  ```R
-  devtools::install(".")
-  # Or load without installing:
-  devtools::load_all(".")
-  ```
+**Important:** When working in a specific language directory, consult the corresponding `.copilot-context.md` file for detailed patterns and workflows.
 
-#### Python Environment
-- **Current installation on this machine:**
-  - **Path:** `C:\Users\jpazevedo\AppData\Local\Programs\Python\Python311\python.exe`
-  - **Version:** Python 3.11.5
-  - **Virtual environment:** `C:\GitHub\.venv`
-- Ensure the required Python packages are installed from `python/requirements.txt`.
-- Use a virtual environment (recommended: `C:\GitHub\.venv` or `<repo>\.venv`).
-- **Activate virtual environment:**
-  ```powershell
-  & C:\GitHub\.venv\Scripts\Activate.ps1
-  ```
-- Install dependencies:
-  ```bash
-  pip install -r python/requirements.txt
-  ```
+---
 
-#### Stata Environment
-- **Current installation on this machine:**
-  - **Path:** `C:\Program Files\Stata17`
-  - **Executable:** `C:\Program Files\Stata17\StataMP-64.exe`
-  - **Version:** Stata 17 MP (64-bit)
-- Run `.do` files in Stata for metadata generation.
-- The `unicefdata` ado files must be installed from `stata/src/` before running sync commands.
-- Common Stata paths searched: `C:\Program Files\Stata17\`, `C:\Program Files\Stata18\`
-- **Run Stata from command line:**
-  ```powershell
-  & "C:\Program Files\Stata17\StataMP-64.exe" /e do "path\to\script.do"
-  ```
+## Quick Reference
 
-### 2. Running Tests
-- **R Tests**: Use `testthat` to run unit tests:
-  ```R
-  library(testthat)
-  test_dir("tests")
-  ```
-- **Python Tests**: If Python scripts include tests, use `pytest`:
-  ```bash
-  pytest
-  ```
+### Environment Paths (This Machine)
 
-### 3. Validating Metadata
-- Use the `validation/` directory for scripts to validate dataset metadata.
-- Follow instructions in `TODO_yaml_metadata.md` for YAML-based metadata validation.
+| Platform | Path | Version |
+|----------|------|---------|
+| **R** | `C:\Program Files\R\R-4.5.1` | R 4.5.1 (64-bit) |
+| **Python** | `C:\GitHub\.venv\Scripts\python.exe` | Python 3.11.5 (venv) |
+| **Stata** | `C:\Program Files\Stata17\StataMP-64.exe` | Stata 17 MP (64-bit) |
 
-### 4. Regenerating Metadata
+### Common Commands
+
+```powershell
+# R - Package development
+Rscript -e "devtools::document()"
+Rscript -e "devtools::check()"
+Rscript -e "devtools::test()"
+
+# Python - Module execution
+python -m unicef_api.run_sync --verbose
+pytest python/tests/
+
+# Stata - Run from command line
+& "C:\Program Files\Stata17\StataMP-64.exe" /e do "script.do"
+```
+
+---
+
+## Cross-Platform Development Workflow
+
+### When Modifying Function Parameters
+
+When changing function signatures (adding, removing, renaming parameters), ensure alignment across ALL platforms:
+
+| Platform | Primary File | Documentation | Regenerate Docs |
+|----------|-------------|---------------|-----------------|
+| **R** | `R/unicefData.R` | roxygen2 comments | `devtools::document()` |
+| **Python** | `python/unicef_api/core.py` | docstrings | N/A (inline) |
+| **Stata** | `stata/src/u/unicefdata.ado` | `.sthlp` file | Manual edit |
+
+### Running Tests
+
+```powershell
+# R Tests
+Rscript -e "devtools::test()"
+
+# Python Tests
+pytest python/tests/
+
+# Stata (manual validation in Stata)
+discard
+unicefdata, indicator(CME_MRY0T4) clear
+```
+
+### Validating Metadata
+
+Use the `validation/` directory for scripts to validate dataset metadata.
+
+### Regenerating Metadata
+
 Use the PowerShell script `tests/regenerate_metadata.ps1` to regenerate metadata across platforms:
 
 ```powershell
@@ -114,24 +95,13 @@ Use the PowerShell script `tests/regenerate_metadata.ps1` to regenerate metadata
 
 # Force overwrite without prompts
 .\tests\regenerate_metadata.ps1 -All -Force
-
-# Verbose mode for debugging
-.\tests\regenerate_metadata.ps1 -All -Verbose
 ```
 
-**Prompt options when files exist:**
-- **Y** = Overwrite existing files
-- **N** = Abort regeneration
-- **S** = Skip this platform
-
-### 5. Comparing Metadata Across Platforms
-Use the comparison script to verify consistency:
+### Comparing Metadata Across Platforms
 
 ```powershell
 python tests/generate_metadata_status.py --compare --detailed
 ```
-
-This compares record counts, line counts, and attributes between Python, R, and Stata outputs.
 
 ---
 
@@ -188,109 +158,10 @@ unicefData/
 - Stata's `unicef_indicators_metadata.yaml` **requires** Python due to macro length limitations
 - Stata's `dataflow_index.yaml` may fail due to macro length limits on large XML responses
 
-### Platform-Specific Scripts
-
-#### Python (`python/unicef_api/`)
-
-| Script | Function | Output Files |
-|--------|----------|--------------|
-| `run_sync.py` | **Main entry point** - orchestrates all sync operations | Calls other modules |
-| `schema_sync.py` | Fetches dataflow DSDs, samples data for dimension values | `dataflows/*.yaml` |
-| `indicator_registry.py` | Fetches `CL_UNICEF_INDICATOR` codelist, caches with 30-day staleness | `unicef_indicators_metadata.yaml` |
-
-**Key functions:**
-```python
-# schema_sync.py
-sync_dataflow_schemas()  # Main sync function
-
-# indicator_registry.py
-refresh_indicator_cache()  # Force refresh from API
-get_dataflow_for_indicator(code)  # Lookup with override table
-get_cache_info()  # Check cache status
-```
-
-#### R (`R/`)
-
-| Script | Function | Output Files |
-|--------|----------|--------------|
-| `metadata_sync.R` | Fetches core metadata (dataflows, codelists, countries, regions, indicators) | `_unicefdata_*.yaml` (5 files) |
-| `schema_sync.R` | Fetches dataflow DSDs, samples data for dimension values | `dataflow_index.yaml`, `dataflows/*.yaml` |
-| `indicator_registry.R` | Fetches `CL_UNICEF_INDICATOR` codelist, caches with 30-day staleness | `unicef_indicators_metadata.yaml` |
-
-**Key functions:**
-```r
-# metadata_sync.R
-sync_all_metadata(verbose = TRUE, output_dir = "R/metadata/current")
-
-# schema_sync.R
-sync_dataflow_schemas(verbose = TRUE, output_dir = "R/metadata/current")
-
-# indicator_registry.R
-refresh_indicator_cache()  # Force refresh from API
-get_dataflow_for_indicator(code)  # Lookup with override table
-get_cache_info()  # Check cache status
-```
-
-#### Stata (`stata/src/u/`)
-
-| Script | Function | Output Files |
-|--------|----------|--------------|
-| `unicefdata_sync.ado` | **All-in-one** - contains all sync logic in subprograms | All files |
-
-**Subprograms within `unicefdata_sync.ado`:**
-
-| Subprogram | Function |
-|------------|----------|
-| `_unicefdata_sync_dataflows` | Fetches dataflow list |
-| `_unicefdata_sync_codelists` | Fetches dimension codelists |
-| `_unicefdata_sync_countries` | Fetches `CL_REF_AREA` country codes |
-| `_unicefdata_sync_regions` | Filters regional aggregates |
-| `_unicefdata_sync_indicators` | Creates indicator→dataflow mapping |
-| `_unicefdata_sync_ind_meta` | Fetches full `CL_UNICEF_INDICATOR` codelist (uses Python helper) |
-
-**Python Helper Infrastructure:**
-
-Stata has a fundamental limitation with macro length (~645,216 characters max) that prevents parsing large XML files inline. To work around this, Stata uses Python helper scripts for large files:
-
-| Component | Location | Purpose |
-|-----------|----------|---------|
-| `unicefdata_xmltoyaml.ado` | `stata/src/u/` | Wrapper that auto-selects Python for files >500KB |
-| `unicefdata_xmltoyaml_py.ado` | `stata/src/u/` | Stata-to-Python bridge |
-| `unicefdata_xml2yaml.py` | `stata/src/u/` | Python XML parser (handles all SDMX types) |
-| `_xmltoyaml_get_schema.ado` | `stata/src/_/` | Schema registry for XML element mappings |
-
-**Important:** When running Stata sync, ensure the adopath includes all required directories:
-```stata
-adopath ++ "stata/src/u"
-adopath ++ "stata/src/p"
-adopath ++ "stata/src/_"
-```
-
-**Usage:**
-```stata
-// Full sync (all files)
-unicefdata_sync, verbose
-
-// Force refresh (bypass 30-day cache)
-unicefdata_sync, verbose force
-
-// Use Python XML parser (recommended for large files)
-unicefdata_sync, verbose forcepython
-
-// Use pure Stata parser (limited to small files only)
-unicefdata_sync, verbose forcestata
-```
-
-**Parser Selection:**
-- `forcepython`: Always use Python (required for `unicef_indicators_metadata.yaml`)
-- `forcestata`: Always use Stata (will fail on large XML files like the indicator codelist)
-- Default: Auto-select based on file size (>500KB → Python)
-
 ### Indicator Registry Architecture
 
 The `unicef_indicators_metadata.yaml` file is special - it contains the full UNICEF indicator codelist (~733 indicators) with metadata. All three platforms now generate this file with aligned structure:
 
-#### File Format (all platforms)
 ```yaml
 metadata:
   version: '1.0'
@@ -307,7 +178,7 @@ indicators:
     category: CME
 ```
 
-#### Caching Behavior
+### Caching Behavior
 
 All platforms implement 30-day staleness checking:
 
@@ -317,7 +188,7 @@ All platforms implement 30-day staleness checking:
 | R | Reads `last_updated` from file, skips if < 30 days | `refresh_indicator_cache()` always fetches |
 | Stata | Reads `last_updated` from file, skips if < 30 days | `unicefdata_sync, force` option |
 
-#### Dataflow Override Table
+### Dataflow Override Table
 
 Some indicators exist in different dataflows than their prefix suggests. All platforms maintain an override table:
 
@@ -326,39 +197,6 @@ Some indicators exist in different dataflows than their prefix suggests. All pla
 "PT_F_20-24_MRD_U18_TND" -> "PT_CM"      # Child Marriage (not PT)
 "PT_F_15-49_FGM" -> "PT_FGM"              # FGM (not PT)
 "ED_CR_L1_UIS_MOD" -> "EDUCATION_UIS_SDG" # UIS indicators (not EDUCATION)
-```
-
-### Orchestration Script
-
-The PowerShell script `tests/regenerate_metadata.ps1` orchestrates metadata generation across all platforms:
-
-```
-regenerate_metadata.ps1
-├── Regenerate-PythonMetadata()
-│   └── Calls: python -m unicef_api.run_sync
-│       ├── schema_sync.sync_dataflow_schemas()
-│       └── indicator_registry.refresh_indicator_cache()
-│
-├── Regenerate-RMetadata()
-│   ├── Step 1: Rscript metadata_sync.R → sync_all_metadata()
-│   ├── Step 2: Rscript schema_sync.R → sync_dataflow_schemas()
-│   └── Step 3: Rscript indicator_registry.R → refresh_indicator_cache()
-│
-└── Regenerate-StataMetadata()
-    └── Runs Stata: unicefdata_sync, verbose forcepython force
-        └── Requires adopath: stata/src/u, stata/src/p, stata/src/_
-```
-
-**Stata Setup for Manual Testing:**
-```stata
-* Ensure all required directories are in adopath
-cd "C:\GitHub\others\unicefData"
-adopath ++ "stata/src/u"
-adopath ++ "stata/src/p"
-adopath ++ "stata/src/_"
-
-* Run sync with Python helper
-unicefdata_sync, verbose forcepython force
 ```
 
 ### API Endpoints Used
@@ -387,30 +225,17 @@ unicefdata_sync, verbose forcepython force
 - YAML is the preferred format for metadata.
 - Ensure metadata files are validated before use.
 
-## Integration Points
-- **R and Python**: Ensure seamless integration between R and Python scripts.
-- **Stata**: Use Stata scripts for metadata generation and validation.
-
-## External Dependencies
-- R packages listed in `DESCRIPTION`.
-- Python packages (if any) should be listed in a `requirements.txt` file.
-- Stata software for `.do` file execution.
-
-## Contribution Guidelines
-- Follow the repository's coding conventions.
-- Write unit tests for new features.
-- Document changes in `NEWS.md`.
+---
 
 ## Notes for AI Agents
-- Focus on maintaining compatibility between R, Python, and Stata components.
-- Prioritize metadata validation and consistency.
-- Ensure outputs adhere to UNICEF data standards.
-- **Stata Limitation**: Stata has a ~645,216 character macro length limit. Large XML files (like the indicator codelist) MUST be parsed via the Python helper infrastructure (`unicefdata_xmltoyaml`), not inline Stata code.
-- When modifying Stata sync code, always consider whether the XML response might exceed macro limits.
 
-For further clarification, refer to the `README.md` or `docs/` directory.
+### Critical Limitations
 
-## Additional Guidance for AI Agents
+1. **Stata Macro Length Limit**: Stata has a ~645,216 character macro length limit. Large XML files (like the indicator codelist) MUST be parsed via the Python helper infrastructure (`unicefdata_xmltoyaml`), not inline Stata code.
+
+2. **R Documentation Sync**: After changing R function signatures, ALWAYS run `devtools::document()` to regenerate `.Rd` files. CI will fail if code and docs are misaligned.
+
+3. **Cross-Platform Consistency**: When modifying function parameters, update ALL platforms (R, Python, Stata) to maintain API consistency.
 
 ### Preventing Hallucinations
 - Ensure all code suggestions are grounded in the repository's existing patterns and workflows.
@@ -432,23 +257,24 @@ For further clarification, refer to the `README.md` or `docs/` directory.
 - Review these scripts to understand best practices for structuring and documenting Stata code.
 
 ### Locating the Repository Root
-- To ensure scripts work regardless of the current working directory, dynamically locate the repository root by searching for the `.git` folder.
-- Example for PowerShell:
-  ```powershell
-  function Get-RepoRoot {
-      $currentDir = Get-Location
-      while (-Not (Test-Path "$currentDir\.git")) {
-          $parentDir = $currentDir.Parent
-          if (-Not $parentDir) {
-              throw "Unable to locate repository root. Ensure the script is run within a Git repository."
-          }
-          $currentDir = $parentDir
-      }
-      return $currentDir
-  }
-  $RepoRoot = Get-RepoRoot
-  ```
-- Use `$RepoRoot` to construct relative paths for scripts and commands.
+To ensure scripts work regardless of the current working directory, dynamically locate the repository root by searching for the `.git` folder:
+```powershell
+function Get-RepoRoot {
+    $currentDir = Get-Location
+    while (-Not (Test-Path "$currentDir\.git")) {
+        $parentDir = $currentDir.Parent
+        if (-Not $parentDir) {
+            throw "Unable to locate repository root."
+        }
+        $currentDir = $parentDir
+    }
+    return $currentDir
+}
+$RepoRoot = Get-RepoRoot
+```
+
+---
 
 ## Contact and Support
-For any questions or further assistance, please refer to the repository maintainers or the documentation provided within the `docs/` directory.   
+
+For any questions or further assistance, please refer to the repository maintainers or the documentation provided within the `docs/` directory.

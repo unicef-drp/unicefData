@@ -5,5 +5,7 @@ utils::globalVariables(c(
   "value", "LOWER_BOUND", "UPPER_BOUND", "OBS_STATUS", "DATA_SOURCE", "REF_PERIOD",
   "COUNTRY_NOTES", "geo_type", "unit", "unit_name", "sex_name", "wealth_quintile_name",
   "obs_status_name", "lower_bound", "upper_bound", "obs_status", "data_source",
-  "ref_period", "country_notes"
+  "ref_period", "country_notes",
+  # apply_circa variables
+  "dist", "target_year"
 ))

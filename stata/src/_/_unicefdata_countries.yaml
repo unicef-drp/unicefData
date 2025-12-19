@@ -1,0 +1,1820 @@
+metadata:
+  version: '2.0.0'
+  source: UNICEF SDMX Codelist CL_COUNTRY
+  url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_REF_AREA/1.0
+  last_updated: 2025-12-08T20:39:26
+  description: Comprehensive UNICEF countries codelist with metadata (auto-generated)
+  countrie_count: 453
+countries:
+  ABW:
+    code: ABW
+    name: 'Aruba'
+    description: ''
+  AFG:
+    code: AFG
+    name: 'Afghanistan'
+    description: ''
+  AGO:
+    code: AGO
+    name: 'Angola'
+    description: ''
+  AIA:
+    code: AIA
+    name: 'Anguilla'
+    description: ''
+  ALB:
+    code: ALB
+    name: 'Albania'
+    description: ''
+  AND:
+    code: AND
+    name: 'Andorra'
+    description: ''
+  ARE:
+    code: ARE
+    name: 'United Arab Emirates'
+    description: ''
+  ARG:
+    code: ARG
+    name: 'Argentina'
+    description: ''
+  ARM:
+    code: ARM
+    name: 'Armenia'
+    description: ''
+  ASM:
+    code: ASM
+    name: 'American Samoa'
+    description: ''
+  ATG:
+    code: ATG
+    name: 'Antigua and Barbuda'
+    description: ''
+  AUS:
+    code: AUS
+    name: 'Australia'
+    description: ''
+  AUT:
+    code: AUT
+    name: 'Austria'
+    description: ''
+  AZE:
+    code: AZE
+    name: 'Azerbaijan'
+    description: ''
+  BDI:
+    code: BDI
+    name: 'Burundi'
+    description: ''
+  BEL:
+    code: BEL
+    name: 'Belgium'
+    description: ''
+  BEN:
+    code: BEN
+    name: 'Benin'
+    description: ''
+  BES:
+    code: BES
+    name: 'Bonaire, Sint Eustatius and Saba'
+    description: ''
+  BFA:
+    code: BFA
+    name: 'Burkina Faso'
+    description: ''
+  BGD:
+    code: BGD
+    name: 'Bangladesh'
+    description: ''
+  BGR:
+    code: BGR
+    name: 'Bulgaria'
+    description: ''
+  BHR:
+    code: BHR
+    name: 'Bahrain'
+    description: ''
+  BHS:
+    code: BHS
+    name: 'Bahamas'
+    description: ''
+  BIH:
+    code: BIH
+    name: 'Bosnia and Herzegovina'
+    description: ''
+  BLM:
+    code: BLM
+    name: 'Saint Barthélemy'
+    description: ''
+  BLR:
+    code: BLR
+    name: 'Belarus'
+    description: ''
+  BLZ:
+    code: BLZ
+    name: 'Belize'
+    description: ''
+  BMU:
+    code: BMU
+    name: 'Bermuda'
+    description: ''
+  BOL:
+    code: BOL
+    name: 'Bolivia (Plurinational State of)'
+    description: ''
+  BRA:
+    code: BRA
+    name: 'Brazil'
+    description: ''
+  BRB:
+    code: BRB
+    name: 'Barbados'
+    description: ''
+  BRN:
+    code: BRN
+    name: 'Brunei Darussalam'
+    description: ''
+  BTN:
+    code: BTN
+    name: 'Bhutan'
+    description: ''
+  BWA:
+    code: BWA
+    name: 'Botswana'
+    description: ''
+  CAF:
+    code: CAF
+    name: 'Central African Republic'
+    description: ''
+  CAN:
+    code: CAN
+    name: 'Canada'
+    description: ''
+  CHE:
+    code: CHE
+    name: 'Switzerland'
+    description: ''
+  CHI:
+    code: CHI
+    name: 'Channel Islands'
+    description: ''
+  CHL:
+    code: CHL
+    name: 'Chile'
+    description: ''
+  CHN:
+    code: CHN
+    name: 'China'
+    description: ''
+  CIV:
+    code: CIV
+    name: 'Côte d''Ivoire'
+    description: ''
+  CMR:
+    code: CMR
+    name: 'Cameroon'
+    description: ''
+  COD:
+    code: COD
+    name: 'Democratic Republic of the Congo'
+    description: ''
+  COG:
+    code: COG
+    name: 'Congo'
+    description: ''
+  COK:
+    code: COK
+    name: 'Cook Islands'
+    description: ''
+  COL:
+    code: COL
+    name: 'Colombia'
+    description: ''
+  COM:
+    code: COM
+    name: 'Comoros'
+    description: ''
+  CPV:
+    code: CPV
+    name: 'Cabo Verde'
+    description: ''
+  CRI:
+    code: CRI
+    name: 'Costa Rica'
+    description: ''
+  CUB:
+    code: CUB
+    name: 'Cuba'
+    description: ''
+  CUW:
+    code: CUW
+    name: 'Curaçao'
+    description: ''
+  CYM:
+    code: CYM
+    name: 'Cayman Islands'
+    description: ''
+  CYP:
+    code: CYP
+    name: 'Cyprus'
+    description: ''
+  CZE:
+    code: CZE
+    name: 'Czechia'
+    description: ''
+  DEU:
+    code: DEU
+    name: 'Germany'
+    description: ''
+  DJI:
+    code: DJI
+    name: 'Djibouti'
+    description: ''
+  DMA:
+    code: DMA
+    name: 'Dominica'
+    description: ''
+  DNK:
+    code: DNK
+    name: 'Denmark'
+    description: ''
+  DOM:
+    code: DOM
+    name: 'Dominican Republic'
+    description: ''
+  DZA:
+    code: DZA
+    name: 'Algeria'
+    description: ''
+  ECU:
+    code: ECU
+    name: 'Ecuador'
+    description: ''
+  EGY:
+    code: EGY
+    name: 'Egypt'
+    description: ''
+  ERI:
+    code: ERI
+    name: 'Eritrea'
+    description: ''
+  ESP:
+    code: ESP
+    name: 'Spain'
+    description: ''
+  EST:
+    code: EST
+    name: 'Estonia'
+    description: ''
+  ETH:
+    code: ETH
+    name: 'Ethiopia'
+    description: ''
+  FAO_GLOBAL:
+    code: FAO_GLOBAL
+    name: 'SOFI - Global'
+    description: ''
+  FAO_LIFDC:
+    code: FAO_LIFDC
+    name: 'Low Income Food Deficit Countries (LIFDCs)'
+    description: ''
+  FIN:
+    code: FIN
+    name: 'Finland'
+    description: ''
+  FJI:
+    code: FJI
+    name: 'Fiji'
+    description: ''
+  FLK:
+    code: FLK
+    name: 'Falkland Islands (Malvinas)'
+    description: ''
+  FRA:
+    code: FRA
+    name: 'France'
+    description: ''
+  FRO:
+    code: FRO
+    name: 'Faroe Islands'
+    description: ''
+  FSM:
+    code: FSM
+    name: 'Micronesia (Federated States of)'
+    description: ''
+  GAB:
+    code: GAB
+    name: 'Gabon'
+    description: ''
+  GBR:
+    code: GBR
+    name: 'United Kingdom'
+    description: ''
+  GEO:
+    code: GEO
+    name: 'Georgia'
+    description: ''
+  GHA:
+    code: GHA
+    name: 'Ghana'
+    description: ''
+  GIB:
+    code: GIB
+    name: 'Gibraltar'
+    description: ''
+  GIN:
+    code: GIN
+    name: 'Guinea'
+    description: ''
+  GLP:
+    code: GLP
+    name: 'Guadeloupe'
+    description: ''
+  GMB:
+    code: GMB
+    name: 'Gambia'
+    description: ''
+  GNB:
+    code: GNB
+    name: 'Guinea-Bissau'
+    description: ''
+  GNQ:
+    code: GNQ
+    name: 'Equatorial Guinea'
+    description: ''
+  GRC:
+    code: GRC
+    name: 'Greece'
+    description: ''
+  GRD:
+    code: GRD
+    name: 'Grenada'
+    description: ''
+  GRL:
+    code: GRL
+    name: 'Greenland'
+    description: ''
+  GTM:
+    code: GTM
+    name: 'Guatemala'
+    description: ''
+  GUF:
+    code: GUF
+    name: 'French Guiana'
+    description: ''
+  GUM:
+    code: GUM
+    name: 'Guam'
+    description: ''
+  GUY:
+    code: GUY
+    name: 'Guyana'
+    description: ''
+  HKG:
+    code: HKG
+    name: 'الصين، منطقة هونغ كونغ الإدارية الخاصة'
+    description: ''
+  HND:
+    code: HND
+    name: 'Honduras'
+    description: ''
+  HRV:
+    code: HRV
+    name: 'Croatia'
+    description: ''
+  HTI:
+    code: HTI
+    name: 'Haiti'
+    description: ''
+  HUN:
+    code: HUN
+    name: 'Hungary'
+    description: ''
+  IDN:
+    code: IDN
+    name: 'Indonesia'
+    description: ''
+  IMN:
+    code: IMN
+    name: 'Isle of Man'
+    description: ''
+  IND:
+    code: IND
+    name: 'India'
+    description: ''
+  IRL:
+    code: IRL
+    name: 'Ireland'
+    description: ''
+  IRN:
+    code: IRN
+    name: 'Iran (Islamic Republic of)'
+    description: ''
+  IRQ:
+    code: IRQ
+    name: 'Iraq'
+    description: ''
+  ISL:
+    code: ISL
+    name: 'Iceland'
+    description: ''
+  ISR:
+    code: ISR
+    name: 'Israel'
+    description: ''
+  ITA:
+    code: ITA
+    name: 'Italy'
+    description: ''
+  JAM:
+    code: JAM
+    name: 'Jamaica'
+    description: ''
+  JOR:
+    code: JOR
+    name: 'Jordan'
+    description: ''
+  JPN:
+    code: JPN
+    name: 'Japan'
+    description: ''
+  KAZ:
+    code: KAZ
+    name: 'Kazakhstan'
+    description: ''
+  KEN:
+    code: KEN
+    name: 'Kenya'
+    description: ''
+  KGZ:
+    code: KGZ
+    name: 'Kyrgyzstan'
+    description: ''
+  KHM:
+    code: KHM
+    name: 'Cambodia'
+    description: ''
+  KIR:
+    code: KIR
+    name: 'Kiribati'
+    description: ''
+  KNA:
+    code: KNA
+    name: 'Saint Kitts and Nevis'
+    description: ''
+  KOR:
+    code: KOR
+    name: 'Republic of Korea'
+    description: ''
+  KWT:
+    code: KWT
+    name: 'Kuwait'
+    description: ''
+  LAO:
+    code: LAO
+    name: 'Lao People''s Democratic Republic'
+    description: ''
+  LBN:
+    code: LBN
+    name: 'Lebanon'
+    description: ''
+  LBR:
+    code: LBR
+    name: 'Liberia'
+    description: ''
+  LBY:
+    code: LBY
+    name: 'Libya'
+    description: ''
+  LCA:
+    code: LCA
+    name: 'Saint Lucia'
+    description: ''
+  LIE:
+    code: LIE
+    name: 'Liechtenstein'
+    description: ''
+  LKA:
+    code: LKA
+    name: 'Sri Lanka'
+    description: ''
+  LSO:
+    code: LSO
+    name: 'Lesotho'
+    description: ''
+  LTU:
+    code: LTU
+    name: 'Lithuania'
+    description: ''
+  LUX:
+    code: LUX
+    name: 'Luxembourg'
+    description: ''
+  LVA:
+    code: LVA
+    name: 'Latvia'
+    description: ''
+  MAC:
+    code: MAC
+    name: 'الصين، منطقة ماكاو الإدارية الخاصة'
+    description: ''
+  MAF:
+    code: MAF
+    name: 'Saint Martin (French part)'
+    description: ''
+  MAR:
+    code: MAR
+    name: 'Morocco'
+    description: ''
+  MCO:
+    code: MCO
+    name: 'Monaco'
+    description: ''
+  MDA:
+    code: MDA
+    name: 'Republic of Moldova'
+    description: ''
+  MDG:
+    code: MDG
+    name: 'Madagascar'
+    description: ''
+  MDV:
+    code: MDV
+    name: 'Maldives'
+    description: ''
+  MEX:
+    code: MEX
+    name: 'Mexico'
+    description: ''
+  MHL:
+    code: MHL
+    name: 'Marshall Islands'
+    description: ''
+  MKD:
+    code: MKD
+    name: 'North Macedonia'
+    description: ''
+  MLI:
+    code: MLI
+    name: 'Mali'
+    description: ''
+  MLT:
+    code: MLT
+    name: 'Malta'
+    description: ''
+  MMR:
+    code: MMR
+    name: 'Myanmar'
+    description: ''
+  MNE:
+    code: MNE
+    name: 'Montenegro'
+    description: ''
+  MNG:
+    code: MNG
+    name: 'Mongolia'
+    description: ''
+  MNP:
+    code: MNP
+    name: 'Northern Mariana Islands'
+    description: ''
+  MOZ:
+    code: MOZ
+    name: 'Mozambique'
+    description: ''
+  MRT:
+    code: MRT
+    name: 'Mauritania'
+    description: ''
+  MSR:
+    code: MSR
+    name: 'Montserrat'
+    description: ''
+  MTQ:
+    code: MTQ
+    name: 'Martinique'
+    description: ''
+  MUS:
+    code: MUS
+    name: 'Mauritius'
+    description: ''
+  MWI:
+    code: MWI
+    name: 'Malawi'
+    description: ''
+  MYS:
+    code: MYS
+    name: 'Malaysia'
+    description: ''
+  MYT:
+    code: MYT
+    name: 'Mayotte'
+    description: ''
+  NAM:
+    code: NAM
+    name: 'Namibia'
+    description: ''
+  NCL:
+    code: NCL
+    name: 'New Caledonia'
+    description: ''
+  NER:
+    code: NER
+    name: 'Niger'
+    description: ''
+  NGA:
+    code: NGA
+    name: 'Nigeria'
+    description: ''
+  NIC:
+    code: NIC
+    name: 'Nicaragua'
+    description: ''
+  NIU:
+    code: NIU
+    name: 'Niue'
+    description: ''
+  NLD:
+    code: NLD
+    name: 'هولندا'
+    description: ''
+  NOR:
+    code: NOR
+    name: 'Norway'
+    description: ''
+  NPL:
+    code: NPL
+    name: 'Nepal'
+    description: ''
+  NRU:
+    code: NRU
+    name: 'Nauru'
+    description: ''
+  NZL:
+    code: NZL
+    name: 'New Zealand'
+    description: ''
+  OMN:
+    code: OMN
+    name: 'Oman'
+    description: ''
+  PAK:
+    code: PAK
+    name: 'Pakistan'
+    description: ''
+  PAN:
+    code: PAN
+    name: 'Panama'
+    description: ''
+  PER:
+    code: PER
+    name: 'Peru'
+    description: ''
+  PHL:
+    code: PHL
+    name: 'Philippines'
+    description: ''
+  PLW:
+    code: PLW
+    name: 'Palau'
+    description: ''
+  PNG:
+    code: PNG
+    name: 'Papua New Guinea'
+    description: ''
+  POL:
+    code: POL
+    name: 'Poland'
+    description: ''
+  PRI:
+    code: PRI
+    name: 'Puerto Rico'
+    description: ''
+  PRK:
+    code: PRK
+    name: 'Democratic People''s Republic of Korea'
+    description: ''
+  PRT:
+    code: PRT
+    name: 'Portugal'
+    description: ''
+  PRY:
+    code: PRY
+    name: 'Paraguay'
+    description: ''
+  PSE:
+    code: PSE
+    name: 'State of Palestine'
+    description: ''
+  PYF:
+    code: PYF
+    name: 'French Polynesia'
+    description: ''
+  QAT:
+    code: QAT
+    name: 'Qatar'
+    description: ''
+  REU:
+    code: REU
+    name: 'Réunion'
+    description: ''
+  ROU:
+    code: ROU
+    name: 'Romania'
+    description: ''
+  RUS:
+    code: RUS
+    name: 'Russian Federation'
+    description: ''
+  RWA:
+    code: RWA
+    name: 'Rwanda'
+    description: ''
+  SAU:
+    code: SAU
+    name: 'Saudi Arabia'
+    description: ''
+  SDN:
+    code: SDN
+    name: 'Sudan'
+    description: ''
+  SEN:
+    code: SEN
+    name: 'Senegal'
+    description: ''
+  SGP:
+    code: SGP
+    name: 'Singapore'
+    description: ''
+  SHN:
+    code: SHN
+    name: 'Saint Helena, Ascension and Tristan da Cunha'
+    description: ''
+  SLB:
+    code: SLB
+    name: 'Solomon Islands'
+    description: ''
+  SLE:
+    code: SLE
+    name: 'Sierra Leone'
+    description: ''
+  SLV:
+    code: SLV
+    name: 'El Salvador'
+    description: ''
+  SMR:
+    code: SMR
+    name: 'San Marino'
+    description: ''
+  SOM:
+    code: SOM
+    name: 'Somalia'
+    description: ''
+  SPM:
+    code: SPM
+    name: 'Saint Pierre and Miquelon'
+    description: ''
+  SRB:
+    code: SRB
+    name: 'Serbia'
+    description: ''
+  SSD:
+    code: SSD
+    name: 'South Sudan'
+    description: ''
+  STP:
+    code: STP
+    name: 'Sao Tome and Principe'
+    description: ''
+  SUR:
+    code: SUR
+    name: 'Suriname'
+    description: ''
+  SVK:
+    code: SVK
+    name: 'Slovakia'
+    description: ''
+  SVN:
+    code: SVN
+    name: 'Slovenia'
+    description: ''
+  SWE:
+    code: SWE
+    name: 'Sweden'
+    description: ''
+  SWZ:
+    code: SWZ
+    name: 'Eswatini'
+    description: ''
+  SXM:
+    code: SXM
+    name: 'سانت مارتن (الجزء الهولندي)'
+    description: ''
+  SYC:
+    code: SYC
+    name: 'Seychelles'
+    description: ''
+  SYR:
+    code: SYR
+    name: 'Syrian Arab Republic'
+    description: ''
+  TCA:
+    code: TCA
+    name: 'Turks and Caicos Islands'
+    description: ''
+  TCD:
+    code: TCD
+    name: 'Chad'
+    description: ''
+  TGO:
+    code: TGO
+    name: 'Togo'
+    description: ''
+  THA:
+    code: THA
+    name: 'Thailand'
+    description: ''
+  TJK:
+    code: TJK
+    name: 'Tajikistan'
+    description: ''
+  TKL:
+    code: TKL
+    name: 'Tokelau'
+    description: ''
+  TKM:
+    code: TKM
+    name: 'Turkmenistan'
+    description: ''
+  TLS:
+    code: TLS
+    name: 'Timor-Leste'
+    description: ''
+  TON:
+    code: TON
+    name: 'Tonga'
+    description: ''
+  TTO:
+    code: TTO
+    name: 'Trinidad and Tobago'
+    description: ''
+  TUN:
+    code: TUN
+    name: 'Tunisia'
+    description: ''
+  TUR:
+    code: TUR
+    name: 'تركيا'
+    description: ''
+  TUV:
+    code: TUV
+    name: 'Tuvalu'
+    description: ''
+  TWN:
+    code: TWN
+    name: 'Taïwan'
+    description: ''
+  TZA:
+    code: TZA
+    name: 'United Republic of Tanzania'
+    description: ''
+  UGA:
+    code: UGA
+    name: 'Uganda'
+    description: ''
+  UKR:
+    code: UKR
+    name: 'Ukraine'
+    description: ''
+  UNDEV_002:
+    code: UNDEV_002
+    name: 'Africa (UN Regions)'
+    description: ''
+  UNDEV_005:
+    code: UNDEV_005
+    name: 'South America (UN Regions)'
+    description: ''
+  UNDEV_009:
+    code: UNDEV_009
+    name: 'Oceania (UN Regions)'
+    description: ''
+  UNDEV_011:
+    code: UNDEV_011
+    name: 'Western Africa (UN Regions)'
+    description: ''
+  UNDEV_013:
+    code: UNDEV_013
+    name: 'Central America (UN Regions)'
+    description: ''
+  UNDEV_014:
+    code: UNDEV_014
+    name: 'Eastern Africa (UN Regions)'
+    description: ''
+  UNDEV_015:
+    code: UNDEV_015
+    name: 'Northern Africa (UN Regions)'
+    description: ''
+  UNDEV_017:
+    code: UNDEV_017
+    name: 'Middle Africa (UN Regions)'
+    description: ''
+  UNDEV_018:
+    code: UNDEV_018
+    name: 'Southern Africa (UN Regions)'
+    description: ''
+  UNDEV_021:
+    code: UNDEV_021
+    name: 'Northern America (UN Regions)'
+    description: ''
+  UNDEV_029:
+    code: UNDEV_029
+    name: 'Caribbean (UN Regions)'
+    description: ''
+  UNDEV_030:
+    code: UNDEV_030
+    name: 'Eastern Asia (UN Regions)'
+    description: ''
+  UNDEV_034:
+    code: UNDEV_034
+    name: 'Southern Asia (UN Regions)'
+    description: ''
+  UNDEV_035:
+    code: UNDEV_035
+    name: 'South-eastern Asia (UN Regions)'
+    description: ''
+  UNDEV_053:
+    code: UNDEV_053
+    name: 'Australia and New Zealand (UN Regions)'
+    description: ''
+  UNDEV_142:
+    code: UNDEV_142
+    name: 'Asia (UN Regions)'
+    description: ''
+  UNDEV_143:
+    code: UNDEV_143
+    name: 'Central Asia (UN Regions)'
+    description: ''
+  UNDEV_145:
+    code: UNDEV_145
+    name: 'Western Asia (UN Regions)'
+    description: ''
+  UNDEV_151:
+    code: UNDEV_151
+    name: 'Eastern Europe (UN Regions)'
+    description: ''
+  UNDEV_154:
+    code: UNDEV_154
+    name: 'Northern Europe (UN Regions)'
+    description: ''
+  UNDEV_155:
+    code: UNDEV_155
+    name: 'Western Europe (UN Regions)'
+    description: ''
+  UNDEV_39:
+    code: UNDEV_39
+    name: 'Southern Europe (UN Regions)'
+    description: ''
+  UNDEV_419:
+    code: UNDEV_419
+    name: 'Latin America and the Caribbean (UN Regions)'
+    description: ''
+  UNDEV_54:
+    code: UNDEV_54
+    name: 'Melanasia (UN Regions)'
+    description: ''
+  UNDEV_543:
+    code: UNDEV_543
+    name: 'Oceania, excluding Australia and New Zealand (UN Regions)'
+    description: ''
+  UNDEV_57:
+    code: UNDEV_57
+    name: 'Micronesia (UN Regions)'
+    description: ''
+  UNDEV_61:
+    code: UNDEV_61
+    name: 'Polynesia (UN Regions)'
+    description: ''
+  UNDEV_GLOBAL:
+    code: UNDEV_GLOBAL
+    name: 'UN regions - Global'
+    description: ''
+  UNDEV_LD:
+    code: UNDEV_LD
+    name: 'Less Developed Regions (UN Regions)'
+    description: ''
+  UNFPA_AP:
+    code: UNFPA_AP
+    name: 'Asia and the Pacific (UNFPA)'
+    description: ''
+  UNFPA_AS:
+    code: UNFPA_AS
+    name: 'Arab States (UNFPA)'
+    description: ''
+  UNFPA_EECA:
+    code: UNFPA_EECA
+    name: 'Europe de l’Est et Asie centrale'
+    description: ''
+  UNFPA_ESA:
+    code: UNFPA_ESA
+    name: 'East and Southern Africa (UNFPA)'
+    description: ''
+  UNFPA_LAC:
+    code: UNFPA_LAC
+    name: 'Latin America and the Caribbean (UNFPA)'
+    description: ''
+  UNFPA_REGIONS:
+    code: UNFPA_REGIONS
+    name: 'UNFPA regions (UNFPA)'
+    description: ''
+  UNFPA_WCA:
+    code: UNFPA_WCA
+    name: 'West and Central Africa (UNFPA)'
+    description: ''
+  UNICEF_EAP:
+    code: UNICEF_EAP
+    name: 'Asia Oriental y Pacífico'
+    description: ''
+  UNICEF_EAPRO:
+    code: UNICEF_EAPRO
+    name: 'East Asia and Pacific (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_ECA:
+    code: UNICEF_ECA
+    name: 'Europa y Asia Central'
+    description: ''
+  UNICEF_ECARO:
+    code: UNICEF_ECARO
+    name: 'Europe and Central Asia (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_EECA:
+    code: UNICEF_EECA
+    name: 'Europa del Este y Asia Central'
+    description: ''
+  UNICEF_ESA:
+    code: UNICEF_ESA
+    name: 'África Oriental y Meridional'
+    description: ''
+  UNICEF_ESARO:
+    code: UNICEF_ESARO
+    name: 'Eastern and Southern Africa (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_LAC:
+    code: UNICEF_LAC
+    name: 'América Latina y el Caribe'
+    description: ''
+  UNICEF_LACRO:
+    code: UNICEF_LACRO
+    name: 'Latin America and the Caribbean (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_MENA:
+    code: UNICEF_MENA
+    name: 'Oriente Medio y África del Norte'
+    description: ''
+  UNICEF_MENARO:
+    code: UNICEF_MENARO
+    name: 'Middle East and North Africa (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_NA:
+    code: UNICEF_NA
+    name: 'América del Norte'
+    description: ''
+  UNICEF_PROG_REG_GLOBAL:
+    code: UNICEF_PROG_REG_GLOBAL
+    name: 'UNICEF Programme Regions - Global'
+    description: ''
+  UNICEF_REP_REG_GLOBAL:
+    code: UNICEF_REP_REG_GLOBAL
+    name: 'UNICEF reporting regions - Global'
+    description: ''
+  UNICEF_ROSA:
+    code: UNICEF_ROSA
+    name: 'South Asia (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_SA:
+    code: UNICEF_SA
+    name: 'Asia Meridional'
+    description: ''
+  UNICEF_SSA:
+    code: UNICEF_SSA
+    name: 'África Subsahariana'
+    description: ''
+  UNICEF_WCA:
+    code: UNICEF_WCA
+    name: 'África Occidental y Central'
+    description: ''
+  UNICEF_WCARO:
+    code: UNICEF_WCARO
+    name: 'West and Central Africa (UNICEF Prog.regions)'
+    description: ''
+  UNICEF_WE:
+    code: UNICEF_WE
+    name: 'Europa Occidental'
+    description: ''
+  UNICEF_XCH:
+    code: UNICEF_XCH
+    name: 'World excluding China (UNICEF Rep.Regions)'
+    description: ''
+  UNSDG_AUSTRALIANEWZEALAND:
+    code: UNSDG_AUSTRALIANEWZEALAND
+    name: 'Australia and New Zealand (UNSDG)'
+    description: ''
+  UNSDG_CARIBBEAN:
+    code: UNSDG_CARIBBEAN
+    name: 'Caribbean (UNSDG)'
+    description: ''
+  UNSDG_CENTRALAMR:
+    code: UNSDG_CENTRALAMR
+    name: 'Central America (UNSDG)'
+    description: ''
+  UNSDG_CENTRALASIA:
+    code: UNSDG_CENTRALASIA
+    name: 'Central Asia (UNSDG)'
+    description: ''
+  UNSDG_CENTRALASIASOUTHERNASIA:
+    code: UNSDG_CENTRALASIASOUTHERNASIA
+    name: 'Central and Southern Asia (UNSDG)'
+    description: ''
+  UNSDG_EASTERNAFR:
+    code: UNSDG_EASTERNAFR
+    name: 'Eastern Africa (UNSDG)'
+    description: ''
+  UNSDG_EASTERNASIA:
+    code: UNSDG_EASTERNASIA
+    name: 'Eastern Asia (UNSDG)'
+    description: ''
+  UNSDG_EASTERNASIASOUTHEASTERNASIA:
+    code: UNSDG_EASTERNASIASOUTHEASTERNASIA
+    name: 'Eastern and South-Eastern Asia (UNSDG)'
+    description: ''
+  UNSDG_EASTERNEUROPE:
+    code: UNSDG_EASTERNEUROPE
+    name: 'Eastern Europe (UNSDG)'
+    description: ''
+  UNSDG_EUROPE:
+    code: UNSDG_EUROPE
+    name: 'Europe (UNSDG)'
+    description: ''
+  UNSDG_EUROPENORTHERNAMR:
+    code: UNSDG_EUROPENORTHERNAMR
+    name: 'Europe and Northern America (UNSDG)'
+    description: ''
+  UNSDG_LAC:
+    code: UNSDG_LAC
+    name: 'Latin America and the Caribbean (UNSDG)'
+    description: ''
+  UNSDG_LDC:
+    code: UNSDG_LDC
+    name: 'Países menos adelantados'
+    description: ''
+  UNSDG_LLDC:
+    code: UNSDG_LLDC
+    name: 'Landlocked developing countries (LLDC) (UNSDG)'
+    description: ''
+  UNSDG_MELANESIA:
+    code: UNSDG_MELANESIA
+    name: 'Melanesia (UNSDG)'
+    description: ''
+  UNSDG_MIDDLEAFR:
+    code: UNSDG_MIDDLEAFR
+    name: 'Middle Africa (UNSDG)'
+    description: ''
+  UNSDG_NORTHAFR:
+    code: UNSDG_NORTHAFR
+    name: 'Northern Africa (UNSDG)'
+    description: ''
+  UNSDG_NORTHERNAMR:
+    code: UNSDG_NORTHERNAMR
+    name: 'Northern America (UNSDG)'
+    description: ''
+  UNSDG_OCEANIA:
+    code: UNSDG_OCEANIA
+    name: 'Oceania (UNSDG)'
+    description: ''
+  UNSDG_OCEANIAexAUSNZL:
+    code: UNSDG_OCEANIAexAUSNZL
+    name: 'Oceania (exc. Australia and New Zealand) (UNSDG)'
+    description: ''
+  UNSDG_POLYNESIA:
+    code: UNSDG_POLYNESIA
+    name: 'Polynesia (UNSDG)'
+    description: ''
+  UNSDG_REGION_GLOBAL:
+    code: UNSDG_REGION_GLOBAL
+    name: 'SDG regions - Global (UNSDG)'
+    description: ''
+  UNSDG_SIDS:
+    code: UNSDG_SIDS
+    name: 'Small island developing States (SIDS) (UNSDG)'
+    description: ''
+  UNSDG_SOUTHAMR:
+    code: UNSDG_SOUTHAMR
+    name: 'South America (UNSDG)'
+    description: ''
+  UNSDG_SOUTHASIA:
+    code: UNSDG_SOUTHASIA
+    name: 'Southern Asia (UNSDG)'
+    description: ''
+  UNSDG_SOUTHEASTERNASIA:
+    code: UNSDG_SOUTHEASTERNASIA
+    name: 'South-eastern Asia (UNSDG)'
+    description: ''
+  UNSDG_SOUTHERNAFR:
+    code: UNSDG_SOUTHERNAFR
+    name: 'Southern Africa (UNSDG)'
+    description: ''
+  UNSDG_SUBSAHARANAFRICA:
+    code: UNSDG_SUBSAHARANAFRICA
+    name: 'Sub-Saharan Africa (UNSDG)'
+    description: ''
+  UNSDG_WESTERNAFR:
+    code: UNSDG_WESTERNAFR
+    name: 'Western Africa (UNSDG)'
+    description: ''
+  UNSDG_WESTERNASIA:
+    code: UNSDG_WESTERNASIA
+    name: 'Western Asia (UNSDG)'
+    description: ''
+  UNSDG_WESTERNASIANORTHERNAFR:
+    code: UNSDG_WESTERNASIANORTHERNAFR
+    name: 'Northern Africa and Western Asia (UNSDG)'
+    description: ''
+  URY:
+    code: URY
+    name: 'Uruguay'
+    description: ''
+  USA:
+    code: USA
+    name: 'United States'
+    description: ''
+  UZB:
+    code: UZB
+    name: 'Uzbekistan'
+    description: ''
+  VAT:
+    code: VAT
+    name: 'Holy See'
+    description: ''
+  VCT:
+    code: VCT
+    name: 'Saint Vincent and the Grenadines'
+    description: ''
+  VEN:
+    code: VEN
+    name: 'Venezuela (Bolivarian Republic of)'
+    description: ''
+  VGB:
+    code: VGB
+    name: 'British Virgin Islands'
+    description: ''
+  VIR:
+    code: VIR
+    name: 'Virgin Islands U.S.'
+    description: ''
+  VNM:
+    code: VNM
+    name: 'Viet Nam'
+    description: ''
+  VUT:
+    code: VUT
+    name: 'Vanuatu'
+    description: ''
+  WB_EAP:
+    code: WB_EAP
+    name: 'East Asia and Pacific (World Bank regions)'
+    description: ''
+  WB_HI:
+    code: WB_HI
+    name: 'World Bank (high income)'
+    description: ''
+  WB_INCOME:
+    code: WB_INCOME
+    name: 'World Bank income groups - Global'
+    description: ''
+  WB_LAC:
+    code: WB_LAC
+    name: 'Latin America and the Caribbean (World Bank regions)'
+    description: ''
+  WB_LI:
+    code: WB_LI
+    name: 'World Bank (low income)'
+    description: ''
+  WB_LMI:
+    code: WB_LMI
+    name: 'World Bank (lower middle income)'
+    description: ''
+  WB_MNA:
+    code: WB_MNA
+    name: 'Middle East and North Africa (World Bank regions)'
+    description: ''
+  WB_NAR:
+    code: WB_NAR
+    name: 'North America (World Bank regions)'
+    description: ''
+  WB_REG_GLOBAL:
+    code: WB_REG_GLOBAL
+    name: 'World bank World - Global'
+    description: ''
+  WB_SAR:
+    code: WB_SAR
+    name: 'South Asia (World Bank regions)'
+    description: ''
+  WB_SSA:
+    code: WB_SSA
+    name: 'Sub-Saharan Africa (World Bank regions)'
+    description: ''
+  WB_UMI:
+    code: WB_UMI
+    name: 'World Bank (upper middle income)'
+    description: ''
+  WHO_AFRO:
+    code: WHO_AFRO
+    name: 'Africa (WHO regions)'
+    description: ''
+  WHO_AMRO:
+    code: WHO_AMRO
+    name: 'Americas (WHO regions)'
+    description: ''
+  WHO_EMRO:
+    code: WHO_EMRO
+    name: 'Eastern Mediterranean (WHO regions)'
+    description: ''
+  WHO_EURO:
+    code: WHO_EURO
+    name: 'Europe (WHO regions)'
+    description: ''
+  WHO_REG_GLOBAL:
+    code: WHO_REG_GLOBAL
+    name: 'World Health Organisation regions - Global'
+    description: ''
+  WHO_SEARO:
+    code: WHO_SEARO
+    name: 'South-East Asia (WHO regions)'
+    description: ''
+  WHO_WPRO:
+    code: WHO_WPRO
+    name: 'Western Pacific (WHO regions)'
+    description: ''
+  WLF:
+    code: WLF
+    name: 'Wallis and Futuna'
+    description: ''
+  WORLD:
+    code: WORLD
+    name: 'World'
+    description: ''
+  WSM:
+    code: WSM
+    name: 'Samoa'
+    description: ''
+  XKX:
+    code: XKX
+    name: 'Kosovo (UNSCR 1244)'
+    description: ''
+  YEM:
+    code: YEM
+    name: 'Yemen'
+    description: ''
+  ZAF:
+    code: ZAF
+    name: 'South Africa'
+    description: ''
+  ZMB:
+    code: ZMB
+    name: 'Zambia'
+    description: ''
+  ZWE:
+    code: ZWE
+    name: 'Zimbabwe'
+    description: ''
+  AU:
+    code: AU
+    name: 'African Union'
+    description: ''
+  AU_AFRICA:
+    code: AU_AFRICA
+    name: 'African Union'
+    description: ''
+  AU_CENTRAL_AFRICA:
+    code: AU_CENTRAL_AFRICA
+    name: 'Central Africa (African Union)'
+    description: ''
+  AU_EASTERN_AFRICA:
+    code: AU_EASTERN_AFRICA
+    name: 'Eastern Africa (African Union)'
+    description: ''
+  AU_NORTHERN_AFRICA:
+    code: AU_NORTHERN_AFRICA
+    name: 'Northern Africa (African Union)'
+    description: ''
+  AU_SOUTHERN_AFRICA:
+    code: AU_SOUTHERN_AFRICA
+    name: 'Southern Africa (African Union)'
+    description: ''
+  AU_WESTERN_AFRICA:
+    code: AU_WESTERN_AFRICA
+    name: 'Western Africa (African Union)'
+    description: ''
+  OECD:
+    code: OECD
+    name: 'OECD'
+    description: ''
+  OECD_FRAGILEANY:
+    code: OECD_FRAGILEANY
+    name: 'OECD Fragile Contexts'
+    description: ''
+  UNICEF_OPS_REG_GLOBAL:
+    code: UNICEF_OPS_REG_GLOBAL
+    name: 'UNICEF operational regions'
+    description: ''
+  UNICEF_EAPR_OPS:
+    code: UNICEF_EAPR_OPS
+    name: 'EAPR (operational region)'
+    description: ''
+  UNICEF_ECAR_OPS:
+    code: UNICEF_ECAR_OPS
+    name: 'ECAR (operational region)'
+    description: ''
+  UNICEF_ESAR_OPS:
+    code: UNICEF_ESAR_OPS
+    name: 'ESAR (operational region)'
+    description: ''
+  UNICEF_LACR_OPS:
+    code: UNICEF_LACR_OPS
+    name: 'LACR (operational region)'
+    description: ''
+  UNICEF_MENA_OPS:
+    code: UNICEF_MENA_OPS
+    name: 'MENA (operational region)'
+    description: ''
+  UNICEF_ROSA_OPS:
+    code: UNICEF_ROSA_OPS
+    name: 'ROSA (operational region)'
+    description: ''
+  UNICEF_WCAR_OPS:
+    code: UNICEF_WCAR_OPS
+    name: 'WCAR (operational region)'
+    description: ''
+  AUREC:
+    code: AUREC
+    name: 'Regional Economic Communities'
+    description: ''
+  AUREC_AMU:
+    code: AUREC_AMU
+    name: 'Arab Maghreb Union (AMU)'
+    description: ''
+  AUREC_COMESA:
+    code: AUREC_COMESA
+    name: 'Common Market for Eastern and Southern Africa (COMESA)'
+    description: ''
+  AUREC_CEN_SAD:
+    code: AUREC_CEN_SAD
+    name: 'Community of Sahel-Saharan States (CEN-SAD)'
+    description: ''
+  AUREC_EAC:
+    code: AUREC_EAC
+    name: 'East African Community (EAC)'
+    description: ''
+  AUREC_ECCAS:
+    code: AUREC_ECCAS
+    name: 'Economic Community of Central African States (ECCAS)'
+    description: ''
+  AUREC_ECOWAS:
+    code: AUREC_ECOWAS
+    name: 'Economic Community of West African States (ECOWAS)'
+    description: ''
+  AUREC_IGAD:
+    code: AUREC_IGAD
+    name: 'Intergovernmental Authority on Development (IGAD)'
+    description: ''
+  AUREC_SADC:
+    code: AUREC_SADC
+    name: 'Southern African Development Community (SADC)'
+    description: ''
+  AUREC_ECOWAS_202502:
+    code: AUREC_ECOWAS_202502
+    name: 'Economic Community of West African States (ECOWAS 2025)'
+    description: ''
+  SDGRC_ECA_ALL:
+    code: SDGRC_ECA_ALL
+    name: '(SDGRC) United Nations Economic Commission for Africa'
+    description: ''
+  SDGRC_ECA_NA:
+    code: SDGRC_ECA_NA
+    name: '(SDGRC) North Africa'
+    description: ''
+  SDGRC_ECA_SA:
+    code: SDGRC_ECA_SA
+    name: '(SDGRC) Southern Africa'
+    description: ''
+  SDGRC_ECA_WA:
+    code: SDGRC_ECA_WA
+    name: '(SDGRC) West Africa'
+    description: ''
+  SDGRC_ECA_EA:
+    code: SDGRC_ECA_EA
+    name: '(SDGRC) Eastern Africa'
+    description: ''
+  SDGRC_ECA_CA:
+    code: SDGRC_ECA_CA
+    name: '(SDGRC) Central Africa'
+    description: ''
+  SDGRC_ECA_AMU:
+    code: SDGRC_ECA_AMU
+    name: '(SDGRC) ECA AMU'
+    description: ''
+  SDGRC_ECA_CEN_SAD:
+    code: SDGRC_ECA_CEN_SAD
+    name: '(SDGRC) ECA_CEN-SAD'
+    description: ''
+  SDGRC_ECA_COMESA:
+    code: SDGRC_ECA_COMESA
+    name: '(SDGRC) ECA_COMESA'
+    description: ''
+  SDGRC_ECA_EAC:
+    code: SDGRC_ECA_EAC
+    name: '(SDGRC) ECA_EAC'
+    description: ''
+  SDGRC_ECA_ECCAS:
+    code: SDGRC_ECA_ECCAS
+    name: '(SDGRC) ECA_ECCAS'
+    description: ''
+  SDGRC_ECA_ECOWAS:
+    code: SDGRC_ECA_ECOWAS
+    name: '(SDGRC) ECA_ECOWAS'
+    description: ''
+  SDGRC_ECA_IGAD:
+    code: SDGRC_ECA_IGAD
+    name: '(SDGRC) ECA_IGAD'
+    description: ''
+  SDGRC_ECA_SADC:
+    code: SDGRC_ECA_SADC
+    name: '(SDGRC) ECA_SADC'
+    description: ''
+  SDGRC_ARAB:
+    code: SDGRC_ARAB
+    name: '(SDGRC) ESCWA_Arab countries'
+    description: ''
+  SDGRC_AUC:
+    code: SDGRC_AUC
+    name: '(SDGRC) ECA_African Union Commission'
+    description: ''
+  SDGRC_ECA_IE:
+    code: SDGRC_ECA_IE
+    name: '(SDGRC) ECA_Island economies'
+    description: ''
+  SDGRC_ECA_LDC:
+    code: SDGRC_ECA_LDC
+    name: '(SDGRC) ECA_Least developed countries'
+    description: ''
+  SDGRC_ECA_LLC:
+    code: SDGRC_ECA_LLC
+    name: '(SDGRC) ECA_Land-locked countries'
+    description: ''
+  SDGRC_ECA_LL_LDC:
+    code: SDGRC_ECA_LL_LDC
+    name: '(SDGRC) ECA_Land-locked LDCs'
+    description: ''
+  SDGRC_ECA_MRC:
+    code: SDGRC_ECA_MRC
+    name: '(SDGRC) ECA_Mineral-rich countries'
+    description: ''
+  SDGRC_ECA_NOP:
+    code: SDGRC_ECA_NOP
+    name: '(SDGRC) ECA_Non-Oil Producing'
+    description: ''
+  SDGRC_ECA_NO_LDC:
+    code: SDGRC_ECA_NO_LDC
+    name: '(SDGRC) ECA_Non-Oil LDCs'
+    description: ''
+  SDGRC_ECA_OP:
+    code: SDGRC_ECA_OP
+    name: '(SDGRC) ECA_Oil producing economies'
+    description: ''
+  SDGRC_ECA_O_LDC:
+    code: SDGRC_ECA_O_LDC
+    name: '(SDGRC) ECA_Oil LDCs'
+    description: ''
+  SDGRC_ECA_SACU:
+    code: SDGRC_ECA_SACU
+    name: '(SDGRC) ECA_Southern Africa Customs Union (SACU)'
+    description: ''
+  SDGRC_ECA_SAHEL:
+    code: SDGRC_ECA_SAHEL
+    name: '(SDGRC) ECA_Sahel'
+    description: ''
+  SDGRC_ECA_SIS:
+    code: SDGRC_ECA_SIS
+    name: '(SDGRC) ECA_Small Island states'
+    description: ''
+  SDGRC_ECA_SSA:
+    code: SDGRC_ECA_SSA
+    name: '(SDGRC) ECA_Sub-Saharan Africa'
+    description: ''
+  SDGRC_ESCAP_AFRICA:
+    code: SDGRC_ESCAP_AFRICA
+    name: '(SDGRC) ESCAP_Africa (AFR)'
+    description: ''
+  SDGRC_ESCWA_ARAB_LOW:
+    code: SDGRC_ESCWA_ARAB_LOW
+    name: '(SDGRC) ESCWA_Arab Low-Income Countries (LICs)'
+    description: ''
+  SDGRC_ESCWA_ARAB_MID:
+    code: SDGRC_ESCWA_ARAB_MID
+    name: '(SDGRC) ESCWA_Arab Middle-Income Countries (MICs)'
+    description: ''
+  SDGRC_ESCWA_CONFLICT:
+    code: SDGRC_ESCWA_CONFLICT
+    name: '(SDGRC) ESCWA_Countries in conflict'
+    description: ''
+  SDGRC_ESCWA_LDC:
+    code: SDGRC_ESCWA_LDC
+    name: '(SDGRC) ESCWA_Arab LDCs subregion'
+    description: ''
+  SDGRC_ESCWA_MAGHREB:
+    code: SDGRC_ESCWA_MAGHREB
+    name: '(SDGRC) ESCWA_Maghreb subregion'
+    description: ''
+  SDGRC_ESCWA_MASHREQ:
+    code: SDGRC_ESCWA_MASHREQ
+    name: '(SDGRC) ESCWA_Mashreq subregion'
+    description: ''
+  SDGRC_ESCWA_NOCONFLICT_MID:
+    code: SDGRC_ESCWA_NOCONFLICT_MID
+    name: '(SDGRC) ESCWA_Non-conflict middle income countries'
+    description: ''
+  SDGRC:
+    code: SDGRC
+    name: 'SDGRC'
+    description: ''
+  SDGRC_ECE_ALL:
+    code: SDGRC_ECE_ALL
+    name: 'ECE_All countries'
+    description: ''
+  SDGRC_ECE_CIS11:
+    code: SDGRC_ECE_CIS11
+    name: 'ECE_CIS (CWG)'
+    description: ''
+  SDGRC_ECE_EAEU:
+    code: SDGRC_ECE_EAEU
+    name: 'ECE_Eurasian Economic Union (EAEU)'
+    description: ''
+  SDGRC_ECE_EECCA:
+    code: SDGRC_ECE_EECCA
+    name: 'ECE_Eastern Europe, Caucasus and Central Asia (CIS)'
+    description: ''
+  SDGRC_ECE_EU27:
+    code: SDGRC_ECE_EU27
+    name: 'ECE_European Union (E25)'
+    description: ''
+  SDGRC_ECE_EU_EUROAREA:
+    code: SDGRC_ECE_EU_EUROAREA
+    name: 'ECE_Euro area (EMU)'
+    description: ''
+  SDGRC_ECE_WESTBALKANS:
+    code: SDGRC_ECE_WESTBALKANS
+    name: 'ECE_West Balkans (ST7)'
+    description: ''
+  SDGRC_ECLAC_ALL:
+    code: SDGRC_ECLAC_ALL
+    name: 'ECLAC_All countries'
+    description: ''
+  SDGRC_ECLAC_CARIBBEAN:
+    code: SDGRC_ECLAC_CARIBBEAN
+    name: 'ECLAC_Carribean'
+    description: ''
+  SDGRC_ECLAC_LA:
+    code: SDGRC_ECLAC_LA
+    name: 'ECLAC_Latin America'
+    description: ''
+  SDGRC_ESCAP_ALL:
+    code: SDGRC_ESCAP_ALL
+    name: 'ESCAP_All countries'
+    description: ''
+  SDGRC_ESCAP_ASEAN:
+    code: SDGRC_ESCAP_ASEAN
+    name: 'ESCAP_ASEAN (ASEAN)'
+    description: ''
+  SDGRC_ESCAP_CSN:
+    code: SDGRC_ESCAP_CSN
+    name: 'ESCAP_Countries with Special Needs'
+    description: ''
+  SDGRC_ESCAP_ECO:
+    code: SDGRC_ESCAP_ECO
+    name: 'ESCAP_ECO (ECO)'
+    description: ''
+  SDGRC_ESCAP_ENEA:
+    code: SDGRC_ESCAP_ENEA
+    name: 'ESCAP_East and North-East Asia (ENEA)'
+    description: ''
+  SDGRC_ESCAP_EUROPE:
+    code: SDGRC_ESCAP_EUROPE
+    name: 'ESCAP_Europe (Europe)'
+    description: ''
+  SDGRC_ESCAP_LATIN_AMERICA:
+    code: SDGRC_ESCAP_LATIN_AMERICA
+    name: 'ESCAP_Latin America (LAC)'
+    description: ''
+  SDGRC_ESCAP_LDC:
+    code: SDGRC_ESCAP_LDC
+    name: 'ESCAP_LDC (LDC_E)'
+    description: ''
+  SDGRC_ESCAP_LLDC:
+    code: SDGRC_ESCAP_LLDC
+    name: 'ESCAP_LLDC (LLDC_E)'
+    description: ''
+  SDGRC_ESCAP_NCA:
+    code: SDGRC_ESCAP_NCA
+    name: 'ESCAP_North and Central Asia (NCA)'
+    description: ''
+  SDGRC_ESCAP_NORTH_AMERICA:
+    code: SDGRC_ESCAP_NORTH_AMERICA
+    name: 'ESCAP_North America (NAM)'
+    description: ''
+  SDGRC_ESCAP_OTHER_AREA:
+    code: SDGRC_ESCAP_OTHER_AREA
+    name: 'ESCAP_Other Area (OTH_REGION)'
+    description: ''
+  SDGRC_ESCAP_PACIFIC:
+    code: SDGRC_ESCAP_PACIFIC
+    name: 'ESCAP_PACIFIC (PAC)'
+    description: ''
+  SDGRC_ESCAP_PIDE:
+    code: SDGRC_ESCAP_PIDE
+    name: 'ESCAP_Pacific island developing economies (PIDE)'
+    description: ''
+  SDGRC_ESCAP_SAARC:
+    code: SDGRC_ESCAP_SAARC
+    name: 'ESCAP_SAARC (SAARC)'
+    description: ''
+  SDGRC_ESCAP_SEA:
+    code: SDGRC_ESCAP_SEA
+    name: 'ESCAP_South-East Asia (SEA)'
+    description: ''
+  SDGRC_ESCAP_SIDS:
+    code: SDGRC_ESCAP_SIDS
+    name: 'ESCAP_Small Islands Developing States'
+    description: ''
+  SDGRC_ESCAP_SSWA:
+    code: SDGRC_ESCAP_SSWA
+    name: 'ESCAP_South and South-West Asia (SSWA)'
+    description: ''
+  SDGRC_ESCAP_WB_HIGH:
+    code: SDGRC_ESCAP_WB_HIGH
+    name: 'ESCAP_WB High Income Economies'
+    description: ''
+  SDGRC_ESCAP_WB_LOW:
+    code: SDGRC_ESCAP_WB_LOW
+    name: 'ESCAP_WB Low Income Economies'
+    description: ''
+  SDGRC_ESCAP_WB_LOWER_MID:
+    code: SDGRC_ESCAP_WB_LOWER_MID
+    name: 'ESCAP_WB Lower Middle Income Economies'
+    description: ''
+  SDGRC_ESCAP_WB_UPPER_MID:
+    code: SDGRC_ESCAP_WB_UPPER_MID
+    name: 'ESCAP_WB Upper Middle Income Economies'
+    description: ''
+  SDGRC_ESCWA_ARAB_HIGH:
+    code: SDGRC_ESCWA_ARAB_HIGH
+    name: 'ESCWA_Arab High-Income Countries (HICs)'
+    description: ''
+  SDGRC_ESCWA_GCC:
+    code: SDGRC_ESCWA_GCC
+    name: 'ESCWA_Gulf Cooperation Council (GCC)'
+    description: ''
+  UNSDG_NORTHAMR_EUROPE_AUSNZL:
+    code: UNSDG_NORTHAMR_EUROPE_AUSNZL
+    name: 'North America, Europe, Australia and New Zealand (UNSDG)'
+    description: ''
+  UNSDG_AFRICA:
+    code: UNSDG_AFRICA
+    name: 'Africa (UNSDG)'
+    description: ''
+  UNSDG_AMERICAS:
+    code: UNSDG_AMERICAS
+    name: 'Americas (UNSDG)'
+    description: ''
+  UNSDG_ASIA:
+    code: UNSDG_ASIA
+    name: 'Asia (UNSDG)'
+    description: ''
+  UNSDG_NORTHERNEUROPE:
+    code: UNSDG_NORTHERNEUROPE
+    name: 'Northern Europe (UNSDG)'
+    description: ''
+  UNSDG_SOUTHERNEUROPE:
+    code: UNSDG_SOUTHERNEUROPE
+    name: 'Southern Europe (UNSDG)'
+    description: ''
+  UNSDG_WESTERNEUROPE:
+    code: UNSDG_WESTERNEUROPE
+    name: 'Western Europe (UNSDG)'
+    description: ''
+  UNSDG_MICRONESIA:
+    code: UNSDG_MICRONESIA
+    name: 'Micronesia (UNSDG)'
+    description: ''
+  WB_ECA:
+    code: WB_ECA
+    name: 'Europe and Central Asia (World Bank regions)'
+    description: ''
