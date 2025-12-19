@@ -30,8 +30,7 @@ list_categories()
 df = unicefData(
     indicator="CME_MRY0T4",
     countries=["ALB", "USA", "BRA"],
-    start_year=2015,
-    end_year=2023
+    year="2015:2023"  # Range, or single year, or list [2015, 2018, 2020]
 )
 
 print(df.head())
@@ -40,7 +39,7 @@ print(df.head())
 ### R
 
 ```r
-source("R/unicefData.R")
+library(unicefData)
 
 # Don't know the indicator code? Search for it!
 search_indicators("mortality")
@@ -51,8 +50,7 @@ list_categories()
 df <- unicefData(
   indicator = "CME_MRY0T4",
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
-  end_year = 2023
+  year = "2015:2023"  # Range, or single year, or c(2015, 2018, 2020)
 )
 
 print(head(df))
@@ -61,9 +59,13 @@ print(head(df))
 ### Stata
 
 ```stata
+* Don't know the indicator code? Search for it!
+unicefdata, categories        // List all categories
+unicefdata, search(mortality)  // Search by keyword
+
 * Fetch under-5 mortality for specific countries
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) ///
-    start_year(2015) end_year(2023) clear
+    year(2015:2023) clear
 
 * View the data
 list iso3 country indicator period value in 1/10
@@ -297,6 +299,28 @@ df = unicefData(indicator="CME_MRY0T4", mrv=3)
 df <- unicefData(indicator = "CME_MRY0T4", mrv = 3)
 ```
 
+### Circa (Nearest Year Matching)
+
+When exact years aren't available, `circa=True` finds the closest data point:
+
+```python
+# Python: Get data closest to 2015 for each country
+df = unicefData(indicator="NT_ANT_HAZ_NE2", year=2015, circa=True)
+# Country A might get 2014 data, Country B might get 2016 if 2015 unavailable
+```
+
+```r
+# R
+df <- unicefData(indicator = "NT_ANT_HAZ_NE2", year = 2015, circa = TRUE)
+```
+
+```stata
+* Stata
+unicefdata, indicator(NT_ANT_HAZ_NE2) year(2015) circa clear
+```
+
+This is useful when working with survey-based indicators where timing varies by country.
+
 ### Add Country/Indicator Metadata
 
 Enrich data with region, income group, and other metadata:
@@ -402,9 +426,9 @@ info <- get_cache_info()
 | `indicator` | string/vector | required | Indicator code(s), e.g., `CME_MRY0T4` |
 | `dataflow` | string | **auto-detect** | SDMX dataflow ID (optional - auto-detected from indicator) |
 | `countries` | vector/list | NULL (all) | ISO3 country codes, e.g., `["ALB", "USA"]` |
-| `start_year` | integer | NULL (all) | First year of data |
-| `end_year` | integer | NULL (all) | Last year of data |
-| `sex` | string | `_T` | Sex filter: `_T` (total), `F`, `M`, or NULL (all) |
+| `year` | int/string/list | NULL (all) | Year(s): single (`2020`), range (`"2015:2023"`), or list (`[2015, 2018]`) |
+| `circa` | boolean | FALSE | Find closest available year when exact year unavailable |
+| `sex` | string | `_T` | Sex filter: `_T` (total), `F`, `M`, or `ALL` (all disaggregations) |
 | `tidy` | boolean | TRUE | Return cleaned data with standardized columns |
 | `country_names` | boolean | TRUE | Add country name column |
 | `max_retries` | integer | 3 | Number of retry attempts on failure |
@@ -568,10 +592,12 @@ python tests/report_metadata_status.py --detailed
 | Feature | R | Python | Stata |
 |---------|---|--------|-------|
 | Unified `unicefData()` / `unicefdata` API | ✅ | ✅ | ✅ |
-| **`search_indicators()`** | ✅ | ✅ | 🔜 |
-| **`list_categories()`** | ✅ | ✅ | 🔜 |
+| **`search_indicators()`** | ✅ | ✅ | ✅ |
+| **`list_categories()`** | ✅ | ✅ | ✅ |
 | Auto dataflow detection | ✅ | ✅ | ✅ |
 | Filter by country, year, sex | ✅ | ✅ | ✅ |
+| Unified `year` parameter | ✅ | ✅ | ✅ |
+| **`circa` nearest year matching** | ✅ | ✅ | ✅ |
 | Automatic retries | ✅ | ✅ | ✅ |
 | 733 indicators supported | ✅ | ✅ | ✅ |
 | **Post-production: `format`** | ✅ | ✅ | ✅ |
@@ -592,8 +618,10 @@ Legacy parameter names still work:
 |--------|-----|
 | `flow` | `dataflow` |
 | `key` | `indicator` |
-| `start_period` | `start_year` |
-| `end_period` | `end_year` |
+| `start_year` | `year` (use `"2015:2023"` for range) |
+| `end_year` | `year` (use `"2015:2023"` for range) |
+| `start_period` | `year` |
+| `end_period` | `year` |
 | `retry` | `max_retries` |
 
 ---
