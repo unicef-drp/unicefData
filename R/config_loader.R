@@ -10,11 +10,7 @@
 #   indicators <- load_shared_indicators()
 #   dataflows <- load_shared_dataflows()
 
-# Required packages
-if (!requireNamespace("yaml", quietly = TRUE)) {
-  message("Installing yaml package...")
-  install.packages("yaml", repos = "https://cloud.r-project.org")
-}
+# Note: yaml package is declared as dependency in DESCRIPTION
 
 # ============================================================================
 # Configuration File Discovery

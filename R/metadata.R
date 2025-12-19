@@ -15,11 +15,7 @@
 #   sync_metadata()  # Downloads and caches all metadata
 #   validate_data(df, "CME_MRY0T4")  # Validate data
 
-# Required packages
-if (!requireNamespace("yaml", quietly = TRUE)) {
-  message("Installing yaml package...")
-  install.packages("yaml", repos = "https://cloud.r-project.org")
-}
+# Note: yaml package is declared as dependency in DESCRIPTION
 
 # ============================================================================
 # Configuration

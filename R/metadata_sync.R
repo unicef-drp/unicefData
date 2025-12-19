@@ -18,9 +18,8 @@
 #
 # =============================================================================
 
-library(httr)
-library(xml2)
-library(yaml)
+# Note: Dependencies (httr, xml2, yaml) declared in DESCRIPTION
+# Use namespaced calls: httr::GET(), xml2::read_xml(), yaml::read_yaml()
 
 # =============================================================================
 # Configuration
