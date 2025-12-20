@@ -26,8 +26,16 @@ program define unicefdata, rclass
         exit
     }
     
-    * Check for FLOWS subcommand
-    if (strpos("`0'", "flows") > 0) {
+    * Check for FLOWS subcommand (also accept "dataflows" as alias)
+    * But NOT if it has a parameter like dataflows(EDUCATION) - that goes to schema display
+    local is_flows_list = 0
+    if (strpos("`0'", "flows") > 0 | strpos("`0'", "dataflows") > 0) {
+        * Check if this is a parameterized call like dataflow(X) or dataflows(X)
+        if (strpos("`0'", "dataflow(") == 0 & strpos("`0'", "dataflows(") == 0) {
+            local is_flows_list = 1
+        }
+    }
+    if (`is_flows_list') {
         * Parse options (detail, verbose)
         local has_detail = (strpos("`0'", "detail") > 0)
         local has_verbose = (strpos("`0'", "verbose") > 0)
@@ -106,6 +114,36 @@ program define unicefdata, rclass
         
         _unicef_indicator_info, indicator("`info_indicator'") `verbose_opt'
         exit
+    }
+    
+    * Check for DATAFLOW INFO subcommand (get dataflow schema details)
+    * Accept both "dataflow(X)" and "dataflows(X)" syntax
+    local has_df_param = (strpos("`0'", ", dataflow(") > 0 | strpos("`0'", ", dataflows(") > 0)
+    if (`has_df_param' & strpos("`0'", "indicator") == 0 & strpos("`0'", "search") == 0) {
+        * Extract dataflow code - this is for "unicefdata, dataflow(X)" without indicator()
+        * Handle both dataflow( and dataflows( syntax
+        local df_start = strpos("`0'", "dataflow(") + 9
+        if (strpos("`0'", "dataflows(") > 0) {
+            local df_start = strpos("`0'", "dataflows(") + 10
+        }
+        local df_end = strpos(substr("`0'", `df_start', .), ")") + `df_start' - 2
+        local df_code = substr("`0'", `df_start', `df_end' - `df_start' + 1)
+        
+        * Check if this looks like a discovery command (no countries, no indicator)
+        * If countries are present, it's a data retrieval command, not discovery
+        if (strpos("`0'", "countr") == 0) {
+            * Check if verbose option was specified
+            local verbose_opt ""
+            if (strpos(lower("`0'"), "verbose") > 0) {
+                local verbose_opt "verbose"
+            }
+            
+            _unicef_dataflow_info, dataflow("`df_code'") `verbose_opt'
+            
+            * Pass through return values
+            return add
+            exit
+        }
     }
     
     * Check for SYNC subcommand (route to unicefdata_sync)

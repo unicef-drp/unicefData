@@ -290,7 +290,7 @@ program define _unicef_search_indicators, rclass
         noi di as text "  - Use {bf:unicefdata, search(keyword)} without dataflow filter"
     }
     else {
-        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_df') "{ul:Dataflow}" _col(`col_name') "{ul:Name}"
+        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_df') "{ul:Dataflow}" _col(`col_name') "{ul:Name (click for metadata)}"
         noi di ""
         
         forvalues i = 1/`n_matches' {
@@ -303,12 +303,15 @@ program define _unicef_search_indicators, rclass
                 local nm = substr("`nm'", 1, `name_width' - 3) + "..."
             }
             
-            * Use info() for indicator (safer) and indicators() for dataflow
+            * Hyperlinks:
+            * - Indicator: show sample usage with indicator() option
+            * - Dataflow: show dataflow schema with dataflow() option
+            * - Name: show metadata with info() option
             if ("`df'" != "" & "`df'" != "N/A") {
-                noi di as text _col(`col_ind') "{stata unicefdata, info(`ind'):`ind'}" as text _col(`col_df') "{stata unicefdata, indicators(`df'):`df'}" _col(`col_name') "`nm'"
+                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}" as text _col(`col_df') "{stata unicefdata, dataflow(`df'):`df'}" _col(`col_name') "{stata unicefdata, info(`ind'):`nm'}"
             }
             else {
-                noi di as text _col(`col_ind') "{stata unicefdata, info(`ind'):`ind'}" as text _col(`col_df') "`df'" _col(`col_name') "`nm'"
+                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}" as text _col(`col_df') "`df'" _col(`col_name') "{stata unicefdata, info(`ind'):`nm'}"
             }
         }
         
