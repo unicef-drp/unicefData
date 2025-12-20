@@ -173,14 +173,25 @@ run_all_tests <- function() {
   cat(sprintf("Started: %s\n", Sys.time()))
   cat("============================================================\n")
   
+  # Check if running in CI - skip heavy network tests
+  in_ci <- Sys.getenv("CI") != "" || Sys.getenv("GITHUB_ACTIONS") != ""
+  
   tests <- list(
     list(name = "List Dataflows", fn = test_list_flows),
     list(name = "Child Mortality", fn = test_child_mortality),
     list(name = "Stunting", fn = test_stunting),
-    list(name = "Immunization", fn = test_immunization),
-    list(name = "Metadata Sync", fn = test_metadata_sync),
-    list(name = "Multiple Indicators", fn = test_multiple_indicators)
+    list(name = "Immunization", fn = test_immunization)
   )
+  
+  # Only run heavy metadata sync test locally (not in CI)
+  if (!in_ci) {
+    tests <- c(tests, list(
+      list(name = "Metadata Sync", fn = test_metadata_sync),
+      list(name = "Multiple Indicators", fn = test_multiple_indicators)
+    ))
+  } else {
+    cat("\nNote: Skipping heavy network tests in CI environment\n\n")
+  }
   
   results <- list()
   

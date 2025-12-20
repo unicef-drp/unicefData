@@ -12,6 +12,7 @@ on:
 jobs:
   r-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -31,5 +32,7 @@ jobs:
           Rscript -e "cat('Installed packages:', paste(installed.packages()[,'Package'], collapse=', '))"
 
       - name: Run scripted tests
+        env:
+          UNICEF_API_TIMEOUT: 30
         run: |
           Rscript -e "source('R/utils.R'); source('R/aliases_devtests.R'); source('R/tests/run_tests.R')"
