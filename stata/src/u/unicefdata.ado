@@ -169,7 +169,6 @@ program define unicefdata, rclass
                         VALIDATE                    /// Validate inputs against codelists
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
-                        NOMETAdata                  /// Suppress metadata display on data retrieval
                         *                           /// Legacy options
                  ]
 
@@ -469,53 +468,85 @@ program define unicefdata, rclass
             }
             
             *-------------------------------------------------------------------
-            * Check and warn about supported disaggregations
+            * Check supported disaggregations (fast - reads dataflow schema directly)
             *-------------------------------------------------------------------
             
-            * Get indicator info to check supported disaggregations
-            capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
-            if (_rc == 0) {
-                local has_sex = "`r(has_sex)'"
-                local has_age = "`r(has_age)'"
-                local has_wealth = "`r(has_wealth)'"
-                local has_residence = "`r(has_residence)'"
-                local has_maternal_edu = "`r(has_maternal_edu)'"
-                
-                * Warn if user specified a filter that's not supported
-                local unsupported_filters ""
-                
-                if ("`age'" != "" & "`age'" != "_T" & "`has_age'" == "0") {
-                    local unsupported_filters "`unsupported_filters' age"
+            * Get dimensions from dataflow schema (lightweight - doesn't parse indicator YAML)
+            local has_sex = 0
+            local has_age = 0
+            local has_wealth = 0
+            local has_residence = 0
+            local has_maternal_edu = 0
+            
+            if ("`dataflow'" != "") {
+                local schema_file "`metadata_path'_dataflows/`dataflow'.yaml"
+                capture confirm file "`schema_file'"
+                if (_rc == 0) {
+                    * Read dataflow schema and extract dimensions (fast - small file)
+                    tempname fh
+                    local in_dimensions = 0
+                    file open `fh' using "`schema_file'", read text
+                    file read `fh' line
+                    while r(eof) == 0 {
+                        local trimmed_line = strtrim(`"`line'"')
+                        if ("`trimmed_line'" == "dimensions:") {
+                            local in_dimensions = 1
+                        }
+                        else if (`in_dimensions' == 1) {
+                            * Check if we've left dimensions section
+                            local first_char = substr(`"`line'"', 1, 1)
+                            if ("`first_char'" != " " & "`first_char'" != "-" & "`first_char'" != "" & regexm(`"`line'"', "^[a-z_]+:")) {
+                                local in_dimensions = 0
+                            }
+                            else if (regexm("`trimmed_line'", "^- id: *([A-Z_0-9]+)")) {
+                                local dim_id = regexs(1)
+                                if ("`dim_id'" == "SEX") local has_sex = 1
+                                if ("`dim_id'" == "AGE") local has_age = 1
+                                if ("`dim_id'" == "WEALTH_QUINTILE") local has_wealth = 1
+                                if ("`dim_id'" == "RESIDENCE") local has_residence = 1
+                                if ("`dim_id'" == "MATERNAL_EDU_LVL" | "`dim_id'" == "MOTHER_EDUCATION") local has_maternal_edu = 1
+                            }
+                        }
+                        file read `fh' line
+                    }
+                    file close `fh'
                 }
-                if ("`wealth'" != "" & "`wealth'" != "_T" & "`has_wealth'" == "0") {
-                    local unsupported_filters "`unsupported_filters' wealth"
-                }
-                if ("`residence'" != "" & "`residence'" != "_T" & "`has_residence'" == "0") {
-                    local unsupported_filters "`unsupported_filters' residence"
-                }
-                if ("`maternal_edu'" != "" & "`maternal_edu'" != "_T" & "`has_maternal_edu'" == "0") {
-                    local unsupported_filters "`unsupported_filters' maternal_edu"
-                }
-                
-                if ("`unsupported_filters'" != "") {
-                    noi di ""
-                    noi di as error "Warning: The following disaggregation(s) are NOT supported by `indicator':"
-                    noi di as error "        `unsupported_filters'"
-                    noi di as text "  This indicator's dataflow (`dataflow') does not include these dimensions."
-                    noi di as text "  Your filter(s) will be ignored. Use 'unicefdata, info(`indicator')' for details."
-                    noi di ""
-                }
-                
-                * Show brief info about what IS supported (in verbose mode)
-                if ("`verbose'" != "") {
-                    noi di as text "Supported disaggregations: " _continue
-                    if ("`has_sex'" == "1") noi di as result "sex " _continue
-                    if ("`has_age'" == "1") noi di as result "age " _continue
-                    if ("`has_wealth'" == "1") noi di as result "wealth " _continue
-                    if ("`has_residence'" == "1") noi di as result "residence " _continue
-                    if ("`has_maternal_edu'" == "1") noi di as result "maternal_edu " _continue
-                    noi di ""
-                }
+            }
+            
+            * Warn if user specified a filter that's not supported
+            local unsupported_filters ""
+            
+            if ("`age'" != "" & "`age'" != "_T" & `has_age' == 0) {
+                local unsupported_filters "`unsupported_filters' age"
+            }
+            if ("`wealth'" != "" & "`wealth'" != "_T" & `has_wealth' == 0) {
+                local unsupported_filters "`unsupported_filters' wealth"
+            }
+            if ("`residence'" != "" & "`residence'" != "_T" & `has_residence' == 0) {
+                local unsupported_filters "`unsupported_filters' residence"
+            }
+            if ("`maternal_edu'" != "" & "`maternal_edu'" != "_T" & `has_maternal_edu' == 0) {
+                local unsupported_filters "`unsupported_filters' maternal_edu"
+            }
+            
+            if ("`unsupported_filters'" != "") {
+                noi di ""
+                noi di as error "Warning: The following disaggregation(s) are NOT supported by `indicator':"
+                noi di as error "        `unsupported_filters'"
+                noi di as text "  This indicator's dataflow (`dataflow') does not include these dimensions."
+                noi di as text "  Your filter(s) will be ignored. Use 'unicefdata, info(`indicator')' for details."
+                noi di ""
+            }
+            
+            * Show brief info about what IS supported (in verbose mode)
+            if ("`verbose'" != "") {
+                noi di as text "Supported disaggregations: " _continue
+                if (`has_sex' == 1) noi di as result "sex " _continue
+                if (`has_age' == 1) noi di as result "age " _continue
+                if (`has_wealth' == 1) noi di as result "wealth " _continue
+                if (`has_residence' == 1) noi di as result "residence " _continue
+                if (`has_maternal_edu' == 1) noi di as result "maternal_edu " _continue
+                noi di ""
             }
         }
         
@@ -1454,66 +1485,25 @@ program define unicefdata, rclass
         return local url "`full_url'"
         
         *-----------------------------------------------------------------------
-        * Display indicator metadata (unless nometadata specified)
+        * Display basic result summary (fast - no YAML parsing)
         *-----------------------------------------------------------------------
         
-        if ("`nometadata'" == "") & ("`indicator'" != "") {
-            * For single indicator, display metadata and store return values
-            local n_indicators : word count `indicator'
-            if (`n_indicators' == 1) {
-                * Get indicator info (quietly to avoid duplicate display)
-                capture _unicef_indicator_info, indicator("`indicator'") brief
-                if (_rc == 0) {
-                    * Store metadata return values
-                    return local indicator_name "`r(name)'"
-                    return local indicator_category "`r(category)'"
-                    return local indicator_dataflow "`r(dataflow)'"
-                    return local indicator_description "`r(description)'"
-                    return local indicator_urn "`r(urn)'"
-                    return local has_sex "`r(has_sex)'"
-                    return local has_age "`r(has_age)'"
-                    return local has_wealth "`r(has_wealth)'"
-                    return local has_residence "`r(has_residence)'"
-                    return local has_maternal_edu "`r(has_maternal_edu)'"
-                    return local supported_dims "`r(supported_dims)'"
-                    
-                    * Display brief metadata summary
-                    noi di ""
-                    noi di as text "{hline 70}"
-                    noi di as text "Indicator: " as result "`indicator'" as text " - " as result "`r(name)'"
-                    noi di as text "{hline 70}"
-                    noi di as text " Dataflow:    " as result "`r(dataflow)'"
-                    noi di as text " Category:    " as result "`r(category)'"
-                    
-                    * Show supported disaggregations on one line
-                    local disagg_list ""
-                    if ("`r(has_sex)'" == "1") local disagg_list "`disagg_list' sex"
-                    if ("`r(has_age)'" == "1") local disagg_list "`disagg_list' age"
-                    if ("`r(has_wealth)'" == "1") local disagg_list "`disagg_list' wealth"
-                    if ("`r(has_residence)'" == "1") local disagg_list "`disagg_list' residence"
-                    if ("`r(has_maternal_edu)'" == "1") local disagg_list "`disagg_list' maternal_edu"
-                    local disagg_list = strtrim("`disagg_list'")
-                    if ("`disagg_list'" != "") {
-                        noi di as text " Disaggregations: " as result "`disagg_list'"
-                    }
-                    else {
-                        noi di as text " Disaggregations: " as result "(none)"
-                    }
-                    noi di as text "{hline 70}"
-                }
-            }
-            else {
-                * Multiple indicators - just show count
-                noi di ""
-                noi di as text "{hline 70}"
-                noi di as text "Retrieved " as result "`n_indicators'" as text " indicators"
-                noi di as text "{hline 70}"
-                foreach ind of local indicator {
-                    noi di as text "  - " as result "`ind'"
-                }
-                noi di as text "{hline 70}"
-            }
+        noi di ""
+        noi di as text "{hline 70}"
+        local n_indicators : word count `indicator'
+        if (`n_indicators' == 1) {
+            noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
         }
+        else if (`n_indicators' > 1) {
+            noi di as text "Retrieved " as result "`n_indicators'" as text " indicators from dataflow " as result "`dataflow'"
+        }
+        else {
+            noi di as text "Retrieved data from dataflow: " as result "`dataflow'"
+        }
+        noi di as text "Observations: " as result _N
+        noi di as text "{hline 70}"
+        noi di as text "{p 2 2 2}Use {stata unicefdata, info(`indicator')} for detailed metadata{p_end}"
+        noi di as text "{hline 70}"
         
         if ("`verbose'" != "") {
             noi di ""

@@ -93,7 +93,6 @@
 {synopt:{opt fallback}}try alternative dataflows on 404 {it:(v1.3.0)}{p_end}
 {synopt:{opt nofallback}}disable automatic dataflow fallback{p_end}
 {synopt:{opt validate}}validate inputs against YAML codelists{p_end}
-{synopt:{opt nometadata}}suppress indicator metadata display on data retrieval{p_end}
 {synopt:{opt clear}}replace data in memory{p_end}
 {synopt:{opt verbose}}display progress messages{p_end}
 {synoptline}
@@ -119,7 +118,7 @@ and {it:indicators} (specific measures). You can specify either:
 automatically displays a brief metadata summary showing the indicator name, dataflow,
 and supported disaggregations. This helps users understand which filter options
 (sex, age, wealth, residence, maternal_edu) are valid for each indicator.
-Use {opt nometadata} to suppress this display.
+Use {cmd:unicefdata, info(}{it:indicator}{cmd:)} to view detailed indicator metadata.
 
 {pstd}
 Data is returned in a standardized format with short variable names and descriptive labels:
@@ -604,19 +603,6 @@ Sync indicators only:{p_end}
 {synopt:{cmd:r(wide_indicators)}}wide_indicators format indicator {it:(v1.3.0)}{p_end}
 {synopt:{cmd:r(addmeta)}}metadata columns added {it:(v1.3.0)}{p_end}
 {synopt:{cmd:r(url)}}API URL used for download{p_end}
-
-{p2col 5 25 29 2: Indicator Metadata (v1.5.0)}{p_end}
-{synopt:{cmd:r(indicator_name)}}full indicator name{p_end}
-{synopt:{cmd:r(indicator_category)}}indicator category{p_end}
-{synopt:{cmd:r(indicator_dataflow)}}dataflow containing this indicator{p_end}
-{synopt:{cmd:r(indicator_description)}}indicator description{p_end}
-{synopt:{cmd:r(indicator_urn)}}SDMX URN identifier{p_end}
-{synopt:{cmd:r(has_sex)}}1 if sex disaggregation supported{p_end}
-{synopt:{cmd:r(has_age)}}1 if age disaggregation supported{p_end}
-{synopt:{cmd:r(has_wealth)}}1 if wealth quintile supported{p_end}
-{synopt:{cmd:r(has_residence)}}1 if urban/rural supported{p_end}
-{synopt:{cmd:r(has_maternal_edu)}}1 if maternal education supported{p_end}
-{synopt:{cmd:r(supported_dims)}}list of supported dimensions (e.g., "sex wealth"){p_end}
 
 {pstd}
 Discovery commands store additional results:
