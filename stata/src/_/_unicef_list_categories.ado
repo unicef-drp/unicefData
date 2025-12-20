@@ -88,7 +88,9 @@ program define _unicef_list_categories, rclass
                 * We want all rows where key ends with _category under indicators
                 
                 * Keep only category rows (one per indicator)
+                * Exclude description entries (keys containing _description_)
                 keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+                drop if regexm(key, "_description_")
                 
                 * Count total indicators
                 local total_indicators = _N
@@ -138,7 +140,9 @@ program define _unicef_list_categories, rclass
             
             * Keep only category rows (one per indicator)
             * yaml.ado uses underscores as key separator
+            * Exclude description entries (keys containing _description_)
             keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+            drop if regexm(key, "_description_")
             
             * Count total indicators
             local total_indicators = _N
