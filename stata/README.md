@@ -456,7 +456,8 @@ If you're familiar with `wbopendata` (World Bank data), the syntax is very simil
 
 ## Author
 
-Joao Pedro Azevedo (UNICEF)
+**Joao Pedro Azevedo** ([@jpazvd](https://github.com/jpazvd))  
+Chief Statistician, UNICEF Data and Analytics Section
 
 ## License
 

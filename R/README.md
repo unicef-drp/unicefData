@@ -143,3 +143,8 @@ schema$attributes  # DATA_SOURCE, COUNTRY_NOTES, REF_PERIOD, ...
 
 - `examples/`: Usage examples and tutorials
 - `metadata/`: Cached metadata and schemas
+
+## 👤 Author
+
+**Joao Pedro Azevedo** ([@jpazvd](https://github.com/jpazvd))  
+Chief Statistician, UNICEF Data and Analytics Section

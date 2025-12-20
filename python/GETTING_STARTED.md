@@ -276,8 +276,7 @@ for category, indicator_list in indicators.items():
 ## 👤 Author
 
 **Joao Pedro Azevedo**  
-Senior Advisor, Data and Analytics  
-UNICEF
+Chief Statistician, UNICEF Data and Analytics Section
 
 ## 📄 License
 

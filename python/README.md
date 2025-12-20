@@ -435,8 +435,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👤 Author
 
 **Joao Pedro Azevedo**  
-Senior Advisor, Data and Analytics  
-UNICEF  
+Chief Statistician, UNICEF Data and Analytics Section  
 Email: jazevedo@unicef.org
 
 ## 🙏 Acknowledgments
