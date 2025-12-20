@@ -70,12 +70,13 @@ Python library directly. See {help unicefdata_sync##limitations:Limitations} bel
 The following files are created in the {cmd:src/_/} directory:
 
 {p2colset 8 40 42 2}{...}
-{p2col:{cmd:_unicefdata_dataflows.yaml}}SDMX dataflow definitions{p_end}
+{p2col:{cmd:_unicefdata_dataflows.yaml}}SDMX dataflow definitions (69 dataflows){p_end}
 {p2col:{cmd:_unicefdata_codelists.yaml}}Valid dimension codes (sex, age, wealth, etc.){p_end}
-{p2col:{cmd:_unicefdata_countries.yaml}}Country ISO3 codes from CL_COUNTRY{p_end}
-{p2col:{cmd:_unicefdata_regions.yaml}}Regional aggregates from CL_WORLD_REGIONS{p_end}
-{p2col:{cmd:_unicefdata_indicators.yaml}}Indicator → dataflow mappings{p_end}
+{p2col:{cmd:_unicefdata_countries.yaml}}Country ISO3 codes from CL_COUNTRY (453 codes){p_end}
+{p2col:{cmd:_unicefdata_regions.yaml}}Regional aggregates from CL_WORLD_REGIONS (111 codes){p_end}
+{p2col:{cmd:_unicefdata_indicators.yaml}}Indicator catalog (733 indicators){p_end}
 {p2col:{cmd:_unicefdata_sync_history.yaml}}Sync timestamps and version history{p_end}
+{p2col:{cmd:_dataflows/*.yaml}}Dataflow schemas with dimension info (69 files){p_end}
 {p2colreset}{...}
 
 
@@ -196,8 +197,8 @@ Stata has internal limits on macro string length that can cause issues when
 parsing large XML files from the UNICEF SDMX API. This affects:
 
 {p2colset 8 40 42 2}{...}
-{p2col:{cmd:dataflow_index.yaml}}May have an empty or incomplete dataflows list{p_end}
-{p2col:{cmd:dataflows/*.yaml}}Individual schema files may not be generated{p_end}
+{p2col:{cmd:_dataflow_index.yaml}}May have an empty or incomplete dataflows list{p_end}
+{p2col:{cmd:_dataflows/*.yaml}}Individual schema files may not be generated{p_end}
 {p2colreset}{...}
 
 {pstd}

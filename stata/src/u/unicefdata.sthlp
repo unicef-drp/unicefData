@@ -246,7 +246,9 @@ For example, {cmd:unicefdata, indicators(CME)} shows all child mortality indicat
 
 {phang}
 {opt info(string)} displays detailed metadata for a specific indicator, including
-its name, dataflow, SDG target, unit, description, and data source.
+its name, category (dataflow), description, and supported disaggregations (sex, age,
+wealth, residence, maternal education). This uses the dataflow schema files in
+{cmd:_dataflows/} to determine which filter options are valid for each indicator.
 {p_end}
 
 {dlgtab:Output Options}
@@ -608,11 +610,14 @@ Discovery commands store additional results:
 {p2col 5 25 29 2: info}{p_end}
 {synopt:{cmd:r(indicator)}}indicator code{p_end}
 {synopt:{cmd:r(name)}}indicator name{p_end}
-{synopt:{cmd:r(dataflow)}}parent dataflow{p_end}
-{synopt:{cmd:r(sdg_target)}}SDG target (if applicable){p_end}
-{synopt:{cmd:r(unit)}}unit of measure{p_end}
+{synopt:{cmd:r(category)}}category/dataflow{p_end}
 {synopt:{cmd:r(description)}}indicator description{p_end}
-{synopt:{cmd:r(source)}}data source{p_end}
+{synopt:{cmd:r(has_sex)}}1 if sex disaggregation supported{p_end}
+{synopt:{cmd:r(has_age)}}1 if age disaggregation supported{p_end}
+{synopt:{cmd:r(has_wealth)}}1 if wealth quintile supported{p_end}
+{synopt:{cmd:r(has_residence)}}1 if urban/rural supported{p_end}
+{synopt:{cmd:r(has_maternal_edu)}}1 if maternal education supported{p_end}
+{synopt:{cmd:r(supported_dims)}}list of supported dimensions{p_end}
 
 
 {marker metadata}{...}
@@ -626,10 +631,11 @@ aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} implementation
 Metadata files are located in {cmd:src/_/} alongside the helper ado files:
 
 {phang2}{cmd:_unicefdata_dataflows.yaml} - 69 SDMX dataflow definitions{p_end}
-{phang2}{cmd:_unicefdata_indicators.yaml} - 25 common SDG indicators{p_end}
+{phang2}{cmd:_unicefdata_indicators.yaml} - 733 indicator codes and metadata{p_end}
 {phang2}{cmd:_unicefdata_codelists.yaml} - Valid codes for sex, age, wealth, residence{p_end}
 {phang2}{cmd:_unicefdata_countries.yaml} - 453 country ISO3 codes{p_end}
 {phang2}{cmd:_unicefdata_regions.yaml} - 111 regional aggregate codes{p_end}
+{phang2}{cmd:_dataflows/*.yaml} - 69 dataflow schema files with dimension info{p_end}
 
 {pstd}
 The {helpb yaml} command is used to parse these files. If {cmd:yaml} is not installed,
