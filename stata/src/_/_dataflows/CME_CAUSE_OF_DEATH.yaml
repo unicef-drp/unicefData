@@ -1,0 +1,30 @@
+id: CME_CAUSE_OF_DEATH
+name: 'CME Cause of death'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-20T00:38:19Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_REF_AREA_SDG
+- id: INDICATOR
+  position: 2
+  codelist: CME_CAUSE_OF_DEATH_SER_TYPE
+- id: CAUSE_OF_DEATH
+  position: 3
+  codelist: CME_CAUSE_OF_DEATH_INDICATOR
+- id: SEX
+  position: 4
+  codelist: CME_CAUSE_OF_DEATH_SEX
+- id: AGE_GROUP
+  position: 5
+  codelist: CL_CME_CAUSE_OF_DEATH_AGE
+- id: SERIES_NAME
+  position: 6
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: LOWER_BOUND
+- id: UPPER_BOUND

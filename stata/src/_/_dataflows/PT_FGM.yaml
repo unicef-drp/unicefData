@@ -1,0 +1,76 @@
+id: PT_FGM
+name: 'Child Protection FGM'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-20T00:38:19Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: FGM_PRACTITIONER
+  position: 3
+  codelist: CL_FGM_PRACTITIONER
+- id: FGM_TYPE
+  position: 4
+  codelist: CL_TYPE_FGM
+- id: AGE
+  position: 5
+  codelist: CL_AGE
+- id: AGE_FGM
+  position: 6
+  codelist: CL_AGE
+- id: MTH_FGM_STATUS
+  position: 7
+  codelist: CL_MTH_FGM_STATUS
+- id: EDUCATION_LEVEL
+  position: 8
+  codelist: CL_EDU_LEVEL
+- id: WEALTH_QUINTILE
+  position: 9
+  codelist: CL_WEALTH_QUINTILE
+- id: MARITAL_STATUS
+  position: 10
+  codelist: CL_MARITAL_STATUS
+- id: RESIDENCE
+  position: 11
+  codelist: CL_RESIDENCE
+- id: RELIGIOUS_GROUP
+  position: 12
+  codelist: CL_RELIGIOUS_GROUP
+- id: ETHNIC_GROUP
+  position: 13
+  codelist: CL_ETHNIC_GROUP
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: SOWC_FLAG_D
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_C
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_A
+  codelist: CL_OBS_SOWC_NOTES
+- id: SOWC_FLAG_B
+  codelist: CL_OBS_SOWC_NOTES
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+- id: OBS_CONF
+  codelist: CL_CONF_STATUS
+- id: DATA_SOURCE
+- id: LOWER_BOUND
+- id: UPPER_BOUND
+- id: UNWGTD_SAMPL_SIZE
+- id: WGTD_SAMPL_SIZE
+- id: SOURCE_LINK
+- id: TIME_PERIOD_METHOD
+- id: COVERAGE_TIME
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+- id: SERIES_FOOTNOTE
+- id: OBS_FOOTNOTE

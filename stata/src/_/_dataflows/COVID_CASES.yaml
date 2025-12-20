@@ -1,0 +1,29 @@
+id: COVID_CASES
+name: 'Covid cases and deaths'
+version: '1.0'
+agency: UNICEF
+synced_at: '2025-12-20T00:38:19Z'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_COUNTRY
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+- id: SEX
+  position: 4
+  codelist: CL_SEX
+time_dimension: TIME_PERIOD
+primary_measure: OBS_VALUE
+attributes:
+- id: DATA_SOURCE
+- id: CAVEAT_LINK
+- id: CAVEAT_NOTE
+- id: OBS_FOOTNOTE
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
