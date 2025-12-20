@@ -239,8 +239,8 @@ program define _unicef_list_dataflows, rclass
     noi di as text "Total: " as result `n_flows' as text " dataflows available"
     noi di as text "{hline 70}"
     noi di ""
-    noi di as text "Usage: " as result "unicefdata, indicator(<code>) dataflow(<ID>)"
-    noi di as text "   or: " as result "unicefdata, indicators(<ID>)" as text " to list indicators in a dataflow"
+    noi di as text "Usage: {stata unicefdata, indicator(<code>) dataflow(<ID>):unicefdata, indicator(<code>) dataflow(<ID>)}"
+    noi di as text "   or: {stata unicefdata, indicators(<ID>):unicefdata, indicators(<ID>)}" as text " to list indicators in a dataflow"
     
     *---------------------------------------------------------------------------
     * Return values

@@ -182,16 +182,21 @@ program define unicefdata, rclass
         if ("`indicator'" == "") & ("`dataflow'" == "") {
             noi di as err "You must specify either indicator() or dataflow()."
             noi di as text ""
-            noi di as text "Discovery commands:"
-            noi di as text "  unicefdata, categories                - List categories with indicator counts"
-            noi di as text "  unicefdata, flows                     - List available dataflows"
-            noi di as text "  unicefdata, search(mortality)         - Search indicators by keyword"
-            noi di as text "  unicefdata, search(edu) dataflow(EDUCATION) - Search within a dataflow"
-            noi di as text "  unicefdata, indicators(CME)           - List indicators in a dataflow"
-            noi di as text "  unicefdata, info(CME_MRY0T4)          - Get indicator details"
+            noi di as text "{bf:Discovery commands:}"
+            noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
+            noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
+            noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
+            noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
+            noi di as text "  {stata unicefdata, indicators(CME)}           " as text "- List indicators in a dataflow"
+            noi di as text "  {stata unicefdata, info(CME_MRY0T4)}          " as text "- Get indicator details"
             noi di as text ""
-            noi di as text "Data retrieval:"
-            noi di as text "  unicefdata, indicator(CME_MRY0T4) countries(BRA USA)"
+            noi di as text "{bf:Data retrieval examples:}"
+            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
+            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA USA) year(2015:2023) clear}"
+            noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
+            noi di as text ""
+            noi di as text "{bf:Help:}"
+            noi di as text "  {stata help unicefdata}                       " as text "- Full documentation"
             exit 198
         }
         
@@ -535,7 +540,7 @@ program define unicefdata, rclass
                 noi di as error "Warning: The following disaggregation(s) are NOT supported by `indicator':"
                 noi di as error "        `unsupported_filters'"
                 noi di as text "  This indicator's dataflow (`dataflow') does not include these dimensions."
-                noi di as text "  Your filter(s) will be ignored. Use 'unicefdata, info(`indicator')' for details."
+                noi di as text "  Your filter(s) will be ignored. Use {stata unicefdata, info(`indicator')} for details."
                 noi di ""
             }
             

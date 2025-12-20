@@ -203,10 +203,10 @@ program define _unicef_list_categories, rclass
     noi di as text _col(3) "{bf:TOTAL}" _col(35) as result %6.0f `total_indicators'
     noi di as text "{hline 50}"
     noi di ""
-    noi di as text "  Use {bf:unicefdata, search(keyword) dataflow(CATEGORY)}"
+    noi di as text "  Use {stata unicefdata, search(keyword) dataflow(CATEGORY):unicefdata, search(keyword) dataflow(CATEGORY)}"
     noi di as text "  to search indicators within a specific category."
     noi di ""
-    noi di as text "  Use {bf:unicefdata, indicators(CATEGORY)} to list all"
+    noi di as text "  Use {stata unicefdata, indicators(CATEGORY):unicefdata, indicators(CATEGORY)} to list all"
     noi di as text "  indicators in a specific category."
     noi di ""
     

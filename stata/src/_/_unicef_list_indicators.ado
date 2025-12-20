@@ -152,7 +152,7 @@ program define _unicef_list_indicators, rclass
     
     if (`n_matches' == 0) {
         noi di as text "  No indicators found for dataflow '`dataflow_upper'"
-        noi di as text "  Use 'unicefdata, flows' to see available dataflows."
+        noi di as text "  Use {stata unicefdata, flows:unicefdata, flows} to see available dataflows."
     }
     else {
         noi di as text _col(2) "{ul:Indicator}" _col(25) "{ul:Name}"

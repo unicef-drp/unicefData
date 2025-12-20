@@ -49,7 +49,7 @@ program define _unicef_indicator_info, rclass
         capture confirm file "`yaml_file'"
         if (_rc != 0) {
             noi di as err "Indicators metadata not found at: `yaml_file'"
-            noi di as err "Run 'unicefdata_sync' to download metadata."
+            noi di as text "Run {stata unicefdata_sync} to download metadata."
             exit 601
         }
         
@@ -302,7 +302,8 @@ program define _unicef_indicator_info, rclass
     
         if (!`found') {
             noi di as err "  Indicator '`indicator_upper'' not found in metadata."
-            noi di as text "  Use 'unicefdata, search(keyword)' to search for indicators."
+            noi di as text "  Use {stata unicefdata, search(`indicator_upper')} to search for similar indicators."
+            noi di as text "  Or try {stata unicefdata, categories} to browse available dataflows."
             noi di ""
             exit 111
         }
@@ -336,12 +337,12 @@ program define _unicef_indicator_info, rclass
             noi di as text _col(4) "maternal_edu: " as result cond(`has_maternal_edu', "Yes (MATERNAL_EDU_LVL)", "No")
         }
         else {
-            noi di as text _col(4) "(Could not determine - run 'unicefdata, sync' to update metadata)"
+            noi di as text _col(4) "(Could not determine - run {stata unicefdata, sync} to update metadata)"
         }
         
         noi di ""
         noi di as text "{hline 70}"
-        noi di as text "Usage: " as result "unicefdata, indicator(`indicator_upper') countries(AFG BGD) year(2020:2022)"
+        noi di as text "Usage: {stata unicefdata, indicator(`indicator_upper') countries(AFG BGD) year(2020:2022) clear}"
         noi di as text "{hline 70}"
     }
     else {
