@@ -169,6 +169,7 @@ program define unicefdata, rclass
                         VALIDATE                    /// Validate inputs against codelists
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
+                        NOMETAdata                  /// Show brief summary instead of full metadata
                         *                           /// Legacy options
                  ]
 
@@ -1485,13 +1486,11 @@ program define unicefdata, rclass
         return local url "`full_url'"
         
         *-----------------------------------------------------------------------
-        * Display indicator metadata (now fast with direct file lookup)
+        * Display indicator metadata
         *-----------------------------------------------------------------------
         
-        noi di ""
-        noi di as text "{hline 70}"
-        
         local n_indicators : word count `indicator'
+        
         if (`n_indicators' == 1) {
             * Get indicator info (now fast - direct file search, no full YAML parse)
             capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
@@ -1509,42 +1508,85 @@ program define unicefdata, rclass
                 return local has_maternal_edu "`r(has_maternal_edu)'"
                 return local supported_dims "`r(supported_dims)'"
                 
-                * Display indicator info
-                noi di as text "Indicator: " as result "`indicator'" as text " - " as result "`r(name)'"
-                noi di as text "{hline 70}"
-                noi di as text " Dataflow:    " as result "`dataflow'"
-                noi di as text " Observations: " as result _N
-                
-                * Show supported disaggregations on one line
-                local disagg_list ""
-                if ("`r(has_sex)'" == "1") local disagg_list "`disagg_list' sex"
-                if ("`r(has_age)'" == "1") local disagg_list "`disagg_list' age"
-                if ("`r(has_wealth)'" == "1") local disagg_list "`disagg_list' wealth"
-                if ("`r(has_residence)'" == "1") local disagg_list "`disagg_list' residence"
-                if ("`r(has_maternal_edu)'" == "1") local disagg_list "`disagg_list' maternal_edu"
-                local disagg_list = strtrim("`disagg_list'")
-                if ("`disagg_list'" != "") {
-                    noi di as text " Disaggregations: " as result "`disagg_list'"
+                if ("`nometadata'" == "") {
+                    *-----------------------------------------------------------
+                    * FULL METADATA DISPLAY (default)
+                    *-----------------------------------------------------------
+                    noi di ""
+                    noi di as text "{hline 70}"
+                    noi di as text "Indicator Information: " as result "`indicator'"
+                    noi di as text "{hline 70}"
+                    noi di ""
+                    noi di as text _col(2) "Code:        " as result "`indicator'"
+                    noi di as text _col(2) "Name:        " as result "`r(name)'"
+                    noi di as text _col(2) "Category:    " as result "`r(category)'"
+                    if ("`r(dataflow)'" != "" & "`r(dataflow)'" != "`r(category)'") {
+                        noi di as text _col(2) "Dataflow:    " as result "`r(dataflow)'"
+                    }
+                    
+                    if ("`r(description)'" != "" & "`r(description)'" != ".") {
+                        noi di ""
+                        noi di as text _col(2) "Description:"
+                        noi di as result _col(4) "`r(description)'"
+                    }
+                    
+                    if ("`r(urn)'" != "" & "`r(urn)'" != ".") {
+                        noi di ""
+                        noi di as text _col(2) "URN:         " as result "`r(urn)'"
+                    }
+                    
+                    noi di ""
+                    noi di as text _col(2) "Supported Disaggregations:"
+                    noi di as text _col(4) "sex:          " as result cond("`r(has_sex)'" == "1", "Yes (SEX)", "No")
+                    noi di as text _col(4) "age:          " as result cond("`r(has_age)'" == "1", "Yes (AGE)", "No")
+                    noi di as text _col(4) "wealth:       " as result cond("`r(has_wealth)'" == "1", "Yes (WEALTH_QUINTILE)", "No")
+                    noi di as text _col(4) "residence:    " as result cond("`r(has_residence)'" == "1", "Yes (RESIDENCE)", "No")
+                    noi di as text _col(4) "maternal_edu: " as result cond("`r(has_maternal_edu)'" == "1", "Yes (MATERNAL_EDU_LVL)", "No")
+                    
+                    noi di ""
+                    noi di as text _col(2) "Observations: " as result _N
+                    noi di as text "{hline 70}"
+                }
+                else {
+                    *-----------------------------------------------------------
+                    * BRIEF DISPLAY (when nometadata specified)
+                    *-----------------------------------------------------------
+                    noi di ""
+                    noi di as text "{hline 70}"
+                    noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
+                    noi di as text "Observations: " as result _N
+                    noi di as text "{hline 70}"
+                    noi di as text "{p 2 2 2}Use {stata unicefdata, info(`indicator')} for detailed metadata{p_end}"
+                    noi di as text "{hline 70}"
                 }
             }
             else {
                 * Fallback if metadata lookup failed
-                noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
+                noi di ""
                 noi di as text "{hline 70}"
-                noi di as text " Observations: " as result _N
+                noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
+                noi di as text "Observations: " as result _N
+                noi di as text "{hline 70}"
+                noi di as text "{p 2 2 2}Use {stata unicefdata, info(`indicator')} for detailed metadata{p_end}"
+                noi di as text "{hline 70}"
             }
         }
         else if (`n_indicators' > 1) {
+            noi di ""
+            noi di as text "{hline 70}"
             noi di as text "Retrieved " as result "`n_indicators'" as text " indicators from dataflow " as result "`dataflow'"
             noi di as text "{hline 70}"
             noi di as text " Observations: " as result _N
+            noi di as text "{hline 70}"
         }
         else {
+            noi di ""
+            noi di as text "{hline 70}"
             noi di as text "Retrieved data from dataflow: " as result "`dataflow'"
             noi di as text "{hline 70}"
             noi di as text " Observations: " as result _N
+            noi di as text "{hline 70}"
         }
-        noi di as text "{hline 70}"
         
         if ("`verbose'" != "") {
             noi di ""
