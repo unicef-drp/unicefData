@@ -342,7 +342,7 @@ program define _unicef_indicator_info, rclass
         
         noi di ""
         noi di as text "{hline 70}"
-        noi di as text "Usage: {stata unicefdata, indicator(`indicator_upper') countries(AFG BGD) year(2020:2022) clear}"
+        noi di as text "Usage: {stata unicefdata, indicator(`indicator_upper') countries(AFG BGD) clear}"
         noi di as text "{hline 70}"
     }
     else {
