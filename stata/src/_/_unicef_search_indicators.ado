@@ -86,9 +86,9 @@ program define _unicef_search_indicators, rclass
             * Work directly with the dataset in the frame
             frame `yaml_frame' {
                 * yaml.ado creates keys like: indicators_CME_MRM0_code, indicators_CME_MRM0_name, etc.
-                * Keep only code, name, category rows under indicators
+                * Keep only code, name, category, dataflow rows under indicators
                 * Exclude description entries (keys containing _description_)
-                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category)$")
+                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category|dataflow)$")
                 drop if regexm(key, "_description_")
                 
                 * Extract indicator ID and attribute type from key
@@ -100,9 +100,10 @@ program define _unicef_search_indicators, rclass
                 replace attribute = "code" if regexm(key, "_code$")
                 replace attribute = "name" if regexm(key, "_name$")
                 replace attribute = "category" if regexm(key, "_category$")
+                replace attribute = "dataflow" if regexm(key, "_dataflow$")
                 
-                * Extract indicator ID (between "indicators_" and "_code/name/category")
-                gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category)$")
+                * Extract indicator ID (between "indicators_" and "_code/name/category/dataflow")
+                gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category|dataflow)$")
                 
                 * Reshape to wide: one row per indicator with code, name, category columns
                 keep ind_id attribute value
@@ -112,11 +113,13 @@ program define _unicef_search_indicators, rclass
                 capture rename valuecode code
                 capture rename valuename name
                 capture rename valuecategory category
+                capture rename valuedataflow dataflow
                 
                 * Handle missing values
                 capture replace code = ind_id if missing(code) | code == ""
                 capture replace name = "" if missing(name)
                 capture replace category = "N/A" if missing(category) | category == ""
+                capture replace dataflow = "N/A" if missing(dataflow) | dataflow == ""
                 
                 * Create lowercase versions for case-insensitive search
                 gen code_lower = lower(code)
@@ -153,11 +156,11 @@ program define _unicef_search_indicators, rclass
                 forvalues i = 1/`n_matches' {
                     local ind_code = code[`i']
                     local ind_name = name[`i']
-                    local ind_cat = category[`i']
+                    local ind_df = dataflow[`i']
                     
                     local matches "`matches' `ind_code'"
                     local match_names `"`match_names' "`ind_name'""'
-                    local match_dataflows "`match_dataflows' `ind_cat'"
+                    local match_dataflows "`match_dataflows' `ind_df'"
                 }
             }
             
@@ -173,9 +176,9 @@ program define _unicef_search_indicators, rclass
             * Read YAML (replaces current dataset)
             yaml read using "`yaml_file'", replace
             
-            * Keep only code, name, category rows under indicators
+            * Keep only code, name, category, dataflow rows under indicators
             * Exclude description entries (keys containing _description_)
-            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category)$")
+            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category|dataflow)$")
             drop if regexm(key, "_description_")
             
             * Extract attribute type from key
@@ -183,9 +186,10 @@ program define _unicef_search_indicators, rclass
             replace attribute = "code" if regexm(key, "_code$")
             replace attribute = "name" if regexm(key, "_name$")
             replace attribute = "category" if regexm(key, "_category$")
+            replace attribute = "dataflow" if regexm(key, "_dataflow$")
             
             * Extract indicator ID
-            gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category)$")
+            gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category|dataflow)$")
             
             * Reshape to wide
             keep ind_id attribute value
@@ -195,11 +199,13 @@ program define _unicef_search_indicators, rclass
             capture rename valuecode code
             capture rename valuename name
             capture rename valuecategory category
+            capture rename valuedataflow dataflow
             
             * Handle missing values
             capture replace code = ind_id if missing(code) | code == ""
             capture replace name = "" if missing(name)
             capture replace category = "N/A" if missing(category) | category == ""
+            capture replace dataflow = "N/A" if missing(dataflow) | dataflow == ""
             
             * Search
             gen code_lower = lower(code)
@@ -232,11 +238,11 @@ program define _unicef_search_indicators, rclass
             forvalues i = 1/`n_matches' {
                 local ind_code = code[`i']
                 local ind_name = name[`i']
-                local ind_cat = category[`i']
+                local ind_df = dataflow[`i']
                 
                 local matches "`matches' `ind_code'"
                 local match_names `"`match_names' "`ind_name'""'
-                local match_dataflows "`match_dataflows' `ind_cat'"
+                local match_dataflows "`match_dataflows' `ind_df'"
             }
             
             restore
