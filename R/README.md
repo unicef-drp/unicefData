@@ -3,25 +3,27 @@
 [![R 4.0+](https://img.shields.io/badge/R-4.0+-blue.svg)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**R component of the bilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
+**R component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
 
-This is the R implementation of the **unicefData** package. For the Python implementation, see the [python directory](../python/README.md).
+This is the R implementation of the **unicefData** package. For other implementations, see the links below.
 
-## 🌐 Bilingual Package
+> 📦 **Other languages:** [Python](../python/README.md) | [Stata](../stata/README.md) | [Main README](../README.md)
 
-The **unicefData** repository provides consistent APIs in both R and Python:
+## 🌐 Trilingual Package
 
-| Feature | R | Python |
-|---------|---|--------|
-| Unified API | `unicefData()` | `unicefData()` |
-| **Search indicators** | `search_indicators()` | `search_indicators()` |
-| **List categories** | `list_categories()` | `list_categories()` |
-| **Auto dataflow detection** | ✅ | ✅ |
-| **Dataflow schema** | `dataflow_schema()` | `dataflow_schema()` |
-| List dataflows | `list_dataflows()` | `list_dataflows()` |
-| 733 indicators | ✅ | ✅ |
-| Automatic retries | ✅ | ✅ |
-| Country name lookup | ✅ | ✅ |
+The **unicefData** repository provides consistent APIs in R, Python, and Stata:
+
+| Feature | R | Python | Stata |
+|---------|---|--------|-------|
+| Unified API | `unicefData()` | `unicefData()` | `unicefdata` |
+| **Search indicators** | `search_indicators()` | `search_indicators()` | `unicefdata, search()` |
+| **List categories** | `list_categories()` | `list_categories()` | `unicefdata, categories` |
+| **Auto dataflow detection** | ✅ | ✅ | ✅ |
+| **Dataflow schema** | `dataflow_schema()` | `dataflow_schema()` | `unicefdata, dataflow()` |
+| List dataflows | `list_dataflows()` | `list_dataflows()` | `unicefdata, flows` |
+| 733 indicators | ✅ | ✅ | ✅ |
+| Automatic retries | ✅ | ✅ | ✅ |
+| Country name lookup | ✅ | ✅ | ✅ |
 
 ## 🚀 Features
 
