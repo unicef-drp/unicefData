@@ -192,7 +192,7 @@ program define unicefdata, rclass
             noi di as text ""
             noi di as text "{bf:Data retrieval examples:}"
             noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
-            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA USA) year(2015:2023) clear}"
+            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA) clear}"
             noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
             noi di as text ""
             noi di as text "{bf:Help:}"
