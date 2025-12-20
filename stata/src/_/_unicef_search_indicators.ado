@@ -316,6 +316,7 @@ program define _unicef_search_indicators, rclass
     noi di as text "{hline `linesize'}"
     noi di as text "Found: " as result `n_matches' as text " indicator(s)"
     noi di as text "{hline `linesize'}"
+    noi di as text "{it:Note: Search matches keyword in code, name, or category. Count may differ from categories table.}"
     
     *---------------------------------------------------------------------------
     * Return values
