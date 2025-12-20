@@ -98,7 +98,13 @@ program define unicefdata, rclass
         local info_end = strpos(substr("`0'", `info_start', .), ")") + `info_start' - 2
         local info_indicator = substr("`0'", `info_start', `info_end' - `info_start' + 1)
         
-        _unicef_indicator_info, indicator("`info_indicator'")
+        * Check if verbose option was specified
+        local verbose_opt ""
+        if (strpos(lower("`0'"), "verbose") > 0) {
+            local verbose_opt "verbose"
+        }
+        
+        _unicef_indicator_info, indicator("`info_indicator'") `verbose_opt'
         exit
     }
     
@@ -163,6 +169,7 @@ program define unicefdata, rclass
                         VALIDATE                    /// Validate inputs against codelists
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
+                        NOMETAdata                  /// Suppress metadata display on data retrieval
                         *                           /// Legacy options
                  ]
 
@@ -1445,6 +1452,68 @@ program define unicefdata, rclass
         return local addmeta "`addmeta'"
         return local obs_count = _N
         return local url "`full_url'"
+        
+        *-----------------------------------------------------------------------
+        * Display indicator metadata (unless nometadata specified)
+        *-----------------------------------------------------------------------
+        
+        if ("`nometadata'" == "") & ("`indicator'" != "") {
+            * For single indicator, display metadata and store return values
+            local n_indicators : word count `indicator'
+            if (`n_indicators' == 1) {
+                * Get indicator info (quietly to avoid duplicate display)
+                capture _unicef_indicator_info, indicator("`indicator'") brief
+                if (_rc == 0) {
+                    * Store metadata return values
+                    return local indicator_name "`r(name)'"
+                    return local indicator_category "`r(category)'"
+                    return local indicator_dataflow "`r(dataflow)'"
+                    return local indicator_description "`r(description)'"
+                    return local indicator_urn "`r(urn)'"
+                    return local has_sex "`r(has_sex)'"
+                    return local has_age "`r(has_age)'"
+                    return local has_wealth "`r(has_wealth)'"
+                    return local has_residence "`r(has_residence)'"
+                    return local has_maternal_edu "`r(has_maternal_edu)'"
+                    return local supported_dims "`r(supported_dims)'"
+                    
+                    * Display brief metadata summary
+                    noi di ""
+                    noi di as text "{hline 70}"
+                    noi di as text "Indicator: " as result "`indicator'" as text " - " as result "`r(name)'"
+                    noi di as text "{hline 70}"
+                    noi di as text " Dataflow:    " as result "`r(dataflow)'"
+                    noi di as text " Category:    " as result "`r(category)'"
+                    
+                    * Show supported disaggregations on one line
+                    local disagg_list ""
+                    if ("`r(has_sex)'" == "1") local disagg_list "`disagg_list' sex"
+                    if ("`r(has_age)'" == "1") local disagg_list "`disagg_list' age"
+                    if ("`r(has_wealth)'" == "1") local disagg_list "`disagg_list' wealth"
+                    if ("`r(has_residence)'" == "1") local disagg_list "`disagg_list' residence"
+                    if ("`r(has_maternal_edu)'" == "1") local disagg_list "`disagg_list' maternal_edu"
+                    local disagg_list = strtrim("`disagg_list'")
+                    if ("`disagg_list'" != "") {
+                        noi di as text " Disaggregations: " as result "`disagg_list'"
+                    }
+                    else {
+                        noi di as text " Disaggregations: " as result "(none)"
+                    }
+                    noi di as text "{hline 70}"
+                }
+            }
+            else {
+                * Multiple indicators - just show count
+                noi di ""
+                noi di as text "{hline 70}"
+                noi di as text "Retrieved " as result "`n_indicators'" as text " indicators"
+                noi di as text "{hline 70}"
+                foreach ind of local indicator {
+                    noi di as text "  - " as result "`ind'"
+                }
+                noi di as text "{hline 70}"
+            }
+        }
         
         if ("`verbose'" != "") {
             noi di ""

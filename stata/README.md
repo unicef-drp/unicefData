@@ -114,7 +114,36 @@ unicefdata, categories                     // List all categories with counts
 unicefdata, flows [detail]                 // List available dataflows
 unicefdata, search(keyword) [dataflow()] [limit(#)]  // Search indicators
 unicefdata, indicators(dataflow)           // List indicators in dataflow
-unicefdata, info(indicator_code)           // Get indicator details
+unicefdata, info(indicator_code)           // Get indicator details + disaggregations
+```
+
+#### Example: Indicator Info with Supported Disaggregations
+
+```stata
+. unicefdata, info(CME_MRY0T4)
+
+----------------------------------------------------------------------
+Indicator Information: CME_MRY0T4
+----------------------------------------------------------------------
+
+ Code:        CME_MRY0T4
+ Name:        Under-five mortality rate
+ Category:    CME
+
+ Description:
+   Probability of dying between birth and exactly 5 years of age, 
+   expressed per 1,000 live births
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    No
+   maternal_edu: No
+
+----------------------------------------------------------------------
+Usage: unicefdata, indicator(CME_MRY0T4) countries(AFG BGD) year(2020:2022)
+----------------------------------------------------------------------
 ```
 
 ### Data Retrieval
@@ -200,7 +229,7 @@ help unicefdata_sync
 stata/
 ├── src/
 │   ├── u/                              # Main user-facing commands
-│   │   ├── unicefdata.ado              # Main command (v1.3.1)
+│   │   ├── unicefdata.ado              # Main command (v1.5.0)
 │   │   ├── unicefdata.sthlp            # Help file
 │   │   ├── unicefdata_sync.ado         # Metadata sync command
 │   │   └── unicefdata_sync.sthlp       # Sync help file
@@ -214,7 +243,11 @@ stata/
 │   │   ├── _unicefdata_indicators.yaml # Metadata: full indicator catalog
 │   │   ├── _unicefdata_codelists.yaml  # Metadata: valid codes
 │   │   ├── _unicefdata_countries.yaml  # Metadata: country codes
-│   │   └── _unicefdata_regions.yaml    # Metadata: regional codes
+│   │   ├── _unicefdata_regions.yaml    # Metadata: regional codes
+│   │   └── _dataflows/                 # Per-dataflow schemas (69 files)
+│   │       ├── CME.yaml                # Child mortality disaggregations
+│   │       ├── EDUCATION.yaml          # Education disaggregations
+│   │       └── ...                     # All 69 dataflow schemas
 │   ├── y/                              # YAML parser dependency
 │   │   ├── yaml.ado
 │   │   └── yaml.sthlp

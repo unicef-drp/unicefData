@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.5.0  19Dec2025}{...}
+{* *! version 1.5.0  20Dec2025}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -93,6 +93,7 @@
 {synopt:{opt fallback}}try alternative dataflows on 404 {it:(v1.3.0)}{p_end}
 {synopt:{opt nofallback}}disable automatic dataflow fallback{p_end}
 {synopt:{opt validate}}validate inputs against YAML codelists{p_end}
+{synopt:{opt nometadata}}suppress indicator metadata display on data retrieval{p_end}
 {synopt:{opt clear}}replace data in memory{p_end}
 {synopt:{opt verbose}}display progress messages{p_end}
 {synoptline}
@@ -112,6 +113,13 @@ and {it:indicators} (specific measures). You can specify either:
 
 {phang2}1. An {opt indicator()} code, which will auto-detect the appropriate dataflow{p_end}
 {phang2}2. A {opt dataflow()} ID to download all indicators in that dataflow{p_end}
+
+{pstd}
+{it:Metadata display (v1.5.0):} When downloading data for a single indicator, {cmd:unicefdata}
+automatically displays a brief metadata summary showing the indicator name, dataflow,
+and supported disaggregations. This helps users understand which filter options
+(sex, age, wealth, residence, maternal_edu) are valid for each indicator.
+Use {opt nometadata} to suppress this display.
 
 {pstd}
 Data is returned in a standardized format with short variable names and descriptive labels:
@@ -306,6 +314,13 @@ default when specifying an indicator.
 
 {phang}
 {opt nofallback} {it:(v1.3.0)} disables the automatic dataflow fallback mechanism.
+{p_end}
+
+{phang}
+{opt nometadata} suppresses the automatic display of indicator metadata when
+retrieving data. By default, {cmd:unicefdata} displays a brief summary of the
+indicator (name, dataflow, supported disaggregations) when downloading data.
+Use this option to skip the metadata display.
 {p_end}
 
 {phang}
@@ -590,6 +605,19 @@ Sync indicators only:{p_end}
 {synopt:{cmd:r(addmeta)}}metadata columns added {it:(v1.3.0)}{p_end}
 {synopt:{cmd:r(url)}}API URL used for download{p_end}
 
+{p2col 5 25 29 2: Indicator Metadata (v1.5.0)}{p_end}
+{synopt:{cmd:r(indicator_name)}}full indicator name{p_end}
+{synopt:{cmd:r(indicator_category)}}indicator category{p_end}
+{synopt:{cmd:r(indicator_dataflow)}}dataflow containing this indicator{p_end}
+{synopt:{cmd:r(indicator_description)}}indicator description{p_end}
+{synopt:{cmd:r(indicator_urn)}}SDMX URN identifier{p_end}
+{synopt:{cmd:r(has_sex)}}1 if sex disaggregation supported{p_end}
+{synopt:{cmd:r(has_age)}}1 if age disaggregation supported{p_end}
+{synopt:{cmd:r(has_wealth)}}1 if wealth quintile supported{p_end}
+{synopt:{cmd:r(has_residence)}}1 if urban/rural supported{p_end}
+{synopt:{cmd:r(has_maternal_edu)}}1 if maternal education supported{p_end}
+{synopt:{cmd:r(supported_dims)}}list of supported dimensions (e.g., "sex wealth"){p_end}
+
 {pstd}
 Discovery commands store additional results:
 
@@ -610,7 +638,8 @@ Discovery commands store additional results:
 {p2col 5 25 29 2: info}{p_end}
 {synopt:{cmd:r(indicator)}}indicator code{p_end}
 {synopt:{cmd:r(name)}}indicator name{p_end}
-{synopt:{cmd:r(category)}}category/dataflow{p_end}
+{synopt:{cmd:r(category)}}category (usually same as dataflow){p_end}
+{synopt:{cmd:r(dataflow)}}dataflow ID for this indicator{p_end}
 {synopt:{cmd:r(description)}}indicator description{p_end}
 {synopt:{cmd:r(has_sex)}}1 if sex disaggregation supported{p_end}
 {synopt:{cmd:r(has_age)}}1 if age disaggregation supported{p_end}
@@ -624,18 +653,41 @@ Discovery commands store additional results:
 {title:YAML Metadata}
 
 {pstd}
-{cmd:unicefdata} uses YAML metadata files for dataflow auto-detection and input validation,
+{cmd:unicefdata} uses two types of YAML metadata for discovery and validation,
 aligned with the R {cmd:get_unicef()} and Python {cmd:unicef_api} implementations.
 
-{pstd}
-Metadata files are located in {cmd:src/_/} alongside the helper ado files:
+{dlgtab:Indicator Metadata}
 
-{phang2}{cmd:_unicefdata_dataflows.yaml} - 69 SDMX dataflow definitions{p_end}
-{phang2}{cmd:_unicefdata_indicators.yaml} - 733 indicator codes and metadata{p_end}
+{pstd}
+Indicator-level metadata provides information about each of the 733 indicators:
+{p_end}
+
+{phang2}{cmd:_unicefdata_indicators_metadata.yaml} - Full indicator catalog{p_end}
+{phang3}Contains: code, name, description, URN, category, dataflow{p_end}
+{phang3}Use case: {cmd:info(indicator)}, {cmd:search(keyword)}, dataflow auto-detection{p_end}
+
+{dlgtab:Dataflow Metadata}
+
+{pstd}
+Dataflow-level metadata provides information about each of the 69 dataflows:
+{p_end}
+
+{phang2}{cmd:_unicefdata_dataflows.yaml} - Dataflow summary (name, agency, version){p_end}
+{phang3}Use case: {cmd:categories} listing, dataflow descriptions{p_end}
+
+{phang2}{cmd:_dataflows/*.yaml} - Per-dataflow schema files (69 files){p_end}
+{phang3}Contains: dimensions (SEX, AGE, WEALTH_QUINTILE, RESIDENCE, etc.){p_end}
+{phang3}Use case: {cmd:info(indicator)} disaggregation support, filter validation{p_end}
+
+{dlgtab:Reference Metadata}
+
+{pstd}
+Reference metadata for valid codes and country/region lists:
+{p_end}
+
 {phang2}{cmd:_unicefdata_codelists.yaml} - Valid codes for sex, age, wealth, residence{p_end}
 {phang2}{cmd:_unicefdata_countries.yaml} - 453 country ISO3 codes{p_end}
 {phang2}{cmd:_unicefdata_regions.yaml} - 111 regional aggregate codes{p_end}
-{phang2}{cmd:_dataflows/*.yaml} - 69 dataflow schema files with dimension info{p_end}
 
 {pstd}
 The {helpb yaml} command is used to parse these files. If {cmd:yaml} is not installed,

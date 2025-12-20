@@ -523,6 +523,99 @@ Use `list_categories()` for the complete list.
 
 ---
 
+## Dataflow Disaggregation Support
+
+Different dataflows support different disaggregation dimensions. Use the `unicefdata, info(INDICATOR)` command in Stata (or equivalent in R/Python) to check which disaggregations are available for a specific indicator.
+
+### Key Disaggregation Dimensions
+
+| Dimension | Description | API Parameter |
+|-----------|-------------|---------------|
+| **SEX** | Gender disaggregation | `sex=` |
+| **AGE** | Age group disaggregation | `age=` |
+| **WEALTH_QUINTILE** | Wealth quintile disaggregation | `wealth=` |
+| **RESIDENCE** | Urban/rural disaggregation | `residence=` |
+| **MATERNAL_EDU_LVL** | Mother's education level | `maternal_edu=` |
+
+### Disaggregation Availability by Dataflow
+
+The following table shows which disaggregation dimensions are available for each dataflow (as of 2025-12-20):
+
+| Dataflow | SEX | AGE | WEALTH | RESIDENCE | MATERNAL_EDU |
+|----------|:---:|:---:|:------:|:---------:|:------------:|
+| **CAUSE_OF_DEATH** | ✓ | ✓ | - | - | - |
+| **CCRI** | - | - | - | - | - |
+| **CHILD_RELATED_SDG** | ✓ | ✓ | ✓ | ✓ | - |
+| **CHLD_PVTY** | ✓ | - | - | ✓ | - |
+| **CME** | ✓ | - | ✓ | - | - |
+| **CME_CAUSE_OF_DEATH** | ✓ | - | - | - | - |
+| **CME_COUNTRY_PROFILES_DATA** | - | - | - | - | - |
+| **CME_DF_2021_WQ** | ✓ | - | ✓ | - | - |
+| **CME_SUBNATIONAL** | ✓ | - | ✓ | - | - |
+| **COVID** | ✓ | ✓ | ✓ | ✓ | - |
+| **COVID_CASES** | ✓ | ✓ | - | - | - |
+| **DM** | ✓ | ✓ | - | ✓ | - |
+| **DM_PROJECTIONS** | ✓ | ✓ | - | ✓ | - |
+| **ECD** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **ECONOMIC** | - | - | - | - | - |
+| **EDUCATION** | ✓ | - | ✓ | ✓ | - |
+| **EDUCATION_FLS** | ✓ | - | - | - | - |
+| **EDUCATION_UIS_SDG** | ✓ | - | ✓ | ✓ | - |
+| **FUNCTIONAL_DIFF** | ✓ | ✓ | ✓ | ✓ | - |
+| **GENDER** | ✓ | ✓ | - | ✓ | - |
+| **GLOBAL_DATAFLOW** | ✓ | ✓ | - | - | - |
+| **HIV_AIDS** | ✓ | ✓ | ✓ | ✓ | - |
+| **IMMUNISATION** | - | ✓ | - | - | - |
+| **MG** (Migration) | - | ✓ | - | - | - |
+| **MNCH** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **NUTRITION** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **PT** (Child Protection) | ✓ | ✓ | ✓ | ✓ | - |
+| **PT_CM** (Child Marriage) | ✓ | ✓ | ✓ | ✓ | - |
+| **PT_CONFLICT** | ✓ | ✓ | - | - | - |
+| **PT_FGM** | - | ✓ | ✓ | ✓ | - |
+| **SDG_PROG_ASSESSMENT** | - | - | - | - | - |
+| **SOC_PROTECTION** | ✓ | - | ✓ | ✓ | - |
+| **WASH_HEALTHCARE_FACILITY** | - | - | - | ✓ | - |
+| **WASH_HOUSEHOLDS** | - | - | ✓ | ✓ | - |
+| **WASH_HOUSEHOLD_MH** | ✓ | ✓ | - | ✓ | - |
+| **WASH_HOUSEHOLD_SUBNAT** | - | - | ✓ | ✓ | - |
+| **WASH_SCHOOLS** | - | - | - | ✓ | - |
+
+**Notes:**
+- ✓ = Dimension available for disaggregation
+- `-` = Dimension not available
+- **CME_SUBNAT_*** dataflows (country-specific subnational): All support SEX and WEALTH_QUINTILE
+- **MATERNAL_EDU** includes both `MATERNAL_EDU_LVL` and `MOTHER_EDUCATION` dimension names
+- Availability does not guarantee data exists for all values; use API to check actual data coverage
+
+### Checking Indicator Disaggregations
+
+```stata
+* Stata: Check what disaggregations are supported
+unicefdata, info(CME_MRY0T4)
+
+* Output shows:
+*  Supported Disaggregations:
+*    sex:          Yes (SEX)
+*    age:          No
+*    wealth:       Yes (WEALTH_QUINTILE)
+*    residence:    No
+*    maternal_edu: No
+```
+
+```python
+# Python: Get indicator info
+from unicef_api import indicator_info
+indicator_info("CME_MRY0T4")
+```
+
+```r
+# R: Get indicator info
+indicator_info("CME_MRY0T4")
+```
+
+---
+
 ## Metadata Synchronization
 
 The unicefData package maintains synchronized YAML metadata files across all three platforms (Python, R, Stata). These files contain dataflow definitions, indicator catalogs, country codes, and codelist mappings.
