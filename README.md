@@ -181,46 +181,35 @@ list_categories()
 
 **Output (current, 2025-12-19):**
 ```
---------------------------------------------------
+==================================================
   Available Indicator Categories
---------------------------------------------------
+==================================================
 
-  Category                        Count
+  CATEGORY                       COUNT
 --------------------------------------------------
-  NT                                 112
-  COD                                 83
-  TRGT                                77
-  WS                                  57
-  ED                                  54
-  PT                                  50
-  PV                                  43
-  CME                                 39
-  HVA                                 38
-  MNCH                                38
-  DM                                  26
-  MG                                  26
-  IM                                  18
-  GN                                  16
-  ECON                                13
-  FD                                  12
-  SPP                                 10
-  ECD                                  8
-  WT                                   7
-  EDUCATION                            1
-  FUNCTIONAL                           1
-  GENDER                               1
-  HIV                                  1
-  IMMUNISATION                         1
-  NUTRITION                            1
+  GLOBAL_DATAFLOW                  183
+  NUTRITION                        112
+  WASH_HOUSEHOLDS                   57
+  CHLD_PVTY                         43
+  PT                                42
+  EDUCATION                         41
+  CME                               39
+  HIV_AIDS                          38
+  MNCH                              38
+  DM                                26
+  MIGRATION                         26
+  IMMUNISATION                      18
+  GENDER                            16
+  ECON                              13
+  EDUCATION_UIS_SDG                 13
+  FUNCTIONAL_DIFF                   12
+  ECD                                8
+  PT_FGM                             6
+  PT_CM                              2
 --------------------------------------------------
-  TOTAL                              733
---------------------------------------------------
+  TOTAL                            733
 
-  Use unicefdata, search(keyword) dataflow(CATEGORY)
-  to search indicators within a specific category.
-
-  Use unicefdata, indicators(CATEGORY) to list all
-  indicators in a specific category.
+  Use search_indicators(category='CATEGORY_NAME') to see indicators
 ```
 Note: Counts may vary by sync date. Use `list_categories()` for current totals.
 
@@ -504,11 +493,12 @@ No parameters. Displays all available categories with indicator counts.
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| `GLOBAL_DATAFLOW` | 226 | General indicators |
+| `GLOBAL_DATAFLOW` | 183 | General indicators |
 | `NUTRITION` | 112 | Nutrition (stunting, wasting, etc.) |
 | `WASH_HOUSEHOLDS` | 57 | Water and Sanitation |
-| `EDUCATION` | 54 | Education indicators |
-| `PT` | 50 | Child Protection |
+| `CHLD_PVTY` | 43 | Child Poverty |
+| `PT` | 42 | Child Protection |
+| `EDUCATION` | 41 | Education indicators |
 | `CME` | 39 | Child Mortality Estimates |
 | `HIV_AIDS` | 38 | HIV/AIDS indicators |
 | `MNCH` | 38 | Maternal and Child Health |
@@ -517,8 +507,11 @@ No parameters. Displays all available categories with indicator counts.
 | `IMMUNISATION` | 18 | Immunization coverage |
 | `GENDER` | 16 | Gender indicators |
 | `ECON` | 13 | Economic indicators |
+| `EDUCATION_UIS_SDG` | 13 | UNESCO Education SDG indicators |
 | `FUNCTIONAL_DIFF` | 12 | Functional difficulties |
 | `ECD` | 8 | Early Childhood Development |
+| `PT_FGM` | 6 | Female Genital Mutilation |
+| `PT_CM` | 2 | Child Marriage |
 
 Use `list_categories()` for the complete list.
 

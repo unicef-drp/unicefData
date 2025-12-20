@@ -2,7 +2,7 @@ metadata:
   version: '1.0'
   source: UNICEF SDMX Codelist CL_UNICEF_INDICATOR
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0
-  last_updated: '2025-12-08T20:17:04.814441'
+  last_updated: '2025-12-20T00:04:45.283722'
   description: Comprehensive UNICEF indicator codelist with metadata (auto-generated)
   indicator_count: 733
 indicators:
@@ -245,499 +245,499 @@ indicators:
     name: Acute hepatitis A
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ACUTE_HEPATITIS_A
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ACUTE_HEPATITIS_B:
     code: COD_ACUTE_HEPATITIS_B
     name: Acute hepatitis B
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ACUTE_HEPATITIS_B
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_AFRICAN_TRYPANOSOMIASIS:
     code: COD_AFRICAN_TRYPANOSOMIASIS
     name: African trypanosomiasis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_AFRICAN_TRYPANOSOMIASIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ALCOHOL_USE_DISORDERS:
     code: COD_ALCOHOL_USE_DISORDERS
     name: Alcohol use disorders
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ALCOHOL_USE_DISORDERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ALZHEIMER_DISEASE_AND_OTHER_DEMENTIAS:
     code: COD_ALZHEIMER_DISEASE_AND_OTHER_DEMENTIAS
     name: Alzheimer disease and other dementias
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ALZHEIMER_DISEASE_AND_OTHER_DEMENTIAS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_APPENDICITIS:
     code: COD_APPENDICITIS
     name: Appendicitis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_APPENDICITIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ASTHMA:
     code: COD_ASTHMA
     name: Asthma
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ASTHMA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_BLADDER_CANCER:
     code: COD_BLADDER_CANCER
     name: Bladder cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_BLADDER_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_BRAIN_AND_NERVOUS_SYSTEM_CANCERS:
     code: COD_BRAIN_AND_NERVOUS_SYSTEM_CANCERS
     name: Brain and nervous system cancers
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_BRAIN_AND_NERVOUS_SYSTEM_CANCERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_BREAST_CANCER:
     code: COD_BREAST_CANCER
     name: Breast cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_BREAST_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS:
     code: COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
     name: Cardiomyopathy, myocarditis, endocarditis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CERVIX_UTERI_CANCER:
     code: COD_CERVIX_UTERI_CANCER
     name: Cervix uteri cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CERVIX_UTERI_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CHLAMYDIA:
     code: COD_CHLAMYDIA
     name: Chlamydia
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CHLAMYDIA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE:
     code: COD_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE
     name: Chronic obstructive pulmonary disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CIRRHOSIS_OF_THE_LIVER:
     code: COD_CIRRHOSIS_OF_THE_LIVER
     name: Cirrhosis of the liver
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CIRRHOSIS_OF_THE_LIVER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_COLLECTIVE_VIOLENCE_AND_LEGAL_INTERVENTION:
     code: COD_COLLECTIVE_VIOLENCE_AND_LEGAL_INTERVENTION
     name: Collective violence and legal intervention
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_COLLECTIVE_VIOLENCE_AND_LEGAL_INTERVENTION
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_COLON_AND_RECTUM_CANCERS:
     code: COD_COLON_AND_RECTUM_CANCERS
     name: Colon and rectum cancers
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_COLON_AND_RECTUM_CANCERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CONGENITAL_ANOMALIES:
     code: COD_CONGENITAL_ANOMALIES
     name: Congenital anomalies
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CONGENITAL_ANOMALIES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_CYSTICERCOSIS:
     code: COD_CYSTICERCOSIS
     name: Cysticercosis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_CYSTICERCOSIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DENGUE:
     code: COD_DENGUE
     name: Dengue
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DENGUE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DIABETES_MELLITUS:
     code: COD_DIABETES_MELLITUS
     name: Diabetes mellitus
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DIABETES_MELLITUS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DIARRHOEAL_DISEASES:
     code: COD_DIARRHOEAL_DISEASES
     name: Diarrhoeal diseases
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DIARRHOEAL_DISEASES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DIPHTHERIA:
     code: COD_DIPHTHERIA
     name: Diphtheria
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DIPHTHERIA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DROWNING:
     code: COD_DROWNING
     name: Drowning
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DROWNING
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_DRUG_USE_DISORDERS:
     code: COD_DRUG_USE_DISORDERS
     name: Drug use disorders
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_DRUG_USE_DISORDERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ECHINOCOCCOSIS:
     code: COD_ECHINOCOCCOSIS
     name: Echinococcosis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ECHINOCOCCOSIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ENCEPHALITIS:
     code: COD_ENCEPHALITIS
     name: Encephalitis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ENCEPHALITIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_EPILEPSY:
     code: COD_EPILEPSY
     name: Epilepsy
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_EPILEPSY
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_EXPOSURE_TO_MECHANICAL_FORCES:
     code: COD_EXPOSURE_TO_MECHANICAL_FORCES
     name: Exposure to mechanical forces
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_EXPOSURE_TO_MECHANICAL_FORCES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_FALLS:
     code: COD_FALLS
     name: Falls
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_FALLS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_FIRE_HEAT_AND_HOT_SUBSTANCES:
     code: COD_FIRE_HEAT_AND_HOT_SUBSTANCES
     name: Fire, heat and hot substances
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_FIRE_HEAT_AND_HOT_SUBSTANCES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_GALLBLADDER_AND_BILIARY_DISEASES:
     code: COD_GALLBLADDER_AND_BILIARY_DISEASES
     name: Gallbladder and biliary diseases
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_GALLBLADDER_AND_BILIARY_DISEASES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_GENITAL_HERPES:
     code: COD_GENITAL_HERPES
     name: Genital herpes
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_GENITAL_HERPES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_GONORRHOEA:
     code: COD_GONORRHOEA
     name: Gonorrhoea
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_GONORRHOEA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_HIV_AIDS:
     code: COD_HIV_AIDS
     name: HIV/AIDS
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_HIV_AIDS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_HYPERTENSIVE_HEART_DISEASE:
     code: COD_HYPERTENSIVE_HEART_DISEASE
     name: Hypertensive heart disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_HYPERTENSIVE_HEART_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_IDIOPATHIC_INTELLECTUAL_DISABILITY:
     code: COD_IDIOPATHIC_INTELLECTUAL_DISABILITY
     name: Idiopathic intellectual disability
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_IDIOPATHIC_INTELLECTUAL_DISABILITY
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_INFLAMMATORY_BOWEL_DISEASE:
     code: COD_INFLAMMATORY_BOWEL_DISEASE
     name: Inflammatory bowel disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_INFLAMMATORY_BOWEL_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_INTERPERSONAL_VIOLENCE:
     code: COD_INTERPERSONAL_VIOLENCE
     name: Interpersonal violence
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_INTERPERSONAL_VIOLENCE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_IRON_DEFICIENCY_ANAEMIA:
     code: COD_IRON_DEFICIENCY_ANAEMIA
     name: Iron-deficiency anaemia
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_IRON_DEFICIENCY_ANAEMIA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ISCHAEMIC_HEART_DISEASE:
     code: COD_ISCHAEMIC_HEART_DISEASE
     name: Ischaemic heart disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ISCHAEMIC_HEART_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_KIDNEY_CANCER:
     code: COD_KIDNEY_CANCER
     name: Kidney cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_KIDNEY_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_KIDNEY_DISEASES:
     code: COD_KIDNEY_DISEASES
     name: Kidney diseases
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_KIDNEY_DISEASES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_LEISHMANIASIS:
     code: COD_LEISHMANIASIS
     name: Leishmaniasis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_LEISHMANIASIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_LEUKAEMIA:
     code: COD_LEUKAEMIA
     name: Leukaemia
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_LEUKAEMIA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_LIVER_CANCER:
     code: COD_LIVER_CANCER
     name: Liver cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_LIVER_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_LOWER_RESPIRATORY_INFECTIONS:
     code: COD_LOWER_RESPIRATORY_INFECTIONS
     name: Lower respiratory infections
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_LOWER_RESPIRATORY_INFECTIONS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_LYMPHOMAS_MULTIPLE_MYELOMA:
     code: COD_LYMPHOMAS_MULTIPLE_MYELOMA
     name: Lymphomas, multiple myeloma
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_LYMPHOMAS_MULTIPLE_MYELOMA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MALARIA:
     code: COD_MALARIA
     name: Malaria
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MALARIA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MATERNAL_CONDITIONS:
     code: COD_MATERNAL_CONDITIONS
     name: Maternal conditions
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MATERNAL_CONDITIONS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MEASLES:
     code: COD_MEASLES
     name: Measles
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MEASLES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MELANOMA_AND_OTHER_SKIN_CANCERS:
     code: COD_MELANOMA_AND_OTHER_SKIN_CANCERS
     name: Melanoma and other skin cancers
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MELANOMA_AND_OTHER_SKIN_CANCERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MENINGITIS:
     code: COD_MENINGITIS
     name: Meningitis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MENINGITIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MESOTHELIOMA:
     code: COD_MESOTHELIOMA
     name: Mesothelioma
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MESOTHELIOMA
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_MOUTH_AND_OROPHARYNX_CANCERS:
     code: COD_MOUTH_AND_OROPHARYNX_CANCERS
     name: Mouth and oropharynx cancers
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_MOUTH_AND_OROPHARYNX_CANCERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_NATURAL_DISASTERS:
     code: COD_NATURAL_DISASTERS
     name: Natural disasters
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_NATURAL_DISASTERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_OESOPHAGUS_CANCER:
     code: COD_OESOPHAGUS_CANCER
     name: Oesophagus cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_OESOPHAGUS_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_OVARY_CANCER:
     code: COD_OVARY_CANCER
     name: Ovary cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_OVARY_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_PANCREAS_CANCER:
     code: COD_PANCREAS_CANCER
     name: Pancreas cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_PANCREAS_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_PANCREATITIS:
     code: COD_PANCREATITIS
     name: Pancreatitis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_PANCREATITIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION:
     code: COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
     name: Paralytic ileus and intestinal obstruction
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_PEPTIC_ULCER_DISEASE:
     code: COD_PEPTIC_ULCER_DISEASE
     name: Peptic ulcer disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_PEPTIC_ULCER_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_POISONINGS:
     code: COD_POISONINGS
     name: Poisonings
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_POISONINGS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_PROTEIN_ENERGY_MALNUTRITION:
     code: COD_PROTEIN_ENERGY_MALNUTRITION
     name: Protein-energy malnutrition
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_PROTEIN_ENERGY_MALNUTRITION
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_RABIES:
     code: COD_RABIES
     name: Rabies
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_RABIES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_RHEUMATIC_HEART_DISEASE:
     code: COD_RHEUMATIC_HEART_DISEASE
     name: Rheumatic heart disease
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_RHEUMATIC_HEART_DISEASE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_ROAD_INJURY:
     code: COD_ROAD_INJURY
     name: Road injury
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_ROAD_INJURY
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_SELF_HARM:
     code: COD_SELF_HARM
     name: Self-harm
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_SELF_HARM
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_SICKLE_CELL_DISORDERS_AND_TRAIT:
     code: COD_SICKLE_CELL_DISORDERS_AND_TRAIT
     name: Sickle cell disorders and trait
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_SICKLE_CELL_DISORDERS_AND_TRAIT
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_SKIN_DISEASES:
     code: COD_SKIN_DISEASES
     name: Skin diseases
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_SKIN_DISEASES
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_STOMACH_CANCER:
     code: COD_STOMACH_CANCER
     name: Stomach cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_STOMACH_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_STROKE:
     code: COD_STROKE
     name: Stroke
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_STROKE
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_SYPHILIS:
     code: COD_SYPHILIS
     name: Syphilis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_SYPHILIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_TESTICULAR_CANCER:
     code: COD_TESTICULAR_CANCER
     name: Testicular cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_TESTICULAR_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_TETANUS:
     code: COD_TETANUS
     name: Tetanus
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_TETANUS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_THALASSAEMIAS:
     code: COD_THALASSAEMIAS
     name: Thalassaemias
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_THALASSAEMIAS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_THYROID_CANCER:
     code: COD_THYROID_CANCER
     name: Thyroid cancer
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_THYROID_CANCER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_TRACHEA_BRONCHUS_LUNG_CANCERS:
     code: COD_TRACHEA_BRONCHUS_LUNG_CANCERS
     name: Trachea, bronchus, lung cancers
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_TRACHEA_BRONCHUS_LUNG_CANCERS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_TRICHOMONIASIS:
     code: COD_TRICHOMONIASIS
     name: Trichomoniasis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_TRICHOMONIASIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_TUBERCULOSIS:
     code: COD_TUBERCULOSIS
     name: Tuberculosis
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_TUBERCULOSIS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_UPPER_RESPIRATORY_INFECTIONS:
     code: COD_UPPER_RESPIRATORY_INFECTIONS
     name: Upper respiratory infections
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_UPPER_RESPIRATORY_INFECTIONS
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_WHOOPING_COUGH:
     code: COD_WHOOPING_COUGH
     name: Whooping cough
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_WHOOPING_COUGH
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   COD_YELLOW_FEVER:
     code: COD_YELLOW_FEVER
     name: Yellow fever
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).COD_YELLOW_FEVER
-    category: GLOBAL_DATAFLOW
+    category: CAUSE_OF_DEATH
   DM:
     code: DM
     name: Demography
@@ -3227,517 +3227,517 @@ indicators:
     name: Social Protection
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_CHLD_POV_PROF:
     code: SPP_CHLD_POV_PROF
     name: Child Poverty Profile
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_CHLD_POV_PROF
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_CHLD_SOC_PROT:
     code: SPP_CHLD_SOC_PROT
     name: Proportion of children covered by social protection
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_CHLD_SOC_PROT
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_DIST_SOC_PROT_BNFT:
     code: SPP_DIST_SOC_PROT_BNFT
     name: Distribution of Social Protection Benefits (%)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_DIST_SOC_PROT_BNFT
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_GDPPC:
     code: SPP_GDPPC
     name: GDP per capita (current US$)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_GDPPC
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_GINI:
     code: SPP_GINI
     name: Gini Coefficient
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_GINI
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_HSLD_INCOME_SHARE:
     code: SPP_HSLD_INCOME_SHARE
     name: Share of household income (%)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_HSLD_INCOME_SHARE
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_MOTHERS_CASH_BNF:
     code: SPP_MOTHERS_CASH_BNF
     name: Mothers with newborns receiving cash benefit (%)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_MOTHERS_CASH_BNF
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_PALMA:
     code: SPP_PALMA
     name: Palma Index of income inequality
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_PALMA
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   SPP_VMI:
     code: SPP_VMI
     name: VMI (vast majority index of income inequality)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).SPP_VMI
-    category: GLOBAL_DATAFLOW
+    category: SOC_PROTECTION
   TRGT:
     code: TRGT
     name: National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_ANE_WOM_15_49_MOD:
     code: TRGT_2025_NT_ANE_WOM_15_49_MOD
     name: National target (Year 2025) for Anaemia prevalence in women of reproductive age
     description: National target (Year 2025) for Prevalence of anaemia in women aged 15-49 (Modeled Estimates)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_ANE_WOM_15_49_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_ANT_HAZ_NE2_MOD:
     code: TRGT_2025_NT_ANT_HAZ_NE2_MOD
     name: National target (Year 2025) for Stunting
     description: National target (Year 2025) for Prevalence of stunting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_ANT_HAZ_NE2_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_ANT_WHZ_NE2:
     code: TRGT_2025_NT_ANT_WHZ_NE2
     name: National target (Year 2025) for Wasting
     description: National target (Year 2025) for Prevalence of wasting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_ANT_WHZ_NE2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_ANT_WHZ_NE3:
     code: TRGT_2025_NT_ANT_WHZ_NE3
     name: National target (Year 2025) for Severe Wasting
     description: National target (Year 2025) for Prevalence of severe wasting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_ANT_WHZ_NE3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_ANT_WHZ_PO2_MOD:
     code: TRGT_2025_NT_ANT_WHZ_PO2_MOD
     name: National target (Year 2025) for Overweight
     description: National target (Year 2025) for Prevalence of overweight among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_ANT_WHZ_PO2_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_BF_EXBF:
     code: TRGT_2025_NT_BF_EXBF
     name: National target (Year 2025) for Exclusive Breastfeeding
     description: National target (Year 2025) for Exclusive Breastfeeding (0-5 months)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_BF_EXBF
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2025_NT_BW_LBW:
     code: TRGT_2025_NT_BW_LBW
     name: National target (Year 2025) for low birth weight
     description: National target (Year 2025) for Prevalence of low birth weight among new-borns
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2025_NT_BW_LBW
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_CME_MRM0:
     code: TRGT_2030_CME_MRM0
     name: National target (Year 2030) for Neonatal mortality rate
     description: National target (Year 2030) for Neonatal mortality rate
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_CME_MRM0
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_CME_MRY0T4:
     code: TRGT_2030_CME_MRY0T4
     name: National target (Year 2030) for Under-five mortality rate
     description: National target (Year 2030) for Under-five mortality rate
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_CME_MRY0T4
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_CME_SBR:
     code: TRGT_2030_CME_SBR
     name: National target (Year 2030) for stillbirth rate
     description: National target (Year 2030) for stillbirth rate (SBR) - the number of babies born with no sign of life at 28 weeks or more of gestation per 1,000 total births.
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_CME_SBR
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ECD_CHLD_36-59M_LMPSL:
     code: TRGT_2030_ECD_CHLD_36-59M_LMPSL
     name: National target (Year 2030) for Early Childhood Development Index
     description: 'National target (Year 2030) for Proportion of children aged 36-59 months who are developmentally on track in at least three of the following domains: literacy-numeracy, physical development, social-emotional development, and learning (% of children aged 36-59 months)'
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ECD_CHLD_36-59M_LMPSL
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_ANAR_L02:
     code: TRGT_2030_ED_ANAR_L02
     name: National target (Year 2030) for School atendance (pre-primary)
     description: National target (Year 2030) for Adjusted net attendance rate, one year before the official primary entry age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_ANAR_L02
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_CR_L1:
     code: TRGT_2030_ED_CR_L1
     name: National target (Year 2030) for Completion rate (primary)
     description: National target (Year 2030) for Completion rate for children of primary school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_CR_L1
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_CR_L2:
     code: TRGT_2030_ED_CR_L2
     name: National target (Year 2030) for Completion rate (lower secondary)
     description: National target (Year 2030) for Completion rate for adolescents of lower secondary school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_CR_L2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_CR_L3:
     code: TRGT_2030_ED_CR_L3
     name: National target (Year 2030) for Completion rate (upper secondary)
     description: National target (Year 2030) for Completion rate for youth of upper secondary education school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_CR_L3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_MAT_G23:
     code: TRGT_2030_ED_MAT_G23
     name: National target (Year 2030) for Math proficiency (grade 2/3)
     description: National target (Year 2030) for Proportion of students in Grade 2 or 3 achieving at least a minimum proficiency level in mathematics
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_MAT_G23
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_MAT_L1:
     code: TRGT_2030_ED_MAT_L1
     name: National target (Year 2030) for Math proficiency (primary)
     description: National target (Year 2030) for Proportion of students at the end of primary achieving at least a minimum proficiency level in mathematics
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_MAT_L1
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_MAT_L2:
     code: TRGT_2030_ED_MAT_L2
     name: National target (Year 2030) for Math proficiency (lower secondary)
     description: National target (Year 2030) for Proportion of students at the end of lower secondary achieving at least a minimum proficiency level in mathematics
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_MAT_L2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_READ_G23:
     code: TRGT_2030_ED_READ_G23
     name: National target (Year 2030) for Reading proficiency (grade 2/3)
     description: National target (Year 2030) for Proportion of students in Grade 2 or 3 achieving at least a minimum proficiency level in reading
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_READ_G23
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_READ_L1:
     code: TRGT_2030_ED_READ_L1
     name: National target (Year 2030) for Reading proficiency (primary)
     description: National target (Year 2030) for Proportion of students at the end of primary achieving at least a minimum proficiency level in reading
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_READ_L1
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_READ_L2:
     code: TRGT_2030_ED_READ_L2
     name: National target (Year 2030) for Reading proficiency (lower secondary)
     description: National target (Year 2030) for Proportion of students at the end of lower secondary achieving at least a minimum proficiency level in reading
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_READ_L2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_ROFST_L1:
     code: TRGT_2030_ED_ROFST_L1
     name: National target (Year 2030) for Out-of-school (primary)
     description: National target (Year 2030) for Out-of-school rate for children of primary school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_ROFST_L1
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_ROFST_L2:
     code: TRGT_2030_ED_ROFST_L2
     name: National target (Year 2030) for Out-of-school (lower secondary)
     description: National target (Year 2030) for Out-of-school rate for adolescents of lower secondary school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_ROFST_L2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_ED_ROFST_L3:
     code: TRGT_2030_ED_ROFST_L3
     name: National target (Year 2030) for Out-of-school (upper secondary)
     description: National target (Year 2030) for Out-of-school rate for youth of upper secondary school age
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ED_ROFST_L3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_GN_SG_LGL_GENEQEMP:
     code: TRGT_2030_GN_SG_LGL_GENEQEMP
     name: National target (Year 2030) for Gender Legal frameworks
     description: 'National target (Year 2030) for Legal frameworks that promote, enforce, and monitor gender equality- Area 3: Employment and economic benefits'
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_GN_SG_LGL_GENEQEMP
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_HVA_EPI_INF_RT_0-14:
     code: TRGT_2030_HVA_EPI_INF_RT_0-14
     name: National target (Year 2030) for HIV Infections (0-14y/o, both Sexes)
     description: National target (Year 2030) for Number of new HIV infections per 1,000 uninfected population, both sexes 0-14
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_HVA_EPI_INF_RT_0-14
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_HVA_EPI_INF_RT_15-19:
     code: TRGT_2030_HVA_EPI_INF_RT_15-19
     name: National target (Year 2030) for HIV Infections (15-19y/o, both Sexes)
     description: National target (Year 2030) for Number of new HIV infections per 1,000 uninfected population, both sexes 15-19
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_HVA_EPI_INF_RT_15-19
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_IM_DTP3:
     code: TRGT_2030_IM_DTP3
     name: National target (Year 2030) for DTP3 coverage
     description: National target (Year 2030) for Proportion of the target population covered by all vaccines included in their national programme - DTP3 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_IM_DTP3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_IM_HPV:
     code: TRGT_2030_IM_HPV
     name: National target (Year 2030) for HPVc coverage
     description: National target (Year 2030) for Proportion of the target population covered by all vaccines included in their national programme - HPVc (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_IM_HPV
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_IM_MCV1:
     code: TRGT_2030_IM_MCV1
     name: National target (Year 2030) for MCV1 coverage
     description: National target (Year 2030) for Proportion of the target population covered by all vaccines included in their national programme - MCV1 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_IM_MCV1
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_IM_MCV2:
     code: TRGT_2030_IM_MCV2
     name: National target (Year 2030) for MCV2 coverage
     description: National target (Year 2030) for Proportion of the target population covered by all vaccines included in their national programme - MCV2 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_IM_MCV2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_IM_PCV3:
     code: TRGT_2030_IM_PCV3
     name: National target (Year 2030) for PCV3 coverage
     description: National target (Year 2030) for Proportion of the target population covered by all vaccines included in their national programme - PCV3 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_IM_PCV3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH_ABR:
     code: TRGT_MNCH_ABR
     name: National target (Year 2030) for Adolescent birth rate (15-19)
     description: National target (Year 2030) for Adolescent birth rate (number of live births to adolescent women per 1,000 adolescent women)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH_ABR
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH_INFDEC:
     code: TRGT_MNCH_INFDEC
     name: National target (Year 2030) for Reproductive health agency
     description: National target (Year 2030) for Informed decision making_reproductive health
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH_INFDEC
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH_MMR:
     code: TRGT_MNCH_MMR
     name: National target (Year 2030) for Maternal mortality ratio
     description: National target (Year 2030) for Maternal mortality ratio (number of maternal deaths per 100,000 live births)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH_MMR
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH_SAB:
     code: TRGT_MNCH_SAB
     name: National target (Year 2030) for Skilled birth attendant
     description: National target (Year 2030) for Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH_SAB
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH_UHC:
     code: TRGT_MNCH_UHC
     name: National target (Year 2030) for Coverage of essential health services
     description: National target (Year 2030) for Coverage of essential health services
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH_UHC
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_ANE_WOM_15_49_MOD:
     code: TRGT_2030_NT_ANE_WOM_15_49_MOD
     name: National target (Year 2030) for Anaemia prevalence in women of reproductive age
     description: National target (Year 2030) for Prevalence of anaemia in women aged 15-49 (Modeled Estimates)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_ANE_WOM_15_49_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_ANT_HAZ_NE2_MOD:
     code: TRGT_2030_NT_ANT_HAZ_NE2_MOD
     name: National target (Year 2030) for Stunting
     description: National target (Year 2030) for Prevalence of stunting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_ANT_HAZ_NE2_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_ANT_WHZ_NE2:
     code: TRGT_2030_NT_ANT_WHZ_NE2
     name: National target (Year 2030) for Wasting
     description: National target (Year 2030) for Prevalence of wasting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_ANT_WHZ_NE2
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_ANT_WHZ_NE3:
     code: TRGT_2030_NT_ANT_WHZ_NE3
     name: National target (Year 2030) for Severe Wasting
     description: National target (Year 2030) for Prevalence of severe wasting among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_ANT_WHZ_NE3
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_ANT_WHZ_PO2_MOD:
     code: TRGT_2030_NT_ANT_WHZ_PO2_MOD
     name: National target (Year 2030) for Overweight
     description: National target (Year 2030) for Prevalence of overweight among children under 5 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_ANT_WHZ_PO2_MOD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_BF_EXBF:
     code: TRGT_2030_NT_BF_EXBF
     name: National target (Year 2030) for Exclusive Breastfeeding
     description: National target (Year 2030) for Exclusive Breastfeeding (0-5 months)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_BF_EXBF
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_NT_BW_LBW:
     code: TRGT_2030_NT_BW_LBW
     name: National target (Year 2030) for low birth weight
     description: National target (Year 2030) for Prevalence of low birth weight among new-borns
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_NT_BW_LBW
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_CHLD_1-14_PS-PSY-V_CGVR:
     code: TRGT_2030_PT_CHLD_1-14_PS-PSY-V_CGVR
     name: National target (Year 2030) for Violent discipline
     description: National target (Year 2030) for Proportion of children aged 1-14 years who experienced physical punishment and/or psychological aggression by caregivers in last month (% of children aged 1-14 years)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_CHLD_1-14_PS-PSY-V_CGVR
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_CHLD_5-17_LBR_ECON:
     code: TRGT_2030_PT_CHLD_5-17_LBR_ECON
     name: National target (Year 2030) for Child labour
     description: National target (Year 2030) for Proportion of children engaged in economic activity and household chores (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_CHLD_5-17_LBR_ECON
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_CHLD_5-17_LBR_ECON-HC:
     code: TRGT_2030_PT_CHLD_5-17_LBR_ECON-HC
     name: National target (Year 2030) for Child labour
     description: National target (Year 2030) for Proportion of children engaged in economic activity and household chores (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_CHLD_5-17_LBR_ECON-HC
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_CHLD_Y0T4_REG:
     code: TRGT_2030_PT_CHLD_Y0T4_REG
     name: National target (Year 2030) for Birth registration
     description: National target (Year 2030) for Proportion of children under 5 years of age whose births have been registered with a civil authority (% of children under 5 years of age)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_CHLD_Y0T4_REG
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_F_15-49_FGM:
     code: TRGT_2030_PT_F_15-49_FGM
     name: National target (Year 2030) for Female genital mutilation
     description: National target (Year 2030) for Proportion of girls and women aged 15-49 years who have undergone female genital mutilation/cutting (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_F_15-49_FGM
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_F_18-29_SX-V_AGE-18:
     code: TRGT_2030_PT_F_18-29_SX-V_AGE-18
     name: National target (Year 2030) for Sexual violence in childhood (Female)
     description: National target (Year 2030) for Proportion of population aged 18-29 years who experienced sexual violence by age of 18 (% of women aged 18-29)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_F_18-29_SX-V_AGE-18
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_F_20-24_MRD_U15:
     code: TRGT_2030_PT_F_20-24_MRD_U15
     name: National target (Year 2030) for Child Marriage
     description: National target (Year 2030) for Proportion of women aged 20-24 years who were married or in a union before age 18 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_F_20-24_MRD_U15
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_F_20-24_MRD_U18:
     code: TRGT_2030_PT_F_20-24_MRD_U18
     name: National target (Year 2030) for Child Marriage
     description: National target (Year 2030) for Proportion of women aged 20-24 years who were married or in a union before age 18 (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_F_20-24_MRD_U18
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH:
     code: TRGT_2030_PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH
     name: National target (Year 2030) for Intimate partner violence
     description: National target (Year 2030) for Proportion of ever-partnered women and girls aged 15-49 years subjected to physical and/or sexual violence by a current or former intimate partner in the previous 12 months (WHO modelled estimates)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PT_M_18-29_SX-V_AGE-18:
     code: TRGT_2030_PT_M_18-29_SX-V_AGE-18
     name: National target (Year 2030) for Sexual violence in childhood (Male)
     description: National target (Year 2030) for Proportion of population aged 18-29 years who experienced sexual violence by age of 18 (% of men aged 18-29)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PT_M_18-29_SX-V_AGE-18
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PV_CHLD_AllPOP_NATPOVL:
     code: TRGT_2030_PV_CHLD_AllPOP_NATPOVL
     name: National target (Year 2030) for Population in poverty
     description: National target (Year 2030) for Proportion of population living below the national poverty line, both sexes (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PV_CHLD_AllPOP_NATPOVL
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PV_CHLD_DPRV-S-L1-HS:
     code: TRGT_2030_PV_CHLD_DPRV-S-L1-HS
     name: National target (Year 2030) for Child poverty
     description: National target (Year 2030) for Proportion of children living in multidimensional poverty, internationally comparable indicators and thresholds, both sexes
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PV_CHLD_DPRV-S-L1-HS
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PV_CHLD_INCM-PL:
     code: TRGT_2030_PV_CHLD_INCM-PL
     name: National target (Year 2030) for Children in poor households
     description: National target (Year 2030) for Projected Children living in households with income below the national poverty line, both sexes (as a % of all children), Covid projections
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PV_CHLD_INCM-PL
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_PV_CHLD_SP:
     code: TRGT_2030_PV_CHLD_SP
     name: National target (Year 2030) for Children covered by Social Protection
     description: National target (Year 2030) for Proportion of child population covered by social protection floors/systems, both sexes (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_PV_CHLD_SP
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_SDG111_215:
     code: TRGT_2030_SDG111_215
     name: National target (Year 2030) for Children in HH below PPPU$ 2.15
     description: National target (Year 2030) for Children living in households with less than PPPU$1.90 updated to 2.15, both sexes (%)
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_SDG111_215
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_H-B:
     code: TRGT_2030_WS_PPL_H-B
     name: National target (Year 2030) for Basic hygiene
     description: National target (Year 2030) for Proportion of population with a handwashing facility with soap and water available at home
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_H-B
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_S-ALB:
     code: TRGT_2030_WS_PPL_S-ALB
     name: National target (Year 2030) for At least basic sanitation
     description: National target (Year 2030) for Proportion of population using at least basic sanitation services
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_S-ALB
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_S-OD:
     code: TRGT_2030_WS_PPL_S-OD
     name: National target (Year 2030) for Open defecation
     description: National target (Year 2030) for Proportion of population practicing open defecation
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_S-OD
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_S-SM:
     code: TRGT_2030_WS_PPL_S-SM
     name: National target (Year 2030) for Safely managed sanitation
     description: National target (Year 2030) for Proportion of population using safely managed sanitation services
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_S-SM
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_W-ALB:
     code: TRGT_2030_WS_PPL_W-ALB
     name: National target (Year 2030) for At least basic drinking water
     description: National target (Year 2030) for Proportion of population using at least basic drinking water services
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_W-ALB
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_2030_WS_PPL_W-SM:
     code: TRGT_2030_WS_PPL_W-SM
     name: National target (Year 2030) for Safely managed drinking water
     description: National target (Year 2030) for Proportion of population using safely managed drinking water services
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_WS_PPL_W-SM
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_CME:
     code: TRGT_CME
     name: Child mortality National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_CME
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_ED:
     code: TRGT_ED
     name: Education National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_ED
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_GN:
     code: TRGT_GN
     name: Gender National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_GN
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_HVA:
     code: TRGT_HVA
     name: HIV/AIDS National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_HVA
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_IM:
     code: TRGT_IM
     name: Immunization National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_IM
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_MNCH:
     code: TRGT_MNCH
     name: Maternal and child health National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_MNCH
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_NT:
     code: TRGT_NT
     name: Nutrition National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_NT
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_PT:
     code: TRGT_PT
     name: Child protection National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_PT
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_PV:
     code: TRGT_PV
     name: Child poverty National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_PV
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   TRGT_WS:
     code: TRGT_WS
     name: WASH National Targets
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_WS
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   WS:
     code: WS
     name: Water, sanitation and hygiene
@@ -4067,43 +4067,43 @@ indicators:
     name: Transition to work
     description: Transition to work
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_10-17_LBR_ECON:
     code: WT_ADLS_10-17_LBR_ECON
     name: Child labour thresholds (economic activity)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_10-17_LBR_ECON
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_10-17_LBR_HC:
     code: WT_ADLS_10-17_LBR_HC
     name: Child labour thresholds (household chores)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_10-17_LBR_HC
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_10-17_TIME_ECON:
     code: WT_ADLS_10-17_TIME_ECON
     name: Time spent in economic activities
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_10-17_TIME_ECON
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_10-17_TIME_HC:
     code: WT_ADLS_10-17_TIME_HC
     name: Time spent in household chores
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_10-17_TIME_HC
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_15-19_ED_NEET:
     code: WT_ADLS_15-19_ED_NEET
     name: Percentage of adolescents (aged 15-19 years) not in education, employment or training
     description: Percentage of adolescents (aged 15-19 years) not in education, employment or training
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_15-19_ED_NEET
-    category: GLOBAL_DATAFLOW
+    category: PT
   WT_ADLS_15-19_LAB_FRC_UNEMP:
     code: WT_ADLS_15-19_LAB_FRC_UNEMP
     name: Percentage of adolescents (aged 15-19 years) in the labour force who are unemployed
     description: Percentage of adolescents (aged 15-19 years) in the labour force who are unemployed
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).WT_ADLS_15-19_LAB_FRC_UNEMP
-    category: GLOBAL_DATAFLOW
+    category: PT
   WS_SCH_H-F:
     code: WS_SCH_H-F
     name: Proportion of schools with handwashing facilities
@@ -4193,7 +4193,7 @@ indicators:
     name: Proportion of children aged 24-59 months of age who are developmentally on track in health, learning and psychosocial well-being, by sex
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).TRGT_2030_ECD_CHLD_LMPSL
-    category: GLOBAL_DATAFLOW
+    category: CHILD_RELATED_SDG
   NT_CF_FG_0_T_2:
     code: NT_CF_FG_0_T_2
     name: Severe food poverty

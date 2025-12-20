@@ -169,7 +169,12 @@ CACHE_MAX_AGE_DAYS <- 30
     EMPH = "EMPH",
     EDUN = "EDUCATION",
     SDG4 = "EDUCATION_UIS_SDG",
-    PV = "CHLD_PVTY"
+    PV = "CHLD_PVTY",
+    # Added mappings to reduce GLOBAL_DATAFLOW catch-all
+    COD = "CAUSE_OF_DEATH",      # Cause of death indicators (83)
+    TRGT = "CHILD_RELATED_SDG",  # SDG/National targets (77)
+    SPP = "SOC_PROTECTION",      # Social protection programs (10)
+    WT = "PT"                    # Child labour/adolescent indicators (7)
   )
   
   # Extract prefix (first part before underscore)

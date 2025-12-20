@@ -111,18 +111,52 @@ def parse_code(element: ET.Element, include_category: bool = False, codelist_id:
         'description': escape_yaml_string(get_text(element, 'com:Description', NAMESPACES))
     }
     
-    # Add category for indicators (prefix before first underscore)
+    # Add category for indicators - map prefix to dataflow name
+    # Aligned with Python/R indicator_registry.py prefix mappings
     if include_category and code_id:
-        if '_' in code_id:
-            result['category'] = code_id.split('_')[0]
-        else:
-            result['category'] = code_id
+        prefix = code_id.split('_')[0] if '_' in code_id else code_id
+        result['category'] = _map_prefix_to_dataflow(prefix)
         
         # Add URN for indicators
         if codelist_id:
             result['urn'] = f"urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:{codelist_id}(1.0).{code_id}"
     
     return result
+
+
+# Mapping of indicator code prefixes to SDMX dataflow names
+# This ensures consistency across Python, R, and Stata
+PREFIX_TO_DATAFLOW = {
+    'CME': 'CME',
+    'NT': 'NUTRITION',
+    'IM': 'IMMUNISATION',
+    'ED': 'EDUCATION',
+    'WS': 'WASH_HOUSEHOLDS',
+    'HVA': 'HIV_AIDS',
+    'MNCH': 'MNCH',
+    'PT': 'PT',
+    'ECD': 'ECD',
+    'DM': 'DM',
+    'ECON': 'ECON',
+    'GN': 'GENDER',
+    'MG': 'MIGRATION',
+    'FD': 'FUNCTIONAL_DIFF',
+    'PP': 'POPULATION',
+    'EMPH': 'EMPH',
+    'EDUN': 'EDUCATION',
+    'SDG4': 'EDUCATION_UIS_SDG',
+    'PV': 'CHLD_PVTY',
+    # Added mappings to reduce GLOBAL_DATAFLOW catch-all
+    'COD': 'CAUSE_OF_DEATH',      # Cause of death indicators (83)
+    'TRGT': 'CHILD_RELATED_SDG',  # SDG/National targets (77)
+    'SPP': 'SOC_PROTECTION',      # Social protection programs (10)
+    'WT': 'PT',                   # Child labour/adolescent indicators (7)
+}
+
+
+def _map_prefix_to_dataflow(prefix: str) -> str:
+    """Map an indicator code prefix to its SDMX dataflow name."""
+    return PREFIX_TO_DATAFLOW.get(prefix, 'GLOBAL_DATAFLOW')
 
 
 def parse_dimension(element: ET.Element) -> Dict[str, Any]:
