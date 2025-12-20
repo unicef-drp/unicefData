@@ -37,7 +37,7 @@
 
 {marker discovery}{...}
 {pstd}
-{ul:Discovery Commands} {it:(New in v1.3.0, enhanced v1.5.1)}
+{ul:Discovery Commands} {it:(New in v1.3.0, enhanced v1.5.0)}
 
 {p 8 16 2}
 {cmd:unicefdata, flows} [{opt detail} {opt verbose}]
