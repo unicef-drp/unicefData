@@ -2,15 +2,12 @@ name: Python Tests
 
 on:
   push:
-    branches: [main, master]
-    paths:
-      - 'python/**'
-      - '.github/workflows/python-tests.yaml'
+    branches:
+      - '**'
   pull_request:
-    branches: [main, master]
-    paths:
-      - 'python/**'
-      - '.github/workflows/python-tests.yaml'
+    branches:
+      - '**'
+  workflow_dispatch:
 
 jobs:
   test:
