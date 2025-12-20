@@ -174,7 +174,8 @@ program define _unicef_list_indicators, rclass
                 local nm = substr("`nm'", 1, `name_width' - 3) + "..."
             }
             
-            noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') dataflow(`dataflow_upper') clear:`ind'}" as text _col(`col_name') "`nm'"
+            * Use info() for safer navigation (doesn't fail for meta-indicators)
+            noi di as text _col(`col_ind') "{stata unicefdata, info(`ind'):`ind'}" as text _col(`col_name') "`nm'"
         }
     }
     

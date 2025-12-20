@@ -297,12 +297,12 @@ program define _unicef_search_indicators, rclass
                 local nm = substr("`nm'", 1, `name_width' - 3) + "..."
             }
             
-            * Make indicator and dataflow clickable
+            * Use info() for indicator (safer) and indicators() for dataflow
             if ("`df'" != "" & "`df'" != "N/A") {
-                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') dataflow(`df') clear:`ind'}" as text _col(`col_df') "{stata unicefdata, indicators(`df'):`df'}" _col(`col_name') "`nm'"
+                noi di as text _col(`col_ind') "{stata unicefdata, info(`ind'):`ind'}" as text _col(`col_df') "{stata unicefdata, indicators(`df'):`df'}" _col(`col_name') "`nm'"
             }
             else {
-                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') clear:`ind'}" as text _col(`col_df') "`df'" _col(`col_name') "`nm'"
+                noi di as text _col(`col_ind') "{stata unicefdata, info(`ind'):`ind'}" as text _col(`col_df') "`df'" _col(`col_name') "`nm'"
             }
         }
         
