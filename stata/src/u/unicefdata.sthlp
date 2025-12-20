@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.5.1  20Dec2025}{...}
+{* *! version 1.5.0  20Dec2025}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}

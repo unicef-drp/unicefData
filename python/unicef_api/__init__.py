@@ -11,7 +11,7 @@ __email__ = "jazevedo@unicef.org"
 
 from unicef_api.core import unicefData, unicefdata, parse_year
 from unicef_api.sdmx import get_sdmx
-from unicef_api.flows import list_dataflows
+from unicef_api.flows import list_dataflows, dataflow_schema, print_dataflow_schema
 from unicef_api.indicator_registry import (
     get_dataflow_for_indicator,
     get_indicator_info,
@@ -49,6 +49,8 @@ __all__ = [
     "get_sdmx",
     # Discovery functions
     "list_dataflows",
+    "dataflow_schema",
+    "print_dataflow_schema",
     "list_indicators",
     "search_indicators",
     "list_categories",

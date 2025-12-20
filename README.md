@@ -729,7 +729,7 @@ python tests/report_metadata_status.py --detailed
 | Unified `unicefData()` / `unicefdata` API | ✅ | ✅ | ✅ |
 | **`search_indicators()`** | ✅ | ✅ | ✅ |
 | **`list_categories()`** | ✅ | ✅ | ✅ |
-| **Dataflow schema display** | 🔜 | 🔜 | ✅ |
+| **Dataflow schema display** | ✅ | ✅ | ✅ |
 | Auto dataflow detection | ✅ | ✅ | ✅ |
 | Filter by country, year, sex | ✅ | ✅ | ✅ |
 | Unified `year` parameter | ✅ | ✅ | ✅ |
