@@ -1485,24 +1485,65 @@ program define unicefdata, rclass
         return local url "`full_url'"
         
         *-----------------------------------------------------------------------
-        * Display basic result summary (fast - no YAML parsing)
+        * Display indicator metadata (now fast with direct file lookup)
         *-----------------------------------------------------------------------
         
         noi di ""
         noi di as text "{hline 70}"
+        
         local n_indicators : word count `indicator'
         if (`n_indicators' == 1) {
-            noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
+            * Get indicator info (now fast - direct file search, no full YAML parse)
+            capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
+            if (_rc == 0) {
+                * Store metadata return values
+                return local indicator_name "`r(name)'"
+                return local indicator_category "`r(category)'"
+                return local indicator_dataflow "`r(dataflow)'"
+                return local indicator_description "`r(description)'"
+                return local indicator_urn "`r(urn)'"
+                return local has_sex "`r(has_sex)'"
+                return local has_age "`r(has_age)'"
+                return local has_wealth "`r(has_wealth)'"
+                return local has_residence "`r(has_residence)'"
+                return local has_maternal_edu "`r(has_maternal_edu)'"
+                return local supported_dims "`r(supported_dims)'"
+                
+                * Display indicator info
+                noi di as text "Indicator: " as result "`indicator'" as text " - " as result "`r(name)'"
+                noi di as text "{hline 70}"
+                noi di as text " Dataflow:    " as result "`dataflow'"
+                noi di as text " Observations: " as result _N
+                
+                * Show supported disaggregations on one line
+                local disagg_list ""
+                if ("`r(has_sex)'" == "1") local disagg_list "`disagg_list' sex"
+                if ("`r(has_age)'" == "1") local disagg_list "`disagg_list' age"
+                if ("`r(has_wealth)'" == "1") local disagg_list "`disagg_list' wealth"
+                if ("`r(has_residence)'" == "1") local disagg_list "`disagg_list' residence"
+                if ("`r(has_maternal_edu)'" == "1") local disagg_list "`disagg_list' maternal_edu"
+                local disagg_list = strtrim("`disagg_list'")
+                if ("`disagg_list'" != "") {
+                    noi di as text " Disaggregations: " as result "`disagg_list'"
+                }
+            }
+            else {
+                * Fallback if metadata lookup failed
+                noi di as text "Indicator: " as result "`indicator'" as text " (Dataflow: " as result "`dataflow'" as text ")"
+                noi di as text "{hline 70}"
+                noi di as text " Observations: " as result _N
+            }
         }
         else if (`n_indicators' > 1) {
             noi di as text "Retrieved " as result "`n_indicators'" as text " indicators from dataflow " as result "`dataflow'"
+            noi di as text "{hline 70}"
+            noi di as text " Observations: " as result _N
         }
         else {
             noi di as text "Retrieved data from dataflow: " as result "`dataflow'"
+            noi di as text "{hline 70}"
+            noi di as text " Observations: " as result _N
         }
-        noi di as text "Observations: " as result _N
-        noi di as text "{hline 70}"
-        noi di as text "{p 2 2 2}Use {stata unicefdata, info(`indicator')} for detailed metadata{p_end}"
         noi di as text "{hline 70}"
         
         if ("`verbose'" != "") {
