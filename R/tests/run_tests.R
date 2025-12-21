@@ -19,10 +19,13 @@ IN_CI <- Sys.getenv("CI") != "" || Sys.getenv("GITHUB_ACTIONS") != ""
 
 # Check actual network connectivity (for true offline detection)
 check_network <- function(timeout = 5) {
+  old_timeout <- getOption("timeout")
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  options(timeout = timeout)
   tryCatch({
     # Try to reach UNICEF SDMX API
     con <- url("https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow", open = "r")
-    on.exit(try(close(con), silent = TRUE))
+    on.exit(try(close(con), silent = TRUE), add = TRUE)
     TRUE
   }, error = function(e) {
     FALSE
