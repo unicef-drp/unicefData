@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+type: software
+title: "unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data"
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+authors:
+  - family-names: Azevedo
+    given-names: "Joao Pedro"
+    email: "jazevedo@unicef.org"
+    affiliation: "UNICEF"
+  - family-names: Avanesian
+    given-names: Garen
+    affiliation: "UNICEF"
+repository-code: "https://github.com/unicef-drp/unicefData"
+url: "https://github.com/unicef-drp/unicefData"
+keywords:
+  - UNICEF
+  - SDMX
+  - indicators
+  - "child welfare"
+  - R
+  - Python
+  - Stata
+  - "data warehouse"
+license: MIT
+version: 1.5.1
+date-released: "2025-12-19"  # Latest release date (v1.5.1)
+date-created: "2024"
+contact:
+  - family-names: Azevedo
+    given-names: "Joao Pedro"
+    email: "jazevedo@unicef.org"
+    affiliation: "UNICEF"
+references:
+  - authors:
+      - family-names: Azevedo
+        given-names: "Joao Pedro"
+    title: "UNICEF SDMX Data Warehouse"
+    url: "https://sdmx.data.unicef.org/"
+    type: website

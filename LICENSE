@@ -1,4 +1,45 @@
-MIT License
+# License
+
+## Suggested Citation
+
+If you use unicefData in your research, please cite it as follows:
+
+**APA Format:**
+> Azevedo, J. P., & Avanesian, G. (2025). unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data (v1.5.1) [Computer software]. Retrieved from https://github.com/unicef-drp/unicefData
+
+**BibTeX:**
+```bibtex
+@software{azevedo2025unicefdata,
+  title={unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data},
+  author={Azevedo, Joao Pedro and Avanesian, Garen},
+  year={2025},
+  version={1.5.1},
+  url={https://github.com/unicef-drp/unicefData}
+}
+```
+
+**R Format:**
+```r
+citation("unicefData")
+```
+
+**Python Format:**
+```
+Azevedo, J. P., & Avanesian, G. (2025). unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data, version 1.5.1. 
+Retrieved from https://github.com/unicef-drp/unicefData
+```
+
+**Stata Format:**
+```
+Azevedo, J. P., & Avanesian, G. (2025). unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data, version 1.5.1. 
+Retrieved from https://github.com/unicef-drp/unicefData
+```
+
+For the most current citation information, see [CITATION.cff](CITATION.cff).
+
+---
+
+## MIT License
 
 Copyright (c) 2024-2025 Joao Pedro Azevedo, UNICEF
 
