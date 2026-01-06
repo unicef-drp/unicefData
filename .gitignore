@@ -41,6 +41,8 @@ ENV/
 
 # Logs
 *.log
+!stata/qa/run_tests.log
+!stata/qa/test_history.txt
 logs/
 log/
 
@@ -93,11 +95,35 @@ validation/validation_results.csv
 /compare_outputs.py
 /update_metadata_current.do
 
+# SSC staging artifacts
+stata/ssc/temp_unzip/
+stata/ssc/*.zip
+
 # Stata test artifacts
 stata/src/test_*.do
 stata/src/test_*.log
 stata/tests/output/*
 !stata/tests/output/.gitkeep
+stata/qa/run_tests_*.log
+stata/qa/*_diagnose*.log
+stata/qa/check_*.log
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.tag
+*.pp1
+*.nav
+*.snm
+*.vrb
 
 # Generated package files
 *.tar.gz

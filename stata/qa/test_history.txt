@@ -1,0 +1,84 @@
+================================================================================
+UNICEFDATA TEST HISTORY
+================================================================================
+This file records all test runs for unicefdata package.
+Each entry shows: date/time, version tested, Stata version, and results.
+================================================================================
+
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  14:32:35
+Ended:    14:32:43
+Duration: 0m 8s
+Version:  1.5.1
+Stata:    17
+Tests:    8 run, 8 passed, 0 failed
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  14:49:51
+Ended:    14:50:10
+Duration: 0m 19s
+Version:  1.5.1
+Stata:    17
+Tests:    13 run, 12 passed, 1 failed
+Result:   FAILED
+Failed:   DL-05
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  14:54:11
+Ended:    14:54:33
+Duration: 0m 22s
+Version:  1.5.1
+Stata:    17
+Tests:    13 run, 12 passed, 1 failed
+Result:   FAILED
+Failed:   DL-05
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  15:11:04
+Ended:    15:11:26
+Duration: 0m 22s
+Version:  1.5.1
+Stata:    17
+Tests:    18 run, 15 passed, 3 failed
+Result:   FAILED
+Failed:   DL-05, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  15:22:44
+Ended:    15:23:08
+Duration: 0m 24s
+Version:  1.5.1
+Stata:    17
+Tests:    18 run, 15 passed, 3 failed
+Result:   FAILED
+Failed:   DL-05, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  16:25:55
+Ended:    16:26:42
+Duration: 0m 47s
+Version:  1.5.1
+Stata:    17
+Tests:    28 run, 19 passed, 7 failed
+Result:   FAILED
+Failed:   DL-05, TRANS-01, MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
