@@ -16,6 +16,19 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 
 `%>%` <- magrittr::`%>%`
 
+# 404 detector before anything else
+.is_http_404 <- function(e) {
+  if (inherits(e, "sdmx_404")) return(TRUE)
+  if (inherits(e, "http_404")) return(TRUE)
+
+  resp <- tryCatch(e$response, error = function(x) NULL)
+  if (!is.null(resp) && inherits(resp, "response")) {
+    return(httr::status_code(resp) == 404)
+  }
+
+  FALSE
+}
+
 # --- Helper: Fetch SDMX ---
 
 #' Fetch SDMX content as text
@@ -27,6 +40,17 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 #' @keywords internal
 fetch_sdmx_text <- function(url, ua, retry) {
   resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
+  status <- httr::status_code(resp)
+  # 404 error
+  if (identical(status, 404L)) {
+    stop(
+      structure(
+        list(message = sprintf("Not Found (404): %s", url), url = url, status = status),
+        class = c("sdmx_404", "error", "condition")
+      )
+    )
+  }
+  # for other errors we can keep the normal behaviour
   httr::stop_for_status(resp)
   httr::content(resp, as = "text", encoding = "UTF-8")
 }
@@ -38,12 +62,12 @@ fetch_sdmx_text <- function(url, ua, retry) {
 #' @export
 detect_dataflow <- function(indicator) {
   if (is.null(indicator)) return(NULL)
-  
+
   # 1. Try registry if available
   if (exists("get_dataflow_for_indicator", mode = "function")) {
     return(get_dataflow_for_indicator(indicator))
   }
-  
+
   # 2. Check known overrides
   indicator_overrides <- list(
     "PT_F_20-24_MRD_U18_TND" = "PT_CM", "PT_F_20-24_MRD_U15" = "PT_CM",
@@ -59,27 +83,105 @@ detect_dataflow <- function(indicator) {
     "ED_READ_L2" = "EDUCATION_UIS_SDG",
     "PV_CHLD_DPRV-S-L1-HS" = "CHLD_PVTY"
   )
-  
+
   if (indicator %in% names(indicator_overrides)) {
     return(indicator_overrides[[indicator]])
   }
-  
+
   # 3. Infer from prefix
   parts <- strsplit(indicator, "_")[[1]]
   prefix <- parts[1]
-  
+
   prefix_map <- list(
     CME = "CME", NT = "NUTRITION", IM = "IMMUNISATION", ED = "EDUCATION",
     WS = "WASH_HOUSEHOLDS", HVA = "HIV_AIDS", MNCH = "MNCH", PT = "PT",
     ECD = "ECD", PV = "CHLD_PVTY"
   )
-  
+
   if (prefix %in% names(prefix_map)) {
     return(prefix_map[[prefix]])
   }
-  
+
   return("GLOBAL_DATAFLOW")
 }
+
+# in Python the failing indicator is succeeded by GLOBAL_DATAFLOW, we need the
+# same in R. Let's try detected flow first and if 404, GLOBAL_DATAFLOW. We need
+# a helper function for that:
+get_fallback_dataflows <- function(original_flow) {
+  if (!is.null(original_flow) && !identical(original_flow, "GLOBAL_DATAFLOW")) {
+    return("GLOBAL_DATAFLOW")
+  }
+  character(0)
+}
+
+# helper function to fetch and signals 404
+.fetch_one_flow <- function(
+    indicator,
+    dataflow,
+    countries = NULL,
+    start_year_str = NULL,
+    end_year_str = NULL,
+    max_retries = 3,
+    version = "1.0",
+    page_size = 100000,
+    verbose = TRUE
+) {
+  base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+  indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
+
+  full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
+  if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
+  if (!is.null(end_year_str))   full_url <- paste0(full_url, "&endPeriod=", end_year_str)
+
+  ua <- httr::user_agent("unicefData/1.0 (+https://github.com/jpazvd/unicefData)")
+
+  pages <- list()
+  page <- 0L
+
+  repeat {
+    page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
+    if (verbose) message(sprintf("Fetching page %d...", page + 1))
+
+    # IMPORTANT: catch 404 as a signal, not a fatal error
+    out <- tryCatch(
+      {
+        txt <- fetch_sdmx_text(page_url, ua, max_retries)     # may throw http_404
+        readr::read_csv(txt, show_col_types = FALSE)
+      },
+      error = function(e) e
+    )
+
+    if (inherits(out, "error")) {
+      if (.is_http_404(out)) {
+        # "Not in this dataflow"
+        return(list(status = "not_found", df = NULL))
+      }
+      # Any other error is still fatal (transient errors should be handled by RETRY)
+      stop(out)
+    }
+
+    df <- out
+    if (is.null(df) || nrow(df) == 0) break
+
+    pages[[length(pages) + 1L]] <- df
+    if (nrow(df) < page_size) break
+
+    page <- page + 1L
+    Sys.sleep(0.2)
+  }
+
+  df_all <- dplyr::bind_rows(pages)
+
+  # Filter countries (post-fetch)
+  if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
+    df_all <- df_all %>% dplyr::filter(REF_AREA %in% countries)
+  }
+
+  list(status = "ok", df = df_all)
+}
+
 
 #' @title Fetch Raw UNICEF Data
 #' @description Low-level fetcher for UNICEF SDMX API.
@@ -93,6 +195,9 @@ detect_dataflow <- function(indicator) {
 #' @param page_size Integer, number of rows per page.
 #' @param verbose Logical, print progress messages.
 #' @export
+
+# changes in this function to replace the internal URL block
+
 unicefData_raw <- function(
     indicator = NULL,
     dataflow = NULL,
@@ -108,13 +213,7 @@ unicefData_raw <- function(
   if (is.null(dataflow) && is.null(indicator)) {
     stop("Either 'indicator' or 'dataflow' must be specified.")
   }
-  
-  # Auto-detect dataflow if missing
-  if (is.null(dataflow)) {
-    dataflow <- detect_dataflow(indicator[1])
-    if (verbose) message(sprintf("Auto-detected dataflow '%s'", dataflow))
-  }
-  
+
   # Validate year
   validate_year <- function(x) {
     if (!is.null(x)) {
@@ -126,49 +225,108 @@ unicefData_raw <- function(
   }
   start_year_str <- validate_year(start_year)
   end_year_str <- validate_year(end_year)
-  
+
   # Get version if needed
   ver <- version %||% "1.0" # Simplified version handling for raw fetch
-  
-  # Build URL
-  base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-  indicator_str <- if (!is.null(indicator)) paste0(".", paste(indicator, collapse = "+"), ".") else "."
-  rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, ver, indicator_str)
-  full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
-  
-  if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
-  if (!is.null(end_year_str)) full_url <- paste0(full_url, "&endPeriod=", end_year_str)
-  
-  # Paging
-  ua <- httr::user_agent("unicefData/1.0")
-  pages <- list()
-  page <- 0L
-  
-  repeat {
-    page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-    if (verbose) message(sprintf("Fetching page %d...", page + 1))
-    
-    df <- tryCatch(
-      readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
-      error = function(e) NULL
+
+  # determine primary dataflow
+  if (is.null(dataflow)) {
+    dataflow <- detect_dataflow(indicator[1])
+    if (verbose) message(sprintf("Auto-detected dataflow '%s'", dataflow))
+  }
+
+  # Candidate flows: primary + fallbacks
+  flows <- dataflow
+  if (!is.null(indicator)) {
+    fb <- get_fallback_dataflows(original_flow = dataflow)
+    if (length(fb) > 0) flows <- unique(c(dataflow, fb))
+  }
+
+  last_not_found <- FALSE
+  for (flow in flows) {
+    if (verbose && !identical(flow, dataflow)) {
+      message(sprintf("Trying fallback dataflow '%s'...", flow))
+    }
+
+    res <- .fetch_one_flow(
+      indicator = indicator,
+      dataflow  = flow,
+      countries = countries,
+      start_year_str = start_year_str,
+      end_year_str   = end_year_str,
+      max_retries = max_retries,
+      version = ver,
+      page_size = page_size,
+      verbose = verbose
     )
-    
-    if (is.null(df) || nrow(df) == 0) break
-    pages[[length(pages) + 1L]] <- df
-    if (nrow(df) < page_size) break
-    page <- page + 1L
-    Sys.sleep(0.2)
+
+    if (identical(res$status, "ok")) {
+      return(res$df)
+    }
+
+    if (identical(res$status, "not_found")) {
+      last_not_found <- TRUE
+      next
+    }
   }
-  
-  df_all <- dplyr::bind_rows(pages)
-  
-  # Filter countries
-  if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
-    df_all <- df_all %>% dplyr::filter(REF_AREA %in% countries)
+
+  # If all candidates were 404 (indicator not found in any attempted flow), return empty
+  if (last_not_found) {
+    if (verbose) message(sprintf(
+      "No data found: indicator '%s' not present in tried dataflows: %s",
+      indicator[1], paste(flows, collapse = ", ")
+    ))
+    return(dplyr::tibble())
   }
-  
-  return(df_all)
+
+  # Otherwise: no pages but not 404 -> empty
+  dplyr::tibble()
 }
+
+#
+#
+#   # Build URL
+#   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+#   indicator_str <- if (!is.null(indicator)) paste0(".", paste(indicator, collapse = "+"), ".") else "."
+#   rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, ver, indicator_str)
+#   full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
+#
+#   if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
+#   if (!is.null(end_year_str)) full_url <- paste0(full_url, "&endPeriod=", end_year_str)
+#
+#   # Paging
+#   ua <- httr::user_agent("unicefData/1.0")
+#   pages <- list()
+#   page <- 0L
+#
+#   repeat {
+#     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
+#     if (verbose) message(sprintf("Fetching page %d...", page + 1))
+#     # this NULL here masks 404, let's fix and make fallback possible:
+#     df <- tryCatch(
+#       readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
+#       error = function(e) {
+#         if (inherits(e, "sdmx_404")) stop(e)
+#         NULL
+#       }
+#     )
+#
+#     if (is.null(df) || nrow(df) == 0) break
+#     pages[[length(pages) + 1L]] <- df
+#     if (nrow(df) < page_size) break
+#     page <- page + 1L
+#     Sys.sleep(0.2)
+#   }
+#
+#   df_all <- dplyr::bind_rows(pages)
+#
+#   # Filter countries
+#   if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
+#     df_all <- df_all %>% dplyr::filter(REF_AREA %in% countries)
+#   }
+#
+#   return(df_all)
+# }
 
 #' @title Validate Data Against Schema
 #' @description Checks if dataframe matches expected schema. Warns on mismatch.
@@ -180,7 +338,7 @@ validate_unicef_schema <- function(df, dataflow) {
     schema_script <- file.path(script_dir, "schema_sync.R")
     if (file.exists(schema_script)) source(schema_script)
   }
-  
+
   if (exists("load_dataflow_schema", mode = "function")) {
     schema <- load_dataflow_schema(dataflow)
     if (!is.null(schema)) {
@@ -188,10 +346,10 @@ validate_unicef_schema <- function(df, dataflow) {
       expected_dims <- sapply(schema$dimensions, function(d) d$id)
       missing_dims <- setdiff(expected_dims, names(df))
       if (length(missing_dims) > 0) {
-        warning(sprintf("Dataflow '%s': Missing expected dimensions: %s", 
+        warning(sprintf("Dataflow '%s': Missing expected dimensions: %s",
                         dataflow, paste(missing_dims, collapse = ", ")))
       }
-      
+
       # Check attributes (optional but good to know)
       expected_attrs <- sapply(schema$attributes, function(a) a$id)
       missing_attrs <- setdiff(expected_attrs, names(df))
@@ -206,7 +364,7 @@ validate_unicef_schema <- function(df, dataflow) {
 #' @export
 clean_unicef_data <- function(df) {
   if (nrow(df) == 0) return(df)
-  
+
   # Rename map
   rename_map <- c(
     "indicator" = "INDICATOR", "indicator_name" = "Indicator",
@@ -220,10 +378,10 @@ clean_unicef_data <- function(df) {
     "obs_status_name" = "Observation Status", "data_source" = "DATA_SOURCE",
     "ref_period" = "REF_PERIOD", "country_notes" = "COUNTRY_NOTES"
   )
-  
+
   existing_renames <- rename_map[rename_map %in% names(df)]
   df_clean <- df %>% dplyr::rename(!!!existing_renames)
-  
+
   # Convert period
   convert_period <- function(val) {
     if (is.na(val)) return(NA_real_)
@@ -234,29 +392,29 @@ clean_unicef_data <- function(df) {
     }
     as.numeric(val_str)
   }
-  
+
   if ("TIME_PERIOD" %in% names(df_clean)) {
     df_clean$period <- sapply(df_clean$TIME_PERIOD, convert_period)
     df_clean$value <- as.numeric(df_clean$OBS_VALUE)
     df_clean <- df_clean %>% dplyr::select(-TIME_PERIOD, -OBS_VALUE)
   }
-  
+
   # Standard columns
   standard_cols <- c("indicator", "indicator_name", "iso3", "country", "geo_type", "period", "value",
-                     "unit", "unit_name", "sex", "sex_name", "age", 
-                     "wealth_quintile", "wealth_quintile_name", "residence", 
-                     "maternal_edu_lvl", "lower_bound", "upper_bound", 
-                     "obs_status", "obs_status_name", "data_source", 
+                     "unit", "unit_name", "sex", "sex_name", "age",
+                     "wealth_quintile", "wealth_quintile_name", "residence",
+                     "maternal_edu_lvl", "lower_bound", "upper_bound",
+                     "obs_status", "obs_status_name", "data_source",
                      "ref_period", "country_notes")
-  
+
   for (col in standard_cols) {
     if (!col %in% names(df_clean)) df_clean[[col]] <- NA_character_
   }
-  
+
   # Reorder
   extra_cols <- setdiff(names(df_clean), standard_cols)
   df_clean <- df_clean %>% dplyr::select(dplyr::all_of(standard_cols), dplyr::all_of(extra_cols))
-  
+
   # Add country names if missing
   if (all(is.na(df_clean$country)) && "iso3" %in% names(df_clean)) {
     df_clean <- df_clean %>%
@@ -267,7 +425,7 @@ clean_unicef_data <- function(df) {
       ) %>%
       dplyr::select(iso3, country, dplyr::everything())
   }
-  
+
   # Add geo_type (country vs aggregate)
   if ("iso3" %in% names(df_clean)) {
     valid_iso3 <- countrycode::codelist$iso3c
@@ -276,7 +434,7 @@ clean_unicef_data <- function(df) {
         geo_type = dplyr::if_else(iso3 %in% valid_iso3, "country", "aggregate")
       )
   }
-  
+
   return(df_clean)
 }
 #' @title Filter UNICEF Data (Sex, Age, Wealth, etc.)
@@ -291,15 +449,15 @@ clean_unicef_data <- function(df) {
 #' @export
 filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, residence = NULL, maternal_edu = NULL, verbose = TRUE) {
   if (nrow(df) == 0) return(df)
-  
+
   available_disaggregations <- c()
   applied_filters <- c()
-  
+
   # Filter by sex (default is "_T" for total)
   if ("SEX" %in% names(df)) {
     sex_values <- unique(na.omit(df$SEX))
     if (length(sex_values) > 1 || (length(sex_values) == 1 && sex_values[1] != "_T")) {
-      available_disaggregations <- c(available_disaggregations, 
+      available_disaggregations <- c(available_disaggregations,
                                      paste0("sex: ", paste(sex_values, collapse = ", ")))
     }
     if (!is.null(sex) && !identical(sex, "ALL")) {
@@ -307,7 +465,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       applied_filters <- c(applied_filters, paste0("sex: ", paste(sex, collapse = ", ")))
     }
   }
-  
+
   # Filter by age (default: keep only total age groups)
   if ("AGE" %in% names(df)) {
     age_values <- unique(na.omit(df$AGE))
@@ -328,7 +486,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       }
     }
   }
-  
+
   # Filter by wealth quintile (default: total)
   if ("WEALTH_QUINTILE" %in% names(df)) {
     wq_values <- unique(na.omit(df$WEALTH_QUINTILE))
@@ -344,7 +502,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       applied_filters <- c(applied_filters, paste0("wealth_quintile: ", wealth))
     }
   }
-  
+
   # Filter by residence (default: total)
   if ("RESIDENCE" %in% names(df)) {
     res_values <- unique(na.omit(df$RESIDENCE))
@@ -360,7 +518,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       applied_filters <- c(applied_filters, paste0("residence: ", residence))
     }
   }
-  
+
   # Filter by maternal education level (default: total)
   if ("MATERNAL_EDU_LVL" %in% names(df)) {
     edu_values <- unique(na.omit(df$MATERNAL_EDU_LVL))
@@ -376,7 +534,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       applied_filters <- c(applied_filters, paste0("maternal_edu_lvl: ", maternal_edu))
     }
   }
-  
+
   # Log available disaggregations and applied filters
   if (verbose) {
     if (length(available_disaggregations) > 0) {
@@ -387,7 +545,7 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
       message(sprintf("Applied filters: %s.", paste(applied_filters, collapse = "; ")))
     }
   }
-  
+
   return(df)
 }
 
@@ -407,20 +565,20 @@ validate_unicef_schema <- function(df, dataflow_id) {
       source(schema_path, local = FALSE)
     }
   }
-  
+
   if (!exists("load_dataflow_schema", mode = "function")) {
     warning("Could not load schema validation functions. Skipping validation.")
     return(df)
   }
-  
+
   expected_cols <- get_expected_columns(dataflow_id)
   if (length(expected_cols) == 0) return(df)
-  
+
   missing_cols <- setdiff(expected_cols, names(df))
   if (length(missing_cols) > 0) {
-    warning(sprintf("Data for %s is missing expected columns: %s", 
+    warning(sprintf("Data for %s is missing expected columns: %s",
                     dataflow_id, paste(missing_cols, collapse = ", ")))
   }
-  
+
   return(df)
 }
