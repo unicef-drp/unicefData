@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14+-1a5276.svg)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)]()
 
 **Stata package for downloading UNICEF child welfare indicators via SDMX API**
 
@@ -446,7 +446,8 @@ If you're familiar with `wbopendata` (World Bank data), the syntax is very simil
 ## Version History
 
 | Version | Date | Changes |
-|---------|------|---------|| 1.5.0 | Dec 2025 | Added `dataflow()` schema display, `dataflows` alias, improved search hyperlinks || 1.3.1 | Dec 2025 | Added `categories` command, `dataflow()` filter in search |
+|---------|------|---------|| 1.5.2 | Jan 2026 | Enhanced help file documentation, comprehensive examples, attributes() option improvements || 1.5.0 | Dec 2025 | Added `dataflow()` schema display, `dataflows` alias, improved search hyperlinks |
+| 1.3.1 | Dec 2025 | Added `categories` command, `dataflow()` filter in search |
 | 1.3.0 | Dec 2025 | Discovery commands (flows, search, indicators, info), frames support |
 | 1.2.0 | Dec 2025 | YAML-based metadata, validation |
 | 1.1.0 | Dec 2025 | API alignment with R/Python |
