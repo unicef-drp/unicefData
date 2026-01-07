@@ -5,7 +5,7 @@ This library provides a simplified interface for fetching child welfare and deve
 indicators from UNICEF's SDMX data repository.
 """
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 def build_user_agent() -> str:
     """Build a User-Agent string including package version and Python runtime."""

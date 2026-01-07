@@ -46,7 +46,7 @@ AGENCY = "UNICEF"
 try:
     from unicef_api import __version__
 except ImportError:
-    __version__ = "1.5.1"  # Fallback if package not installed
+    __version__ = "1.5.2"  # Fallback if package not installed
 
 
 def build_user_agent() -> str:

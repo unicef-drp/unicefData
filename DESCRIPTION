@@ -1,6 +1,6 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
-Version: 1.5.1
+Version: 1.5.2
 Authors@R: c(
     person("Joao Pedro", "Azevedo", email = "jazevedo@unicef.org", role = c("aut", "cre")),
     person("Garen", "Avanesian", role = "aut"))
