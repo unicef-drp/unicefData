@@ -207,10 +207,16 @@ version 11
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
                         NOMETAdata                  /// Show brief summary instead of full metadata
+                           NOERROR                     /// Undocumented: suppress printed error messages
                         *                           /// Legacy options
                  ]
 
     quietly {
+
+                 * Allow caller to suppress printed error messages (undocumented)
+                 local noerror_flag 0
+                 if ("`noerror'" != "") local noerror_flag 1
+
 
         *-----------------------------------------------------------------------
         * Validate inputs
@@ -218,31 +224,39 @@ version 11
         * Preserve the requested indicator list for later formatting steps
         local indicator_requested `indicator'
         
-        if ("`indicator'" == "") & ("`dataflow'" == "") {
-            noi di as err "You must specify either indicator() or dataflow()."
-            noi di as text ""
-            noi di as text "{bf:Discovery commands:}"
-            noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
-            noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
-            noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
-            noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
-            noi di as text "  {stata unicefdata, indicators(CME)}           " as text "- List indicators in a dataflow"
-            noi di as text "  {stata unicefdata, info(CME_MRY0T4)}          " as text "- Get indicator details"
-            noi di as text ""
-            noi di as text "{bf:Data retrieval examples:}"
-            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
-            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA) clear}"
-            noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
-            noi di as text ""
-            noi di as text "{bf:Help:}"
-            noi di as text "  {stata help unicefdata}                       " as text "- Full documentation"
-            exit 198
+        if ("`indicator'" == "" ) & ("`dataflow'" == "") {
+            if (`noerror_flag' == 0) {
+                noi di as err "You must specify either indicator() or dataflow()."
+                noi di as text ""
+                noi di as text "{bf:Discovery commands:}"
+                noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
+                noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
+                noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
+                noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
+                noi di as text "  {stata unicefdata, indicators(CME)}           " as text "- List indicators in a dataflow"
+                noi di as text "  {stata unicefdata, info(CME_MRY0T4)}          " as text "- Get indicator details"
+                noi di as text ""
+                noi di as text "{bf:Data retrieval examples:}"
+                noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
+                noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA) clear}"
+                noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
+                noi di as text ""
+                noi di as text "{bf:Help:}"
+                noi di as text "  {stata help unicefdata}                       " as text "- Full documentation"
+            }
+            return scalar success = 0
+            return scalar successcode = 198
+            return local fail_message "Missing indicator() or dataflow()"
+            return
         }
         
         if ("`clear'" == "") {
             if (_N > 0) {
-                noi di as err "You must start with an empty dataset; or enable the clear option."
-                exit 4
+                if (`noerror_flag' == 0) noi di as err "You must start with an empty dataset; or enable the clear option."
+                return scalar success = 0
+                return scalar successcode = 4
+                return local fail_message "Existing dataset in memory; use clear option"
+                return
             }
         }
         
@@ -486,12 +500,15 @@ version 11
             }
             
             * Load combined data
-            if (`first_indicator' == 0) {
+                if (`first_indicator' == 0) {
                 use "`combined_data'", clear
             }
             else {
-                noi di as err "Could not fetch data for any of the specified indicators."
-                exit 677
+                if (`noerror_flag' == 0) noi di as err "Could not fetch data for any of the specified indicators."
+                return scalar success = 0
+                return scalar successcode = 677
+                return local fail_message "Could not fetch data for any of the specified indicators"
+                return
             }
             
             * Skip the single-indicator fetch logic below
@@ -688,17 +705,23 @@ version 11
         }
         
         if (`success' == 0) {
-            noi di ""
-            noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
-            noi di as text `"{p 4 4 2}(1) Please check your internet connection by {browse "https://data.unicef.org/" :clicking here}.{p_end}"'
-            noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
-            noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
-            noi di as text `"{p 4 4 2}(4) Consider adjusting Stata timeout: {help netio}.{p_end}"'
-            if ("`indicator'" != "" & "`nofallback'" == "") {
-                noi di as text `"{p 4 4 2}(5) Try specifying a different dataflow().{p_end}"'
+            if (`noerror_flag' == 0) {
+                noi di ""
+                noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
+                noi di as text `"{p 4 4 2}(1) Please check your internet connection by {browse "https://data.unicef.org/" :clicking here}.{p_end}"'
+                noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
+                noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
+                noi di as text `"{p 4 4 2}(4) Consider adjusting Stata timeout: {help netio}.{p_end}"'
+                if ("`indicator'" != "" & "`nofallback'" == "") {
+                    noi di as text `"{p 4 4 2}(5) Try specifying a different dataflow().{p_end}"'
+                }
+                noi di as text `"{p 4 4 2}(6) {browse "https://github.com/unicef-drp/unicefData/issues/new":Report an issue on GitHub} with a detailed description and, if possible, a log with {bf:set trace on} enabled.{p_end}"'
             }
-            noi di as text `"{p 4 4 2}(6) {browse "https://github.com/unicef-drp/unicefData/issues/new":Report an issue on GitHub} with a detailed description and, if possible, a log with {bf:set trace on} enabled.{p_end}"'
-            exit 677
+            * Return structured failure info for callers that capture this program
+            return scalar success = 0
+            return scalar successcode = 677
+            return local fail_message "Could not download data from UNICEF SDMX API"
+            return
         }
         
         *-----------------------------------------------------------------------
@@ -723,7 +746,10 @@ version 11
         
         if (`obs_count' == 0) {
             noi di as text "No data found for the specified query."
-            exit 0
+            return scalar success = 0
+            return scalar successcode = 0
+            return local fail_message "No data found for the specified query"
+            return
         }
         
         *-----------------------------------------------------------------------

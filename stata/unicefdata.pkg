@@ -26,6 +26,7 @@ d
 * Main command and help
 f src/u/unicefdata.ado
 f src/u/unicefdata.sthlp
+f src/u/unicefdata_whatsnew.sthlp
 
 * Sync command and help
 f src/u/unicefdata_sync.ado
