@@ -2542,12 +2542,23 @@ di as text "Log saved to: `logfile'"
 if "`target_test'" == "" {
     local sep "======================================================================"
     
+    * Get git branch name
+    tempfile gitbranch
+    shell git -C "C:/GitHub/myados/unicefData" branch --show-current > "`gitbranch'" 2>&1
+    tempname fh
+    file open `fh' using "`gitbranch'", read text
+    file read `fh' git_branch
+    file close `fh'
+    local git_branch = strtrim("`git_branch'")
+    if "`git_branch'" == "" local git_branch "(unknown)"
+    
     file open history using "`histfile'", write append
     file write history _n "`sep'" _n
     file write history "Test Run: `c(current_date)'" _n
     file write history "Started:  `start_time'" _n
     file write history "Ended:    `end_time'" _n
     file write history "Duration: `duration_str'" _n
+    file write history "Branch:   `git_branch'" _n
     file write history "Version:  1.5.2" _n
     file write history "Stata:    `c(stata_version)'" _n
     file write history "Tests:    $test_count run, $pass_count passed, $fail_count failed" _n

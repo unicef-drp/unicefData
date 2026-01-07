@@ -247,6 +247,7 @@ version 11
             return scalar success = 0
             return scalar successcode = 198
             return local fail_message "Missing indicator() or dataflow()"
+            if (`noerror_flag' == 0) exit 198
             return
         }
         
@@ -256,6 +257,7 @@ version 11
                 return scalar success = 0
                 return scalar successcode = 4
                 return local fail_message "Existing dataset in memory; use clear option"
+                if (`noerror_flag' == 0) exit 4
                 return
             }
         }
@@ -508,6 +510,7 @@ version 11
                 return scalar success = 0
                 return scalar successcode = 677
                 return local fail_message "Could not fetch data for any of the specified indicators"
+                if (`noerror_flag' == 0) exit 677
                 return
             }
             
@@ -721,6 +724,7 @@ version 11
             return scalar success = 0
             return scalar successcode = 677
             return local fail_message "Could not download data from UNICEF SDMX API"
+            if (`noerror_flag' == 0) exit 677
             return
         }
         
@@ -749,6 +753,7 @@ version 11
             return scalar success = 0
             return scalar successcode = 0
             return local fail_message "No data found for the specified query"
+            * Note: successcode=0 means no error, just empty result
             return
         }
         
