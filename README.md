@@ -81,7 +81,7 @@ help unicefdata
 
 ## 🆕 What's New in v1.5.2
 
-**Released**: January 6, 2026
+**Released**: TBD
 
 ### Fixed
 - **404 fallback behavior**: Invalid indicators now return empty results (not errors) across all platforms with automatic fallback to GLOBAL_DATAFLOW
