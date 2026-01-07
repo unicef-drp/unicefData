@@ -61,7 +61,7 @@ get_package_root <- function() {
 #' @param max_retries Number of retries
 #' @return Response object or NULL
 fetch_with_retry <- function(url, max_retries = 3) {
-  ua <- httr::user_agent("unicefData/1.0")
+  ua <- .unicefData_ua
   
   for (attempt in seq_len(max_retries)) {
     tryCatch({

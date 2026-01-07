@@ -1,4 +1,4 @@
-v 3
+v 1.5.2
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -20,7 +20,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20251219
+d Distribution-Date: 20260107
 d
 
 * Main command and help
@@ -67,77 +67,6 @@ f src/_/_unicefdata_codelists.yaml
 f src/_/_unicefdata_countries.yaml
 f src/_/_unicefdata_regions.yaml
 f src/_/_unicefdata_sync_history.yaml
-
-* Dataflow schema files (for disaggregation validation)
-f src/_/_dataflows/CAUSE_OF_DEATH.yaml
-f src/_/_dataflows/CCRI.yaml
-f src/_/_dataflows/CHILD_RELATED_SDG.yaml
-f src/_/_dataflows/CHLD_PVTY.yaml
-f src/_/_dataflows/CME.yaml
-f src/_/_dataflows/CME_CAUSE_OF_DEATH.yaml
-f src/_/_dataflows/CME_COUNTRY_PROFILES_DATA.yaml
-f src/_/_dataflows/CME_DF_2021_WQ.yaml
-f src/_/_dataflows/CME_SUBNATIONAL.yaml
-f src/_/_dataflows/CME_SUBNAT_AGO.yaml
-f src/_/_dataflows/CME_SUBNAT_BDI.yaml
-f src/_/_dataflows/CME_SUBNAT_BEN.yaml
-f src/_/_dataflows/CME_SUBNAT_BGD.yaml
-f src/_/_dataflows/CME_SUBNAT_CMR.yaml
-f src/_/_dataflows/CME_SUBNAT_ETH.yaml
-f src/_/_dataflows/CME_SUBNAT_GHA.yaml
-f src/_/_dataflows/CME_SUBNAT_GIN.yaml
-f src/_/_dataflows/CME_SUBNAT_HTI.yaml
-f src/_/_dataflows/CME_SUBNAT_KEN.yaml
-f src/_/_dataflows/CME_SUBNAT_LAO.yaml
-f src/_/_dataflows/CME_SUBNAT_LBR.yaml
-f src/_/_dataflows/CME_SUBNAT_LSO.yaml
-f src/_/_dataflows/CME_SUBNAT_MDG.yaml
-f src/_/_dataflows/CME_SUBNAT_MLI.yaml
-f src/_/_dataflows/CME_SUBNAT_MMR.yaml
-f src/_/_dataflows/CME_SUBNAT_MRT.yaml
-f src/_/_dataflows/CME_SUBNAT_MWI.yaml
-f src/_/_dataflows/CME_SUBNAT_NAM.yaml
-f src/_/_dataflows/CME_SUBNAT_NGA.yaml
-f src/_/_dataflows/CME_SUBNAT_NPL.yaml
-f src/_/_dataflows/CME_SUBNAT_PAK.yaml
-f src/_/_dataflows/CME_SUBNAT_RWA.yaml
-f src/_/_dataflows/CME_SUBNAT_SEN.yaml
-f src/_/_dataflows/CME_SUBNAT_SLE.yaml
-f src/_/_dataflows/CME_SUBNAT_TCD.yaml
-f src/_/_dataflows/CME_SUBNAT_TGO.yaml
-f src/_/_dataflows/CME_SUBNAT_TZA.yaml
-f src/_/_dataflows/CME_SUBNAT_UGA.yaml
-f src/_/_dataflows/CME_SUBNAT_ZMB.yaml
-f src/_/_dataflows/CME_SUBNAT_ZWE.yaml
-f src/_/_dataflows/COVID.yaml
-f src/_/_dataflows/COVID_CASES.yaml
-f src/_/_dataflows/DM.yaml
-f src/_/_dataflows/DM_PROJECTIONS.yaml
-f src/_/_dataflows/ECD.yaml
-f src/_/_dataflows/ECONOMIC.yaml
-f src/_/_dataflows/EDUCATION.yaml
-f src/_/_dataflows/EDUCATION_FLS.yaml
-f src/_/_dataflows/EDUCATION_UIS_SDG.yaml
-f src/_/_dataflows/FUNCTIONAL_DIFF.yaml
-f src/_/_dataflows/GENDER.yaml
-f src/_/_dataflows/GLOBAL_DATAFLOW.yaml
-f src/_/_dataflows/HIV_AIDS.yaml
-f src/_/_dataflows/IMMUNISATION.yaml
-f src/_/_dataflows/MG.yaml
-f src/_/_dataflows/MNCH.yaml
-f src/_/_dataflows/NUTRITION.yaml
-f src/_/_dataflows/PT.yaml
-f src/_/_dataflows/PT_CM.yaml
-f src/_/_dataflows/PT_CONFLICT.yaml
-f src/_/_dataflows/PT_FGM.yaml
-f src/_/_dataflows/SDG_PROG_ASSESSMENT.yaml
-f src/_/_dataflows/SOC_PROTECTION.yaml
-f src/_/_dataflows/WASH_HEALTHCARE_FACILITY.yaml
-f src/_/_dataflows/WASH_HOUSEHOLDS.yaml
-f src/_/_dataflows/WASH_HOUSEHOLD_MH.yaml
-f src/_/_dataflows/WASH_HOUSEHOLD_SUBNAT.yaml
-f src/_/_dataflows/WASH_SCHOOLS.yaml
-f src/_/_dataflows/WT.yaml
 
 * Python helper scripts (optional, for XML parsing during sync)
 f src/py/unicefdata_xml2yaml.py

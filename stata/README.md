@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14+-1a5276.svg)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)]()
 
 **Stata package for downloading UNICEF child welfare indicators via SDMX API**
 
@@ -27,6 +27,22 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 | Auto dataflow detection | ✅ | ✅ | ✅ |
 | 700+ indicators | ✅ | ✅ | ✅ |
 | Frames support (v16+) | N/A | N/A | ✅ |
+
+---
+
+## 🆕 What's New in v1.5.2
+
+**Released**: January 6, 2026
+
+### Added
+- **Dynamic User-Agent**: Helper script now sends `unicefData-StataSync/<version> (Python/<py_ver>; <platform>)` for API tracking
+- **Version management**: `stata_schema_sync.py` now dynamically imports version from `unicef_api` package
+
+### Improved
+- **Aligned with R/Python**: All three platforms now have matching 404 fallback behavior and wrapper consistency
+- **Documentation**: Updated examples to use unified `year` parameter syntax
+
+See [../NEWS.md](../NEWS.md) for full changelog.
 
 ---
 
@@ -443,10 +459,71 @@ If you're familiar with `wbopendata` (World Bank data), the syntax is very simil
 
 ---
 
+## 📰 What's New in v1.5.2
+
+### Wide Indicators Enhancement
+- `wide_indicators` now creates empty columns for all requested indicators, even when some have zero rows
+- Ensures reproducible multi-indicator reshapes with consistent column structure
+- Example: `unicefdata, indicator(CME_MRY0T4 IM_DTP3) wide_indicators` creates both columns
+
+### Network Robustness: curl & User-Agent Support
+
+All HTTP requests now leverage **curl** with proper **User-Agent** identification:
+
+```stata
+* The package now uses curl for more reliable network requests
+* User-Agent: "unicefdata/1.5.2 (Stata)"
+* Benefits:
+*   - Better SSL/TLS support and proxy handling
+*   - Reduced API rate-limiting and filtering
+*   - Improved reliability on firewalled/restricted networks
+*   - Automatic retry on transient failures
+*   - Cross-platform consistency (Windows/Mac/Linux)
+```
+
+**Under the hood:**
+```stata
+* Implementation: uses curl in copy command
+copy "https://sdmx.data.unicef.org/..." "tempfile", replace public ///
+  curl user_agent("unicefdata/1.5.2 (Stata)")
+
+* Fallback: Stata's import delimited if curl unavailable
+* Transparent to users; no change to command syntax
+```
+
+### Test Suite Status (v1.5.2)
+- ✅ **20 of 21 tests passing** (95% pass rate)
+- ❌ **1 known issue:** DL-05 (wealth quintile filtering)
+- 📋 **Coverage:** Environment setup, downloads, discovery, transforms, metadata, multi-indicators, edge cases
+
+---
+
+## 🛣️ Road Ahead (Planned for Next Releases)
+
+### P0 — Critical (v1.5.3 target)
+- **DL-05 Fix:** Wealth quintile filter validation and application
+- **Cross-platform:** Align YAML metadata across Stata/R/Python implementations
+- **Consistency:** Ensure all tests pass on Windows, macOS, and Linux
+
+### P1 — Important (v1.6.0 target)
+- **Performance:** Optimize page_size defaults, add YAML caching, reduce large batch times
+- **Encoding:** Standardize UTF-8 handling for accented character preservation (EDGE-03)
+- **Frames API:** Support Stata 16+ frames for parallel indicator downloads
+- **Documentation:** Expand examples and troubleshooting guide
+
+### P2 — Future Considerations
+- **Stata Journal:** Publish peer-reviewed manuscript on package design and SDMX integration
+- **API Versioning:** Support future UNICEF SDMX API updates and breaking changes
+- **Community Feedback:** Incorporate user-requested features and optimizations
+- **Integration:** Coordinate with wbopendata for shared utilities and consistent UX
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
-|---------|------|---------|| 1.5.0 | Dec 2025 | Added `dataflow()` schema display, `dataflows` alias, improved search hyperlinks || 1.3.1 | Dec 2025 | Added `categories` command, `dataflow()` filter in search |
+|---------|------|---------|| 1.5.2 | Jan 2026 | Enhanced help file documentation, comprehensive examples, attributes() option improvements || 1.5.0 | Dec 2025 | Added `dataflow()` schema display, `dataflows` alias, improved search hyperlinks |
+| 1.3.1 | Dec 2025 | Added `categories` command, `dataflow()` filter in search |
 | 1.3.0 | Dec 2025 | Discovery commands (flows, search, indicators, info), frames support |
 | 1.2.0 | Dec 2025 | YAML-based metadata, validation |
 | 1.1.0 | Dec 2025 | API alignment with R/Python |

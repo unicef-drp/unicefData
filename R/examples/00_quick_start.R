@@ -8,7 +8,7 @@
 #   1. Single indicator, specific countries
 #   2. Multiple indicators
 #   3. Nutrition data
-#   4. Immunization data  
+#   4. Immunization data
 #   5. All countries (large download)
 
 # Source common setup (handles path resolution)
@@ -136,7 +136,7 @@ cat("Format: wide_indicators (Merged side-by-side)\n\n")
 df <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRM0"),
   countries = c("ALB", "USA", "BRA"),
-  start_year = 2015,
+  year = "2015",
   format = "wide_indicators"
 )
 

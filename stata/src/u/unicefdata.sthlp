@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.5.0  20Dec2025}{...}
+{* *! version 1.5.2  06Jan2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -18,6 +18,26 @@
 {p2colset 5 20 22 2}{...}
 {p2col :{cmd:unicefdata} {hline 2}}Download indicators from UNICEF Data Warehouse{p_end}
 {p2colreset}{...}
+
+
+{marker whatsnew}{...}
+{title:What's New in v1.5.2}
+
+{pstd}
+{bf:wide_indicators Enhancements:} The {opt wide_indicators} reshape now ensures all requested 
+indicators have columns in the output, even when some indicators have zero observations after 
+filtering. This prevents "variable not found" errors and improves reliability for cross-indicator analysis.
+{p_end}
+
+{pstd}
+{bf:Network Robustness:} All HTTP requests now use curl with proper User-Agent identification 
+("unicefdata/1.5.2 (Stata)"), providing:
+{phang2}• Better SSL/TLS support across platforms{p_end}
+{phang2}• Improved proxy handling{p_end}
+{phang2}• Automatic retry logic{p_end}
+{phang2}• Reduced rate-limiting issues{p_end}
+{phang2}• Automatic fallback to Stata's import delimited if curl unavailable{p_end}
+{p_end}
 
 
 {marker syntax}{...}
@@ -85,8 +105,10 @@
 
 {syntab:Output Options}
 {synopt:{opt long}}keep data in long format (default){p_end}
-{synopt:{opt wide}}reshape data to wide format (years as columns){p_end}
+{synopt:{opt wide}}reshape data to wide format (years as columns with yr prefix){p_end}
+{synopt:{opt wide_attributes}}reshape with disaggregation attributes as column suffixes {it:(v1.5.1)}{p_end}
 {synopt:{opt wide_indicators}}reshape with indicators as columns {it:(v1.3.0)}{p_end}
+{synopt:{opt attributes(string)}}attributes to keep for wide_indicators format; space-separated list of attribute codes (e.g., {cmd:_T _M _F _Q1 _Q2}) or {cmd:ALL} to keep all attributes {it:(v1.5.1)}{p_end}
 {synopt:{opt addmeta(string)}}add metadata: region, income_group, continent {it:(v1.3.0)}{p_end}
 {synopt:{opt dropna}}drop observations with missing values{p_end}
 {synopt:{opt simplify}}keep only essential columns{p_end}
@@ -104,6 +126,8 @@
 {synopt:{opt nometadata}}show brief summary instead of full indicator metadata{p_end}
 {synopt:{opt clear}}replace data in memory{p_end}
 {synopt:{opt verbose}}display progress messages{p_end}
+{synopt:{opt curl}}use curl for HTTP requests with User-Agent header {it:(v1.5.2, default)}{p_end}
+{synopt:{opt nocurl}}disable curl; use Stata's import delimited instead{p_end}
 {synoptline}
 
 
@@ -277,18 +301,157 @@ wealth, residence, maternal education). This uses the dataflow schema files in
 
 {dlgtab:Output Options}
 
+{pstd}
+{bf:Understanding Output Formats:}
+
+{pstd}
+{cmd:unicefdata} offers four output formats for different analytical needs. The default 
+is {cmd:long}, which is the most flexible. The three {cmd:wide_*} options reshape data 
+for specific cross-tabulation or pivot scenarios.
+
 {phang}
 {opt long} keeps data in long format (one observation per country-year-indicator).
-This is the default format from the SDMX API.
-
-{phang}
-{opt wide} reshapes data to wide format with years as columns.
-
-{phang}
-{opt wide_indicators} {it:(v1.3.0)} reshapes data so that different indicators 
-become separate columns. Useful for cross-indicator analysis. Automatically 
-filters to total values to avoid reshape conflicts.
+This is the default format from the SDMX API and the most flexible for data analysis.
+All disaggregation variables (sex, age, wealth, residence, matedu) are present as 
+separate columns. Use this format when you need maximum flexibility.
 {p_end}
+
+{phang}
+{opt wide} reshapes data to wide format with years as columns, using {cmd:yr} prefix.
+Result structure:
+{p_end}
+{phang2}Rows: iso3 x indicator x all disaggregation values (sex, wealth, age, residence, matedu){p_end}
+{phang2}Columns: yr2018, yr2019, yr2020, yr2021, etc. (years with "yr" prefix){p_end}
+{phang2}Use case: Time-series analysis, trend visualization{p_end}
+
+{phang}
+{opt wide_attributes} {it:(v1.5.1)} reshapes data to wide format with disaggregation 
+attributes as column suffixes. Use this when you want all disaggregation variations 
+as separate columns.
+{p_end}
+{phang2}Result structure:{p_end}
+{phang2}Rows: iso3 x country x period (time years){p_end}
+{phang2}Columns: indicator_T, indicator_M, indicator_F, indicator_Q1, etc.{p_end}
+{phang2}Use case: Compare disaggregations side-by-side, wealth gap analysis, gender parity analysis{p_end}
+{phang2}Example for sex: CME_MRY0T4_T (total), CME_MRY0T4_M (male), CME_MRY0T4_F (female){p_end}
+{phang2}Example for wealth: NT_ANT_HAZ_NE2_Q1 (poorest), ..., NT_ANT_HAZ_NE2_Q5 (richest){p_end}
+{phang2}Example for combined: CME_MRY0T4_M_Q1 (male in poorest quintile){p_end}
+{phang2}Use {opt attributes()} to filter which suffixes appear in output{p_end}
+
+{phang}
+{opt wide_indicators} {it:(v1.3.0; enhanced v1.5.2)} reshapes data so that different indicators 
+become separate columns. Use this for cross-indicator analysis.
+{p_end}
+{phang2}Result structure:{p_end}
+{phang2}Rows: iso3 x country x period (and optionally disaggregations if attributes=ALL){p_end}
+{phang2}Columns: CME_MRY0T4, IM_DTP3, NT_ANT_HAZ_NE2, etc. (indicators as columns){p_end}
+{phang2}Default behavior: Keeps only _T (total) for all disaggregations (backward compatible){p_end}
+{phang2}v1.5.2 improvement: Now creates empty numeric columns for all requested indicators, {p_end}
+{phang2}even when some indicators have zero observations after filtering. This prevents reshape{p_end}
+{phang2}failures and "variable not found" errors.{p_end}
+{phang2}Use case: Compare multiple indicators side-by-side, correlation analysis, reliable batch processing{p_end}
+
+{phang}
+{opt attributes(string)} {it:(v1.5.1)} specifies which disaggregation attribute values 
+to keep when using {cmd:wide_attributes} or {cmd:wide_indicators}. This allows flexible 
+filtering of rows before reshaping.
+{p_end}
+
+{pstd}
+{bf:Key Facts About attributes():}
+{p_end}
+{phang2}• Works with: {cmd:wide_attributes} and {cmd:wide_indicators} (not with {cmd:long} or {cmd:wide}){p_end}
+{phang2}• Syntax: Accepts space-separated attribute codes, case-insensitive{p_end}
+{phang2}• Default for {cmd:wide_indicators}: _T (total only) - backward compatible{p_end}
+{phang2}• Default for {cmd:wide_attributes}: No default - if attributes() not specified, all values included{p_end}
+{phang2}• Special keyword: {cmd:ALL} - keep all attribute combinations{p_end}
+{phang2}• Filtering applied: BEFORE reshape operations, not after{p_end}
+
+{pstd}
+{bf:Important Constraint:} {cmd:wide_attributes} and {cmd:wide_indicators} {bf:cannot}} 
+be used together. This is because they represent different reshape strategies. 
+Attempting both simultaneously results in ERROR 198.
+{p_end}
+
+{pstd}
+{bf:Common Patterns:}
+
+{phang2}{bf:Pattern 1:} Time-series analysis
+{p_end}
+{phang3}{cmd:wide} option x years as columns for trend visualization{p_end}
+
+{phang2}{bf:Pattern 2:} Equity gap analysis (wealth, gender, geography)
+{p_end}
+{phang3}{cmd:wide_attributes attributes(_T _Q1 _Q5)} - compare richest vs poorest{p_end}
+{phang3}{cmd:wide_attributes attributes(_T _M _F)} - compare gender disparities{p_end}
+
+{phang2}{bf:Pattern 3:} Cross-indicator comparison
+{p_end}
+{phang3}{cmd:wide_indicators} - multiple indicators as columns for one period{p_end}
+
+{phang2}{bf:Pattern 4:} Full disaggregation matrix
+{p_end}
+{phang3}{cmd:wide_indicators attributes(ALL)} - all sex/age/wealth combinations{p_end}
+
+{pstd}
+{bf:Supported Attribute Codes:}
+
+{phang2}{bf:Sex (_T, _M, _F):}
+{p_end}
+{phang3}{cmd:_T} = Total (both sexes){p_end}
+{phang3}{cmd:_M} = Male{p_end}
+{phang3}{cmd:_F} = Female{p_end}
+
+{phang2}{bf:Wealth Quintiles (_T, _Q1, _Q2, _Q3, _Q4, _Q5):}
+{p_end}
+{phang3}{cmd:_T} = Total{p_end}
+{phang3}{cmd:_Q1} = Poorest quintile{p_end}
+{phang3}{cmd:_Q2} = Second quintile{p_end}
+{phang3}{cmd:_Q3} = Middle quintile{p_end}
+{phang3}{cmd:_Q4} = Fourth quintile{p_end}
+{phang3}{cmd:_Q5} = Richest quintile{p_end}
+
+{phang2}{bf:Residence (_T, _U, _R):}
+{p_end}
+{phang3}{cmd:_T} = Total{p_end}
+{phang3}{cmd:_U} = Urban{p_end}
+{phang3}{cmd:_R} = Rural{p_end}
+
+{phang2}{bf:Age (varies by indicator):}
+{p_end}
+{phang3}{cmd:_T} = Total{p_end}
+{phang3}{cmd:_0}} through {cmd:_18} = Age-specific codes (varies by indicator){p_end}
+
+{phang2}{bf:Maternal Education (_T, _NoEd, _Prim, _Sec, _High):}
+{p_end}
+{phang3}{cmd:_T} = Total{p_end}
+{phang3}{cmd:_NoEd} = No education{p_end}
+{phang3}{cmd:_Prim} = Primary education{p_end}
+{phang3}{cmd:_Sec} = Secondary education{p_end}
+{phang3}{cmd:_High} = Higher education{p_end}
+
+{phang2}{bf:Special Keyword:}
+{p_end}
+{phang3}{cmd:ALL} = Keep all attribute combinations (no filtering){p_end}
+
+{pstd}
+{bf:attributes() Examples:}
+
+{phang2}{cmd:attributes(_T _M _F)} - Keep total, male, and female; drop other sex categories{p_end}
+{phang2}{cmd:attributes(_Q1 _Q2 _Q3 _Q4 _Q5)} - Keep all quintiles; drop total{p_end}
+{phang2}{cmd:attributes(_T _Q1 _Q2 _Q3 _Q4 _Q5)} - Keep total and all quintiles{p_end}
+{phang2}{cmd:attributes(_U _R)} - Keep urban and rural only; drop total{p_end}
+{phang2}{cmd:attributes(ALL)} - No filtering; keep all disaggregation combinations{p_end}
+
+{pstd}
+{bf:Important Notes:}
+
+{phang2}1. {cmd:attributes()} filtering is applied {bf:before} reshape, not after.{p_end}
+{phang2}2. If you specify invalid attribute codes, they are silently ignored.{p_end}
+{phang2}3. If no rows match the filter, all rows are kept (with a warning in verbose mode).{p_end}
+{phang2}4. Case-insensitive: {cmd:attributes(_T)}} = {cmd:attributes(_t)}}.{p_end}
+{phang2}5. For {cmd:wide_indicators}}, default ({cmd:attributes()}}} empty) = {cmd:_T}} (totals only).{p_end}
+{phang2}6. For {cmd:wide_attributes}}, default ({cmd:attributes()}}} empty) = All values included.{p_end}
 
 {phang}
 {opt addmeta(string)} {it:(v1.3.0)} adds metadata columns to the output. 
@@ -317,6 +480,19 @@ Useful for cross-sectional analysis.
 {opt raw} returns raw SDMX data without variable renaming or standardization.
 
 {dlgtab:Technical}
+
+{phang}
+{opt curl} {it:(v1.5.2, default)} uses curl for HTTP requests with proper User-Agent identification.
+This provides robust network handling with:
+{phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
+{phang2}• Automatic proxy detection and handling{p_end}
+{phang2}• Automatic retry logic for temporary network failures{p_end}
+{phang2}• User-Agent header: "unicefdata/1.5.2 (Stata)"{p_end}
+{phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
+{pstd}
+If your Stata installation lacks curl support or you prefer Stata's default import method,
+use {opt nocurl} to disable curl and use Stata's import delimited instead.
+{p_end}
 
 {phang}
 {opt max_retries(#)} specifies the number of retry attempts (default: 3). 
@@ -428,11 +604,236 @@ Simplify output to essential columns:{p_end}
 {p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) simplify dropna clear" :. unicefdata, indicator(CME_MRY0T4) simplify dropna clear}{p_end}
 
 {pstd}
-{ul:New v1.3.0 Features}
+{ul:Reshape Options (v1.5.1): wide, wide_attributes, wide_indicators with attributes()}
 
 {pstd}
-Wide format with indicators as columns:{p_end}
-{p 8 12}{stata "unicefdata, dataflow(CME) countries(AFG BGD) wide_indicators clear" :. unicefdata, dataflow(CME) countries(AFG BGD) wide_indicators clear}{p_end}
+{bf:Understanding the Three Reshape Options:}
+
+{phang}
+{bf:1. wide} - Pivots years as columns (standard time-series format):
+{p_end}
+{phang2}Rows: iso3 × indicator × disaggregation attributes (sex, age, wealth, etc.)
+{p_end}
+{phang2}Columns: yr2018, yr2019, yr2020, yr2021 (years as columns with "yr" prefix)
+{p_end}
+{phang2}Use: When you want time-series analysis with years as columns
+{p_end}
+
+{phang}
+{bf:2. wide_attributes} - Pivots disaggregation suffixes (e.g., sex, wealth):
+{p_end}
+{phang2}Rows: iso3 × country × period (time)
+{p_end}
+{phang2}Columns: indicator_T, indicator_M, indicator_F (for sex disaggregation)
+{p_end}
+{phang2}Use: When you want all attribute variations as separate columns
+{p_end}
+{phang2}Example: CME_MRY0T4_T (total), CME_MRY0T4_M (male), CME_MRY0T4_F (female)
+{p_end}
+
+{phang}
+{bf:3. wide_indicators} - Pivots indicators as columns (cross-indicator analysis):
+{p_end}
+{phang2}Rows: iso3 × country × period × (optionally disaggregations if attributes=ALL)
+{p_end}
+{phang2}Columns: CME_MRY0T4, IM_DTP3, NT_ANT_HAZ_NE2 (indicators as columns)
+{p_end}
+{phang2}Use: When you want to compare multiple indicators side-by-side
+{p_end}
+{phang2}Default: Keeps only _T (total) for all disaggregations (backward compatible)
+{p_end}
+
+{pstd}
+{bf:Important:} {cmd:wide_attributes} and {cmd:wide_indicators} {bf:cannot}} be used together.
+Choose one reshape option. The {opt attributes()} option applies filtering before 
+reshape and works with both options.
+
+{pstd}
+{ul:Supported Attribute Codes for attributes() Option:}
+
+{phang}
+{bf:Sex disaggregation:}
+{p_end}
+{phang2}{cmd:_T} - Total (both sexes){p_end}
+{phang2}{cmd:_M} - Male{p_end}
+{phang2}{cmd:_F} - Female{p_end}
+
+{phang}
+{bf:Wealth quintile:}
+{p_end}
+{phang2}{cmd:_T} - Total{p_end}
+{phang2}{cmd:_Q1} - Poorest quintile{p_end}
+{phang2}{cmd:_Q2} - Second quintile{p_end}
+{phang2}{cmd:_Q3} - Middle quintile{p_end}
+{phang2}{cmd:_Q4} - Fourth quintile{p_end}
+{phang2}{cmd:_Q5} - Richest quintile{p_end}
+
+{phang}
+{bf:Residence:}
+{p_end}
+{phang2}{cmd:_T} - Total{p_end}
+{phang2}{cmd:_U} - Urban{p_end}
+{phang2}{cmd:_R} - Rural{p_end}
+
+{phang}
+{bf:Special keyword:}
+{p_end}
+{phang2}{cmd:ALL} - Keep all attribute combinations{p_end}
+
+{pstd}
+{ul:Interactive Examples - Reshape with attributes()}
+
+{pstd}
+{bf:Example 1:} Wide format with years as columns (standard time-series):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2018:2021) ///
+            wide clear
+        . list iso3 indicator yr2018 yr2019 yr2020 yr2021
+{txt}      
+Result: One row per iso3 × indicator; columns are yr2018, yr2019, yr2020, yr2021
+
+{pstd}
+{bf:Example 2:} wide_attributes - Get all sex disaggregations as suffixes:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2020) ///
+            sex(ALL) wide_attributes clear
+        . describe
+        . list iso3 period CME_MRY0T4_T CME_MRY0T4_M CME_MRY0T4_F in 1/4
+{txt}
+
+Result: Columns include CME_MRY0T4_T (total), CME_MRY0T4_M (male), CME_MRY0T4_F (female)
+
+{pstd}
+{bf:Example 3:} wide_attributes with attributes() - Keep only males and females (no total):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2020) ///
+            sex(ALL) wide_attributes attributes(_M _F) clear
+        . describe
+{txt}
+
+Result: Only columns for _M and _F; no _T column (filtered out by attributes())
+
+{pstd}
+{bf:Example 4:} wide_indicators - Multiple indicators as columns (default _T only):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA CHN) ///
+            year(2020) wide_indicators clear
+        . list iso3 period CME_MRY0T4 IM_DTP3 in 1/6
+{txt}
+
+Result: Rows are iso3 × country × period; columns are CME_MRY0T4 and IM_DTP3 (indicators)
+Automatically filters to _T (total) for backward compatibility
+
+{pstd}
+{bf:Example 5:} wide_indicators with sex disaggregation matrix (attributes=ALL):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA) ///
+            year(2020) sex(ALL) wide_indicators attributes(ALL) clear
+        . describe
+{txt}
+
+Result: Rows include all sex combinations; multiple rows per iso3×period (one per sex value)
+Columns: iso3, country, period, sex, CME_MRY0T4, IM_DTP3
+
+{pstd}
+{bf:Example 6:} wide_indicators with custom attributes (wealth quintiles only):{p_end}
+{cmd}
+        . unicefdata, indicator(NT_ANT_HAZ_NE2) countries(ETH KEN UGA) ///
+            year(2020) wealth(ALL) wide_indicators attributes(_Q1 _Q2 _Q3 _Q4 _Q5) clear
+        . list iso3 period NT_ANT_HAZ_NE2 in 1/10
+{txt}
+
+Result: Only rows for wealth quintiles Q1-Q5; no total (_T) because it's filtered out
+
+{pstd}
+{bf:Example 7:} Combining wide with multiple indicators and visualization:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 CME_MRY0) countries(USA BRA IND) ///
+            year(2010:2023) wide clear
+        . reshape long CME_MRY0T4 CME_MRY0, i(iso3 country indicator) j(year) string
+        . gen year_num = real(subinstr(year, "yr", "", 1))
+        . graph twoway ///
+            (line CME_MRY0T4 year_num if iso3=="USA", lcolor(blue)) ///
+            (line CME_MRY0T4 year_num if iso3=="BRA", lcolor(red)) ///
+            (line CME_MRY0T4 year_num if iso3=="IND", lcolor(green)), ///
+                title("Under-5 Mortality Trends") ///
+                xtitle("Year") ytitle("Deaths per 1,000 live births")
+{txt}
+
+{pstd}
+{bf:Example 8:} wide_attributes for wealth gap analysis:{p_end}
+{cmd}
+        . unicefdata, indicator(NT_ANT_HAZ_NE2) countries(ETH KEN UGA) ///
+            year(2020) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear
+        . gen wealth_gap = NT_ANT_HAZ_NE2_Q5 - NT_ANT_HAZ_NE2_Q1
+        . gsort -wealth_gap
+        . list iso3 country NT_ANT_HAZ_NE2_Q1 NT_ANT_HAZ_NE2_Q5 wealth_gap
+{txt}
+
+Result: Q1=poorest, Q5=richest; gap shows wealth inequality in stunting
+
+{pstd}
+{bf:Example 9:} Comparing attribute codes - see what filtering does:{p_end}
+{cmd}
+        . * Approach 1: Download with attributes(_T _M _F) for wide_indicators
+        . unicefdata, indicator(CME_MRY0T4) countries(USA) year(2020) ///
+            sex(ALL) wide_indicators attributes(_T _M _F) clear
+        . di "Default narrow attributes(_T _M _F): " _N " observations"
+        . 
+        . * Approach 2: Download with attributes(ALL) for full matrix
+        . unicefdata, indicator(CME_MRY0T4) countries(USA) year(2020) ///
+            sex(ALL) wide_indicators attributes(ALL) clear
+        . di "With attributes(ALL): " _N " observations"
+{txt}
+
+Result: The attributes() filter controls how many rows are kept (affects analysis structure)
+
+{pstd}
+{bf:Example 10:} ERROR - Using both reshape options together (not allowed):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(USA) year(2020) ///
+            wide_attributes wide_indicators clear
+{txt}
+
+Error: "Error: wide_attributes and wide_indicators cannot be used together."
+
+{pstd}
+{ul:Advanced Reshape Scenarios}
+
+{pstd}
+{bf:Cross-indicator comparison with wealth disaggregation:}
+{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 NT_ANT_HAZ_NE2 IM_DTP3) ///
+            countries(ETH KEN UGA) year(2020) wealth(ALL) ///
+            wide_indicators attributes(_T _Q1 _Q5) clear
+        . keep if wealth == "_T"
+        . describe
+        . list iso3 CME_MRY0T4 NT_ANT_HAZ_NE2 IM_DTP3 in 1/6
+{txt}
+
+{pstd}
+{bf:Export reshaped data to Excel by format:}
+{p_end}
+{cmd}
+        . * Wide format export
+        . unicefdata, indicator(CME_MRY0T4) countries(ALB BRA) year(2015:2023) ///
+            wide clear
+        . export excel using "u5mr_wide_format.xlsx", firstrow(variables) replace
+        .
+        . * wide_attributes export
+        . unicefdata, indicator(CME_MRY0T4) countries(ALB BRA) year(2020) ///
+            sex(ALL) wide_attributes clear
+        . export excel using "u5mr_by_sex.xlsx", firstrow(variables) replace
+        .
+        . * wide_indicators export
+        . unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(ALB BRA) ///
+            year(2020) wide_indicators clear
+        . export excel using "mortality_immunization_comparison.xlsx", firstrow(variables) replace
+{txt}
+
+{pstd}
+{ul:v1.3.0-v1.5.0 Features}
 
 {pstd}
 Add regional and income group metadata:{p_end}
@@ -595,6 +996,47 @@ WASH urban-rural gap analysis:{p_end}
         . gsort -gap
         . list iso3 country valueUrban valueRural gap in 1/10
 {txt}      ({stata "unicefdata_examples example07":click to run})
+
+{pstd}
+Using {opt wide} option - Time series format:{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND CHN) ///
+            year(2015:2023) wide clear
+        . keep if sex == "_T"
+        . list iso3 country yr2015 yr2020 yr2023, sep(0) noobs
+        . gen change_2015_2023 = yr2023 - yr2015
+        . gen pct_change = (change_2015_2023 / yr2015) * 100
+{txt}      ({stata "unicefdata_examples example08":click to run})
+
+{pstd}
+Using {opt wide_indicators} - Multiple indicators as columns (v1.5.2):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1) ///
+            countries(AFG ETH PAK NGA) latest wide_indicators clear
+        . keep if sex == "_T"
+        . describe CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1
+        . list iso3 country CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1, sep(0) noobs
+        . correlate CME_MRY0T4 IM_DTP3
+{txt}      ({stata "unicefdata_examples example09":click to run})
+
+{pstd}
+Using {opt wide_attributes} - Disaggregations as columns (v1.5.1):{p_end}
+{cmd}
+        . unicefdata, indicator(CME_MRY0T4) countries(IND PAK BGD) ///
+            year(2020) sex(ALL) wide_attributes clear
+        . list iso3 country CME_MRY0T4_T CME_MRY0T4_M CME_MRY0T4_F, sep(0) noobs
+        . gen mf_gap = CME_MRY0T4_M - CME_MRY0T4_F
+{txt}      ({stata "unicefdata_examples example10":click to run})
+
+{pstd}
+Using {opt attributes()} filter - Targeted disaggregation:{p_end}
+{cmd}
+        . unicefdata, indicator(NT_ANT_HAZ_NE2) countries(IND PAK BGD ETH) ///
+            latest attributes(_T _Q1 _Q5) wide_attributes clear
+        . list iso3 country NT_ANT_HAZ_NE2_T NT_ANT_HAZ_NE2_Q1 NT_ANT_HAZ_NE2_Q5, ///
+            sep(0) noobs
+        . gen wealth_gap = NT_ANT_HAZ_NE2_Q1 - NT_ANT_HAZ_NE2_Q5
+{txt}      ({stata "unicefdata_examples example11":click to run})
 
 {pstd}
 {ul:Metadata Sync}

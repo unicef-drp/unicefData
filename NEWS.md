@@ -1,5 +1,29 @@
 # unicefData Changelog
 
+## 1.5.2 (2026-01-07)
+
+### Fixed
+* **404 fallback in R**: Invalid indicators now return empty data frame with informative message instead of throwing error (parity with Python behavior)
+* **Quick-start example**: Fixed deprecated `start_year`/`end_year` parameters → now uses unified `year` parameter syntax
+
+### Added
+* **Dynamic User-Agent**: All platforms now send descriptive UA strings with version, runtime, and repo URL
+  - R: `unicefData-R/<version> (R/<r_ver>; <OS>) (+https://github.com/unicef-drp/unicefData)`
+  - Python: `unicefData-Python/<version> (Python/<py_ver>; <system>) (+github...)`
+  - Stata: `unicefData-StataSync/<version> (Python/<py_ver>; <platform>) (+github...)`
+* **Test coverage for PR #14**: 24 new tests validating 404 fallback and wrapper behavior
+  - R: 14 tests (5 for 404 fallback, 7 for list_dataflows, 1 skip)
+  - Python: 10 tests (4 for 404 fallback, 6 for list_dataflows)
+* **Quick verification script**: Added `R/examples/07_quick_verification.R` for rapid PR validation
+
+### Refactored
+* **list_dataflows() wrapper**: Now consistently wraps `list_sdmx_flows()` with unified output schema (id, agency, version, name)
+* **Stata helper version**: `stata_schema_sync.py` now dynamically imports version from `unicef_api` package with fallback
+
+### Documentation
+* **Test coverage summary**: Added `PR14_TEST_COVERAGE_SUMMARY.md` documenting all PR #14 validation
+* **Examples aligned**: All R/Python/Stata examples now use consistent `year` parameter syntax
+
 ## 1.5.0 (2025-12-19)
 
 ### Cross-Platform Release

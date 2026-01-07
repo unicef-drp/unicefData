@@ -18,6 +18,7 @@ Usage:
 import os
 import yaml
 import requests
+import platform
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any
@@ -25,6 +26,16 @@ import logging
 import time
 
 logger = logging.getLogger(__name__)
+
+def _build_user_agent() -> str:
+    """Build User-Agent string inline to avoid circular imports."""
+    try:
+        from unicef_api import __version__
+    except ImportError:
+        __version__ = "unknown"
+    py_ver = platform.python_version()
+    system = platform.system()
+    return f"unicefData-Python/{__version__} (Python/{py_ver}; {system}) (+https://github.com/unicef-drp/unicefData)"
 
 # SDMX namespaces
 SDMX_NS = {
@@ -46,7 +57,7 @@ def get_dataflow_list(max_retries: int = 3) -> List[Dict[str, str]]:
     
     for attempt in range(max_retries):
         try:
-            response = requests.get(url, timeout=60)
+            response = requests.get(url, timeout=60, headers={'User-Agent': _build_user_agent()})
             response.raise_for_status()
             
             root = ET.fromstring(response.content)
@@ -83,7 +94,7 @@ def get_dataflow_schema(dataflow_id: str, version: str = '1.0', max_retries: int
     
     for attempt in range(max_retries):
         try:
-            response = requests.get(url, timeout=120)
+            response = requests.get(url, timeout=120, headers={'User-Agent': _build_user_agent()})
             
             if response.status_code == 404:
                 logger.warning(f"Dataflow {dataflow_id} not found (404)")
@@ -199,7 +210,7 @@ def get_sample_data(
     
     for attempt in range(max_retries):
         try:
-            response = requests.get(url, timeout=180, stream=True)
+            response = requests.get(url, timeout=180, stream=True, headers={'User-Agent': _build_user_agent()})
             
             if response.status_code == 404:
                 return None

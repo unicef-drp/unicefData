@@ -79,6 +79,34 @@ help unicefdata
 
 ---
 
+## 🆕 What's New in v1.5.2
+
+**Released**: January 6, 2026
+
+### Fixed
+- **404 fallback behavior**: Invalid indicators now return empty results (not errors) across all platforms with automatic fallback to GLOBAL_DATAFLOW
+- **Quick-start examples**: Updated from deprecated `start_year`/`end_year` to unified `year` parameter
+- **User-Agent (Python)**: Resolved circular import preventing dynamic version detection
+
+### Added
+- **Dynamic User-Agent strings**: All platforms now send descriptive UA with version, runtime, and OS for better API tracking
+  - R: `unicefData-R/1.5.2 (R/4.x.x; Windows)`
+  - Python: `unicefData-Python/1.5.2 (Python/3.11.5; Windows)`
+  - Stata: `unicefData-StataSync/1.5.2 (Python/3.11.5; Windows)`
+- **Comprehensive test coverage**: 24 new tests across R and Python validating PR #14 features
+  - R: 14 tests (5 for 404 fallback, 7 for list_dataflows wrapper)
+  - Python: 10 tests (4 for 404 fallback, 6 for list_dataflows wrapper)
+- **Quick verification scripts**: Added rapid validation tools for testing changes
+
+### Improved
+- **list_dataflows() wrapper**: Consistent schema with documented columns across all platforms
+- **Error handling**: More informative messages when indicators not found
+- **Test alignment**: R and Python now have matching test coverage for identical behaviors
+
+See [NEWS.md](NEWS.md) (R/Stata) and [python/CHANGELOG.md](python/CHANGELOG.md) (Python) for full changelogs.
+
+---
+
 ## Installation
 
 ### R Package
@@ -836,6 +864,15 @@ cd stata && do install_local.do
 ```
 
 Please ensure your contributions pass the existing tests before submitting a PR.
+
+---
+
+## Release & Versioning
+
+This project follows Semantic Versioning (MAJOR.MINOR.PATCH) and uses Conventional Commits to automate version bumps and releases. For the full policy, test gating, and tagging flow, see the workspace guide:
+
+- Release & Versioning: ../.unicef/RELEASE_GUIDE.md
+
 
 ---
 
