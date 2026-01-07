@@ -2,6 +2,26 @@
 
 All notable changes to the unicef-api Python library will be documented in this file.
 
+## [1.5.2] - 2026-01-07
+
+### Added
+
+- **Dynamic User-Agent**: All HTTP requests now include descriptive UA string
+  - Format: `unicefData-Python/<version> (Python/<py_ver>; <system>) (+https://github.com/unicef-drp/unicefData)`
+  - Applied consistently across `sdmx_client.py` and `schema_sync.py`
+- **Comprehensive test suite for PR #14**: 10 new integration tests
+  - 4 tests for 404 fallback behavior (`test_404_fallback.py`)
+  - 6 tests for `list_dataflows()` wrapper schema validation (`test_list_dataflows.py`)
+
+### Fixed
+
+- **404 fallback behavior**: Invalid indicators now return empty DataFrame instead of raising exceptions (consistent error handling)
+- **list_dataflows() parameter**: Fixed documentation to use `max_retries` (not `retry` or `cache`)
+
+### Changed
+
+- **Test alignment**: Python and R test suites now have matching coverage for 404 fallback and wrapper validation
+- **Version management**: Version string now dynamically read from `__init__.py` in User-Agent builder
 
 ## [1.5.0] - 2025-12-19
 

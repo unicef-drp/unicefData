@@ -42,6 +42,24 @@ SDMX_NS = {
 BASE_URL = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
 AGENCY = "UNICEF"
 
+# Try to import version from main package, fallback to local constant
+try:
+    from unicef_api import __version__
+except ImportError:
+    __version__ = "1.5.2"  # Fallback if package not installed
+
+
+def build_user_agent() -> str:
+    """Build a descriptive User-Agent string for requests."""
+    py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    platform = sys.platform
+    # Identify this helper tool distinctly for server logs
+    return (
+        f"unicefData-StataSync/{__version__} "
+        f"(Python/{py_ver}; {platform}) "
+        f"(+https://github.com/unicef-drp/unicefData)"
+    )
+
 
 def escape_yaml_string(s: str) -> str:
     """Escape special characters for YAML string values."""
@@ -60,7 +78,11 @@ def get_dataflow_list(verbose: bool = False) -> List[Dict[str, str]]:
     if verbose:
         print(f"  Fetching dataflow list from API...")
     
-    response = requests.get(url, timeout=60)
+    headers = {
+        'User-Agent': build_user_agent(),
+        'Accept-Encoding': 'gzip, deflate'
+    }
+    response = requests.get(url, timeout=60, headers=headers)
     response.raise_for_status()
     
     root = ET.fromstring(response.content)
@@ -86,7 +108,11 @@ def get_dataflow_schema(dataflow_id: str, version: str = '1.0', verbose: bool = 
     url = f"{BASE_URL}/dataflow/{AGENCY}/{dataflow_id}/{version}?references=all"
     
     try:
-        response = requests.get(url, timeout=120)
+        headers = {
+            'User-Agent': build_user_agent(),
+            'Accept-Encoding': 'gzip, deflate'
+        }
+        response = requests.get(url, timeout=120, headers=headers)
         
         if response.status_code == 404:
             return None

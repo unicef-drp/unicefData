@@ -29,6 +29,7 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 
 - **Easy-to-use API**: Simple Python interface for UNICEF SDMX data
 - **Auto dataflow detection**: No need to know which dataflow an indicator is in
+- **404-aware fallback**: Invalid indicators return empty DataFrame (not exception) with automatic fallback to GLOBAL_DATAFLOW
 - **Search capability**: Find indicators using `search_indicators()` and `list_categories()`
 - **Comprehensive coverage**: Access 733 indicators across 15 categories
 - **Automatic data cleaning**: Standardized DataFrames ready for analysis
@@ -57,6 +58,25 @@ This conversion:
 - Maintains a consistent numeric format for all observations
 - Enables proper sorting and time-series analysis
 - Works identically in both Python and R packages
+
+## 🆕 What's New in v1.5.2
+
+**Released**: January 6, 2026
+
+### Fixed
+- **404 fallback behavior**: Invalid indicators now return empty DataFrame without raising exceptions
+- **User-Agent**: Resolved circular import issue preventing dynamic version detection
+
+### Added
+- **Dynamic User-Agent**: Sends `unicefData-Python/<version> (Python/<py_ver>; <system>)` for better API tracking
+- **Comprehensive test suite**: 10 new integration tests (4 for 404 fallback, 6 for `list_dataflows()`)
+- **Aligned test coverage**: Python and R test suites now have matching coverage
+
+### Improved
+- **list_dataflows()**: Consistent wrapper with documented schema (id, agency, version, name)
+- **Error handling**: More graceful handling of invalid indicators and network errors
+
+See [CHANGELOG.md](CHANGELOG.md) for full changelog.
 
 ## 📦 Installation
 

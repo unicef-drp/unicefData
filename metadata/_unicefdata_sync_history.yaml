@@ -1,0 +1,9 @@
+vintages:
+- codelists: 5
+  countries: 453
+  dataflows: 69
+  errors: []
+  indicators: 25
+  regions: 111
+  synced_at: '2026-01-07T00:26:48.351298Z'
+  vintage_date: '2026-01-07'
