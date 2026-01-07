@@ -1,6 +1,6 @@
 # unicefData Changelog
 
-## 1.5.2 (2026-01-06)
+## 1.5.2 (2026-01-07)
 
 ### Fixed
 * **404 fallback in R**: Invalid indicators now return empty data frame with informative message instead of throwing error (parity with Python behavior)

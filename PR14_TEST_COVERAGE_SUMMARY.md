@@ -201,7 +201,7 @@ Rscript R/examples/07_quick_verification.R
 
 ### Changelog Entry (Suggested)
 ```markdown
-## [1.5.2] - 2026-01-06
+## [1.5.2] - 2026-01-07
 
 ### Added
 - Dynamic User-Agent strings across R, Python, and Stata (format: `unicefData-<LANG>/<VERSION> (<RUNTIME>/<VER>; <OS>)`)

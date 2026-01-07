@@ -61,7 +61,7 @@ This conversion:
 
 ## 🆕 What's New in v1.5.2
 
-**Released**: January 6, 2026
+**Released**: January 7, 2026
 
 ### Fixed
 - **404 fallback behavior**: Invalid indicators now return empty data frame with informative message instead of error (parity with Python)

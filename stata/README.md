@@ -32,7 +32,7 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 
 ## 🆕 What's New in v1.5.2
 
-**Released**: January 6, 2026
+**Released**: January 7, 2026
 
 ### Added
 - **Dynamic User-Agent**: Helper script now sends `unicefData-StataSync/<version> (Python/<py_ver>; <platform>)` for API tracking

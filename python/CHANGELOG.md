@@ -2,7 +2,7 @@
 
 All notable changes to the unicef-api Python library will be documented in this file.
 
-## [1.5.2] - 2026-01-06
+## [1.5.2] - 2026-01-07
 
 ### Added
 
