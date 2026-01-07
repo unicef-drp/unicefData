@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14+-1a5276.svg)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.5.2-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.5.3-blue.svg)]()
 
 **Stata package for downloading UNICEF child welfare indicators via SDMX API**
 
@@ -33,6 +33,12 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 ## 🆕 What's New in v1.5.2
 
 **Released**: January 6, 2026
+
+### Patch v1.5.3
+**Released**: January 7, 2026
+
+### Fixed
+- Fix dispatcher and CSV import behavior for `categories` and `indicator()` flows (patch: attocmig)
 
 ### Added
 - **Dynamic User-Agent**: Helper script now sends `unicefData-StataSync/<version> (Python/<py_ver>; <platform>)` for API tracking

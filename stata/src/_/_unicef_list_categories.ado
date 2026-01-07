@@ -1,10 +1,11 @@
 *******************************************************************************
 * _unicef_list_categories.ado
-*! v 1.4.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.4.1   07Jan2026               by Joao Pedro Azevedo (UNICEF)
 * List all available indicator categories with counts
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
 *
+* v1.4.1: Patch: accept DETAIL option; dispatcher now passes options correctly
 * v1.4.0: MAJOR REWRITE - Direct dataset query instead of 733 yaml get calls
 *         - Much faster: single dataset filter vs 733 individual lookups
 *         - More robust: avoids frame context/return value issues
@@ -19,7 +20,7 @@
 program define _unicef_list_categories, rclass
     version 14.0
     
-    syntax [, VERBOSE METApath(string)]
+    syntax [, DETAIL VERBOSE METApath(string)]
     
     * Check if frames are available (Stata 16+)
     local use_frames = (c(stata_version) >= 16)
@@ -63,6 +64,11 @@ program define _unicef_list_categories, rclass
         
         if ("`verbose'" != "") {
             noi di as text "Reading categories from: " as result "`yaml_file'"
+        }
+
+        * Accept but ignore DETAIL for now (placeholder for expanded output)
+        if ("`detail'" != "") {
+            local _show_detail 1
         }
         
         *-----------------------------------------------------------------------

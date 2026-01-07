@@ -1,4 +1,4 @@
-*! v 1.5.2   06Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.5.3   07Jan2026               by Joao Pedro Azevedo (UNICEF)
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
@@ -149,6 +149,25 @@ version 11
         
         * Route to unicefdata_sync
         unicefdata_sync, `sync_target' `sync_opts'
+        exit
+    }
+
+    * Check for CATEGORIES subcommand (list categories with indicator counts)
+    if (strpos("`0'", "categories") > 0) {
+        local has_detail = (strpos("`0'", "detail") > 0)
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+
+        local opts ""
+        if (`has_detail') local opts "detail"
+        if (`has_verbose') local opts "`opts' verbose"
+
+        if ("`opts'" == "") {
+            _unicef_list_categories
+        }
+        else {
+            _unicef_list_categories, `opts'
+        }
+
         exit
     }
 
@@ -683,11 +702,15 @@ version 11
         }
         
         *-----------------------------------------------------------------------
-        * Import the CSV data (if not already loaded by fallback)
+        * Import the CSV data
         *-----------------------------------------------------------------------
-        
-        * Check if data is already loaded (from fallback helper)
-        if (_N == 0) {
+
+        * Import the downloaded CSV into memory.
+        * Only import when there is no data currently loaded, or when the
+        * user explicitly requested `clear'. This avoids overwriting a
+        * non-empty dataset unless the user allowed it.
+
+        if (_N == 0) | ("`clear'" != "") {
             import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
         }
         
