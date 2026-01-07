@@ -22,7 +22,7 @@ Notes:
       4. Maximum number of variables is set to 5,000 but can be increased;
           see help set_maxvar.
 
-. do C:\GitHub\myados\unicefData\stata\qa\run_tests.do 
+. do run_tests.do 
 
 . /****************************************************************************
 > ***
@@ -59,13 +59,27 @@ Notes:
 > **/
 . 
 . clear all
-r; t=0.01 16:25:55
+r; t=0.02 22:48:33
 
 . set more off
-r; t=0.00 16:25:55
+r; t=0.00 22:48:33
 
 . cap log close _all
-r; t=0.00 16:25:55
+r; t=0.00 22:48:33
+
+. 
+. *============================================================================
+> ===
+. * SYNC REPO AND STATA (ALWAYS RUN FIRST)
+. *============================================================================
+> ===
+. 
+. * Always start by making sure unicefdata in REPO and in Stata are aligned
+. * This ensures tests run against the latest code from the repository
+. net install unicefdata, from("C:\GitHub\myados\unicefData\stata") replace
+checking unicefdata consistency and verifying not already installed...
+all files already exist and are up to date.
+r; t=0.85 22:48:34
 
 . 
 . *============================================================================
@@ -75,13 +89,13 @@ r; t=0.00 16:25:55
 > ===
 . 
 . local args `0'
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . local target_test ""
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . local verbose 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . foreach arg of local args {
@@ -157,7 +171,7 @@ r; t=0.00 16:25:55
  70.         local target_test "`arg'"
  71.     }
  72. }
-r; t=0.02 16:25:55
+r; t=0.02 22:48:34
 
 . 
 . *============================================================================
@@ -168,27 +182,27 @@ r; t=0.02 16:25:55
 . 
 . * Capture start time
 . local start_time = c(current_time)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Define file paths
 . local qadir "c:/GitHub/myados/unicefData/stata/qa"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . local logdate = string(date(c(current_date), "DMY"), "%tdCY-N-D")
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . local logfile "`qadir'/run_tests.log"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . local histfile "`qadir'/test_history.txt"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Always start by making sure unicefdata in REPO and in Stata are aligned
 . * Use install_local.do instead of net install (avoids pkg file length issues)
 . local repodir "C:/GitHub/myados/unicefData/stata"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . cap noi do "`repodir'/install_local.do"
 
@@ -204,173 +218,173 @@ r; t=0.00 16:25:55
 . *! This script copies all package files to your PLUS ado directory.
 . 
 . version 14.0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . clear all
-r; t=0.01 16:25:55
+r; t=0.02 22:48:34
 
 . 
 . * Get the PLUS directory path
 . local plusdir : sysdir PLUS
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "Installing unicefdata to: " as result "`plusdir'"
 Installing unicefdata to: C:\Users\jpazevedo\ado\plus/
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Create subdirectories if they don't exist
 . capture mkdir "`plusdir'u"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . capture mkdir "`plusdir'_"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . capture mkdir "`plusdir'y"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . capture mkdir "`plusdir'py"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Determine source directory (current directory should be stata/)
 . local srcdir "`c(pwd)'/src"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . capture confirm file "`srcdir'/u/unicefdata.ado"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . if _rc {
 .     di as err "Error: Cannot find source files."
 Error: Cannot find source files.
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     di as err "Please cd to the stata/ directory of the unicefData repository
 >  first."
 Please cd to the stata/ directory of the unicefData repository first.
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     di as err ""
 
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     di as err "Example:"
 Example:
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     di as err "  cd C:\GitHub\unicefData\stata"
   cd C:\GitHub\unicefData\stata
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     di as err "  do install_local.do"
   do install_local.do
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     exit 601
-r(601); t=0.00 16:25:55
+r(601); t=0.00 22:48:34
 . }
-r(601); t=0.00 16:25:55
+r(601); t=0.00 22:48:34
 
 end of do-file
-r; t=0.01 16:25:55
+r; t=0.02 22:48:34
 
 . 
 . * Start log (with retry if locked)
 . cap log close _testlog
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . cap log using "`logfile'", replace text name(_testlog)
-r; t=0.02 16:25:55
+r; t=0.03 22:48:34
 
 . if _rc != 0 {
 .     local timestamp = subinstr(c(current_time),":","-",.)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     local logfile "`qadir'/run_tests_`timestamp'.log"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     log using "`logfile'", replace text name(_testlog)
-(file c:/GitHub/myados/unicefData/stata/qa/run_tests_16-25-55.log not found)
+(file c:/GitHub/myados/unicefData/stata/qa/run_tests_22-48-34.log not found)
 -------------------------------------------------------------------------------
       name:  _testlog
-       log:  c:/GitHub/myados/unicefData/stata/qa/run_tests_16-25-55.log
+       log:  c:/GitHub/myados/unicefData/stata/qa/run_tests_22-48-34.log
   log type:  text
- opened on:   6 Jan 2026, 16:25:55
-r; t=0.00 16:25:55
+ opened on:   6 Jan 2026, 22:48:34
+r; t=0.00 22:48:34
 . }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Set trace if verbose mode
 . if `verbose' == 1 {
 .     set trace on
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     set tracedepth 4
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Initialize counters
 . global test_count = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global pass_count = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global fail_count = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global skip_count = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global failed_tests = ""
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Test execution control
 . global run_env = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_downloads = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_discovery = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_sync = 0  // Skip sync tests by default (may modify files)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_format = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_yaml = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_xplat = 1  // Cross-platform consistency tests
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_transform = 1      // Transformations & metadata (P1)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . global run_edge = 1           // Robustness/performance (P2)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . * Override if single test specified
 . if "`target_test'" != "" {
 .     global run_env = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_downloads = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_discovery = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_sync = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_format = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_xplat = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_yaml = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_transform = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     global run_edge = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . *============================================================================
@@ -381,51 +395,51 @@ r; t=0.00 16:25:55
 . 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "{bf:{center 78:unicefdata AUTOMATED TEST SUITE}}"
                        unicefdata AUTOMATED TEST SUITE                        
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text ""
 
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "  Version:       1.5.1"
   Version:       1.5.1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "  Date:          `c(current_date)' `c(current_time)'"
-  Date:           6 Jan 2026 16:25:55
-r; t=0.00 16:25:55
+  Date:           6 Jan 2026 22:48:34
+r; t=0.00 22:48:34
 
 . di as text "  Stata:         `c(stata_version)'"
   Stata:         17
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "  OS:            `c(os)'"
   OS:            Windows
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . if "`target_test'" != "" {
 .     di as text "  Target Test:   `target_test'"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . if `verbose' == 1 {
 .     di as text "  Verbose Mode:  ENABLED"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . *============================================================================
@@ -435,7 +449,7 @@ r; t=0.00 16:25:55
 > ===
 . 
 . capture program drop test_start
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . program define test_start
   1.     syntax, id(string) desc(string)
@@ -447,11 +461,11 @@ r; t=0.00 16:25:55
   5.     di as result "TEST `id': " as text "`desc'"
   6.     di as text "{hline 78}"
   7. end
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . capture program drop test_pass
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . program define test_pass
   1.     syntax, id(string) [msg(string)]
@@ -460,11 +474,11 @@ r; t=0.00 16:25:55
   3.     
 .     di as result "✓ PASS: `id'" as text " `msg'"
   4. end
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . capture program drop test_fail
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . program define test_fail
   1.     syntax, id(string) [msg(string)] [rc(string)]
@@ -501,11 +515,11 @@ r; t=0.00 16:25:55
  27.         di as err "✗ FAIL: `id'" as text " `msg'"
  28.     }
  29. end
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . capture program drop test_skip
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . program define test_skip
   1.     syntax, id(string) [msg(string)]
@@ -514,7 +528,7 @@ r; t=0.00 16:25:55
   3.     
 .     di as text "○ SKIP: `id'" as text " `msg'"
   4. end
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 
 . 
 . *============================================================================
@@ -571,43 +585,43 @@ r; t=0.00 16:25:55
 ------------------------------------------------------------------------------
 TEST ENV-01: Check unicefdata version
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     
 .     cap which unicefdata
-r; t=0.00 16:25:55
+r; t=0.01 22:48:34
 .     if _rc == 0 {
 .         * Resolve ado path robustly (prefer findfile)
 .         local fn ""
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         cap findfile unicefdata.ado
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         if _rc == 0 {
 .             local fn = r(fn)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         else {
 .             * Fallback to which() result
 .             local fn = r(fn)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . 
 .         * Normalize path separators to avoid invalid file specification on Wi
 > ndows
 .         local fnsafe = subinstr("`fn'","\\","/",.)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . 
 .         * Extract version from ado file
 .         tempname fh
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         cap file open `fh' using "`fnsafe'", read
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         if _rc == 0 {
 .             file read `fh' line
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .             local found_version = 0
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .             while r(eof)==0 & `found_version'==0 {
   2.                 if regexm("`line'", "^\*! v ([0-9]+\.[0-9]+\.[0-9]+)") {
   3.                     local ado_version = regexs(1)
@@ -615,39 +629,39 @@ r; t=0.00 16:25:55
   5.                 }
   6.                 file read `fh' line
   7.             }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .             file close `fh'
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . 
 .             if `found_version' {
 .                 test_pass, id("ENV-01") msg("Version `ado_version' found")
-✓ PASS: ENV-01 Version 1.5.0 found
-r; t=0.00 16:25:55
+✓ PASS: ENV-01 Version 1.5.1 found
+r; t=0.00 22:48:34
 .             }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .             else {
 .                 test_fail, id("ENV-01") msg("Could not extract version from a
 > do file")
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .             }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         }
-r; t=0.00 16:25:55
+r; t=0.01 22:48:34
 .         else {
 .             test_fail, id("ENV-01") msg("Could not open ado file: `fnsafe'") 
 > rc(_rc)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .         }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     }
-r; t=0.01 16:25:55
+r; t=0.01 22:48:34
 .     else {
 .         test_fail, id("ENV-01") msg("unicefdata not found") rc(_rc)
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.03 16:25:55
+r; t=0.04 22:48:34
 
 . 
 . if $run_env == 1 | "`target_test'" == "ENV-02" {
@@ -703,12 +717,12 @@ r; t=0.03 16:25:55
 ------------------------------------------------------------------------------
 TEST ENV-02: Check required dependencies
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     
 .     local deps "yaml"
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     local all_found = 1
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     
 .     foreach dep of local deps {
   2.         cap which `dep'
@@ -721,21 +735,21 @@ r; t=0.00 16:25:55
   9.         }
  10.     }
   Found: yaml
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     
 .     if `all_found' {
 .         test_pass, id("ENV-02") msg("All dependencies found")
 ✓ PASS: ENV-02 All dependencies found
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     else {
 .         test_fail, id("ENV-02") msg("Some dependencies missing")
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 .     }
-r; t=0.00 16:25:55
+r; t=0.00 22:48:34
 . }
-r; t=0.02 16:25:55
+r; t=0.03 22:48:34
 
 . 
 . *============================================================================
@@ -817,10 +831,10 @@ r; t=0.02 16:25:55
 ------------------------------------------------------------------------------
 TEST DL-01: Download single indicator (Under-5 mortality)
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:55
+r; t=0.00 22:48:35
 .     
 .     clear
-r; t=0.00 16:25:55
+r; t=0.00 22:48:35
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) year(201
 > 5:2020) clear
 Auto-detected dataflow 'CME'
@@ -853,29 +867,29 @@ Indicator Information: CME_MRY0T4
 
  Observations: 18
 ----------------------------------------------------------------------
-r; t=2.34 16:25:57
+r; t=3.65 22:48:38
 .     
 .     if _rc == 0 {
 .         if _N > 0 {
 .             test_pass, id("DL-01") msg("Downloaded `=_N' observations")
 ✓ PASS: DL-01 Downloaded 18 observations
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .         }
-r; t=0.00 16:25:57
+r; t=0.01 22:48:38
 .         else {
 .             test_fail, id("DL-01") msg("No data downloaded")
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .         }
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .     }
-r; t=0.00 16:25:57
+r; t=0.01 22:48:38
 .     else {
 .         test_fail, id("DL-01") msg("Download failed") rc(_rc)
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .     }
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 . }
-r; t=2.36 16:25:57
+r; t=3.69 22:48:38
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-02" {
@@ -944,10 +958,10 @@ r; t=2.36 16:25:57
 ------------------------------------------------------------------------------
 TEST DL-02: Download multiple countries
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .     
 .     clear
-r; t=0.00 16:25:57
+r; t=0.00 22:48:38
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(DEU FRA ITA ESP GBR) 
 > year(2020) clear
 Auto-detected dataflow 'CME'
@@ -980,33 +994,33 @@ Indicator Information: CME_MRY0T4
 
  Observations: 5
 ----------------------------------------------------------------------
-r; t=0.20 16:25:58
+r; t=0.37 22:48:39
 .     
 .     if _rc == 0 {
 .         qui count
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .         if r(N) >= 5 {
 .             test_pass, id("DL-02") msg("Downloaded data for multiple countrie
 > s")
 ✓ PASS: DL-02 Downloaded data for multiple countries
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .         }
-r; t=0.00 16:25:58
+r; t=0.01 22:48:39
 .         else {
 .             test_fail, id("DL-02") msg("Expected at least 5 obs, got `=r(N)'"
 > )
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .         }
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .     }
-r; t=0.00 16:25:58
+r; t=0.01 22:48:39
 .     else {
 .         test_fail, id("DL-02") msg("Download failed") rc(_rc)
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .     }
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 . }
-r; t=0.22 16:25:58
+r; t=0.40 22:48:39
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-03" {
@@ -1080,10 +1094,10 @@ r; t=0.22 16:25:58
 ------------------------------------------------------------------------------
 TEST DL-03: Download with year range
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .     
 .     clear
-r; t=0.00 16:25:58
+r; t=0.00 22:48:39
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA) year(2010:2020) 
 > clear
 Auto-detected dataflow 'CME'
@@ -1116,32 +1130,32 @@ Indicator Information: CME_MRY0T4
 
  Observations: 11
 ----------------------------------------------------------------------
-r; t=1.34 16:25:59
+r; t=2.14 22:48:41
 .     
 .     if _rc == 0 {
 .         qui count
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         if r(N) > 5 {
 .             test_pass, id("DL-03") msg("Downloaded `=r(N)' year observations"
 > )
 ✓ PASS: DL-03 Downloaded 11 year observations
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         }
-r; t=0.01 16:25:59
+r; t=0.00 22:48:41
 .         else {
 .             test_fail, id("DL-03") msg("Expected > 5 years, got `=r(N)'")
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     }
-r; t=0.01 16:25:59
+r; t=0.00 22:48:41
 .     else {
 .         test_fail, id("DL-03") msg("Download failed") rc(_rc)
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 . }
-r; t=1.37 16:25:59
+r; t=2.16 22:48:41
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-04" {
@@ -1256,10 +1270,10 @@ r; t=1.37 16:25:59
 ------------------------------------------------------------------------------
 TEST DL-04: Schema validation (P0 - Critical)
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     
 .     clear
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2020) c
 > lear
 Auto-detected dataflow 'CME'
@@ -1292,14 +1306,14 @@ Indicator Information: CME_MRY0T4
 
  Observations: 2
 ----------------------------------------------------------------------
-r; t=0.19 16:25:59
+r; t=0.22 22:48:41
 .     
 .     if _rc == 0 {
 .         * Check required columns exist
 .         local required_cols "iso3 country period indicator value"
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         local all_exist = 1
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         foreach col of local required_cols {
   2.             cap confirm variable `col'
   3.             if _rc != 0 {
@@ -1307,51 +1321,51 @@ r; t=0.00 16:25:59
   5.                 local all_exist = 0
   6.             }
   7.         }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         
 .         if `all_exist' {
 .             * Check iso3 is 3-character string
 .             cap assert length(iso3) == 3 if !missing(iso3)
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .             if _rc == 0 {
 .                 * Check period is numeric
 .                 cap confirm numeric variable period
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .                 if _rc == 0 {
 .                     test_pass, id("DL-04") msg("Schema valid: required column
 > s exist, correct types")
 ✓ PASS: DL-04 Schema valid: required columns exist, correct types
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .                 }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .                 else {
 .                     test_fail, id("DL-04") msg("period is not numeric")
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .                 }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .             }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .             else {
 .                 test_fail, id("DL-04") msg("iso3 contains non-ISO3 codes")
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .             }
-r; t=0.00 16:25:59
+r; t=0.01 22:48:41
 .         }
-r; t=0.00 16:25:59
+r; t=0.01 22:48:41
 .         else {
 .             test_fail, id("DL-04") msg("Missing required columns")
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .         }
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     }
-r; t=0.01 16:25:59
+r; t=0.01 22:48:41
 .     else {
 .         test_fail, id("DL-04") msg("Download failed") rc(_rc)
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     }
-r; t=0.01 16:25:59
+r; t=0.00 22:48:41
 . }
-r; t=0.23 16:25:59
+r; t=0.27 22:48:41
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-05" {
@@ -1504,11 +1518,11 @@ r; t=0.23 16:25:59
 ------------------------------------------------------------------------------
 TEST DL-05: Disaggregation filters (P0 - Critical)
 ------------------------------------------------------------------------------
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     
 .     * Test sex filter
 .     clear
-r; t=0.00 16:25:59
+r; t=0.00 22:48:41
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA) year(2020) sex(F
 > ) clear
 Auto-detected dataflow 'CME'
@@ -1541,19 +1555,19 @@ Indicator Information: CME_MRY0T4
 
  Observations: 1
 ----------------------------------------------------------------------
-r; t=0.53 16:26:00
+r; t=0.23 22:48:41
 .     
 .     if _rc == 0 {
 .         cap confirm variable sex
-r; t=0.00 16:26:00
+r; t=0.00 22:48:41
 .         if _rc == 0 {
 .             * Check all values are F
 .             qui count if sex != "F" & !missing(sex)
-r; t=0.00 16:26:00
+r; t=0.00 22:48:41
 .             if r(N) == 0 {
 .                 * Test wealth filter combination
 .                 clear
-r; t=0.00 16:26:00
+r; t=0.00 22:48:41
 .                 cap noi unicefdata, indicator(NT_ANT_WHZ_NE2) countries(BGD) 
 > year(2019) wealth(Q1 Q5) clear
 Auto-detected dataflow 'NUTRITION'
@@ -1591,79 +1605,79 @@ Indicator Information: NT_ANT_WHZ_NE2
 
  Observations: 24
 ----------------------------------------------------------------------
-r; t=1.99 16:26:02
+r; t=2.30 22:48:44
 .                 if _rc == 0 {
 .                     cap confirm variable wealth
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                     if _rc == 0 {
 .                         * Check that Q1 and Q5 are present
 .                         qui count if inlist(wealth, "Q1", "Q5")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                         if r(N) > 0 {
 .                             * Also check no unexpected quintiles (Q2, Q3, Q4)
 .                             qui count if inlist(wealth, "Q2", "Q3", "Q4")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                             if r(N) == 0 {
 .                                 test_pass, id("DL-05") msg("Filters work: sex
 > (F) and wealth(Q1 Q5) correct")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                             }
-r; t=0.02 16:26:02
+r; t=0.00 22:48:44
 .                             else {
 .                                 test_fail, id("DL-05") msg("Unexpected quinti
 > les (Q2/Q3/Q4) found")
 ✗ FAIL: DL-05 Unexpected quintiles (Q2/Q3/Q4) found
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                             }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                         }
-r; t=0.03 16:26:02
+r; t=0.01 22:48:44
 .                         else {
 .                             test_fail, id("DL-05") msg("No Q1 or Q5 values fo
 > und")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                         }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                     }
-r; t=0.03 16:26:02
+r; t=0.01 22:48:44
 .                     else {
 .                         test_fail, id("DL-05") msg("No wealth variable in res
 > ult")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                     }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                 }
-r; t=0.03 16:26:02
+r; t=0.01 22:48:44
 .                 else {
 .                     test_fail, id("DL-05") msg("Wealth filter download failed
 > ") rc(_rc)
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .                 }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .             }
-r; t=2.03 16:26:02
+r; t=2.32 22:48:44
 .             else {
 .                 test_fail, id("DL-05") msg("Sex filter returned non-F values:
 >  `=r(N)' obs")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .             }
-r; t=0.00 16:26:02
+r; t=0.01 22:48:44
 .         }
-r; t=2.03 16:26:02
+r; t=2.33 22:48:44
 .         else {
 .             test_fail, id("DL-05") msg("Sex variable not found in result")
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .         }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .     }
-r; t=2.03 16:26:02
+r; t=2.33 22:48:44
 .     else {
 .         test_fail, id("DL-05") msg("Sex filter download failed") rc(_rc)
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .     }
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 . }
-r; t=2.59 16:26:02
+r; t=2.60 22:48:44
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-06" {
@@ -1791,10 +1805,10 @@ r; t=2.59 16:26:02
 ------------------------------------------------------------------------------
 TEST DL-06: Duplicate detection (P0 - Critical)
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .     
 .     clear
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND) year(201
 > 8:2020) clear
 Auto-detected dataflow 'CME'
@@ -1827,60 +1841,60 @@ Indicator Information: CME_MRY0T4
 
  Observations: 9
 ----------------------------------------------------------------------
-r; t=0.68 16:26:02
+r; t=0.81 22:48:44
 .     
 .     if _rc == 0 {
 .         * Check for duplicates on key dimensions
 .         cap confirm variable sex
-r; t=0.00 16:26:02
+r; t=0.00 22:48:44
 .         if _rc == 0 {
 .             qui duplicates report iso3 period sex
-r; t=0.02 16:26:03
+r; t=0.01 22:48:44
 .             if r(unique_value) == r(N) {
 .                 test_pass, id("DL-06") msg("No duplicates found on key dimens
 > ions")
 ✓ PASS: DL-06 No duplicates found on key dimensions
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .             }
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .             else {
 .                 local dup_count = r(N) - r(unique_value)
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .                 test_fail, id("DL-06") msg("Found `dup_count' duplicate obser
 > vations")
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .             }
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .         }
-r; t=0.02 16:26:03
+r; t=0.01 22:48:44
 .         else {
 .             * If no sex variable, check simpler key
 .             qui duplicates report iso3 period indicator
-r; t=0.00 16:26:03
+r; t=0.00 22:48:44
 .             if r(unique_value) == r(N) {
 .                 test_pass, id("DL-06") msg("No duplicates on iso3 × period × 
 > indicator")
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .             }
-r; t=0.00 16:26:03
+r; t=0.03 22:48:45
 .             else {
 .                 local dup_count = r(N) - r(unique_value)
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .                 test_fail, id("DL-06") msg("Found `dup_count' duplicates")
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .             }
-r; t=0.01 16:26:03
+r; t=0.00 22:48:45
 .         }
-r; t=0.01 16:26:03
+r; t=0.03 22:48:45
 .     }
-r; t=0.03 16:26:03
+r; t=0.04 22:48:45
 .     else {
 .         test_fail, id("DL-06") msg("Download failed") rc(_rc)
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .     }
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 . }
-r; t=0.75 16:26:03
+r; t=0.91 22:48:45
 
 . 
 . if $run_downloads == 1 | "`target_test'" == "DL-07" {
@@ -2019,11 +2033,11 @@ r; t=0.75 16:26:03
 ------------------------------------------------------------------------------
 TEST DL-07: API error handling (P0 - Critical)
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .     
 .     * Test invalid indicator code
 .     clear
-r; t=0.00 16:26:03
+r; t=0.00 22:48:45
 .     cap noi unicefdata, indicator(INVALID_CODE_12345) countries(USA) year(202
 > 0) clear
 Auto-detected dataflow 'GLOBAL_DATAFLOW'
@@ -2039,7 +2053,7 @@ Tried:  GLOBAL_DATAFLOW
     (5) Try specifying a different dataflow().
     (6) Report an issue on GitHub with a detailed description and, if
     possible, a log with set trace on enabled.
-r; t=8.15 16:26:11
+r; t=8.30 22:48:53
 .     
 .     * Should fail gracefully (non-zero rc), not crash
 .     if _rc != 0 {
@@ -2048,37 +2062,37 @@ r; t=8.15 16:26:11
 .             test_pass, id("DL-07") msg("Invalid indicator handled gracefully 
 > (rc=`=_rc')")
 ✓ PASS: DL-07 Invalid indicator handled gracefully (rc=677)
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         }
-r; t=0.01 16:26:11
+r; t=0.00 22:48:53
 .         else {
 .             test_fail, id("DL-07") msg("Syntax error instead of graceful fail
 > ure (rc=`=_rc')")
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         }
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .     }
-r; t=0.01 16:26:11
+r; t=0.01 22:48:53
 .     else {
 .         * Should not succeed with invalid indicator
 .         qui count
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         if r(N) == 0 {
 .             test_pass, id("DL-07") msg("Invalid indicator returns empty (no e
 > rror thrown)")
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         }
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         else {
 .             test_fail, id("DL-07") msg("Invalid indicator returned data unexp
 > ectedly")
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .         }
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .     }
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 . }
-r; t=8.19 16:26:11
+r; t=8.36 22:48:53
 
 . 
 . *============================================================================
@@ -2258,10 +2272,10 @@ r; t=8.19 16:26:11
 ------------------------------------------------------------------------------
 TEST DATA-01: Data type validation (P0 - Critical)
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .     
 .     clear
-r; t=0.00 16:26:11
+r; t=0.00 22:48:53
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2018:20
 > 20) clear
 Auto-detected dataflow 'CME'
@@ -2294,64 +2308,64 @@ Indicator Information: CME_MRY0T4
 
  Observations: 6
 ----------------------------------------------------------------------
-r; t=1.54 16:26:12
+r; t=1.93 22:48:55
 .     
 .     if _rc == 0 {
 .         * Check value is numeric
 .         cap confirm numeric variable value
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .         if _rc == 0 {
 .             * Check for string corruption ("NULL", "NA", etc.)
 .             qui count if missing(value)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             local missing_ok = r(N)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             qui count if !missing(value)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             local nonmiss = r(N)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             
 .             if `missing_ok' + `nonmiss' == _N {
 .                 * Check period is integer
 .                 cap assert period == int(period) if !missing(period)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .                 if _rc == 0 {
 .                     test_pass, id("DATA-01") msg("Data types valid: value num
 > eric, period integer")
 ✓ PASS: DATA-01 Data types valid: value numeric, period integer
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .                 }
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .                 else {
 .                     test_fail, id("DATA-01") msg("period contains non-integer
 >  values")
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .                 }
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             }
-r; t=0.01 16:26:12
+r; t=0.01 22:48:55
 .             else {
 .                 test_fail, id("DATA-01") msg("value has non-numeric corruptio
 > n")
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .             }
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .         }
-r; t=0.01 16:26:12
+r; t=0.01 22:48:55
 .         else {
 .             test_fail, id("DATA-01") msg("value is not numeric variable")
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .         }
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .     }
-r; t=0.01 16:26:12
+r; t=0.01 22:48:55
 .     else {
 .         test_fail, id("DATA-01") msg("Download failed") rc(_rc)
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .     }
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 . }
-r; t=1.61 16:26:12
+r; t=2.01 22:48:55
 
 . 
 . *============================================================================
@@ -2399,7 +2413,7 @@ r; t=1.61 16:26:12
 ------------------------------------------------------------------------------
 TEST DISC-01: List dataflows
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:12
+r; t=0.00 22:48:55
 .     
 .     cap noi unicefdata, flows
 
@@ -2436,21 +2450,21 @@ Available UNICEF SDMX Dataflows
 -------------------------------------------------------------------------------
 Total: 69 dataflows available
 -------------------------------------------------------------------------------
-r; t=0.33 16:26:13
+r; t=0.22 22:48:55
 .     
 .     if _rc == 0 {
 .         test_pass, id("DISC-01") msg("Dataflows listed successfully")
 ✓ PASS: DISC-01 Dataflows listed successfully
-r; t=0.00 16:26:13
+r; t=0.00 22:48:55
 .     }
-r; t=0.00 16:26:13
+r; t=0.00 22:48:55
 .     else {
 .         test_fail, id("DISC-01") msg("Failed to list dataflows") rc(_rc)
-r; t=0.00 16:26:13
+r; t=0.00 22:48:55
 .     }
-r; t=0.00 16:26:13
+r; t=0.00 22:48:55
 . }
-r; t=0.34 16:26:13
+r; t=0.24 22:48:55
 
 . 
 . if $run_discovery == 1 | "`target_test'" == "DISC-02" {
@@ -2492,7 +2506,7 @@ r; t=0.34 16:26:13
 ------------------------------------------------------------------------------
 TEST DISC-02: Search indicators by keyword
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:13
+r; t=0.00 22:48:55
 .     
 .     cap noi unicefdata, search(mortality)
 
@@ -2530,21 +2544,21 @@ Found: 20 indicator(s)
 -------------------------------------------------------------------------------
 Note: Search matches keyword in code, name, or category. Count may differ from 
 > categories table.
-r; t=1.31 16:26:14
+r; t=1.62 22:48:57
 .     
 .     if _rc == 0 {
 .         test_pass, id("DISC-02") msg("Search completed successfully")
 ✓ PASS: DISC-02 Search completed successfully
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     }
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     else {
 .         test_fail, id("DISC-02") msg("Search failed") rc(_rc)
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     }
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 . }
-r; t=1.32 16:26:14
+r; t=1.63 22:48:57
 
 . 
 . if $run_discovery == 1 | "`target_test'" == "DISC-03" {
@@ -2592,7 +2606,7 @@ r; t=1.32 16:26:14
 ------------------------------------------------------------------------------
 TEST DISC-03: Dataflow schema display
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     
 .     cap noi unicefdata, dataflow(CME)
 
@@ -2620,21 +2634,21 @@ Attributes (7):
   OBS_STATUS
 
 ----------------------------------------------------------------------
-r; t=0.01 16:26:14
+r; t=0.00 22:48:57
 .     
 .     if _rc == 0 {
 .         test_pass, id("DISC-03") msg("Schema displayed successfully")
 ✓ PASS: DISC-03 Schema displayed successfully
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     }
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     else {
 .         test_fail, id("DISC-03") msg("Schema display failed") rc(_rc)
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     }
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 . }
-r; t=0.02 16:26:14
+r; t=0.03 22:48:57
 
 . 
 . *============================================================================
@@ -2646,20 +2660,19 @@ r; t=0.02 16:26:14
 . if $run_transform == 1 | "`target_test'" == "TRANS-01" {
 .     *========================================================================
 > ==
-.     * TRANS-01: Wide format reshape (years stay rows, indicator becomes colum
-> n)
+.     * TRANS-01: Wide format reshape (years as columns with yr prefix)
 .     *========================================================================
 > ==
-.     test_start, id("TRANS-01") desc("Wide format reshape creates indicator co
-> lumn")
+.     test_start, id("TRANS-01") desc("Wide format reshape creates yr#### colum
+> ns")
 
 ------------------------------------------------------------------------------
-TEST TRANS-01: Wide format reshape creates indicator column
+TEST TRANS-01: Wide format reshape creates yr#### columns
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 . 
 .     clear
-r; t=0.00 16:26:14
+r; t=0.00 22:48:57
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2019:20
 > 21) wide clear
 Auto-detected dataflow 'CME'
@@ -2667,6 +2680,7 @@ Fetching page 1...
 Note: Disaggregated data available: sex: F M _T; wealth_quintile: Q1 Q2 Q3 Q4 Q
 > 5 _T; 
 Applied filters: sex: _T (Default); wealth_quintile: _T (Default); 
+Note: Could not reshape to wide format (years as columns).
 
 ----------------------------------------------------------------------
 Indicator Information: CME_MRY0T4
@@ -2692,55 +2706,69 @@ Indicator Information: CME_MRY0T4
 
  Observations: 6
 ----------------------------------------------------------------------
-r; t=0.95 16:26:15
+r; t=1.32 22:48:58
 . 
 .     if _rc == 0 {
 .         local ok = 1
-r; t=0.00 16:26:15
-.         cap confirm variable CME_MRY0T4
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
+.         * Check for year columns (yr2019, yr2020, yr2021)
+.         cap confirm variable yr2019
+r; t=0.00 22:48:58
 .         if _rc != 0 {
 .             local ok = 0
-r; t=0.00 16:26:15
-.             di as err "  Expected column CME_MRY0T4 after wide reshape"
-  Expected column CME_MRY0T4 after wide reshape
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
+.             di as err "  Expected yr2019 column after wide reshape"
+  Expected yr2019 column after wide reshape
+r; t=0.00 22:48:58
 .         }
-r; t=0.00 16:26:15
-.         else {
-.             qui duplicates report iso3 period
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
+.         cap confirm variable yr2020
+r; t=0.00 22:48:58
+.         if _rc != 0 {
+.             local ok = 0
+r; t=0.00 22:48:58
+.             di as err "  Expected yr2020 column after wide reshape"
+  Expected yr2020 column after wide reshape
+r; t=0.00 22:48:58
+.         }
+r; t=0.00 22:48:58
+.         
+.         if `ok' {
+.             * Rows should be iso3 × indicator (× attributes if present)
+.             qui duplicates report iso3 indicator
+r; t=0.00 22:48:58
 .             if r(unique_value) != r(N) {
 .                 local ok = 0
-r; t=0.00 16:26:15
-.                 di as err "  Duplicate iso3×period rows after wide reshape"
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
+.                 di as err "  Duplicate iso3×indicator rows after wide reshape
+> "
+r; t=0.00 22:48:58
 .             }
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .         }
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 . 
 .         if `ok' {
-.             test_pass, id("TRANS-01") msg("Wide reshape succeeded with CME_MR
-> Y0T4 column")
-r; t=0.00 16:26:15
+.             test_pass, id("TRANS-01") msg("Wide reshape succeeded with yr####
+>  columns")
+r; t=0.00 22:48:58
 .         }
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .         else {
 .             test_fail, id("TRANS-01") msg("Wide reshape output invalid")
 ✗ FAIL: TRANS-01 Wide reshape output invalid
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .         }
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .     }
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .     else {
 .         test_fail, id("TRANS-01") msg("Wide reshape download failed") rc(_rc)
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .     }
-r; t=0.00 16:26:15
+r; t=0.01 22:48:58
 . }
-r; t=0.96 16:26:15
+r; t=1.34 22:48:58
 
 . 
 . if $run_transform == 1 | "`target_test'" == "TRANS-02" {
@@ -2754,16 +2782,16 @@ r; t=0.96 16:26:15
 ------------------------------------------------------------------------------
 TEST TRANS-02: Latest/MRV keep recent periods only
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 . 
 .     local latest_ok = 0
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .     local mrv_ok = 0
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 . 
 .     * Latest per country
 .     clear
-r; t=0.00 16:26:15
+r; t=0.00 22:48:58
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2015:20
 > 23) latest clear
 Auto-detected dataflow 'CME'
@@ -2796,25 +2824,25 @@ Indicator Information: CME_MRY0T4
 
  Observations: 2
 ----------------------------------------------------------------------
-r; t=4.10 16:26:19
+r; t=3.40 22:49:02
 .     if _rc == 0 & _N > 0 {
 .         by iso3: egen _maxp = max(period)
-r; t=0.05 16:26:19
+r; t=0.00 22:49:02
 .         quietly count if period == _maxp
-r; t=0.00 16:26:19
+r; t=0.00 22:49:02
 .         if r(N) == _N {
 .             local latest_ok = 1
-r; t=0.00 16:26:19
+r; t=0.00 22:49:02
 .         }
-r; t=0.00 16:26:19
+r; t=0.00 22:49:02
 .         drop _maxp
-r; t=0.00 16:26:19
+r; t=0.00 22:49:02
 .     }
-r; t=0.05 16:26:19
+r; t=0.00 22:49:02
 . 
 .     * MRV(3) per country
 .     clear
-r; t=0.00 16:26:19
+r; t=0.00 22:49:02
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND) year(201
 > 0:2023) mrv(3) clear
 Auto-detected dataflow 'CME'
@@ -2847,39 +2875,39 @@ Indicator Information: CME_MRY0T4
 
  Observations: 9
 ----------------------------------------------------------------------
-r; t=4.89 16:26:24
+r; t=4.31 22:49:06
 .     if _rc == 0 & _N > 0 {
 .         gsort iso3 -period
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .         by iso3: gen _rank = _n
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .         quietly summarize _rank
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .         if r(max) <= 3 {
 .             local mrv_ok = 1
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .         }
-r; t=0.00 16:26:24
+r; t=0.01 22:49:06
 .         drop _rank
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .     }
-r; t=0.00 16:26:24
+r; t=0.01 22:49:06
 . 
 .     if (`latest_ok' & `mrv_ok') {
 .         test_pass, id("TRANS-02") msg("Latest and MRV filters keep recent per
 > iods only")
 ✓ PASS: TRANS-02 Latest and MRV filters keep recent periods only
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .     }
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .     else {
 .         test_fail, id("TRANS-02") msg("Latest/MRV filtering incorrect or empt
 > y")
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .     }
-r; t=0.01 16:26:24
+r; t=0.00 22:49:06
 . }
-r; t=9.06 16:26:24
+r; t=7.72 22:49:06
 
 . 
 . if $run_transform == 1 | "`target_test'" == "META-01" {
@@ -2894,10 +2922,10 @@ r; t=9.06 16:26:24
 ------------------------------------------------------------------------------
 TEST META-01: addmeta(region income_group) populates metadata
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 . 
 .     clear
-r; t=0.00 16:26:24
+r; t=0.00 22:49:06
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND) year(202
 > 0) addmeta(region income_group) latest clear
 Auto-detected dataflow 'CME'
@@ -2930,52 +2958,52 @@ Indicator Information: CME_MRY0T4
 
  Observations: 3
 ----------------------------------------------------------------------
-r; t=0.54 16:26:25
+r; t=0.33 22:49:06
 . 
 .     if _rc == 0 {
 .         cap confirm variable region
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         local have_region = (_rc == 0)
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         cap confirm variable income_group
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         local have_income = (_rc == 0)
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         if `have_region' & `have_income' {
 .             keep if inlist(iso3, "USA", "BRA", "IND")
 (0 observations deleted)
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .             qui count if missing(region) | missing(income_group)
-r; t=0.00 16:26:25
+r; t=0.01 22:49:06
 .             if r(N) == 0 {
 .                 test_pass, id("META-01") msg("Metadata columns present and po
 > pulated")
 ✓ PASS: META-01 Metadata columns present and populated
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .             }
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .             else {
 .                 test_fail, id("META-01") msg("Missing metadata values for sam
 > ple countries")
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .             }
-r; t=0.01 16:26:25
+r; t=0.00 22:49:06
 .         }
-r; t=0.01 16:26:25
+r; t=0.02 22:49:06
 .         else {
 .             test_fail, id("META-01") msg("Metadata columns not created")
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         }
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     }
-r; t=0.01 16:26:25
+r; t=0.02 22:49:06
 .     else {
 .         test_fail, id("META-01") msg("addmeta download failed") rc(_rc)
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     }
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 . }
-r; t=0.55 16:26:25
+r; t=0.35 22:49:06
 
 . 
 . if $run_transform == 1 | "`target_test'" == "META-02" {
@@ -2989,40 +3017,40 @@ r; t=0.55 16:26:25
 ------------------------------------------------------------------------------
 TEST META-02: Metadata YAML exists with non-zero size
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 . 
 .     local yamlfile "C:/GitHub/myados/unicefData/stata/src/_/_dataflow_index.y
 > aml"
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     cap confirm file "`yamlfile'"
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     if _rc != 0 {
 .         test_skip, id("META-02") msg("Metadata YAML not found at `yamlfile'")
 ○ SKIP: META-02 Metadata YAML not found at C:/GitHub/myados/unicefData/stata/sr
 > c/_/_dataflow_index.yaml
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     }
-r; t=0.00 16:26:25
+r; t=0.01 22:49:06
 .     else {
 .         mata: st_numscalar("filesz", filesize("`yamlfile'"))
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         scalar filesz = filesz
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         if filesz > 1000 {
 .             test_pass, id("META-02") msg("Metadata YAML present (size = `=fil
 > esz' bytes)")
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         }
-r; t=0.01 16:26:25
+r; t=0.00 22:49:06
 .         else {
 .             test_fail, id("META-02") msg("Metadata YAML too small (<1KB)")
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .         }
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     }
-r; t=0.01 16:26:25
+r; t=0.00 22:49:06
 . }
-r; t=0.01 16:26:25
+r; t=0.01 22:49:06
 
 . 
 . if $run_transform == 1 | "`target_test'" == "MULTI-01" {
@@ -3037,10 +3065,10 @@ r; t=0.01 16:26:25
 ------------------------------------------------------------------------------
 TEST MULTI-01: Multiple indicators reshape into columns
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 . 
 .     clear
-r; t=0.00 16:26:25
+r; t=0.00 22:49:06
 .     cap noi unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA) year
 > (2020) wide_indicators clear
 Note: Disaggregated data available: sex: F M _T; wealth_quintile: Q1 Q2 Q3 Q4 Q
@@ -3053,39 +3081,39 @@ Retrieved 2 indicators from dataflow
 ----------------------------------------------------------------------
  Observations: 2
 ----------------------------------------------------------------------
-r; t=0.99 16:26:26
+r; t=0.66 22:49:07
 . 
 .     if _rc == 0 {
 .         local have_all = 1
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .         foreach v in CME_MRY0T4 IM_DTP3 {
   2.             cap confirm variable `v'
   3.             if _rc != 0 local have_all = 0
   4.         }
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .         if `have_all' {
 .             test_pass, id("MULTI-01") msg("wide_indicators created CME_MRY0T4
 >  and IM_DTP3 columns")
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .         }
-r; t=0.00 16:26:26
+r; t=0.01 22:49:07
 .         else {
 .             test_fail, id("MULTI-01") msg("Missing indicator columns after wi
 > de_indicators")
 ✗ FAIL: MULTI-01 Missing indicator columns after wide_indicators
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .         }
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .     }
-r; t=0.00 16:26:26
+r; t=0.01 22:49:07
 .     else {
 .         test_fail, id("MULTI-01") msg("Multi-indicator download failed") rc(_
 > rc)
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .     }
-r; t=0.01 16:26:26
+r; t=0.00 22:49:07
 . }
-r; t=0.100 16:26:26
+r; t=0.67 22:49:07
 
 . 
 . *============================================================================
@@ -3122,10 +3150,10 @@ r; t=0.100 16:26:26
 ------------------------------------------------------------------------------
 TEST EDGE-01: Invalid query fails gracefully with informative error
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 . 
 .     clear
-r; t=0.00 16:26:26
+r; t=0.00 22:49:07
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA) year(1800) clear
 Auto-detected dataflow 'CME'
 Fetching page 1...
@@ -3140,41 +3168,41 @@ Tried:  CME GLOBAL_DATAFLOW
     (5) Try specifying a different dataflow().
     (6) Report an issue on GitHub with a detailed description and, if
     possible, a log with set trace on enabled.
-r; t=12.41 16:26:38
+r; t=12.50 22:49:19
 . 
 .     if _rc == 677 {
 .         test_pass, id("EDGE-01") msg("Graceful failure: r(677) - API correctl
 > y reported no data for invalid year. This is expected and correct behavior.")
 ✓ PASS: EDGE-01 Graceful failure: r(677) - API correctly reported no data for i
 > nvalid year. This is expected and correct behavior.
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .     }
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .     else if _rc == 0 {
 .         qui count
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .         if r(N) == 0 {
 .             test_pass, id("EDGE-01") msg("Alternative valid behavior: Empty d
 > ataset returned")
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .         }
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .         else {
 .             test_fail, id("EDGE-01") msg("Unexpected: Got `=r(N)' observation
 > s for year 1800")
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .         }
-r; t=0.00 16:26:38
+r; t=0.01 22:49:19
 .     }
-r; t=0.00 16:26:38
+r; t=0.01 22:49:19
 .     else {
 .         test_fail, id("EDGE-01") msg("Unexpected error code (expected r(677) 
 > or r(0))") rc(_rc)
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .     }
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 . }
-r; t=12.42 16:26:38
+r; t=12.52 22:49:19
 
 . 
 . if $run_edge == 1 | "`target_test'" == "EDGE-02" {
@@ -3188,10 +3216,10 @@ r; t=12.42 16:26:38
 ------------------------------------------------------------------------------
 TEST EDGE-02: Commands operate correctly with N=1
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 . 
 .     clear
-r; t=0.00 16:26:38
+r; t=0.00 22:49:19
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA) year(2022) sex(F
 > ) latest clear
 Auto-detected dataflow 'CME'
@@ -3224,40 +3252,40 @@ Indicator Information: CME_MRY0T4
 
  Observations: 1
 ----------------------------------------------------------------------
-r; t=0.96 16:26:39
+r; t=1.03 22:49:20
 . 
 .     if _rc == 0 {
 .         qui count
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         if r(N) == 1 {
 .             test_pass, id("EDGE-02") msg("Single observation returned success
 > fully")
 ✓ PASS: EDGE-02 Single observation returned successfully
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         else if r(N) == 0 {
 .             test_skip, id("EDGE-02") msg("No data for USA 2022 sex(F); cannot
 >  verify single-observation path")
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         else {
 .             test_fail, id("EDGE-02") msg("Expected 1 observation, got `=r(N)'
 > ")
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .         }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .     }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .     else {
 .         test_fail, id("EDGE-02") msg("Single-observation request failed") rc(
 > _rc)
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .     }
-r; t=0.00 16:26:39
+r; t=0.01 22:49:20
 . }
-r; t=0.96 16:26:39
+r; t=1.04 22:49:20
 
 . 
 . if $run_edge == 1 | "`target_test'" == "EDGE-03" {
@@ -3272,10 +3300,10 @@ r; t=0.96 16:26:39
 ------------------------------------------------------------------------------
 TEST EDGE-03: Country names with accents are preserved
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 . 
 .     clear
-r; t=0.00 16:26:39
+r; t=0.00 22:49:20
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(CIV) year(2020) clear
 Auto-detected dataflow 'CME'
 Fetching page 1...
@@ -3307,44 +3335,44 @@ Indicator Information: CME_MRY0T4
 
  Observations: 1
 ----------------------------------------------------------------------
-r; t=0.31 16:26:39
+r; t=0.66 22:49:21
 . 
 .     if _rc == 0 & _N > 0 {
 .         gen lower_country = lower(country)
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         qui count if strpos(lower_country, "cote") > 0
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         if r(N) > 0 {
 .             test_pass, id("EDGE-03") msg("Country name with accent preserved 
 > (Cote/Côte)")
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         else {
 .             test_fail, id("EDGE-03") msg("Country name lost special character
 > s")
 ✗ FAIL: EDGE-03 Country name lost special characters
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .         drop lower_country
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     else if _rc == 0 & _N == 0 {
 .         test_skip, id("EDGE-03") msg("No data for CIV 2020; cannot verify acc
 > ents")
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     else {
 .         test_fail, id("EDGE-03") msg("Special-character request failed") rc(_
 > rc)
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     }
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 . }
-r; t=0.31 16:26:39
+r; t=0.66 22:49:21
 
 . 
 . if $run_edge == 1 | "`target_test'" == "PERF-01" {
@@ -3358,14 +3386,14 @@ r; t=0.31 16:26:39
 ------------------------------------------------------------------------------
 TEST PERF-01: Medium batch completes under 60 seconds
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 . 
 .     timer clear 1
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     timer on 1
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     clear
-r; t=0.00 16:26:39
+r; t=0.00 22:49:21
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(ALB ARG BGD BRA CHN E
 > TH IND NGA PAK ZAF USA VNM EGY TUR MEX) year(2015:2020) clear
 Auto-detected dataflow 'CME'
@@ -3398,43 +3426,43 @@ Indicator Information: CME_MRY0T4
 
  Observations: 90
 ----------------------------------------------------------------------
-r; t=1.02 16:26:40
+r; t=3.40 22:49:24
 .     timer off 1
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 . 
 .     if _rc == 0 {
 .         qui count
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 .         scalar runtime = r(t1)
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 .         if runtime < 60 & r(N) >= 50 {
 .             test_pass, id("PERF-01") msg("Runtime `=round(runtime,0.1)'s with
 >  `=r(N)' obs")
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 .         else if runtime >= 60 {
 .             test_fail, id("PERF-01") msg("Runtime `=round(runtime,0.1)'s exce
 > eds 60s")
 ✗ FAIL: PERF-01 Runtime .s exceeds 60s
-r; t=0.00 16:26:40
+r; t=0.00 22:49:24
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         else {
 .             test_fail, id("PERF-01") msg("Runtime ok but low row count (`=r(N
 > )')")
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     else {
 .         test_fail, id("PERF-01") msg("Performance batch failed") rc(_rc)
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     }
-r; t=0.00 16:26:40
+r; t=0.01 22:49:25
 . }
-r; t=1.03 16:26:40
+r; t=3.41 22:49:25
 
 . 
 . if $run_edge == 1 | "`target_test'" == "REGR-01" {
@@ -3449,13 +3477,13 @@ r; t=1.03 16:26:40
 ------------------------------------------------------------------------------
 TEST REGR-01: Placeholder until snapshot fixture is added
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     test_skip, id("REGR-01") msg("Snapshot baseline not yet defined; add fixt
 > ure to enable")
 ○ SKIP: REGR-01 Snapshot baseline not yet defined; add fixture to enable
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 . }
-r; t=0.01 16:26:40
+r; t=0.00 22:49:25
 
 . 
 . *============================================================================
@@ -3534,22 +3562,22 @@ r; t=0.01 16:26:40
 ------------------------------------------------------------------------------
 TEST XPLAT-01: Compare metadata YAML files (Python/R/Stata)
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     
 .     * Define paths
 .     local py_yaml "C:/GitHub/myados/unicefData/python/metadata/current/_unice
 > fdata_countries.yaml"
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     local r_yaml "C:/GitHub/myados/unicefData/R/metadata/current/_unicefdata_
 > countries.yaml"
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     local stata_yaml "C:/GitHub/myados/unicefData/stata/src/_/_unicefdata_cou
 > ntries.yaml"
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     
 .     * Check all files exist
 .     local all_exist = 1
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     foreach f in py_yaml r_yaml stata_yaml {
   2.         cap confirm file "``f''"
   3.         if _rc != 0 {
@@ -3557,54 +3585,54 @@ r; t=0.00 16:26:40
   5.             local all_exist = 0
   6.         }
   7.     }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     
 .     if `all_exist' {
 .         * Parse country counts from each YAML file
 .         tempname py_count r_count stata_count
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         
 .         * Python: _metadata.total_countries
 .         cap yaml query _metadata.total_countries using "`py_yaml'", flatten
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         if _rc == 0 {
 .             scalar `py_count' = real(r(values))
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         else {
 .             scalar `py_count' = .
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         
 .         * R: _metadata.total_countries
 .         cap yaml query _metadata.total_countries using "`r_yaml'", flatten
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         if _rc == 0 {
 .             scalar `r_count' = real(r(values))
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         else {
 .             scalar `r_count' = .
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         
 .         * Stata: metadata.countrie_count (note typo in field name)
 .         cap yaml query metadata.countrie_count using "`stata_yaml'", flatten
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         if _rc == 0 {
 .             scalar `stata_count' = real(r(values))
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         else {
 .             scalar `stata_count' = .
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         
 .         * Compare counts
 .         if !missing(`py_count') & !missing(`r_count') & !missing(`stata_count
@@ -3612,33 +3640,33 @@ r; t=0.00 16:26:40
 .             if `py_count' == `r_count' & `r_count' == `stata_count' {
 .                 test_pass, id("XPLAT-01") msg("Country counts match: Python=`
 > =`py_count'', R=`=`r_count'', Stata=`=`stata_count''")
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .             }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .             else {
 .                 test_fail, id("XPLAT-01") msg("Country counts differ: Python=
 > `=`py_count'', R=`=`r_count'', Stata=`=`stata_count''")
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .             }
-r; t=0.00 16:26:40
+r; t=0.01 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.01 22:49:25
 .         else {
 .             test_fail, id("XPLAT-01") msg("Could not parse country counts fro
 > m YAML files")
 ✗ FAIL: XPLAT-01 Could not parse country counts from YAML files
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     }
-r; t=0.01 16:26:40
+r; t=0.02 22:49:25
 .     else {
 .         test_fail, id("XPLAT-01") msg("Not all metadata YAML files exist")
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     }
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 . }
-r; t=0.03 16:26:40
+r; t=0.04 22:49:25
 
 . 
 . if $run_xplat == 1 | "`target_test'" == "XPLAT-02" {
@@ -3711,11 +3739,11 @@ r; t=0.03 16:26:40
 ------------------------------------------------------------------------------
 TEST XPLAT-02: Verify variable naming consistency
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     
 .     * Download same data in Stata
 .     clear
-r; t=0.00 16:26:40
+r; t=0.00 22:49:25
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA) year(2020) clear
 Auto-detected dataflow 'CME'
 Fetching page 1...
@@ -3747,14 +3775,14 @@ Indicator Information: CME_MRY0T4
 
  Observations: 1
 ----------------------------------------------------------------------
-r; t=0.32 16:26:41
+r; t=0.62 22:49:25
 .     
 .     if _rc == 0 {
 .         * Check expected variable names exist
 .         local expected_vars "iso3 country period indicator value"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         local all_found = 1
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         
 .         foreach var of local expected_vars {
   2.             cap confirm variable `var'
@@ -3763,11 +3791,11 @@ r; t=0.00 16:26:41
   5.                 local all_found = 0
   6.             }
   7.         }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         
 .         * Check that SDMX names are NOT present
 .         local sdmx_vars "REF_AREA TIME_PERIOD OBS_VALUE INDICATOR"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         foreach var of local sdmx_vars {
   2.             cap confirm variable `var'
   3.             if _rc == 0 {
@@ -3776,31 +3804,31 @@ r; t=0.00 16:26:41
   5.                 local all_found = 0
   6.             }
   7.         }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         
 .         if `all_found' {
 .             test_pass, id("XPLAT-02") msg("Variable names follow lowercase co
 > nvention: iso3, country, period, indicator, value")
 ✓ PASS: XPLAT-02 Variable names follow lowercase convention: iso3, country, per
 > iod, indicator, value
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         else {
 .             test_fail, id("XPLAT-02") msg("Variable naming convention not con
 > sistent")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .         }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .     }
-r; t=0.02 16:26:41
+r; t=0.01 22:49:25
 .     else {
 .         test_fail, id("XPLAT-02") msg("Download failed") rc(_rc)
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .     }
-r; t=0.00 16:26:41
+r; t=0.01 22:49:25
 . }
-r; t=0.35 16:26:41
+r; t=0.66 22:49:25
 
 . 
 . if $run_xplat == 1 | "`target_test'" == "XPLAT-03" {
@@ -3872,11 +3900,11 @@ r; t=0.35 16:26:41
 ------------------------------------------------------------------------------
 TEST XPLAT-03: Check numerical formatting consistency
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .     
 .     * Download test data
 .     clear
-r; t=0.00 16:26:41
+r; t=0.00 22:49:25
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2018:20
 > 20) clear
 Auto-detected dataflow 'CME'
@@ -3909,69 +3937,69 @@ Indicator Information: CME_MRY0T4
 
  Observations: 6
 ----------------------------------------------------------------------
-r; t=0.58 16:26:41
+r; t=1.48 22:49:27
 .     
 .     if _rc == 0 {
 .         * Check value is numeric (not string)
 .         cap confirm numeric variable value
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .         if _rc == 0 {
 .             * Check period is numeric integer
 .             cap confirm numeric variable period
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .             if _rc == 0 {
 .                 * Check period values are integers
 .                 qui count if period != int(period) & !missing(period)
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                 if r(N) == 0 {
 .                     * Check for reasonable value ranges (mortality should be 
 > 0-1000 per 1000)
 .                     qui count if (value < 0 | value > 1000) & !missing(value)
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                     if r(N) == 0 {
 .                         test_pass, id("XPLAT-03") msg("Numeric types and form
 > ats correct: value (float), period (int)")
 ✓ PASS: XPLAT-03 Numeric types and formats correct: value (float), period (int)
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                     }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                     else {
 .                         test_fail, id("XPLAT-03") msg("Some values outside ex
 > pected range [0,1000]")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                     }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                 }
-r; t=0.01 16:26:41
+r; t=0.00 22:49:27
 .                 else {
 .                     test_fail, id("XPLAT-03") msg("period contains non-intege
 > r values")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .                 }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .             }
-r; t=0.01 16:26:41
+r; t=0.01 22:49:27
 .             else {
 .                 test_fail, id("XPLAT-03") msg("period is not numeric")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .             }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .         }
-r; t=0.01 16:26:41
+r; t=0.01 22:49:27
 .         else {
 .             test_fail, id("XPLAT-03") msg("value is not numeric")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .         }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     }
-r; t=0.01 16:26:41
+r; t=0.01 22:49:27
 .     else {
 .         test_fail, id("XPLAT-03") msg("Download failed") rc(_rc)
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 . }
-r; t=0.64 16:26:41
+r; t=1.54 22:49:27
 
 . 
 . if $run_xplat == 1 | "`target_test'" == "XPLAT-04" {
@@ -4039,24 +4067,24 @@ r; t=0.64 16:26:41
 ------------------------------------------------------------------------------
 TEST XPLAT-04: Validate country code consistency
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     
 .     * Define test country codes
 .     local test_countries "USA BRA IND GBR DEU"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     local all_found = 1
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     
 .     * Check each country exists in all three YAML files
 .     local py_yaml "C:/GitHub/myados/unicefData/python/metadata/current/_unice
 > fdata_countries.yaml"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     local r_yaml "C:/GitHub/myados/unicefData/R/metadata/current/_unicefdata_
 > countries.yaml"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     local stata_yaml "C:/GitHub/myados/unicefData/stata/src/_/_unicefdata_cou
 > ntries.yaml"
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     
 .     foreach country of local test_countries {
   2.         * Python
@@ -4095,23 +4123,23 @@ r; t=0.00 16:26:41
   Country DEU not found in Python YAML
   Country DEU not found in R YAML
   Country DEU not found in Stata YAML
-r; t=0.01 16:26:41
+r; t=0.01 22:49:27
 .     
 .     if `all_found' {
 .         test_pass, id("XPLAT-04") msg("All test countries (USA, BRA, IND, GBR
 > , DEU) found in all platforms")
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     else {
 .         test_fail, id("XPLAT-04") msg("Some countries missing from metadata Y
 > AML files")
 ✗ FAIL: XPLAT-04 Some countries missing from metadata YAML files
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     }
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 . }
-r; t=0.03 16:26:41
+r; t=0.04 22:49:27
 
 . 
 . if $run_xplat == 1 | "`target_test'" == "XPLAT-05" {
@@ -4187,11 +4215,11 @@ r; t=0.03 16:26:41
 ------------------------------------------------------------------------------
 TEST XPLAT-05: Test data structure alignment
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     
 .     * Download test data
 .     clear
-r; t=0.00 16:26:41
+r; t=0.00 22:49:27
 .     cap noi unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2020) c
 > lear
 Auto-detected dataflow 'CME'
@@ -4224,18 +4252,18 @@ Indicator Information: CME_MRY0T4
 
  Observations: 2
 ----------------------------------------------------------------------
-r; t=0.30 16:26:42
+r; t=0.81 22:49:28
 .     
 .     if _rc == 0 {
 .         * Store Stata row count
 .         local stata_rows = _N
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         
 .         * Check structure
 .         local expected_vars "iso3 country period indicator value"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         local all_present = 1
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         
 .         foreach var of local expected_vars {
   2.             cap confirm variable `var'
@@ -4244,58 +4272,58 @@ r; t=0.00 16:26:42
   5.                 local all_present = 0
   6.             }
   7.         }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         
 .         if `all_present' {
 .             * Check if disaggregation variables exist
 .             local disagg_vars ""
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             cap confirm variable sex
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             if _rc == 0 {
 .                 local disagg_vars "`disagg_vars' sex"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             cap confirm variable wealth
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             if _rc == 0 {
 .                 local disagg_vars "`disagg_vars' wealth"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             
 .             if "`disagg_vars'" != "" {
 .                 test_pass, id("XPLAT-05") msg("Data structure correct: `stata
 > _rows' rows, core vars + disaggregations (`disagg_vars')")
 ✓ PASS: XPLAT-05 Data structure correct: 2 rows, core vars + disaggregations ( 
 > sex wealth)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             else {
 .                 test_pass, id("XPLAT-05") msg("Data structure correct: `stata
 > _rows' rows, core variables present")
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .             }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         }
-r; t=0.01 16:26:42
+r; t=0.01 22:49:28
 .         else {
 .             test_fail, id("XPLAT-05") msg("Missing core variables in data str
 > ucture")
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     }
-r; t=0.01 16:26:42
+r; t=0.02 22:49:28
 .     else {
 .         test_fail, id("XPLAT-05") msg("Download failed") rc(_rc)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.33 16:26:42
+r; t=0.85 22:49:28
 
 . 
 . *============================================================================
@@ -4306,73 +4334,73 @@ r; t=0.33 16:26:42
 . 
 . di as text ""
 
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "{bf:{center 78:TEST SUMMARY}}"
                                  TEST SUMMARY                                 
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text ""
 
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "  Total Tests:   " as result $test_count
   Total Tests:   28
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as result "  Passed:        " $pass_count
   Passed:        19
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . if $fail_count > 0 {
 .     di as err "  Failed:        " $fail_count
   Failed:        7
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . else {
 .     di as text "  Failed:        " as result $fail_count
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "  Skipped:       " $skip_count
   Skipped:       2
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text ""
 
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . 
 . local pass_rate = round(100 * $pass_count / $test_count, 0.1)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . if $fail_count == 0 {
 .     di as result "  ✓ ALL TESTS PASSED (`pass_rate'%)"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . else {
 .     di as err "  ✗ SOME TESTS FAILED (`pass_rate'% pass rate)"
   ✗ SOME TESTS FAILED (67.90000000000001% pass rate)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . di as text "{hline 78}"
 ------------------------------------------------------------------------------
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . 
 . *============================================================================
@@ -4382,123 +4410,123 @@ r; t=0.00 16:26:42
 > ===
 . 
 . cap log close
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . 
 . * Capture end time and calculate duration
 . local end_time = c(current_time)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local start_h = real(substr("`start_time'", 1, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local start_m = real(substr("`start_time'", 4, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local start_s = real(substr("`start_time'", 7, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local end_h = real(substr("`end_time'", 1, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local end_m = real(substr("`end_time'", 4, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local end_s = real(substr("`end_time'", 7, 2))
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local start_secs = `start_h' * 3600 + `start_m' * 60 + `start_s'
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local end_secs = `end_h' * 3600 + `end_m' * 60 + `end_s'
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local duration_secs = `end_secs' - `start_secs'
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . if `duration_secs' < 0 local duration_secs = `duration_secs' + 86400
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local duration_min = floor(`duration_secs' / 60)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local duration_sec = mod(`duration_secs', 60)
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . local duration_str = "`duration_min'm `duration_sec's"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . 
 . di as text "Duration: `duration_str' (started `start_time', ended `end_time')
 > "
-Duration: 0m 47s (started 16:25:55, ended 16:26:42)
-r; t=0.00 16:26:42
+Duration: 0m 54s (started 22:48:34, ended 22:49:28)
+r; t=0.00 22:49:28
 
 . di as text "Log saved to: `logfile'"
-Log saved to: c:/GitHub/myados/unicefData/stata/qa/run_tests_16-25-55.log
-r; t=0.00 16:26:42
+Log saved to: c:/GitHub/myados/unicefData/stata/qa/run_tests_22-48-34.log
+r; t=0.00 22:49:28
 
 . 
 . * Write to history file (only if running all tests)
 . if "`target_test'" == "" {
 .     local sep "==============================================================
 > ========"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     
 .     file open history using "`histfile'", write append
-r; t=0.02 16:26:42
+r; t=0.00 22:49:28
 .     file write history _n "`sep'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Test Run: `c(current_date)'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Started:  `start_time'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Ended:    `end_time'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Duration: `duration_str'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Version:  1.5.1" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Stata:    `c(stata_version)'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "Tests:    $test_count run, $pass_count passed, $fail_
 > count failed" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     
 .     if $fail_count == 0 {
 .         file write history "Result:   ALL TESTS PASSED" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     else {
 .         file write history "Result:   FAILED" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .         file write history "Failed:   $failed_tests" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     
 .     file write history "Log:      run_tests.log" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file write history "`sep'" _n
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     file close history
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 .     
 .     di as text "History appended to: `histfile'"
 History appended to: c:/GitHub/myados/unicefData/stata/qa/test_history.txt
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.03 16:26:42
+r; t=0.01 22:49:28
 
 . else {
 .     di as text "(Single test mode - history not updated)"
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 . }
-r; t=0.00 16:26:42
+r; t=0.00 22:49:28
 
 . 
 . exit
 
 end of do-file
-r; t=46.88 16:26:42
+r; t=54.32 22:49:28

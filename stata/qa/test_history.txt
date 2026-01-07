@@ -82,3 +82,29 @@ Result:   FAILED
 Failed:   DL-05, TRANS-01, MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  22:38:48
+Ended:    22:39:33
+Duration: 0m 45s
+Version:  1.5.1
+Stata:    17
+Tests:    28 run, 19 passed, 7 failed
+Result:   FAILED
+Failed:   DL-05, TRANS-01, MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  6 Jan 2026
+Started:  22:48:34
+Ended:    22:49:28
+Duration: 0m 54s
+Version:  1.5.1
+Stata:    17
+Tests:    28 run, 19 passed, 7 failed
+Result:   FAILED
+Failed:   DL-05, TRANS-01, MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
