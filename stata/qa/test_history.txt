@@ -212,3 +212,43 @@ Result:   FAILED
 Failed:   DL-05, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run:  7 Jan 2026
+Started:  14:27:47
+Ended:    14:28:38
+Duration: 0m 51s
+Version:  1.5.2
+Stata:    17
+Tests:    28 run, 20 passed, 6 failed
+Result:   FAILED
+Failed:   DL-05, DISC-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  7 Jan 2026
+Started:  14:28:54
+Ended:    14:29:42
+Duration: 0m 48s
+Version:  1.5.2
+Stata:    17
+Tests:    28 run, 18 passed, 8 failed
+Result:   FAILED
+Failed:   DL-05, DL-07, DISC-01, EDGE-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run:  7 Jan 2026
+Started:  14:35:16
+Ended:    14:36:02
+Duration: 0m 46s
+Branch:   attocmig/unicefdata-changes
+Version:  1.5.2
+Stata:    17
+Tests:    28 run, 20 passed, 6 failed
+Result:   FAILED
+Failed:   DL-05, DISC-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
