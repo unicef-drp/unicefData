@@ -443,6 +443,66 @@ If you're familiar with `wbopendata` (World Bank data), the syntax is very simil
 
 ---
 
+## 📰 What's New in v1.5.2
+
+### Wide Indicators Enhancement
+- `wide_indicators` now creates empty columns for all requested indicators, even when some have zero rows
+- Ensures reproducible multi-indicator reshapes with consistent column structure
+- Example: `unicefdata, indicator(CME_MRY0T4 IM_DTP3) wide_indicators` creates both columns
+
+### Network Robustness: curl & User-Agent Support
+
+All HTTP requests now leverage **curl** with proper **User-Agent** identification:
+
+```stata
+* The package now uses curl for more reliable network requests
+* User-Agent: "unicefdata/1.5.2 (Stata)"
+* Benefits:
+*   - Better SSL/TLS support and proxy handling
+*   - Reduced API rate-limiting and filtering
+*   - Improved reliability on firewalled/restricted networks
+*   - Automatic retry on transient failures
+*   - Cross-platform consistency (Windows/Mac/Linux)
+```
+
+**Under the hood:**
+```stata
+* Implementation: uses curl in copy command
+copy "https://sdmx.data.unicef.org/..." "tempfile", replace public ///
+  curl user_agent("unicefdata/1.5.2 (Stata)")
+
+* Fallback: Stata's import delimited if curl unavailable
+* Transparent to users; no change to command syntax
+```
+
+### Test Suite Status (v1.5.2)
+- ✅ **20 of 21 tests passing** (95% pass rate)
+- ❌ **1 known issue:** DL-05 (wealth quintile filtering)
+- 📋 **Coverage:** Environment setup, downloads, discovery, transforms, metadata, multi-indicators, edge cases
+
+---
+
+## 🛣️ Road Ahead (Planned for Next Releases)
+
+### P0 — Critical (v1.5.3 target)
+- **DL-05 Fix:** Wealth quintile filter validation and application
+- **Cross-platform:** Align YAML metadata across Stata/R/Python implementations
+- **Consistency:** Ensure all tests pass on Windows, macOS, and Linux
+
+### P1 — Important (v1.6.0 target)
+- **Performance:** Optimize page_size defaults, add YAML caching, reduce large batch times
+- **Encoding:** Standardize UTF-8 handling for accented character preservation (EDGE-03)
+- **Frames API:** Support Stata 16+ frames for parallel indicator downloads
+- **Documentation:** Expand examples and troubleshooting guide
+
+### P2 — Future Considerations
+- **Stata Journal:** Publish peer-reviewed manuscript on package design and SDMX integration
+- **API Versioning:** Support future UNICEF SDMX API updates and breaking changes
+- **Community Feedback:** Incorporate user-requested features and optimizations
+- **Integration:** Coordinate with wbopendata for shared utilities and consistent UX
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
