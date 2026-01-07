@@ -307,27 +307,6 @@ unicefData_raw <- function(
 #     df <- tryCatch(
 #       readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
 #       error = function(e) {
-#         if (inherits(e, "sdmx_404")) stop(e)
-#         NULL
-#       }
-#     )
-#
-#     if (is.null(df) || nrow(df) == 0) break
-#     pages[[length(pages) + 1L]] <- df
-#     if (nrow(df) < page_size) break
-#     page <- page + 1L
-#     Sys.sleep(0.2)
-#   }
-#
-#   df_all <- dplyr::bind_rows(pages)
-#
-#   # Filter countries
-#   if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
-#     df_all <- df_all %>% dplyr::filter(REF_AREA %in% countries)
-#   }
-#
-#   return(df_all)
-# }
 
 #' @title Validate Data Against Schema
 #' @description Checks if dataframe matches expected schema. Warns on mismatch.
