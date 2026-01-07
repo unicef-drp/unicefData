@@ -250,3 +250,123 @@ program example07
     di as text ""
     di as result "Top 10 countries with largest urban-rural gap in basic water access"
 end
+
+
+*  ----------------------------------------------------------------------------
+*  Example 08: Using wide option - Time series format
+*  Link: help unicefdata > Options > wide
+*  Multi-line workflow: Download with wide option → Analyze time trends
+*  ----------------------------------------------------------------------------
+
+capture program drop example08
+program example08
+    * Download data with years as columns using wide option
+    unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND CHN) ///
+        year(2015:2023) wide clear
+    
+    * Keep only total values
+    keep if sex == "_T"
+    
+    * Show time series structure
+    list iso3 country yr2015 yr2020 yr2023, sep(0) noobs
+    
+    * Calculate change over time
+    gen change_2015_2023 = yr2023 - yr2015
+    gen pct_change = (change_2015_2023 / yr2015) * 100
+    
+    di as text ""
+    di as result "Under-5 Mortality Change 2015-2023:"
+    list iso3 country yr2015 yr2023 change_2015_2023 pct_change, sep(0) noobs
+    
+    di as text ""
+    di as text "Note: wide option creates yr#### columns automatically"
+end
+
+
+*  ----------------------------------------------------------------------------
+*  Example 09: Using wide_indicators - Multiple indicators as columns (v1.5.2)
+*  Link: help unicefdata > Options > wide_indicators
+*  Multi-line workflow: Download multiple indicators → Automatic column creation
+*  NEW in v1.5.2: Creates empty columns even if indicator has no observations
+*  ----------------------------------------------------------------------------
+
+capture program drop example09
+program example09
+    * Download multiple indicators with wide_indicators option
+    unicefdata, indicator(CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1) ///
+        countries(AFG ETH PAK NGA) latest wide_indicators clear
+    
+    * Keep only total values
+    keep if sex == "_T"
+    
+    * Show indicators as columns
+    describe CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1
+    
+    di as text ""
+    di as result "Multiple indicators downloaded as separate columns:"
+    list iso3 country CME_MRY0T4 CME_MRY0 IM_DTP3 IM_MCV1, sep(0) noobs
+    
+    * Calculate correlation between mortality and immunization
+    correlate CME_MRY0T4 IM_DTP3
+    
+    di as text ""
+    di as text "v1.5.2 improvement: All requested indicators create columns even if no data"
+    di as text "Use wide_indicators for cross-indicator analysis, correlations, scatter plots"
+end
+
+
+*  ----------------------------------------------------------------------------
+*  Example 10: Using wide_attributes - Disaggregations as columns (v1.5.1)
+*  Link: help unicefdata > Options > wide_attributes
+*  Multi-line workflow: Download with disaggregations → Equity gap analysis
+*  ----------------------------------------------------------------------------
+
+capture program drop example10
+program example10
+    * Download with sex disaggregations using wide_attributes
+    unicefdata, indicator(CME_MRY0T4) countries(IND PAK BGD) ///
+        year(2020) sex(ALL) wide_attributes clear
+    
+    * Show disaggregations as column suffixes
+    list iso3 country CME_MRY0T4_T CME_MRY0T4_M CME_MRY0T4_F, sep(0) noobs
+    
+    * Calculate male-female gap
+    gen mf_gap = CME_MRY0T4_M - CME_MRY0T4_F
+    
+    di as text ""
+    di as result "Gender gap in under-5 mortality (Male - Female):"
+    list iso3 country CME_MRY0T4_M CME_MRY0T4_F mf_gap, sep(0) noobs
+    
+    di as text ""
+    di as text "Note: wide_attributes creates indicator_T, indicator_M, indicator_F columns"
+    di as text "Use for gender, wealth, or residence gap analysis"
+end
+
+
+*  ----------------------------------------------------------------------------
+*  Example 11: Using attributes() filter - Targeted disaggregation
+*  Link: help unicefdata > Options > attributes(string)
+*  Multi-line workflow: Filter specific attributes → Compare equity
+*  ----------------------------------------------------------------------------
+
+capture program drop example11
+program example11
+    * Download only specific wealth quintiles using attributes() filter
+    unicefdata, indicator(NT_ANT_HAZ_NE2) countries(IND PAK BGD ETH) ///
+        latest attributes(_T _Q1 _Q5) wide_attributes clear
+    
+    * Show total, poorest, and richest only
+    list iso3 country NT_ANT_HAZ_NE2_T NT_ANT_HAZ_NE2_Q1 NT_ANT_HAZ_NE2_Q5, ///
+        sep(0) noobs
+    
+    * Calculate wealth gap in stunting
+    gen wealth_gap = NT_ANT_HAZ_NE2_Q1 - NT_ANT_HAZ_NE2_Q5
+    
+    di as text ""
+    di as result "Wealth equity gap in child stunting (Poorest Q1 - Richest Q5):"
+    list iso3 country NT_ANT_HAZ_NE2_Q1 NT_ANT_HAZ_NE2_Q5 wealth_gap, sep(0) noobs
+    
+    di as text ""
+    di as text "Positive gap = poorest children more stunted (expected)"
+    di as text "Use attributes(_T _Q1 _Q5) to download only what you need for equity analysis"
+end
