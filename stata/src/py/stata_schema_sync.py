@@ -41,7 +41,12 @@ SDMX_NS = {
 
 BASE_URL = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
 AGENCY = "UNICEF"
-__version__ = "1.5.1"  # Keep in sync with package version
+
+# Try to import version from main package, fallback to local constant
+try:
+    from unicef_api import __version__
+except ImportError:
+    __version__ = "1.5.1"  # Fallback if package not installed
 
 
 def build_user_agent() -> str:
