@@ -1,6 +1,8 @@
 # =============================================================================
 # metadata_sync.R - Sync consolidated metadata from SDMX API
 # =============================================================================
+# Version: 1.6.0 (2026-01-12)
+# Author: João Pedro Azevedo (UNICEF)
 #
 # This module syncs all metadata from the UNICEF SDMX API and saves to YAML files
 # with standardized watermarks matching Python format.
