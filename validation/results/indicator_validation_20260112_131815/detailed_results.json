@@ -1,0 +1,36 @@
+{
+  "generated": "2026-01-12T13:18:24.286733",
+  "total_tests": 3,
+  "results": [
+    {
+      "indicator_code": "CME",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 7.3705668449401855,
+      "timestamp": "2026-01-12T13:18:24.243349",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_ARR_10T19",
+      "language": "r",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 252,
+      "execution_time_sec": 0.01865243911743164,
+      "timestamp": "2026-01-12T13:18:24.264007",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_131815\\r\\success\\CME_ARR_10T19.csv"
+    },
+    {
+      "indicator_code": "CME_ARR_SBR",
+      "language": "r",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 213,
+      "execution_time_sec": 0.01772332191467285,
+      "timestamp": "2026-01-12T13:18:24.283732",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_131815\\r\\success\\CME_ARR_SBR.csv"
+    }
+  ]
+}

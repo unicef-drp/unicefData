@@ -1,6 +1,6 @@
 *******************************************************************************
 * _unicef_fetch_with_fallback.ado
-*! v 1.0.0   09Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.0   12Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Fetch data with automatic dataflow fallback on 404 errors
 * Tries alternative dataflows when primary dataflow returns no data
 *******************************************************************************

@@ -1,0 +1,362 @@
+{
+  "CME_ARR_10T19": {
+    "cached_at": "2026-01-12T13:13:33.444139",
+    "rows": 252,
+    "size_bytes": 43487
+  },
+  "CME_ARR_SBR": {
+    "cached_at": "2026-01-12T13:13:35.640048",
+    "rows": 213,
+    "size_bytes": 33108
+  },
+  "CME_ARR_U5MR": {
+    "cached_at": "2026-01-12T13:43:11.879376",
+    "rows": 245,
+    "size_bytes": 43582
+  },
+  "CME_MRM0": {
+    "cached_at": "2026-01-12T13:44:44.988634",
+    "rows": 11875,
+    "size_bytes": 2569326
+  },
+  "CME_MRM1T11": {
+    "cached_at": "2026-01-12T13:44:53.279187",
+    "rows": 11862,
+    "size_bytes": 2814290
+  },
+  "CME_MRM1T59": {
+    "cached_at": "2026-01-12T13:45:01.645591",
+    "rows": 11862,
+    "size_bytes": 2766203
+  },
+  "CME_MRY0": {
+    "cached_at": "2026-01-12T13:45:16.464425",
+    "rows": 14633,
+    "size_bytes": 3144363
+  },
+  "CME_MRY0T4": {
+    "cached_at": "2026-01-12T13:45:32.919668",
+    "rows": 15194,
+    "size_bytes": 3365578
+  },
+  "CME_MRY10T14": {
+    "cached_at": "2026-01-12T13:45:59.408507",
+    "rows": 8466,
+    "size_bytes": 1922146
+  },
+  "CME_MRY10T19": {
+    "cached_at": "2026-01-12T13:46:15.748273",
+    "rows": 8466,
+    "size_bytes": 1919249
+  },
+  "CME_MRY15T19": {
+    "cached_at": "2026-01-12T13:46:33.713507",
+    "rows": 8466,
+    "size_bytes": 1902487
+  },
+  "CME_MRY15T24": {
+    "cached_at": "2026-01-12T13:46:47.165702",
+    "rows": 8466,
+    "size_bytes": 1902368
+  },
+  "CME_MRY1T4": {
+    "cached_at": "2026-01-12T13:47:03.604349",
+    "rows": 14633,
+    "size_bytes": 3469528
+  },
+  "CME_MRY20T24": {
+    "cached_at": "2026-01-12T13:47:20.907785",
+    "rows": 8466,
+    "size_bytes": 1901785
+  },
+  "CME_MRY5T14": {
+    "cached_at": "2026-01-12T13:47:34.450303",
+    "rows": 8466,
+    "size_bytes": 2064655
+  },
+  "CME_MRY5T24": {
+    "cached_at": "2026-01-12T13:47:47.301530",
+    "rows": 8466,
+    "size_bytes": 1885245
+  },
+  "CME_MRY5T9": {
+    "cached_at": "2026-01-12T13:48:02.601689",
+    "rows": 8466,
+    "size_bytes": 1874151
+  },
+  "CME_PND": {
+    "cached_at": "2026-01-12T13:48:12.821384",
+    "rows": 8102,
+    "size_bytes": 1627838
+  },
+  "CME_SB": {
+    "cached_at": "2026-01-12T13:48:20.176323",
+    "rows": 5976,
+    "size_bytes": 892728
+  },
+  "CME_SBR": {
+    "cached_at": "2026-01-12T13:48:28.593124",
+    "rows": 5976,
+    "size_bytes": 1278776
+  },
+  "CME_TMM0": {
+    "cached_at": "2026-01-12T13:48:39.760456",
+    "rows": 11662,
+    "size_bytes": 1617607
+  },
+  "CME_TMM1T11": {
+    "cached_at": "2026-01-12T13:48:57.065763",
+    "rows": 11662,
+    "size_bytes": 1751382
+  },
+  "CME_TMM1T59": {
+    "cached_at": "2026-01-12T13:52:05.725766",
+    "rows": 11484,
+    "size_bytes": 1709893
+  },
+  "CME_TMY0": {
+    "cached_at": "2026-01-12T13:55:14.852786",
+    "rows": 14240,
+    "size_bytes": 1943331
+  },
+  "CME_TMY0T4": {
+    "cached_at": "2026-01-12T13:58:22.940392",
+    "rows": 13927,
+    "size_bytes": 2009133
+  },
+  "CME_TMY10T14": {
+    "cached_at": "2026-01-12T14:01:36.799566",
+    "rows": 8466,
+    "size_bytes": 1247374
+  },
+  "CME_TMY10T19": {
+    "cached_at": "2026-01-12T14:04:43.218167",
+    "rows": 8466,
+    "size_bytes": 1259228
+  },
+  "CME_TMY15T19": {
+    "cached_at": "2026-01-12T14:07:20.953540",
+    "rows": 8466,
+    "size_bytes": 1254976
+  },
+  "CME_TMY15T24": {
+    "cached_at": "2026-01-12T14:07:29.485956",
+    "rows": 8466,
+    "size_bytes": 1263593
+  },
+  "CME_TMY1T4": {
+    "cached_at": "2026-01-12T14:07:38.088694",
+    "rows": 13440,
+    "size_bytes": 2056750
+  },
+  "CME_TMY20T24": {
+    "cached_at": "2026-01-12T14:07:48.321104",
+    "rows": 8466,
+    "size_bytes": 1257719
+  },
+  "CME_TMY5T14": {
+    "cached_at": "2026-01-12T14:07:58.789851",
+    "rows": 8466,
+    "size_bytes": 1323667
+  },
+  "CME_TMY5T24": {
+    "cached_at": "2026-01-12T14:08:06.813362",
+    "rows": 8466,
+    "size_bytes": 1251569
+  },
+  "CME_TMY5T9": {
+    "cached_at": "2026-01-12T14:08:14.430990",
+    "rows": 8466,
+    "size_bytes": 1215937
+  },
+  "DM_BRTS": {
+    "cached_at": "2026-01-12T14:31:55.817095",
+    "rows": 20424,
+    "size_bytes": 6171517
+  },
+  "DM_BRTS_SURVIVING_1": {
+    "cached_at": "2026-01-12T14:32:11.006441",
+    "rows": 41676,
+    "size_bytes": 13134108
+  },
+  "DM_DPR_CHD": {
+    "cached_at": "2026-01-12T14:32:25.440070",
+    "rows": 17316,
+    "size_bytes": 5141445
+  },
+  "DM_DPR_OLD": {
+    "cached_at": "2026-01-12T14:32:47.940077",
+    "rows": 17316,
+    "size_bytes": 5164968
+  },
+  "DM_DPR_TOT": {
+    "cached_at": "2026-01-12T14:33:04.328492",
+    "rows": 17316,
+    "size_bytes": 5142382
+  },
+  "DM_FRATE_TOT": {
+    "cached_at": "2026-01-12T14:33:22.800985",
+    "rows": 20424,
+    "size_bytes": 5930604
+  },
+  "DM_LIFE_EXP": {
+    "cached_at": "2026-01-12T14:34:37.529531",
+    "rows": 20424,
+    "size_bytes": 6115059
+  },
+  "DM_NET_MG_RATE": {
+    "cached_at": "2026-01-12T14:34:58.764886",
+    "rows": 20424,
+    "size_bytes": 6703401
+  },
+  "DM_POP_TOT": {
+    "cached_at": "2026-01-12T15:02:37.014038",
+    "rows": 23606,
+    "size_bytes": 7318330
+  },
+  "ECD_CHLD_U5_PLYTH-HM": {
+    "cached_at": "2026-01-12T15:02:49.133526",
+    "rows": 666,
+    "size_bytes": 362438
+  },
+  "ED_CR_L2_UIS_MOD": {
+    "cached_at": "2026-01-12T15:03:17.950740",
+    "rows": 4062,
+    "size_bytes": 1186733
+  },
+  "ED_ROFST_L3": {
+    "cached_at": "2026-01-12T15:03:39.366636",
+    "rows": 123,
+    "size_bytes": 27992
+  },
+  "FD_NEVER_ATTENDED": {
+    "cached_at": "2026-01-12T15:03:44.516782",
+    "rows": 127,
+    "size_bytes": 42548
+  },
+  "IM_BCG": {
+    "cached_at": "2026-01-12T15:05:18.061768",
+    "rows": 8228,
+    "size_bytes": 2717030
+  },
+  "MNCH_MLRCARE": {
+    "cached_at": "2026-01-12T15:05:34.807486",
+    "rows": 621,
+    "size_bytes": 277119
+  },
+  "NT_CF_MMF": {
+    "cached_at": "2026-01-12T15:06:30.356963",
+    "rows": 4433,
+    "size_bytes": 2971774
+  },
+  "ED_READ_L1": {
+    "cached_at": "2026-01-12T16:12:19.966522",
+    "rows": 363,
+    "size_bytes": 170051
+  },
+  "FD_SOCIAL_TRANSFERS": {
+    "cached_at": "2026-01-12T16:12:29.668716",
+    "rows": 97,
+    "size_bytes": 36598
+  },
+  "GN_UNMPLY": {
+    "cached_at": "2026-01-12T16:13:21.061952",
+    "rows": 345,
+    "size_bytes": 69427
+  },
+  "HVA_PMTCT_ART_CVG": {
+    "cached_at": "2026-01-12T16:13:44.798544",
+    "rows": 18,
+    "size_bytes": 9676
+  },
+  "IM_HEPB3": {
+    "cached_at": "2026-01-12T16:14:09.270777",
+    "rows": 6213,
+    "size_bytes": 1992025
+  },
+  "MNCH_ITNOWN": {
+    "cached_at": "2026-01-12T16:14:36.323337",
+    "rows": 283,
+    "size_bytes": 92434
+  },
+  "NT_ANT_WHZ_NE2": {
+    "cached_at": "2026-01-12T16:15:51.040450",
+    "rows": 3068,
+    "size_bytes": 1287054
+  },
+  "NT_CF_ISSSF_FL": {
+    "cached_at": "2026-01-12T16:16:21.804387",
+    "rows": 632,
+    "size_bytes": 380557
+  },
+  "SPP_MOTHERS_CASH_BNF": {
+    "cached_at": "2026-01-12T16:18:06.993268",
+    "rows": 332,
+    "size_bytes": 67935
+  },
+  "WT_ADLS_15-19_ED_NEET": {
+    "cached_at": "2026-01-12T16:19:48.227605",
+    "rows": 267,
+    "size_bytes": 97719
+  },
+  "ECD_CHLD_36-59M_EDU-PGM": {
+    "cached_at": "2026-01-12T16:46:20.664060",
+    "rows": 2,
+    "size_bytes": 2300
+  },
+  "ED_CR_L1": {
+    "cached_at": "2026-01-12T16:46:53.385781",
+    "rows": 122,
+    "size_bytes": 25566
+  },
+  "HVA_PED_ART_NUM": {
+    "cached_at": "2026-01-12T16:48:26.776055",
+    "rows": 1955,
+    "size_bytes": 945174
+  },
+  "IM_IPV1": {
+    "cached_at": "2026-01-12T16:48:49.228868",
+    "rows": 2236,
+    "size_bytes": 766484
+  },
+  "MNCH_INSTDEL": {
+    "cached_at": "2026-01-12T16:49:03.993637",
+    "rows": 1179,
+    "size_bytes": 390750
+  },
+  "NT_BF_EIBF": {
+    "cached_at": "2026-01-12T22:42:44.101251",
+    "rows": 757,
+    "size_bytes": 434763
+  },
+  "NT_CF_ZEROFV": {
+    "cached_at": "2026-01-12T16:50:14.893548",
+    "rows": 5008,
+    "size_bytes": 3268405
+  },
+  "PT_F_20-24_MRD_U15": {
+    "cached_at": "2026-01-12T16:51:08.225858",
+    "rows": 636,
+    "size_bytes": 309859
+  },
+  "SPP_GDPPC": {
+    "cached_at": "2026-01-12T16:51:49.733719",
+    "rows": 236,
+    "size_bytes": 41685
+  },
+  "WS_PPL_H-L": {
+    "cached_at": "2026-01-12T16:52:47.006466",
+    "rows": 2360,
+    "size_bytes": 537845
+  },
+  "WS_PPL_S-B": {
+    "cached_at": "2026-01-12T16:52:54.031473",
+    "rows": 5159,
+    "size_bytes": 1174490
+  },
+  "WT_ADLS_10-17_LBR_ECON": {
+    "cached_at": "2026-01-12T16:53:00.090594",
+    "rows": 92,
+    "size_bytes": 21782
+  }
+}

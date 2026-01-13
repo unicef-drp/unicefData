@@ -1,4 +1,4 @@
-*! v 1.5.3   07Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.0   12Jan2026               by Joao Pedro Azevedo (UNICEF)
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
