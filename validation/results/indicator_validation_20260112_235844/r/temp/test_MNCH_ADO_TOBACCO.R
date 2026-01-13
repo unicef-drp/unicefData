@@ -1,0 +1,19 @@
+
+library(unicefData)
+tryCatch({
+    df <- unicefData(
+        indicator = "MNCH_ADO_TOBACCO",
+        
+        
+    )
+    
+    if (nrow(df) > 0) {
+        write.csv(df, "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_235844/r/success/MNCH_ADO_TOBACCO.csv", row.names = FALSE)
+        cat(nrow(df))
+    } else {
+        cat("0")
+    }
+}, error = function(e) {
+    writeLines(as.character(e$message), "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_235844/r/failed/MNCH_ADO_TOBACCO.error")
+    cat("ERROR")
+})

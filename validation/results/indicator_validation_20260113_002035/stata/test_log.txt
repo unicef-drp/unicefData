@@ -1,0 +1,2253 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:21:14
+r; t=0.00 0:21:14
+
+. 
+. unicefdata, indicator(COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION)   clear
+Auto-detected dataflow 'CAUSE_OF_DEATH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y10T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); age: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
+----------------------------------------------------------------------
+
+ Code:        COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
+ Name:        Paralytic ileus and intestinal obstruction
+ Category:    CAUSE_OF_DEATH
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 8
+----------------------------------------------------------------------
+r; t=2.38 0:21:17
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.01 0:21:17
+.     local nobs = r(N)
+r; t=0.00 0:21:17
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/COD_PARALYTIC_ILEUS_AND_
+> INTESTINAL_OBSTRUCTION.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
+    > .csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION.csv sa
+> ved
+r; t=0.03 0:21:17
+.         display "OK: `nobs' rows"
+OK: 8 rows
+r; t=0.00 0:21:17
+.     }
+r; t=0.17 0:21:17
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:21:17
+.     }
+r; t=0.02 0:21:17
+. }
+r; t=0.24 0:21:17
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:21:17
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/COD_PARALYTIC_ILEUS_AND_INTESTI
+> NAL_OBSTRUCTION.error", write replace
+r; t=0.03 0:21:17
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:21:17
+.     file close ferr
+r; t=0.00 0:21:17
+. }
+r; t=0.20 0:21:17
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:21:17
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:21:26
+r; t=0.02 0:21:26
+
+. 
+. unicefdata, indicator(COD_SICKLE_CELL_DISORDERS_AND_TRAIT)   clear
+Auto-detected dataflow 'CAUSE_OF_DEATH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y10T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); age: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: COD_SICKLE_CELL_DISORDERS_AND_TRAIT
+----------------------------------------------------------------------
+
+ Code:        COD_SICKLE_CELL_DISORDERS_AND_TRAIT
+ Name:        Sickle cell disorders and trait
+ Category:    CAUSE_OF_DEATH
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).COD_SICKLE_CELL_DISORDERS_AND_TRAIT
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 484
+----------------------------------------------------------------------
+r; t=1.92 0:21:28
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:21:28
+.     local nobs = r(N)
+r; t=0.00 0:21:28
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/COD_SICKLE_CELL_DISORDER
+> S_AND_TRAIT.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/COD_SICKLE_CELL_DISORDERS_AND_TRAIT.csv not
+    found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/COD_SICKLE_CELL_DISORDERS_AND_TRAIT.csv saved
+r; t=0.01 0:21:28
+.         display "OK: `nobs' rows"
+OK: 484 rows
+r; t=0.00 0:21:28
+.     }
+r; t=0.13 0:21:28
+.     else {
+.         display "NO_DATA"
+r; t=0.01 0:21:28
+.     }
+r; t=0.05 0:21:28
+. }
+r; t=0.23 0:21:28
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:21:28
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/COD_SICKLE_CELL_DISORDERS_AND_T
+> RAIT.error", write replace
+r; t=0.00 0:21:28
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:21:28
+.     file close ferr
+r; t=0.00 0:21:28
+. }
+r; t=0.14 0:21:28
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:21:28
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:21:40
+r; t=0.03 0:21:40
+
+. 
+. unicefdata, indicator(DM_HH_INTERNET)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  GLOBAL_DATAFLOW DM DEMOGRAPHICS DM_PROJECTIONS POPULATION
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=26.28 0:22:07
+
+end of do-file
+r(677); t=26.74 0:22:07
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:22:14
+r; t=0.00 0:22:14
+
+. 
+. unicefdata, indicator(DM_HH_U18)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  GLOBAL_DATAFLOW DM DEMOGRAPHICS DM_PROJECTIONS POPULATION
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=25.80 0:22:40
+
+end of do-file
+r(677); t=26.22 0:22:40
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:22:48
+r; t=0.00 0:22:48
+
+. 
+. unicefdata, indicator(ECD_CHLD_24-59M_FHR-SPT-LNG)   clear
+Auto-detected dataflow 'ECD'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  ECD EARLY_CHILDHOOD_DEVELOPMENT EDUCATION GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=21.66 0:23:09
+
+end of do-file
+r(677); t=21.97 0:23:09
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:23:15
+r; t=0.01 0:23:15
+
+. 
+. unicefdata, indicator(ECON_GVT_EDU_EXP_PTGDP)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+
+----------------------------------------------------------------------
+Indicator Information: ECON_GVT_EDU_EXP_PTGDP
+----------------------------------------------------------------------
+
+ Code:        ECON_GVT_EDU_EXP_PTGDP
+ Name:        government expenditure on education (% GDP)
+ Category:    ECON
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).ECON_GVT_EDU_EXP_PTGDP
+
+ Supported Disaggregations:
+   sex:          No
+   age:          No
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 234
+----------------------------------------------------------------------
+r; t=1.23 0:23:17
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:23:17
+.     local nobs = r(N)
+r; t=0.00 0:23:17
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/ECON_GVT_EDU_EXP_PTGDP.c
+> sv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/ECON_GVT_EDU_EXP_PTGDP.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/ECON_GVT_EDU_EXP_PTGDP.csv saved
+r; t=0.01 0:23:17
+.         display "OK: `nobs' rows"
+OK: 234 rows
+r; t=0.00 0:23:17
+.     }
+r; t=0.19 0:23:17
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:23:17
+.     }
+r; t=0.03 0:23:17
+. }
+r; t=0.26 0:23:17
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:23:17
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/ECON_GVT_EDU_EXP_PTGDP.error", 
+> write replace
+r; t=0.00 0:23:17
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:23:17
+.     file close ferr
+r; t=0.00 0:23:17
+. }
+r; t=0.28 0:23:17
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:23:17
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:23:30
+r; t=0.00 0:23:30
+
+. 
+. unicefdata, indicator(ED_PUP_PER_READ_BOOK)   clear
+Auto-detected dataflow 'EDUCATION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  EDUCATION EDUCATION_UIS_SDG EDUCATION_FLS EDUCATION_IMEP_SDG GLOBAL_DAT
+> AFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=26.17 0:23:56
+
+end of do-file
+r(677); t=26.71 0:23:56
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:24:04
+r; t=0.00 0:24:04
+
+. 
+. unicefdata, indicator(ED_ROFST_L2_UIS_MOD)   clear
+Auto-detected dataflow 'EDUCATION'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); residence: _T(
+> Default); 
+
+----------------------------------------------------------------------
+Indicator Information: ED_ROFST_L2_UIS_MOD
+----------------------------------------------------------------------
+
+ Code:        ED_ROFST_L2_UIS_MOD
+ Name:        Out-of-school rate for adolescents of lower secondary school age 
+> (%), (modelled data)
+ Category:    EDUCATION_UIS_SDG
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).ED_ROFST_L2_UIS_MOD
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 4779
+----------------------------------------------------------------------
+r; t=12.51 0:24:16
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:24:16
+.     local nobs = r(N)
+r; t=0.00 0:24:16
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/ED_ROFST_L2_UIS_MOD.csv"
+> , replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/ED_ROFST_L2_UIS_MOD.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/ED_ROFST_L2_UIS_MOD.csv saved
+r; t=0.03 0:24:16
+.         display "OK: `nobs' rows"
+OK: 4779 rows
+r; t=0.00 0:24:16
+.     }
+r; t=0.14 0:24:16
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:24:16
+.     }
+r; t=0.01 0:24:16
+. }
+r; t=0.18 0:24:16
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:24:16
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/ED_ROFST_L2_UIS_MOD.error", wri
+> te replace
+r; t=0.00 0:24:16
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:24:16
+.     file close ferr
+r; t=0.00 0:24:16
+. }
+r; t=0.12 0:24:16
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:24:16
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:24:34
+r; t=0.00 0:24:34
+
+. 
+. unicefdata, indicator(GN_STUNT_ADOL_GRL)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  GLOBAL_DATAFLOW GENDER GENDER_EQUALITY GIRLS_EDUCATION
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=21.81 0:24:56
+
+end of do-file
+r(677); t=22.11 0:24:56
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:25:06
+r; t=0.00 0:25:06
+
+. 
+. unicefdata, indicator(HVA_EPI_DTH_RT)   clear
+Auto-detected dataflow 'HIV_AIDS'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y0T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: HVA_EPI_DTH_RT
+----------------------------------------------------------------------
+
+ Code:        HVA_EPI_DTH_RT
+ Name:        Estimated rate of annual AIDS-related deaths (per 100,000 populat
+> ion)
+ Category:    HIV_AIDS
+
+ Description:
+   Number of AIDS-related deaths per 100,000 people
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).HVA_EPI_DTH_RT
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 5432
+----------------------------------------------------------------------
+r; t=3.96 0:25:10
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:25:10
+.     local nobs = r(N)
+r; t=0.00 0:25:10
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/HVA_EPI_DTH_RT.csv", rep
+> lace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/HVA_EPI_DTH_RT.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/HVA_EPI_DTH_RT.csv saved
+r; t=0.10 0:25:11
+.         display "OK: `nobs' rows"
+OK: 5432 rows
+r; t=0.00 0:25:11
+.     }
+r; t=0.29 0:25:11
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:25:11
+.     }
+r; t=0.03 0:25:11
+. }
+r; t=0.36 0:25:11
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:25:11
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/HVA_EPI_DTH_RT.error", write re
+> place
+r; t=0.00 0:25:11
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:25:11
+.     file close ferr
+r; t=0.00 0:25:11
+. }
+r; t=0.21 0:25:11
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:25:11
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:25:17
+r; t=0.01 0:25:17
+
+. 
+. unicefdata, indicator(HVA_PMTCT_ARV_NUM)   clear
+Auto-detected dataflow 'HIV_AIDS'
+Fetching page 1...
+
+----------------------------------------------------------------------
+Indicator Information: HVA_PMTCT_ARV_NUM
+----------------------------------------------------------------------
+
+ Code:        HVA_PMTCT_ARV_NUM
+ Name:        Reported number of pregnant woment living with HIV receiving anit
+> retroviral treatments (ARVs) for prevention of mother to child transmission p
+> rogrammes (PMTCT)
+ Category:    HIV_AIDS
+
+ Description:
+   Reported number of pregnant woment living with HIV receiving anitretroviral 
+> treatments (ARVs) for prevention of mother to child transmission programmes (
+> PMTCT) (excludes single-dose nevirapine)
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).HVA_PMTCT_ARV_NUM
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 1855
+----------------------------------------------------------------------
+r; t=2.26 0:25:19
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:25:20
+.     local nobs = r(N)
+r; t=0.00 0:25:20
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/HVA_PMTCT_ARV_NUM.csv", 
+> replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/HVA_PMTCT_ARV_NUM.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/HVA_PMTCT_ARV_NUM.csv saved
+r; t=0.03 0:25:20
+.         display "OK: `nobs' rows"
+OK: 1855 rows
+r; t=0.00 0:25:20
+.     }
+r; t=0.32 0:25:20
+.     else {
+.         display "NO_DATA"
+r; t=0.01 0:25:20
+.     }
+r; t=0.10 0:25:20
+. }
+r; t=0.49 0:25:20
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:25:20
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/HVA_PMTCT_ARV_NUM.error", write
+>  replace
+r; t=0.03 0:25:20
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:25:20
+.     file close ferr
+r; t=0.00 0:25:20
+. }
+r; t=0.32 0:25:20
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:25:20
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:25:29
+r; t=0.00 0:25:29
+
+. 
+. unicefdata, indicator(HVA_PMTCT_TEST_NUM)   clear
+Auto-detected dataflow 'HIV_AIDS'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  HIV_AIDS HEALTH GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.70 0:25:47
+
+end of do-file
+r(677); t=17.98 0:25:47
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:26:01
+r; t=0.00 0:26:01
+
+. 
+. unicefdata, indicator(MG_INTNL_MG)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  GLOBAL_DATAFLOW MG MIGRATION CHILD_MIGRATION
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=21.61 0:26:22
+
+end of do-file
+r(677); t=21.97 0:26:22
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:26:32
+r; t=0.00 0:26:32
+
+. 
+. unicefdata, indicator(MG_INTNL_MG_CNTRY_ORIGIN)   clear
+Auto-detected dataflow 'GLOBAL_DATAFLOW'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  GLOBAL_DATAFLOW MG MIGRATION CHILD_MIGRATION
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=22.08 0:26:54
+
+end of do-file
+r(677); t=22.39 0:26:54
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:27:03
+r; t=0.01 0:27:03
+
+. 
+. unicefdata, indicator(MNCH_ANC4)   clear
+Auto-detected dataflow 'MNCH'
+Fetching page 1...
+Note: Disaggregated data available: wealth_quintile: Q1 Q2 Q3 Q4 Q5 _T; age: Y1
+> 5T19 Y15T49; residence: R U _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: MNCH_ANC4
+----------------------------------------------------------------------
+
+ Code:        MNCH_ANC4
+ Name:        Antenatal care 4+ visits - percentage of women (aged 15-49 years)
+>  attended at least four times during pregnancy by any provider
+ Category:    MNCH
+
+ Description:
+   Antenatal care 4+ visits - percentage of women (aged 15-49 years) attended a
+> t least four times during pregnancy by any provider
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).MNCH_ANC4
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: Yes (MATERNAL_EDU_LVL)
+
+ Observations: 4734
+----------------------------------------------------------------------
+r; t=5.32 0:27:08
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:27:08
+.     local nobs = r(N)
+r; t=0.00 0:27:08
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/MNCH_ANC4.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/MNCH_ANC4.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/MNCH_ANC4.csv saved
+r; t=0.03 0:27:08
+.         display "OK: `nobs' rows"
+OK: 4734 rows
+r; t=0.00 0:27:08
+.     }
+r; t=0.14 0:27:08
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:27:08
+.     }
+r; t=0.01 0:27:08
+. }
+r; t=0.19 0:27:08
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:27:08
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/MNCH_ANC4.error", write replace
+r; t=0.00 0:27:08
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:27:08
+.     file close ferr
+r; t=0.00 0:27:08
+. }
+r; t=0.10 0:27:08
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:27:08
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:27:15
+r; t=0.00 0:27:15
+
+. 
+. unicefdata, indicator(MNCH_ORTCF)   clear
+Auto-detected dataflow 'MNCH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; wealth_quintile: Q1 Q2 Q3 Q4 Q
+> 5 _T; residence: R U _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: MNCH_ORTCF
+----------------------------------------------------------------------
+
+ Code:        MNCH_ORTCF
+ Name:        Diarrhoea treatment - percentage of children (under age 5) with d
+> iarrhoea who received ORT (oral rehydration salts or recommended homemade flu
+> ids or increased fluids) and continued feeding
+ Category:    MNCH
+
+ Description:
+   Diarrhoea treatment - percentage of children (under age 5) with diarrhoea wh
+> o received ORT (oral rehydration salts or recommended homemade fluids or incr
+> eased fluids) and continued feeding
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).MNCH_ORTCF
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: Yes (MATERNAL_EDU_LVL)
+
+ Observations: 673
+----------------------------------------------------------------------
+r; t=2.97 0:27:18
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.01 0:27:18
+.     local nobs = r(N)
+r; t=0.00 0:27:18
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/MNCH_ORTCF.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/MNCH_ORTCF.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/MNCH_ORTCF.csv saved
+r; t=0.02 0:27:18
+.         display "OK: `nobs' rows"
+OK: 673 rows
+r; t=0.00 0:27:18
+.     }
+r; t=0.22 0:27:18
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:27:18
+.     }
+r; t=0.02 0:27:18
+. }
+r; t=0.32 0:27:18
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:27:18
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/MNCH_ORTCF.error", write replac
+> e
+r; t=0.00 0:27:18
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:27:18
+.     file close ferr
+r; t=0.00 0:27:18
+. }
+r; t=0.23 0:27:18
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:27:18
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:27:27
+r; t=0.00 0:27:27
+
+. 
+. unicefdata, indicator(NT_ANT_HAZWHZ_NE2_PO2)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH G
+> LOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.48 0:27:58
+
+end of do-file
+r(677); t=30.97 0:27:58
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:28:04
+r; t=0.00 0:28:04
+
+. 
+. unicefdata, indicator(NT_ANT_HAZ_NE2_T_NE3)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH G
+> LOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.29 0:28:34
+
+end of do-file
+r(677); t=30.57 0:28:34
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:28:41
+r; t=0.00 0:28:41
+
+. 
+. unicefdata, indicator(NT_ANT_SAM_T)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH G
+> LOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.62 0:29:12
+
+end of do-file
+r(677); t=30.99 0:29:12
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:29:18
+r; t=0.02 0:29:18
+
+. 
+. unicefdata, indicator(NT_ANT_WHZ_PO1)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH G
+> LOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.08 0:29:48
+
+end of do-file
+r(677); t=30.51 0:29:48
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:30:05
+r; t=0.02 0:30:05
+
+. 
+. unicefdata, indicator(NT_ANT_WHZ_PO2)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; wealth_quintile: B20 B40 B60 B
+> 80 Q1 Q2 Q3 Q4 Q5 R20 R40 R60 R80 _T; age: M0T11 M0T23 M0T5 M12T17 M12T23 M18
+> T23 M24T29 M24T35 M24T59 M30T35 M36T41 M36T47 M42T47 M48T53 M48T59 M54T59 M6T
+> 11 M6T8 M9T11 Y0T4; residence: R U _T; maternal_edu: AGG_0_1 AGG_2_3 AGG_3S_H
+>  AGG_5T8 ISCED11A_01 ISCED11_1 _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); maternal_edu: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: NT_ANT_WHZ_PO2
+----------------------------------------------------------------------
+
+ Code:        NT_ANT_WHZ_PO2
+ Name:        Weight-for-height >+2 SD (overweight)
+ Category:    NUTRITION
+
+ Description:
+   Percentage of children under 5 years of age falling above 2 standard deviati
+> ons (moderate and severe) from the median weight-for-height of the reference 
+> population
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).NT_ANT_WHZ_PO2
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: Yes (MATERNAL_EDU_LVL)
+
+ Observations: 15065
+----------------------------------------------------------------------
+r; t=25.24 0:30:30
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:30:30
+.     local nobs = r(N)
+r; t=0.00 0:30:30
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/NT_ANT_WHZ_PO2.csv", rep
+> lace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/NT_ANT_WHZ_PO2.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/NT_ANT_WHZ_PO2.csv saved
+r; t=0.13 0:30:30
+.         display "OK: `nobs' rows"
+OK: 15065 rows
+r; t=0.00 0:30:30
+.     }
+r; t=0.22 0:30:30
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:30:30
+.     }
+r; t=0.02 0:30:30
+. }
+r; t=0.27 0:30:30
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:30:30
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/NT_ANT_WHZ_PO2.error", write re
+> place
+r; t=0.00 0:30:30
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:30:31
+.     file close ferr
+r; t=0.00 0:30:31
+. }
+r; t=0.12 0:30:31
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:30:31
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:30:39
+r; t=0.00 0:30:39
+
+. 
+. unicefdata, indicator(NT_BF_EBF)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; wealth_quintile: B20 B40 B60 B
+> 80 Q1 Q2 Q3 Q4 Q5 R20 R40 R60 R80 _T; age: M0T5 M12T17 M12T23 M18T23 M6T11 M6
+> T23 _T; residence: R U _T; maternal_edu: AGG_0_1 AGG_2_3 AGG_3S_H AGG_5T8 ISC
+> ED11A_01 ISCED11_1 _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); maternal_edu: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: NT_BF_EBF
+----------------------------------------------------------------------
+
+ Code:        NT_BF_EBF
+ Name:        Ever breastfed (0-23 months)
+ Category:    NUTRITION
+
+ Description:
+   Percentage of newborns ever breastfed
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).NT_BF_EBF
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: Yes (MATERNAL_EDU_LVL)
+
+ Observations: 778
+----------------------------------------------------------------------
+r; t=5.14 0:30:44
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:30:44
+.     local nobs = r(N)
+r; t=0.00 0:30:44
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/NT_BF_EBF.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/NT_BF_EBF.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/NT_BF_EBF.csv saved
+r; t=0.01 0:30:44
+.         display "OK: `nobs' rows"
+OK: 778 rows
+r; t=0.00 0:30:44
+.     }
+r; t=0.12 0:30:44
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:30:44
+.     }
+r; t=0.01 0:30:44
+. }
+r; t=0.17 0:30:44
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:30:44
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/NT_BF_EBF.error", write replace
+r; t=0.00 0:30:44
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:30:44
+.     file close ferr
+r; t=0.00 0:30:44
+. }
+r; t=0.11 0:30:44
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:30:44
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:30:52
+r; t=0.00 0:30:52
+
+. 
+. unicefdata, indicator(NT_BW_LBW)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+
+----------------------------------------------------------------------
+Indicator Information: NT_BW_LBW
+----------------------------------------------------------------------
+
+ Code:        NT_BW_LBW
+ Name:        Prevalence of low birth weight among new-borns
+ Category:    NUTRITION
+
+ Description:
+   Percentage of live births under 2500 g out of the total number of live birth
+> s during the same period.
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).NT_BW_LBW
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: Yes (MATERNAL_EDU_LVL)
+
+ Observations: 6657
+----------------------------------------------------------------------
+r; t=2.100 0:30:55
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:30:55
+.     local nobs = r(N)
+r; t=0.00 0:30:55
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/NT_BW_LBW.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/NT_BW_LBW.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/NT_BW_LBW.csv saved
+r; t=0.04 0:30:55
+.         display "OK: `nobs' rows"
+OK: 6657 rows
+r; t=0.00 0:30:55
+.     }
+r; t=0.16 0:30:55
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:30:55
+.     }
+r; t=0.02 0:30:55
+. }
+r; t=0.23 0:30:55
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:30:55
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/NT_BW_LBW.error", write replace
+r; t=0.00 0:30:55
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:30:55
+.     file close ferr
+r; t=0.00 0:30:55
+. }
+r; t=0.21 0:30:55
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:30:55
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:31:02
+r; t=0.00 0:31:02
+
+. 
+. unicefdata, indicator(NT_CF_BREASTMILK)   clear
+Auto-detected dataflow 'NUTRITION'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH G
+> LOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.34 0:31:33
+
+end of do-file
+r(677); t=30.77 0:31:33
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:31:41
+r; t=0.00 0:31:41
+
+. 
+. unicefdata, indicator(PT_F_15-49_W-BTNG)   clear
+Auto-detected dataflow 'PT'
+Fetching page 1...
+Note: Disaggregated data available: wealth_quintile: B20 B40 M40 Q1 Q2 Q3 Q4 Q5
+>  R40 R60 _T; age: Y15T17 Y15T19 Y15T49 Y18T19 Y20T24 Y25T29 Y30T34 Y35T39 Y40
+> T44 Y45T49 Y_GE15; residence: R U _T; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: PT_F_15-49_W-BTNG
+----------------------------------------------------------------------
+
+ Code:        PT_F_15-49_W-BTNG
+ Name:        Percentage of women (aged 15-49 years) who consider a husband to 
+> be justified in hitting or beating his wife for at least one of the specified
+>  reasons
+ Category:    PT
+
+ Description:
+   Percentage of women (aged 15-49 years) who consider a husband to be justifie
+> d in hitting or beating his wife for at least one of the specified reasons
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).PT_F_15-49_W-BTNG
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 1499
+----------------------------------------------------------------------
+r; t=2.24 0:31:43
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:31:43
+.     local nobs = r(N)
+r; t=0.00 0:31:43
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/PT_F_15-49_W-BTNG.csv", 
+> replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/PT_F_15-49_W-BTNG.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/PT_F_15-49_W-BTNG.csv saved
+r; t=0.02 0:31:44
+.         display "OK: `nobs' rows"
+OK: 1499 rows
+r; t=0.00 0:31:44
+.     }
+r; t=0.13 0:31:44
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:31:44
+.     }
+r; t=0.02 0:31:44
+. }
+r; t=0.18 0:31:44
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:31:44
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/PT_F_15-49_W-BTNG.error", write
+>  replace
+r; t=0.00 0:31:44
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:31:44
+.     file close ferr
+r; t=0.00 0:31:44
+. }
+r; t=0.12 0:31:44
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:31:44
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:31:52
+r; t=0.00 0:31:52
+
+. 
+. unicefdata, indicator(PT_M_15-17_SX-V_HLP)   clear
+Auto-detected dataflow 'PT'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  PT PT_CM PT_FGM PT_CONFLICT CHILD_PROTECTION GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=30.25 0:32:22
+
+end of do-file
+r(677); t=30.72 0:32:22
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:32:26
+r; t=0.00 0:32:26
+
+. 
+. unicefdata, indicator(PT_M_18-29_SX-V_AGE-18)   clear
+Auto-detected dataflow 'PT'
+Fetching page 1...
+Note: Disaggregated data available: age: Y18T19 Y18T29 Y18T74 Y20T24 Y25T29; 
+Applied filters: sex: _T(Default); wealth_quintile: _T(Default); age: _T(Defaul
+> t); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: PT_M_18-29_SX-V_AGE-18
+----------------------------------------------------------------------
+
+ Code:        PT_M_18-29_SX-V_AGE-18
+ Name:        Percentage of men (aged 18-29 years) who experienced sexual viole
+> nce by age 18
+ Category:    PT
+
+ Description:
+   Percentage of men (aged 18-29 years) who experienced sexual violence by age 
+> 18
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).PT_M_18-29_SX-V_AGE-18
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 40
+----------------------------------------------------------------------
+r; t=1.04 0:32:27
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:32:27
+.     local nobs = r(N)
+r; t=0.00 0:32:27
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/PT_M_18-29_SX-V_AGE-18.c
+> sv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/PT_M_18-29_SX-V_AGE-18.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/PT_M_18-29_SX-V_AGE-18.csv saved
+r; t=0.01 0:32:27
+.         display "OK: `nobs' rows"
+OK: 40 rows
+r; t=0.00 0:32:27
+.     }
+r; t=0.12 0:32:27
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:32:27
+.     }
+r; t=0.01 0:32:27
+. }
+r; t=0.16 0:32:27
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:32:27
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/PT_M_18-29_SX-V_AGE-18.error", 
+> write replace
+r; t=0.00 0:32:27
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:32:28
+.     file close ferr
+r; t=0.00 0:32:28
+. }
+r; t=0.11 0:32:28
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:32:28
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:32:40
+r; t=0.02 0:32:40
+
+. 
+. unicefdata, indicator(PV_CHLD_DPRV-E2-HS)   clear
+Auto-detected dataflow 'CHLD_PVTY'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; residence: R U _T; 
+Applied filters: sex: _T(Default); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: PV_CHLD_DPRV-E2-HS
+----------------------------------------------------------------------
+
+ Code:        PV_CHLD_DPRV-E2-HS
+ Name:        Percentage Children suffering exactly two deprivation. Homogeneou
+> s moderate standards
+ Category:    CHLD_PVTY
+
+ Description:
+   Percentage Children suffering exactly two deprivation. Homogeneous moderate 
+> standards
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).PV_CHLD_DPRV-E2-HS
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          No
+   wealth:       No
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 72
+----------------------------------------------------------------------
+r; t=2.29 0:32:42
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.02 0:32:42
+.     local nobs = r(N)
+r; t=0.00 0:32:42
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/PV_CHLD_DPRV-E2-HS.csv",
+>  replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/PV_CHLD_DPRV-E2-HS.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/PV_CHLD_DPRV-E2-HS.csv saved
+r; t=0.09 0:32:43
+.         display "OK: `nobs' rows"
+OK: 72 rows
+r; t=0.00 0:32:43
+.     }
+r; t=0.30 0:32:43
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:32:43
+.     }
+r; t=0.07 0:32:43
+. }
+r; t=0.44 0:32:43
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:32:43
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/PV_CHLD_DPRV-E2-HS.error", writ
+> e replace
+r; t=0.00 0:32:43
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:32:43
+.     file close ferr
+r; t=0.00 0:32:43
+. }
+r; t=0.18 0:32:43
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:32:43
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:33:04
+r; t=0.00 0:33:04
+
+. 
+. unicefdata, indicator(PV_PRO_PSS_DIRECT_TRANSFER)   clear
+Auto-detected dataflow 'CHLD_PVTY'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHLD_PVTY CHILD_POVERTY GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=23.98 0:33:28
+
+end of do-file
+r(677); t=24.90 0:33:28
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:33:39
+r; t=0.00 0:33:39
+
+. 
+. unicefdata, indicator(PV_PRO_PSS_EDU_BOTTOM20)   clear
+Auto-detected dataflow 'CHLD_PVTY'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHLD_PVTY CHILD_POVERTY GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=18.54 0:33:57
+
+end of do-file
+r(677); t=19.01 0:33:57
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:34:05
+r; t=0.00 0:34:05
+
+. 
+. unicefdata, indicator(TRGT_2030_ED_MAT_G23)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.90 0:34:23
+
+end of do-file
+r(677); t=18.33 0:34:23
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:34:31
+r; t=0.00 0:34:31
+
+. 
+. unicefdata, indicator(TRGT_2030_PT_M_18-29_SX-V_AGE-18)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.41 0:34:49
+
+end of do-file
+r(677); t=17.71 0:34:49
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:34:55
+r; t=0.00 0:34:55
+
+. 
+. unicefdata, indicator(TRGT_2030_WS_PPL_S-SM)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.27 0:35:12
+
+end of do-file
+r(677); t=17.59 0:35:12
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:35:23
+r; t=0.00 0:35:23
+
+. 
+. unicefdata, indicator(TRGT_CME)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.49 0:35:40
+
+end of do-file
+r(677); t=17.76 0:35:40
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:35:49
+r; t=0.00 0:35:49
+
+. 
+. unicefdata, indicator(TRGT_GN)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.29 0:36:06
+
+end of do-file
+r(677); t=17.55 0:36:06
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:36:14
+r; t=0.00 0:36:14
+
+. 
+. unicefdata, indicator(TRGT_WS)   clear
+Auto-detected dataflow 'CHILD_RELATED_SDG'
+Fetching page 1...
+Could not fetch data from any dataflow.
+Tried:  CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW
+
+    Could not download data from UNICEF SDMX API.
+    (1) Please check your internet connection by clicking here.
+    (2) Please check if the indicator code is correct.
+    (3) Please check your firewall settings.
+    (4) Consider adjusting Stata timeout: netio.
+    (5) Try specifying a different dataflow().
+    (6) Report an issue on GitHub with a detailed description and, if
+    possible, a log with set trace on enabled.
+r(677); t=17.85 0:36:32
+
+end of do-file
+r(677); t=18.38 0:36:32
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:36:41
+r; t=0.00 0:36:41
+
+. 
+. unicefdata, indicator(WS_HCF_H-L)   clear
+Auto-detected dataflow 'WASH_HOUSEHOLDS'
+Fetching page 1...
+Note: Disaggregated data available: residence: R U _T; 
+Applied filters: residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: WS_HCF_H-L
+----------------------------------------------------------------------
+
+ Code:        WS_HCF_H-L
+ Name:        Proportion of health care facilities with limited hygiene service
+> s
+ Category:    WASH_HOUSEHOLDS
+
+ Description:
+   Proportion of health care facilities with functional hand hygiene facilities
+>  available either at points of care or toilets but not both
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).WS_HCF_H-L
+
+ Supported Disaggregations:
+   sex:          No
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 4041
+----------------------------------------------------------------------
+r; t=15.21 0:36:56
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.01 0:36:56
+.     local nobs = r(N)
+r; t=0.00 0:36:56
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/WS_HCF_H-L.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/WS_HCF_H-L.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/WS_HCF_H-L.csv saved
+r; t=0.02 0:36:56
+.         display "OK: `nobs' rows"
+OK: 4041 rows
+r; t=0.00 0:36:56
+.     }
+r; t=0.11 0:36:56
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:36:56
+.     }
+r; t=0.01 0:36:56
+. }
+r; t=0.17 0:36:56
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:36:56
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/WS_HCF_H-L.error", write replac
+> e
+r; t=0.00 0:36:56
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:36:56
+.     file close ferr
+r; t=0.00 0:36:56
+. }
+r; t=0.13 0:36:56
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:36:56
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:37:05
+r; t=0.00 0:37:05
+
+. 
+. unicefdata, indicator(WS_PPL_M-NPART_AGE_15_19)   clear
+Auto-detected dataflow 'WASH_HOUSEHOLDS'
+Fetching page 1...
+
+----------------------------------------------------------------------
+Indicator Information: WS_PPL_M-NPART_AGE_15_19
+----------------------------------------------------------------------
+
+ Code:        WS_PPL_M-NPART_AGE_15_19
+ Name:        Percentage of adolescent girls aged 15-19 years who did not parti
+> cipate in school, work, or social activities during their last menstrual peri
+> od
+ Category:    WASH_HOUSEHOLDS
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).WS_PPL_M-NPART_AGE_15_19
+
+ Supported Disaggregations:
+   sex:          No
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 40
+----------------------------------------------------------------------
+r; t=18.40 0:37:23
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:37:23
+.     local nobs = r(N)
+r; t=0.01 0:37:23
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/WS_PPL_M-NPART_AGE_15_19
+> .csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/WS_PPL_M-NPART_AGE_15_19.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/WS_PPL_M-NPART_AGE_15_19.csv saved
+r; t=0.01 0:37:23
+.         display "OK: `nobs' rows"
+OK: 40 rows
+r; t=0.00 0:37:23
+.     }
+r; t=0.15 0:37:23
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:37:23
+.     }
+r; t=0.03 0:37:23
+. }
+r; t=0.25 0:37:23
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:37:23
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/WS_PPL_M-NPART_AGE_15_19.error"
+> , write replace
+r; t=0.00 0:37:24
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:37:24
+.     file close ferr
+r; t=0.00 0:37:24
+. }
+r; t=0.20 0:37:24
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:37:24
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:37:33
+r; t=0.00 0:37:33
+
+. 
+. unicefdata, indicator(WS_PPL_S-FST)   clear
+Auto-detected dataflow 'WASH_HOUSEHOLDS'
+Fetching page 1...
+Note: Disaggregated data available: residence: R U _T; 
+Applied filters: wealth_quintile: _T(Default); residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: WS_PPL_S-FST
+----------------------------------------------------------------------
+
+ Code:        WS_PPL_S-FST
+ Name:        Proportion of population using of on-site sanitation facilities w
+> ith human waste treated off-site
+ Category:    WASH_HOUSEHOLDS
+
+ Description:
+   Proportion of population using of on-site sanitation facilities with human w
+> aste treated off-site
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).WS_PPL_S-FST
+
+ Supported Disaggregations:
+   sex:          No
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 5209
+----------------------------------------------------------------------
+r; t=4.45 0:37:38
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:37:38
+.     local nobs = r(N)
+r; t=0.02 0:37:38
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/WS_PPL_S-FST.csv", repla
+> ce
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/WS_PPL_S-FST.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/WS_PPL_S-FST.csv saved
+r; t=0.03 0:37:38
+.         display "OK: `nobs' rows"
+OK: 5209 rows
+r; t=0.00 0:37:38
+.     }
+r; t=0.28 0:37:38
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:37:38
+.     }
+r; t=0.02 0:37:38
+. }
+r; t=0.40 0:37:38
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:37:38
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/WS_PPL_S-FST.error", write repl
+> ace
+r; t=0.00 0:37:38
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:37:38
+.     file close ferr
+r; t=0.00 0:37:38
+. }
+r; t=0.22 0:37:38
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:37:38
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:37:46
+r; t=0.00 0:37:46
+
+. 
+. unicefdata, indicator(WS_SCH_H-F)   clear
+Auto-detected dataflow 'WASH_HOUSEHOLDS'
+Fetching page 1...
+Note: Disaggregated data available: residence: R U _T; 
+Applied filters: residence: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: WS_SCH_H-F
+----------------------------------------------------------------------
+
+ Code:        WS_SCH_H-F
+ Name:        Proportion of schools with handwashing facilities
+ Category:    WASH_HOUSEHOLDS
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).WS_SCH_H-F
+
+ Supported Disaggregations:
+   sex:          No
+   age:          No
+   wealth:       Yes (WEALTH_QUINTILE)
+   residence:    Yes (RESIDENCE)
+   maternal_edu: No
+
+ Observations: 10092
+----------------------------------------------------------------------
+r; t=11.43 0:37:58
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 0:37:58
+.     local nobs = r(N)
+r; t=0.00 0:37:58
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_002035/stata/success/WS_SCH_H-F.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_002035/stata/success/WS_SCH_H-F.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_002035/stata/success/WS_SCH_H-F.csv saved
+r; t=0.05 0:37:58
+.         display "OK: `nobs' rows"
+OK: 10092 rows
+r; t=0.00 0:37:58
+.     }
+r; t=0.18 0:37:58
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:37:58
+.     }
+r; t=0.02 0:37:58
+. }
+r; t=0.23 0:37:58
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:37:58
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_002035/stata/failed/WS_SCH_H-F.error", write replac
+> e
+r; t=0.00 0:37:58
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:37:58
+.     file close ferr
+r; t=0.00 0:37:58
+. }
+r; t=0.11 0:37:58
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_002035/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:37:58
+-------------------------------------------------------------------------------

@@ -1,0 +1,450 @@
+{
+  "timestamp": "2026-01-12T23:56:23.582496",
+  "seed": 50,
+  "canonical_sequences": {
+    "CME": [
+      "CME",
+      "CME_DF_2021_WQ",
+      "CME_COUNTRY_ESTIMATES",
+      "CME_SUBNATIONAL",
+      "CME_ESTIMATE_2021",
+      "MORTALITY",
+      "GLOBAL_DATAFLOW"
+    ],
+    "ED": [
+      "EDUCATION_UIS_SDG",
+      "EDUCATION",
+      "EDUCATION_FLS",
+      "EDUCATION_IMEP_SDG",
+      "UIS",
+      "GLOBAL_DATAFLOW"
+    ],
+    "PT": [
+      "PT",
+      "PT_CM",
+      "PT_FGM",
+      "PT_CONFLICT",
+      "CHILD_PROTECTION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "COD": [
+      "CAUSE_OF_DEATH",
+      "CME",
+      "MORTALITY",
+      "GLOBAL_DATAFLOW"
+    ],
+    "WS": [
+      "WASH_HOUSEHOLDS",
+      "WASH_SCHOOLS",
+      "WASH_HEALTHCARE_FACILITY",
+      "WASH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "IM": [
+      "IMMUNISATION",
+      "IMMUNISATION_COVERAGE",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "TRGT": [
+      "CHILD_RELATED_SDG",
+      "SDG_CHILD_TARGETS",
+      "GLOBAL_DATAFLOW"
+    ],
+    "SPP": [
+      "SOC_PROTECTION",
+      "SOCIAL_PROTECTION",
+      "SOC_SAFETY_NETS",
+      "GLOBAL_DATAFLOW"
+    ],
+    "MNCH": [
+      "MNCH",
+      "MATERNAL_HEALTH",
+      "CHILD_HEALTH",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "NT": [
+      "NUTRITION",
+      "NUTRITION_STUNTING",
+      "NUTRITION_WASTING",
+      "CHILD_NUTRITION",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "ECD": [
+      "ECD",
+      "EARLY_CHILDHOOD_DEVELOPMENT",
+      "EDUCATION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "HVA": [
+      "HIV_AIDS",
+      "HIV",
+      "AIDS",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "PV": [
+      "CHLD_PVTY",
+      "CHILD_POVERTY",
+      "POVERTY",
+      "GLOBAL_DATAFLOW"
+    ],
+    "DM": [
+      "DM",
+      "DEMOGRAPHICS",
+      "DM_PROJECTIONS",
+      "POPULATION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "MG": [
+      "MG",
+      "MIGRATION",
+      "CHILD_MIGRATION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "GN": [
+      "GENDER",
+      "GENDER_EQUALITY",
+      "GIRLS_EDUCATION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "FD": [
+      "FUNCTIONAL_DIFF",
+      "DISABILITY",
+      "FUNCTIONAL_DIFFICULTY",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "ECO": [
+      "ECONOMIC",
+      "ECONOMICS",
+      "LABOUR",
+      "EMPLOYMENT",
+      "GLOBAL_DATAFLOW"
+    ],
+    "COVID": [
+      "COVID_CASES",
+      "COVID",
+      "COVID_DEATHS",
+      "COVID_VACCINATION",
+      "HEALTH",
+      "GLOBAL_DATAFLOW"
+    ],
+    "WT": [
+      "WASH_HOUSEHOLDS",
+      "WASH_SCHOOLS",
+      "PT",
+      "CHILD_PROTECTION",
+      "EDUCATION",
+      "GLOBAL_DATAFLOW"
+    ],
+    "DEFAULT": [
+      "GLOBAL_DATAFLOW"
+    ]
+  },
+  "python": {
+    "status": "success",
+    "sequences": {
+      "CME": [
+        "CME",
+        "CME_DF_2021_WQ",
+        "CME_COUNTRY_ESTIMATES",
+        "CME_SUBNATIONAL",
+        "CME_ESTIMATE_2021",
+        "MORTALITY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ED": [
+        "EDUCATION_UIS_SDG",
+        "EDUCATION",
+        "EDUCATION_FLS",
+        "EDUCATION_IMEP_SDG",
+        "UIS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "PT": [
+        "PT",
+        "PT_CM",
+        "PT_FGM",
+        "PT_CONFLICT",
+        "CHILD_PROTECTION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "COD": [
+        "CAUSE_OF_DEATH",
+        "CME",
+        "MORTALITY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "WS": [
+        "WASH_HOUSEHOLDS",
+        "WASH_SCHOOLS",
+        "WASH_HEALTHCARE_FACILITY",
+        "WASH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "IM": [
+        "IMMUNISATION",
+        "IMMUNISATION_COVERAGE",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "TRGT": [
+        "CHILD_RELATED_SDG",
+        "SDG_CHILD_TARGETS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "SPP": [
+        "SOC_PROTECTION",
+        "SOCIAL_PROTECTION",
+        "SOC_SAFETY_NETS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "MNCH": [
+        "MNCH",
+        "MATERNAL_HEALTH",
+        "CHILD_HEALTH",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "NT": [
+        "NUTRITION",
+        "NUTRITION_STUNTING",
+        "NUTRITION_WASTING",
+        "CHILD_NUTRITION",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ECD": [
+        "ECD",
+        "EARLY_CHILDHOOD_DEVELOPMENT",
+        "EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "HVA": [
+        "HIV_AIDS",
+        "HIV",
+        "AIDS",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "PV": [
+        "CHLD_PVTY",
+        "CHILD_POVERTY",
+        "POVERTY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "DM": [
+        "DM",
+        "DEMOGRAPHICS",
+        "DM_PROJECTIONS",
+        "POPULATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "MG": [
+        "MG",
+        "MIGRATION",
+        "CHILD_MIGRATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "GN": [
+        "GENDER",
+        "GENDER_EQUALITY",
+        "GIRLS_EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "FD": [
+        "FUNCTIONAL_DIFF",
+        "DISABILITY",
+        "FUNCTIONAL_DIFFICULTY",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ECO": [
+        "ECONOMIC",
+        "ECONOMICS",
+        "LABOUR",
+        "EMPLOYMENT",
+        "GLOBAL_DATAFLOW"
+      ],
+      "COVID": [
+        "COVID_CASES",
+        "COVID",
+        "COVID_DEATHS",
+        "COVID_VACCINATION",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "WT": [
+        "WASH_HOUSEHOLDS",
+        "WASH_SCHOOLS",
+        "PT",
+        "CHILD_PROTECTION",
+        "EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "DEFAULT": [
+        "GLOBAL_DATAFLOW"
+      ]
+    },
+    "errors": []
+  },
+  "r": {
+    "status": "success",
+    "sequences": {
+      "CME": [
+        "CME",
+        "CME_DF_2021_WQ",
+        "CME_COUNTRY_ESTIMATES",
+        "CME_SUBNATIONAL",
+        "CME_ESTIMATE_2021",
+        "MORTALITY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ED": [
+        "EDUCATION_UIS_SDG",
+        "EDUCATION",
+        "EDUCATION_FLS",
+        "EDUCATION_IMEP_SDG",
+        "UIS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "PT": [
+        "PT",
+        "PT_CM",
+        "PT_FGM",
+        "PT_CONFLICT",
+        "CHILD_PROTECTION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "COD": [
+        "CAUSE_OF_DEATH",
+        "CME",
+        "MORTALITY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "WS": [
+        "WASH_HOUSEHOLDS",
+        "WASH_SCHOOLS",
+        "WASH_HEALTHCARE_FACILITY",
+        "WASH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "IM": [
+        "IMMUNISATION",
+        "IMMUNISATION_COVERAGE",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "TRGT": [
+        "CHILD_RELATED_SDG",
+        "SDG_CHILD_TARGETS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "SPP": [
+        "SOC_PROTECTION",
+        "SOCIAL_PROTECTION",
+        "SOC_SAFETY_NETS",
+        "GLOBAL_DATAFLOW"
+      ],
+      "MNCH": [
+        "MNCH",
+        "MATERNAL_HEALTH",
+        "CHILD_HEALTH",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "NT": [
+        "NUTRITION",
+        "NUTRITION_STUNTING",
+        "NUTRITION_WASTING",
+        "CHILD_NUTRITION",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ECD": [
+        "ECD",
+        "EARLY_CHILDHOOD_DEVELOPMENT",
+        "EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "HVA": [
+        "HIV_AIDS",
+        "HIV",
+        "AIDS",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "PV": [
+        "CHLD_PVTY",
+        "CHILD_POVERTY",
+        "POVERTY",
+        "GLOBAL_DATAFLOW"
+      ],
+      "DM": [
+        "DM",
+        "DEMOGRAPHICS",
+        "DM_PROJECTIONS",
+        "POPULATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "MG": [
+        "MG",
+        "MIGRATION",
+        "CHILD_MIGRATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "GN": [
+        "GENDER",
+        "GENDER_EQUALITY",
+        "GIRLS_EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "FD": [
+        "FUNCTIONAL_DIFF",
+        "DISABILITY",
+        "FUNCTIONAL_DIFFICULTY",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "ECO": [
+        "ECONOMIC",
+        "ECONOMICS",
+        "LABOUR",
+        "EMPLOYMENT",
+        "GLOBAL_DATAFLOW"
+      ],
+      "COVID": [
+        "COVID_CASES",
+        "COVID",
+        "COVID_DEATHS",
+        "COVID_VACCINATION",
+        "HEALTH",
+        "GLOBAL_DATAFLOW"
+      ],
+      "WT": [
+        "WASH_HOUSEHOLDS",
+        "WASH_SCHOOLS",
+        "PT",
+        "CHILD_PROTECTION",
+        "EDUCATION",
+        "GLOBAL_DATAFLOW"
+      ],
+      "DEFAULT": [
+        "GLOBAL_DATAFLOW"
+      ]
+    },
+    "errors": []
+  },
+  "stata": {
+    "status": "pending",
+    "sequences": {},
+    "errors": []
+  },
+  "consistency": {
+    "status": "pass",
+    "issues": []
+  }
+}

@@ -1,0 +1,177 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260112_235229/stata/test_log.txt
+  log type:  text
+ opened on:  12 Jan 2026, 23:52:39
+r; t=0.00 23:52:39
+
+. 
+. unicefdata, indicator(COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS)   clear
+Auto-detected dataflow 'CAUSE_OF_DEATH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y10T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); age: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
+----------------------------------------------------------------------
+
+ Code:        COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
+ Name:        Cardiomyopathy, myocarditis, endocarditis
+ Category:    CAUSE_OF_DEATH
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 510
+----------------------------------------------------------------------
+r; t=3.91 23:52:43
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.02 23:52:43
+.     local nobs = r(N)
+r; t=0.00 23:52:43
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260112_235229/stata/success/COD_CARDIOMYOPATHY_MYOCA
+> RDITIS_ENDOCARDITIS.csv", replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 112_235229/stata/success/COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS.cs
+    > v not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 12_235229/stata/success/COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS.csv saved
+r; t=0.04 23:52:43
+.         display "OK: `nobs' rows"
+OK: 510 rows
+r; t=0.00 23:52:43
+.     }
+r; t=0.16 23:52:43
+.     else {
+.         display "NO_DATA"
+r; t=0.00 23:52:43
+.     }
+r; t=0.02 23:52:43
+. }
+r; t=0.22 23:52:43
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 23:52:43
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260112_235229/stata/failed/COD_CARDIOMYOPATHY_MYOCARDITIS_
+> ENDOCARDITIS.error", write replace
+r; t=0.00 23:52:43
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 23:52:43
+.     file close ferr
+r; t=0.00 23:52:43
+. }
+r; t=0.16 23:52:43
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260112_235229/stata/test_log.txt
+  log type:  text
+ closed on:  12 Jan 2026, 23:52:43
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260112_235229/stata/test_log.txt
+  log type:  text
+ opened on:  12 Jan 2026, 23:52:58
+r; t=0.00 23:52:58
+
+. 
+. unicefdata, indicator(COD_KIDNEY_DISEASES)   clear
+Auto-detected dataflow 'CAUSE_OF_DEATH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y10T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); age: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: COD_KIDNEY_DISEASES
+----------------------------------------------------------------------
+
+ Code:        COD_KIDNEY_DISEASES
+ Name:        Kidney diseases
+ Category:    CAUSE_OF_DEATH
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).COD_KIDNEY_DISEASES
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 716
+----------------------------------------------------------------------
+r; t=2.34 23:53:00
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.00 23:53:00
+.     local nobs = r(N)
+r; t=0.00 23:53:00
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260112_235229/stata/success/COD_KIDNEY_DISEASES.csv"
+> , replace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 112_235229/stata/success/COD_KIDNEY_DISEASES.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 12_235229/stata/success/COD_KIDNEY_DISEASES.csv saved
+r; t=0.02 23:53:00
+.         display "OK: `nobs' rows"
+OK: 716 rows
+r; t=0.00 23:53:00
+.     }
+r; t=0.16 23:53:00
+.     else {
+.         display "NO_DATA"
+r; t=0.00 23:53:00
+.     }
+r; t=0.02 23:53:00
+. }
+r; t=0.22 23:53:00
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 23:53:00
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260112_235229/stata/failed/COD_KIDNEY_DISEASES.error", wri
+> te replace
+r; t=0.00 23:53:00
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 23:53:00
+.     file close ferr
+r; t=0.00 23:53:00
+. }
+r; t=0.16 23:53:00
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260112_235229/stata/test_log.txt
+  log type:  text
+ closed on:  12 Jan 2026, 23:53:00
+-------------------------------------------------------------------------------

@@ -1,0 +1,278 @@
+metadata:
+  version: 1.0.0
+  created: '2026-01-12'
+  last_updated: '2026-01-12'
+  source: UNICEF SDMX Dataflow Analysis (69 dataflows)
+  author: GitHub Copilot (AI Agent)
+  description: |
+    Canonical fallback sequences for cross-platform indicator dataflow resolution.
+    Used by Python, R, and Stata to consistently resolve indicators to SDMX dataflows.
+    Each prefix maps to a sequence of dataflows to try in order.
+
+# Fallback sequences organized by indicator prefix
+# Format: prefix -> list of dataflows (try in order until one succeeds)
+# Based on 69 unique SDMX dataflows analyzed 2026-01-12
+fallback_sequences:
+  # Child Mortality Estimation (41+ variants in SDMX)
+  # Primary: CME_* dataflows, fallback to general indicators
+  CME:
+    - CME
+    - CME_DF_2021_WQ
+    - CME_COUNTRY_ESTIMATES
+    - CME_SUBNATIONAL
+    - CME_ESTIMATE_2021
+    - MORTALITY
+    - GLOBAL_DATAFLOW
+
+  # Education indicators (UIS/SDG aligned)
+  # Primary: EDUCATION_* dataflows, fallback to UIS
+  ED:
+    - EDUCATION_UIS_SDG
+    - EDUCATION
+    - EDUCATION_FLS
+    - EDUCATION_IMEP_SDG
+    - UIS
+    - GLOBAL_DATAFLOW
+
+  # Protection indicators (multiple variants)
+  # Primary: PT and PT_CM, fallback to child protection
+  PT:
+    - PT
+    - PT_CM
+    - PT_FGM
+    - PT_CONFLICT
+    - CHILD_PROTECTION
+    - GLOBAL_DATAFLOW
+
+  # Cause of Death (cross-listed with CME)
+  # Primary: CAUSE_OF_DEATH, fallback to mortality/CME
+  COD:
+    - CAUSE_OF_DEATH
+    - CME
+    - MORTALITY
+    - GLOBAL_DATAFLOW
+
+  # Water, Sanitation, and Hygiene (WASH)
+  # Multiple variants: households, schools, health facilities
+  WS:
+    - WASH_HOUSEHOLDS
+    - WASH_SCHOOLS
+    - WASH_HEALTHCARE_FACILITY
+    - WASH
+    - GLOBAL_DATAFLOW
+
+  # Immunisation indicators
+  # Primary: IMMUNISATION dataflow
+  IM:
+    - IMMUNISATION
+    - IMMUNISATION_COVERAGE
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Child-related SDG Target indicators
+  # Used for SDG tracking of child-specific targets
+  TRGT:
+    - CHILD_RELATED_SDG
+    - SDG_CHILD_TARGETS
+    - GLOBAL_DATAFLOW
+
+  # Social Protection indicators
+  # Including social safety nets, child benefits
+  SPP:
+    - SOC_PROTECTION
+    - SOCIAL_PROTECTION
+    - SOC_SAFETY_NETS
+    - GLOBAL_DATAFLOW
+
+  # Maternal and Child Health
+  # MNCH includes pregnancy, birth, postpartum care
+  MNCH:
+    - MNCH
+    - MATERNAL_HEALTH
+    - CHILD_HEALTH
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Nutrition indicators
+  # Growth stunting, wasting, micronutrient deficiency
+  NT:
+    - NUTRITION
+    - NUTRITION_STUNTING
+    - NUTRITION_WASTING
+    - CHILD_NUTRITION
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Early Childhood Development
+  # Preschool access, development readiness
+  ECD:
+    - ECD
+    - EARLY_CHILDHOOD_DEVELOPMENT
+    - EDUCATION
+    - GLOBAL_DATAFLOW
+
+  # HIV/AIDS indicators
+  # Includes testing, treatment, prevention
+  HVA:
+    - HIV_AIDS
+    - HIV
+    - AIDS
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Child Poverty and Deprivation
+  # Multidimensional poverty, living conditions
+  PV:
+    - CHLD_PVTY
+    - CHILD_POVERTY
+    - POVERTY
+    - GLOBAL_DATAFLOW
+
+  # Demographics
+  # Population, births, age structure
+  DM:
+    - DM
+    - DEMOGRAPHICS
+    - DM_PROJECTIONS
+    - POPULATION
+    - GLOBAL_DATAFLOW
+
+  # Migration indicators
+  # Child migration, displacement, trafficking
+  MG:
+    - MG
+    - MIGRATION
+    - CHILD_MIGRATION
+    - GLOBAL_DATAFLOW
+
+  # Gender indicators
+  # Gender equality, empowerment, rights
+  GN:
+    - GENDER
+    - GENDER_EQUALITY
+    - GIRLS_EDUCATION
+    - GLOBAL_DATAFLOW
+
+  # Functional Difficulty
+  # Disability prevalence, functional limitations
+  FD:
+    - FUNCTIONAL_DIFF
+    - DISABILITY
+    - FUNCTIONAL_DIFFICULTY
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Economic indicators
+  # GDP, income, labor market
+  ECO:
+    - ECONOMIC
+    - ECONOMICS
+    - LABOUR
+    - EMPLOYMENT
+    - GLOBAL_DATAFLOW
+
+  # COVID-19 indicators
+  # Cases, deaths, vaccination, pandemic response
+  COVID:
+    - COVID_CASES
+    - COVID
+    - COVID_DEATHS
+    - COVID_VACCINATION
+    - HEALTH
+    - GLOBAL_DATAFLOW
+
+  # Worktable indicators (WT prefix)
+  # Special prefix for cross-cutting indicators
+  WT:
+    - WASH_HOUSEHOLDS
+    - WASH_SCHOOLS
+    - PT
+    - CHILD_PROTECTION
+    - EDUCATION
+    - GLOBAL_DATAFLOW
+
+  # Default fallback for unknown/unmapped prefixes
+  # Try general UNICEF dataflow before giving up
+  DEFAULT:
+    - GLOBAL_DATAFLOW
+
+# Additional metadata: mapping of dataflows to categories
+# Useful for diagnostics and understanding indicator routing
+dataflow_categories:
+  MORTALITY:
+    - CME
+    - CME_DF_2021_WQ
+    - CME_COUNTRY_ESTIMATES
+    - CME_SUBNATIONAL
+    - CAUSE_OF_DEATH
+    - MORTALITY
+
+  HEALTH:
+    - MNCH
+    - IMMUNISATION
+    - NUTRITION
+    - HIV_AIDS
+    - HEALTH
+    - FUNCTIONAL_DIFF
+
+  EDUCATION:
+    - EDUCATION_UIS_SDG
+    - EDUCATION
+    - EDUCATION_FLS
+    - ECD
+    - GIRLS_EDUCATION
+
+  WASH:
+    - WASH_HOUSEHOLDS
+    - WASH_SCHOOLS
+    - WASH_HEALTHCARE_FACILITY
+
+  PROTECTION:
+    - PT
+    - PT_CM
+    - PT_FGM
+    - PT_CONFLICT
+    - CHILD_PROTECTION
+    - MIGRATION
+
+  SOCIAL_DEVELOPMENT:
+    - SOC_PROTECTION
+    - POVERTY
+    - GENDER
+    - CHILD_POVERTY
+
+  DEMOGRAPHICS:
+    - DEMOGRAPHICS
+    - POPULATION
+    - MIGRATION
+
+  ECONOMIC:
+    - ECONOMIC
+    - LABOUR
+    - EMPLOYMENT
+
+  EMERGENCY:
+    - COVID
+    - EMERGENCY_RESPONSE
+
+# Fallback logic notes
+# =====================
+# The sequences above represent the UNICEF data strategy:
+#
+# 1. Try indicator-specific dataflow first
+#    Example: CME for child mortality, ED for education
+#
+# 2. Try regional/specialized variants
+#    Example: CME_SUBNATIONAL for subnational mortality data
+#
+# 3. Try category dataflow (e.g., HEALTH for health indicators)
+#    Example: IMMUNISATION -> HEALTH
+#
+# 4. Fall back to GLOBAL_DATAFLOW as last resort
+#    This catches indicators that don't fit standard categories
+#
+# All three platforms (Python, R, Stata) should follow this sequence
+# to ensure consistent cross-platform indicator resolution.
+#
+# See: unicefData/validation/SDMX_DATAFLOW_ANALYSIS.md
+#      unicefData/validation/DATAFLOW_FALLBACK_COMPARISON.md

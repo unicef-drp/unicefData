@@ -1,0 +1,19 @@
+
+library(unicefData)
+tryCatch({
+    df <- unicefData(
+        indicator = "PT_M_20-24_MRD_U18",
+        
+        
+    )
+    
+    if (nrow(df) > 0) {
+        write.csv(df, "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_235844/r/success/PT_M_20-24_MRD_U18.csv", row.names = FALSE)
+        cat(nrow(df))
+    } else {
+        cat("0")
+    }
+}, error = function(e) {
+    writeLines(as.character(e$message), "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_235844/r/failed/PT_M_20-24_MRD_U18.error")
+    cat("ERROR")
+})

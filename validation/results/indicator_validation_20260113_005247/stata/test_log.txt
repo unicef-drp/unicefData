@@ -1,0 +1,88 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_005247/stata/test_log.txt
+  log type:  text
+ opened on:  13 Jan 2026, 00:53:10
+r; t=0.00 0:53:10
+
+. 
+. unicefdata, indicator(COD_CHLAMYDIA)   clear
+Auto-detected dataflow 'CAUSE_OF_DEATH'
+Fetching page 1...
+Note: Disaggregated data available: sex: F M _T; age: Y10T14 Y10T19 Y15T19; 
+Applied filters: sex: _T(Default); age: _T(Default); 
+
+----------------------------------------------------------------------
+Indicator Information: COD_CHLAMYDIA
+----------------------------------------------------------------------
+
+ Code:        COD_CHLAMYDIA
+ Name:        Chlamydia
+ Category:    CAUSE_OF_DEATH
+
+ URN:         urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICA
+> TOR(1.0).COD_CHLAMYDIA
+
+ Supported Disaggregations:
+   sex:          Yes (SEX)
+   age:          Yes (AGE)
+   wealth:       No
+   residence:    No
+   maternal_edu: No
+
+ Observations: 26
+----------------------------------------------------------------------
+r; t=3.58 0:53:14
+
+. 
+. if _rc == 0 {
+.     qui describe
+r; t=0.02 0:53:14
+.     local nobs = r(N)
+r; t=0.00 0:53:14
+.     if `nobs' > 0 {
+.         export delimited using "C:/GitHub/myados/unicefData/validation/result
+> s/indicator_validation_20260113_005247/stata/success/COD_CHLAMYDIA.csv", repl
+> ace
+(file
+    C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260
+    > 113_005247/stata/success/COD_CHLAMYDIA.csv not found)
+file C:/GitHub/myados/unicefData/validation/results/indicator_validation_202601
+> 13_005247/stata/success/COD_CHLAMYDIA.csv saved
+r; t=0.04 0:53:14
+.         display "OK: `nobs' rows"
+OK: 26 rows
+r; t=0.00 0:53:14
+.     }
+r; t=0.15 0:53:14
+.     else {
+.         display "NO_DATA"
+r; t=0.00 0:53:14
+.     }
+r; t=0.06 0:53:14
+. }
+r; t=0.28 0:53:14
+
+. else {
+.     display "ERROR: _rc=" _rc
+r; t=0.00 0:53:14
+.     file open ferr using "C:/GitHub/myados/unicefData/validation/results/indi
+> cator_validation_20260113_005247/stata/failed/COD_CHLAMYDIA.error", write rep
+> lace
+r; t=0.00 0:53:14
+.     file write ferr "Stata error: _rc=" (_rc) _n
+r; t=0.00 0:53:14
+.     file close ferr
+r; t=0.00 0:53:15
+. }
+r; t=0.12 0:53:15
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:/GitHub/myados/unicefData/validation/results/indicator_validatio
+> n_20260113_005247/stata/test_log.txt
+  log type:  text
+ closed on:  13 Jan 2026, 00:53:15
+-------------------------------------------------------------------------------
