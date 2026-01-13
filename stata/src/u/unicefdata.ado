@@ -663,6 +663,7 @@ version 11
         
         * Determine if we should use fallback
         local use_fallback = ("`fallback'" != "" | ("`nofallback'" == "" & "`indicator'" != ""))
+        local fallback_used 0  // Track if fallback successfully provided data
         
         * Show fetching message (matches R/Python behavior)
         noi di as text "Fetching page 1..."
@@ -701,6 +702,7 @@ version 11
                 local success 1
                 local dataflow "`r(dataflow)'"
                 local full_url "`r(url)'"
+                local fallback_used 1  // Mark that fallback was used (data already in memory)
                 if ("`verbose'" != "") {
                     noi di as text "Successfully used fallback dataflow: " as result "`dataflow'"
                 }
@@ -736,9 +738,13 @@ version 11
         * Only import when there is no data currently loaded, or when the
         * user explicitly requested `clear'. This avoids overwriting a
         * non-empty dataset unless the user allowed it.
+        *
+        * If fallback was used, data is already in memory from the fallback helper.
 
-        if (_N == 0) | ("`clear'" != "") {
-            import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+        if ("`fallback_used'" != "1") {
+            if (_N == 0) | ("`clear'" != "") {
+                import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+            }
         }
         
         } // end skip_single_fetch
@@ -2173,6 +2179,18 @@ program define _unicef_detect_dataflow_prefix, sclass
     }
     else if ("`prefix'" == "SDG") {
         sreturn local dataflow "CHILD_RELATED_SDG"
+    }
+    else if ("`prefix'" == "COD") {
+        sreturn local dataflow "CAUSE_OF_DEATH"
+    }
+    else if ("`prefix'" == "TRGT") {
+        sreturn local dataflow "CHILD_RELATED_SDG"
+    }
+    else if ("`prefix'" == "SPP") {
+        sreturn local dataflow "SOC_PROTECTION"
+    }
+    else if ("`prefix'" == "WT") {
+        sreturn local dataflow "PT"
     }
     else {
         * Default to GLOBAL_DATAFLOW if unknown
