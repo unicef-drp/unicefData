@@ -1,0 +1,785 @@
+% Stata Journal Article Template
+% Documenting unicefData Libraries
+
+\documentclass[bib]{statapress}
+
+\usepackage[crop,newcenter,frame]{pagedims}
+\usepackage{sj_clean}
+\usepackage{stata}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{booktabs} % for \toprule, \midrule, \bottomrule
+\usepackage{threeparttable} % for tablenotes under tables
+\usepackage[hang,flushmargin]{footmisc} % left-align footnotes, no indent
+\usepackage{url}
+\setlength{\emergencystretch}{1em}
+\captionsetup{font=footnotesize}
+
+\sjsetissue{$vv$}{$ii$}{$mm$}{$yyyy$}
+\inserttype[st0001]{article}
+
+\title[unicefData]{unicefData: Trilingual Library for UNICEF SDMX Indicators}
+
+\author{Jo\~{a}o Pedro Azevedo}{%
+Jo\~{a}o Pedro Azevedo\\
+UNICEF\\
+Division of Data, Analytics, Planning and Monitoring\\
+3 United Nations Plaza\\
+New York, NY 10017\\
+jpazevedo@unicef.org%
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This article introduces \texttt{unicefdata}, a Stata package for accessing over 733 child welfare indicators from the UNICEF Data Warehouse via the SDMX API. The package provides discovery commands (search, list, info), data retrieval with flexible filtering (countries, years, disaggregations), and multiple output formats (long, wide, wide\_indicators). Automatic dataflow detection from indicator codes eliminates the need for manual API navigation. Part of a trilingual ecosystem with R and Python implementations, \texttt{unicefdata} enables reproducible research on child health, nutrition, education, protection, and WASH indicators. The package requires \texttt{yaml.ado} for metadata parsing and is available via SSC.
+
+\keywords{st0001, unicefdata, SDMX, UNICEF, child monitoring, custodianship, open data}
+\end{abstract}
+
+
+\section{Introduction}
+The United Nations Children's Fund (UNICEF) maintains one of the world's most comprehensive databases on child welfare, covering health, nutrition, education, protection, HIV/AIDS, and water/sanitation (WASH) \citep{unicef2024data}. The UNICEF Data Warehouse uses the Statistical Data and Metadata eXchange (SDMX) standard \citep{sdmx2021}, an ISO-certified framework for exchanging statistical information. While powerful, direct SDMX API interaction requires knowledge of dataflow structures, dimension codes, and RESTful query syntax—barriers for researchers focused on substantive analysis rather than data engineering.
+
+The \texttt{unicefdata} package removes these barriers by providing a Stata interface modeled after \texttt{wbopendata} \citep{azevedo2011}. Users specify indicators, countries, and time periods in familiar syntax; the package handles API queries, dataflow detection, and data transformation. Discovery commands enable exploration without prior knowledge of SDMX structures \citep{sdmx2021}. The package is part of a trilingual ecosystem with R (\texttt{get\_unicef()}) and Python (\texttt{unicef\_api}) implementations sharing identical function names and parameter structures \citep{unicef2025rclient,unicef2025pyclient}.
+
+The package includes comprehensive help files accessible via \texttt{help unicefdata} and \texttt{help unicefdata\_sync}. This article provides conceptual overview and extended examples; the help files document all options and stored results.
+
+\subsection{Relationship to other tools}
+
+	\textbf{Direct SDMX API access} offers full control but requires knowledge of dataflow IDs, dimension codes, and REST query syntax. \texttt{unicefdata} abstracts this complexity behind Stata-friendly options.
+
+	\textbf{UNICEF Data Portal (web)} is ideal for quick downloads and visual exploration, but it does not provide reproducible, scriptable workflows.
+
+	\textbf{R (\texttt{get\_unicef}) and Python (\texttt{unicef\_api})} clients expose the same interface as \texttt{unicefdata}. Choose the language that fits your analytical stack; all three are designed for parity to ease cross-team collaboration.
+\subsection{Requirements}
+
+The package requires Stata 14.0 or higher and depends on \texttt{yaml.ado} for parsing metadata files. The \texttt{yaml} package provides robust YAML reading/writing capabilities and can be installed from SSC:
+
+\begin{stlog}
+\begin{verbatim}
+. ssc install yaml, replace
+\end{verbatim}
+\end{stlog}
+
+No additional dependencies or external software are required. The package works entirely within Stata's native environment.
+
+\section{Data model: Indicators and dimensions}
+
+\subsection{Indicator structure and definitions}
+
+The UNICEF Data Warehouse follows the Statistical Data and Metadata eXchange (SDMX) standard, an ISO 20922-certified framework for exchanging statistical information. Within SDMX, an \textit{indicator} is a time-series observation of a specific phenomenon (e.g., under-5 mortality rate, prevalence of stunting, immunization coverage). Each indicator is uniquely identified by a code (e.g., \texttt{CME\_MRY0T4} for under-5 mortality) and belongs to a \textit{dataflow}, which is a logical grouping of related indicators.
+
+The UNICEF data warehouse currently maintains 733+ indicators organized across 11 thematic dataflows:
+
+\begin{itemize}
+  \item \textbf{CME} (Child Mortality Estimates) - 39 mortality indicators
+  \item \textbf{NUTRITION} - 112 nutrition indicators (stunting, wasting, underweight)
+  \item \textbf{WASH} - 57 water/sanitation indicators
+  \item \textbf{EDUCATION} - 38 education indicators
+  \item \textbf{HIV/AIDS} - 38 HIV-related indicators
+  \item \textbf{IMMUNISATION} - 18 immunization coverage indicators
+  \item And 6 others (MNCH, CAUSE\_OF\_DEATH, CHLD\_PVTY, PT, ECON, GENDER)
+\end{itemize}
+
+Each indicator is categorized by thematic domain, enabling discovery and cross-cutting analysis of child welfare across health, nutrition, education, and protection domains.
+
+Governance note: UNICEF’s custodial and co-custodial arrangements for major child-related series shape available disaggregations and provenance in SDMX responses; see Section~\ref{data-governance} for a brief overview.
+
+\subsection{Dimensions and attributes}
+
+\subsubsection{Conceptual framework}
+
+At the heart of the UNICEF data warehouse is a conceptual distinction between how data are \textit{structured for analysis} and how data are \textit{contextualized and interpreted}. An indicator (such as ``under-5 mortality rate'') is not a single number but rather a collection of observations, each representing a specific combination of context and reference. 
+
+\input{table_raw_sdmx_sample.tex}
+
+For example, the under-5 mortality rate for Bangladesh in 2020 disaggregated by sex yields three observations: the total rate (\texttt{\_T} = 31.5 deaths per 1,000 live births), the rate for males (\texttt{M} = 33.6), and the rate for females (\texttt{F} = 29.4). The rate varies not just by country and year, but also by demographic group (sex, age), socioeconomic status (wealth quintile), and geography (urban vs. rural). Each dimension includes a total category (\texttt{\_T}) alongside disaggregated values, enabling both aggregate and stratified analysis. These \textit{structural dimensions} are essential for analysis because they define the axes along which data can be filtered, aggregated, and compared.
+
+From an SDMX data modeling perspective, the columns in Table~\ref{tab:raw-sdmx-sample} map directly to the data structure definition (DSD): \texttt{REF\_AREA}, \texttt{TIME}, \texttt{SEX}, and \texttt{QUINTILE} are dimensions that jointly identify the observation key; \texttt{OBS} is the primary measure; \texttt{Src} (often \texttt{SOURCE}) and \texttt{Stat} (often \texttt{OBS\_STATUS}) are observation-level attributes that travel with each value. The DSD binds these concept roles to code lists so that all SDMX responses are schema-valid and interoperable across agencies \citep{sdmx2021}. This distinction motivates the interface design in \texttt{unicefdata}: dimensions are exposed as filters because they define the retrieval key, while attributes remain metadata for interpretation and quality assessment.
+
+Table~\ref{tab:bgd-mortality-disagg} (Table 2) shows how these concepts play out for a single indicator (CME\_MRY0T4) in Bangladesh. Wealth quintiles are available only for the total sex category, and sex-specific estimates are available only at the total wealth level. The empty cells in the sex rows make it visually clear that the SDMX source does not publish intersections of sex by wealth for this series—a limitation users must respect when requesting disaggregations.
+
+\input{table_bgd_mortality_2020.tex}
+
+However, an observation also carries metadata that clarifies its meaning and reliability: the source survey (e.g., DHS, census), the confidence interval around the estimate, whether the value is observed or modeled, and the date of collection. These \textit{attributes} provide context and quality assessment but are not used for filtering or disaggregation. A user querying for all observations of stunting prevalence in Ethiopia does not specify ``include DHS data but exclude MICS data'' at the query level; instead, the data returned carry attributes indicating the source, allowing the user to filter or weight results post-hoc.
+
+The \texttt{unicefdata} package exposes dimensions as command-line filtering options (because users commonly need to select specific subsets of data), while attributes are stored in metadata files and YAML configuration for reference and interpretation.
+
+\subsubsection{Dimensions}
+
+Dimensions define how observations are disaggregated. The \texttt{unicefdata} package exposes the most commonly used dimensions as filtering options:
+
+\hangpara
+\textbf{Geographic dimension} - Specifies the \texttt{country} or regional aggregate. The package automatically classifies entities as countries (e.g., \texttt{BRA}) or aggregates (e.g., \texttt{SSA} for Sub-Saharan Africa), enabling selective filtering.
+
+\hangpara
+\textbf{Time dimension} - Specifies the \texttt{period} (year or year-month combination). The package automatically converts sub-annual periods to decimal years (e.g., June 2020 becomes 2020.5) for consistent time-series analysis.
+
+\hangpara
+\textbf{Sex dimension} (\texttt{sex}) - Values: \texttt{\_T} (total/both sexes), \texttt{M} (male), \texttt{F} (female). Some indicators lack sex disaggregation.
+
+\hangpara
+\textbf{Age dimension} (\texttt{age}) - Age group codes vary by indicator. Common values: \texttt{0T4} (under-5), \texttt{0T17} (under-18), \texttt{15T49} (reproductive age females).
+
+\hangpara
+\textbf{Wealth dimension} (\texttt{wealth}) - Wealth quintiles: \texttt{Q1}--\texttt{Q5}. Indicates income/asset-based household wealth stratification. Available only for survey-based indicators.
+
+\hangpara
+\textbf{Residence dimension} (\texttt{residence}) - Values: \texttt{URBAN}, \texttt{RURAL}, or \texttt{\_T} (total). Distinguishes urban-rural disparities for select indicators.
+
+\hangpara
+\textbf{Maternal education dimension} (\texttt{maternal\_edu}) - Education level of mother (typically for child-related indicators). Values depend on the survey protocol.
+
+\subsubsection{Attributes}
+
+Attributes are non-structural metadata that contextualize observations without serving as filtering dimensions. The package stores attributes in YAML metadata files but does not expose them as command-line options:
+
+\hangpara
+\textbf{Data source} - The survey, administrative system, or estimation model producing the observation (e.g., ``Demographic and Health Survey'', ``UN IGME'').
+
+\hangpara
+\textbf{Confidence intervals} - Upper and lower bounds (where available) for uncertainty quantification, critical for estimates from mortality models.
+
+\hangpara
+\textbf{Data type} - ``Observed'' (from surveys/administrative systems) or ``Estimated'' (from models, e.g., UN mortality models).
+
+\hangpara
+\textbf{Geographic classification} - Whether the entity is a country or regional aggregate (automatically applied by the package).
+
+\hangpara
+\textbf{Temporal metadata} - Survey year, collection period, or model reference year.
+
+\subsection{Indicator-to-dataflow mapping and automatic detection}
+
+Unlike direct SDMX API access, which requires users to know both the indicator code \textit{and} the dataflow it belongs to, the \texttt{unicefdata} package maintains a YAML-based index mapping all 733+ indicators to their parent dataflows. This enables automatic dataflow detection.
+
+When a user specifies an indicator code (e.g., \texttt{CME\_MRY0T4}), the package:
+
+\begin{enumerate}
+  \item Queries the local indicator-to-dataflow index (\texttt{\_unicefdata\_indicators.yaml})
+  \item Retrieves the associated dataflow ID (\texttt{CME})
+  \item Constructs the SDMX query URL with appropriate filter parameters
+  \item Submits the query to the UNICEF SDMX API
+  \item Automatically falls back to alternative dataflows if the primary returns HTTP 404
+\end{enumerate}
+
+This design prioritizes user convenience: researchers can request indicators by code alone, without understanding SDMX dataflow semantics. The indicator index is synchronized every 30 days, or less as per manual request, via the \texttt{unicefdata\_sync} command, ensuring new indicators and definitions remain current.
+
+\subsection{Output data structure}
+
+By default, the package returns data in \textit{long format}, one row per country-year-indicator combination with the following columns:
+
+\begin{description}
+  \item[\texttt{countrycode}] ISO3 country code (e.g., \texttt{BRA})
+  \item[\texttt{country}] Country name (e.g., \texttt{Brazil})
+  \item[\texttt{indicator}] Indicator code (e.g., \texttt{CME\_MRY0T4})
+  \item[\texttt{year}] Time period (decimal year after conversion)
+  \item[\texttt{value}] Numeric observation
+  \item[\texttt{sex}] Sex disaggregation (if applicable)
+  \item[\texttt{age}] Age disaggregation (if applicable)
+  \item[\texttt{wealth}] Wealth quintile (if applicable)
+  \item[\texttt{residence}] Urban/rural (if applicable)
+  \item[\texttt{maternal\_edu}] Maternal education level (if applicable)
+\end{description}
+
+Dimension columns are omitted for indicators lacking that dimension, and missing values (typically represented as \texttt{.} in Stata) indicate unavailable observations. Users can reshape data to wide format (years as columns) or wide-indicators format (indicators as columns) using the format options.
+
+\subsection{Key features}
+\begin{itemize}
+  \item Access to 733+ UNICEF indicators across 11 thematic dataflows
+  \item Discovery commands: search indicators, list dataflows, display metadata
+  \item Automatic dataflow detection from indicator codes using YAML metadata
+  \item Flexible filtering: countries, years, sex, age, wealth quintiles, residence
+  \item Multiple output formats: long (default), wide (years as columns), wide\_indicators (series as columns)
+  \item Geographic classification: automatic country vs aggregate region detection
+  \item Metadata synchronization via \texttt{unicefdata\_sync} command
+  \item XML-to-YAML conversion for offline schema analysis (\texttt{unicefdata\_xmltoyaml})
+\end{itemize}
+
+\subsection{Disaggregation availability by dataflow}
+
+\subsubsection*{Compatibility Matrix (v1.0, updated 2025-12-20)}
+
+The following table shows which disaggregation dimensions are available for each dataflow (as of 2025-12-20):
+
+\begin{center}
+{\scriptsize
+\setlength{\tabcolsep}{3pt}%
+\captionof{table}{Disaggregation availability by dataflow (v1.0, updated 2025-12-20)}\label{tab:disaggregation_availability}
+\vspace{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c}
+\hline
+Dataflow & SEX & AGE & WEALTH & RESIDENCE & MATERNAL\_EDU \\
+\hline
+CAUSE\_OF\_DEATH & \checkmark & \checkmark & -- & -- & -- \\
+CCRI & -- & -- & -- & -- & -- \\
+CHILD\_RELATED\_SDG & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+CHLD\_PVTY & \checkmark & -- & -- & \checkmark & -- \\
+CME & \checkmark & -- & \checkmark & -- & -- \\
+CME\_CAUSE\_OF\_DEATH & \checkmark & -- & -- & -- & -- \\
+CME\_COUNTRY\_PROFILES\_DATA & -- & -- & -- & -- & -- \\
+CME\_DF\_2021\_WQ & \checkmark & -- & \checkmark & -- & -- \\
+CME\_SUBNATIONAL & \checkmark & -- & \checkmark & -- & -- \\
+COVID & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+COVID\_CASES & \checkmark & \checkmark & -- & -- & -- \\
+DM & \checkmark & \checkmark & -- & \checkmark & -- \\
+DM\_PROJECTIONS & \checkmark & \checkmark & -- & \checkmark & -- \\
+ECD & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+ECONOMIC & -- & -- & -- & -- & -- \\
+EDUCATION & \checkmark & -- & \checkmark & \checkmark & -- \\
+EDUCATION\_FLS & \checkmark & -- & -- & -- & -- \\
+EDUCATION\_UIS\_SDG & \checkmark & -- & \checkmark & \checkmark & -- \\
+FUNCTIONAL\_DIFF & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+GENDER & \checkmark & \checkmark & -- & \checkmark & -- \\
+GLOBAL\_DATAFLOW & \checkmark & \checkmark & -- & -- & -- \\
+HIV\_AIDS & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+IMMUNISATION & -- & \checkmark & -- & -- & -- \\
+MG (Migration) & -- & \checkmark & -- & -- & -- \\
+MNCH & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+NUTRITION & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+PT (Child Protection) & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+PT\_CM (Child Marriage) & \checkmark & \checkmark & \checkmark & \checkmark & -- \\
+PT\_CONFLICT & \checkmark & \checkmark & -- & -- & -- \\
+PT\_FGM & -- & \checkmark & \checkmark & \checkmark & -- \\
+SDG\_PROG\_ASSESSMENT & -- & -- & -- & -- & -- \\
+SOC\_PROTECTION & \checkmark & -- & \checkmark & \checkmark & -- \\
+WASH\_HEALTHCARE\_FACILITY & -- & -- & -- & \checkmark & -- \\
+WASH\_HOUSEHOLDS & -- & -- & \checkmark & \checkmark & -- \\
+WASH\_HOUSEHOLD\_MH & \checkmark & \checkmark & -- & \checkmark & -- \\
+WASH\_HOUSEHOLD\_SUBNAT & -- & -- & \checkmark & \checkmark & -- \\
+WASH\_SCHOOLS & -- & -- & -- & \checkmark & -- \\
+\hline
+\end{tabular}}% end resizebox
+}% end scriptsize
+\end{center}
+
+\vspace{-12pt}
+\noindent
+\footnotesize
+\textbf{Notes:} \checkmark~= Dimension available for disaggregation; -- = Dimension not available. \\
+CME\_SUBNAT\_* dataflows (country-specific subnational) all support SEX and WEALTH\_QUINTILE. \\
+MATERNAL\_EDU includes both \texttt{MATERNAL\_EDU\_LVL} and \texttt{MOTHER\_EDUCATION} dimension names. \\
+Availability does not guarantee data exists for all values; use API to check actual data coverage.
+
+
+\section{Data governance and custodianship}\label{data-governance}
+
+The UNICEF Data Warehouse is governed by the UNICEF Office of the Chief Statistician, which serves as custodian or co-custodian for most child-related SDG indicators and other global child monitoring series. Because UNICEF produces or co-produces the vast majority of indicators in the warehouse, definitions, code lists, and quality standards are harmonized at the point of production. When indicators originate from partner agencies, the warehouse ingests them via SDMX while preserving agency-specific source attributes so that provenance is transparent to users. This custodianship model explains the consistency users see in dimension code lists (for example, sex, wealth quintile, residence) and why \texttt{unicefdata} can rely on stable SDMX structures across dataflows.
+
+\subsubsection*{Custodianship arrangements: key examples}
+
+UNICEF’s custodianship and co-custodianship span several flagship initiatives. A brief overview helps users understand why specific dimensions, release cadences, and attribution conventions differ across series:
+
+\hangpara
+	\textbf{UN Inter-agency Group for Child Mortality Estimation (IGME)} — Co-led by UNICEF, IGME produces child mortality indicators (for example, under-five, infant). IGME sets methods, validates inputs, and releases modelled estimates with uncertainty bounds. In SDMX responses, observation attributes typically include source (IGME) and status (modelled), with dimensions such as sex available but intersections with wealth generally not published.
+
+\hangpara
+	\textbf{Joint Malnutrition Estimates (JME)} — A partnership including UNICEF produces global and country estimates for stunting, wasting, and underweight. JME governs age-group definitions and survey inclusion criteria, leading to harmonized age dimensions and standard uncertainty reporting across nutrition series.
+
+\hangpara
+	\textbf{WHO/UNICEF Joint Monitoring Programme (JMP)} — For water, sanitation, and hygiene (WASH), JMP defines service ladders and urban–rural residence classifications. This governance is reflected in the residence dimension and the categorical code lists found in WASH dataflows.
+
+\hangpara
+	\textbf{WHO/UNICEF Estimates of National Immunization Coverage (WUENIC)} — Immunization coverage indicators (for example, DTP3) follow WUENIC’s methods and validation rules. Sub-annual timing and administrative versus survey sources are captured via observation attributes, while the primary disaggregation is typically age-appropriate cohort totals rather than wealth or sex intersections.
+
+\hangpara
+Across these initiatives, UNICEF’s custodial or co-custodial role ensures coherence at the concept and code-list level, while SDMX attributes preserve provenance (agency, status, method) for transparency. Users should interpret disaggregation availability in light of each initiative’s methodological stance—for example, whether sex-by-wealth intersections are conceptually supported or withheld to protect statistical reliability.
+
+\normalsize
+
+\subsubsection*{Additional initiatives}
+
+Beyond IGME, JME, JMP and WUENIC, several inter-agency programmes and custodianship contexts shape indicator definitions and disaggregation availability:
+
+\hangpara
+	\textbf{UNAIDS Global AIDS Monitoring (GAM)} — Annual monitoring of commitments in the Political Declaration on HIV and AIDS provides standardized indicators and reporting tools. UNICEF, as a co-sponsor of UNAIDS, engages on child and adolescent HIV outcomes. The \texttt{HIV\_AIDS} dataflows reflect alignment with GAM concepts \citep{unaidsGAM2025}.
+
+\hangpara
+	\textbf{UIS SDG 4 monitoring} — The UNESCO Institute for Statistics (UIS) is the custodian for SDG~4 indicators (education), including out-of-school rates and learning metrics. Related dataflows (for example, \texttt{EDUCATION\_UIS\_SDG}) adopt UIS definitions and code lists \citep{uisSite2025}.
+
+\hangpara
+	\textbf{UNFPA–UNICEF programmes on Child Marriage and FGM} — Joint programmes focus on ending harmful practices and complement statistical monitoring. The \texttt{PT\_CM} and \texttt{PT\_FGM} dataflows align to UNICEF Data statistics \citep{unicefChildMarriage2023,unicefFGM2026}.
+
+\hangpara
+	\textbf{Child protection domains (Child labour, Violence against children)} — UNICEF’s child protection portfolio includes indicators and evidence on child labour and violence against children, informing programme design and monitoring in related \texttt{PT} dataflows \citep{unicefChildLabour2026,unicefViolenceChildren2026}.
+
+
+\subsubsection*{Checking Indicator Disaggregations}
+
+\begin{stlog}
+\begin{verbatim}
+* Stata: Check what disaggregations are supported
+unicefdata, info(CME_MRY0T4)
+
+* Output shows:
+*  Supported Disaggregations:
+*    sex:          Yes (SEX)
+*    age:          No
+*    wealth:       Yes (WEALTH_QUINTILE)
+*    residence:    No
+*    maternal_edu: No
+\end{verbatim}
+\end{stlog}
+
+
+\section{The unicefdata command}
+
+\subsection{Syntax}
+
+\textbf{Data retrieval:}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{ind}icator(\ststring)
+    \optional{\LB options \RB}
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{data}flow(\ststring)
+    \optional{\LB options \RB}
+\end{stsyntax}
+
+\textbf{Discovery commands:}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{cat}egories
+    \optional{\dunderbar{v}erbose}
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{flow}s
+    \optional{\dunderbar{det}ail \dunderbar{v}erbose}
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{data}flow(\ststring)
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{sea}rch(\ststring)
+    \optional{\dunderbar{lim}it(\num) \dunderbar{data}flow(\ststring)}
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{ind}icators(\ststring)
+\end{stsyntax}
+
+\begin{stsyntax}
+unicefdata
+    , \dunderbar{inf}o(\ststring)
+\end{stsyntax}
+
+\subsection{Main options}
+
+\hangpara
+{\tt \dunderbar{ind}icator(\ststring)} specifies indicator code(s) to download (for example, {\tt CME\_MRY0T4} for under-5 mortality rate). Multiple indicators can be specified space-separated.
+
+\hangpara
+{\tt \dunderbar{data}flow(\ststring)} specifies the SDMX dataflow ID (for example, {\tt CME} or {\tt NUTRITION}). Required only if not using {\tt indicator()}. The package can retrieve all indicators from a dataflow.
+
+\hangpara
+{\tt \dunderbar{count}ries(\ststring)} specifies ISO3 country codes, space or comma separated (for example, {\tt BRA USA IND}). Omit to retrieve all countries and regional aggregates.
+
+\hangpara
+{\tt year(\ststring)} specifies the year range or list. Supports single year ({\tt 2020}), range ({\tt 2015:2023}), or comma-separated list ({\tt 2015,2018,2020}).
+
+\hangpara
+{\tt circa} requests the closest available year for each country when the exact year is unavailable. Useful for harmonizing panel data with missing years.
+
+\subsection{Disaggregation filters}
+
+\hangpara
+{\tt sex(\ststring)} specifies the sex dimension: {\tt \_T} (total, default), {\tt F} (female), {\tt M} (male), or {\tt ALL} (retrieve all sex disaggregations).
+
+\hangpara
+{\tt age(\ststring)} specifies the age group filter. Default is {\tt \_T} (total). Use {\tt ALL} to retrieve all age disaggregations. Age group codes vary by indicator.
+
+\hangpara
+{\tt wealth(\ststring)} specifies the wealth quintile filter. Default is {\tt \_T} (total). Use {\tt ALL} to retrieve all quintiles (Q1--Q5).
+
+\hangpara
+{\tt \dunderbar{res}idence(\ststring)} specifies the residence dimension: {\tt URBAN}, {\tt RURAL}, or {\tt \_T} (default, total).
+
+\hangpara
+{\tt \dunderbar{mat}ernal\_edu(\ststring)} specifies the maternal education level filter. Default is {\tt \_T} (total).
+
+\subsection{Output options}
+
+\hangpara
+{\tt long} requests long format (default): one row per country-year-indicator combination. This is the standard format for panel data analysis.
+
+\hangpara
+{\tt wide} requests wide format with years as columns. Variables will be named {\tt yr2020}, {\tt yr2021}, etc.
+
+\hangpara
+{\tt \dunderbar{wide\_}indicators} requests wide format with indicators as columns. Useful for multi-indicator comparative analysis.
+
+\hangpara
+{\tt latest} requests only the most recent value per country-indicator combination. Returns a cross-section.
+
+\hangpara
+{\tt \dunderbar{mr}v(\num)} requests the {\it N} most recent values per country. For example, {\tt mrv(5)} returns the five most recent observations.
+
+\hangpara
+{\tt dropna} drops observations with missing values. By default, missing values are retained.
+
+\hangpara
+{\tt \dunderbar{simp}lify} keeps only essential columns: country code, year, and value. Removes dimension columns.
+
+\hangpara
+{\tt \dunderbar{add}meta(\ststring)} adds geographic metadata columns. Options include \\
+{\tt region}, {\tt income\_group}, and {\tt continent}.
+
+\hangpara
+{\tt clear} replaces data in memory. Required unless memory is empty.
+
+\subsection{Discovery options}
+
+\begin{description}
+  \item[\texttt{categories}] List all thematic categories with indicator counts.
+  
+  \item[\texttt{flows}] List available SDMX dataflows. Use with \texttt{detail} for full descriptions.
+  
+  \item[\texttt{dataflow(name)}] Display dataflow schema (dimensions and attributes).
+  
+  \item[\texttt{search(keyword)}] Search indicators by keyword. Use \texttt{limit(\#)} to control results.
+  
+  \item[\texttt{indicators(dataflow)}] List all indicators in a specific dataflow.
+  
+  \item[\texttt{info(indicator)}] Display detailed metadata for an indicator.
+\end{description}
+
+\subsection{Stored results}
+
+\texttt{unicefdata} stores the following in \texttt{r()}:
+
+\begin{description}
+  \item[\texttt{r(N)}] Number of observations downloaded
+  \item[\texttt{r(countries)}] Number of unique countries
+  \item[\texttt{r(years)}] Number of unique years
+  \item[\texttt{r(indicators)}] Number of unique indicators
+  \item[\texttt{r(dataflow)}] Dataflow ID used for query
+\end{description}
+
+Discovery commands (\texttt{info}, \texttt{dataflow}) return additional metadata in scalars and macros.
+
+\subsection{Common errors and solutions}
+
+	extbf{Indicator not found}
+
+If you see ``indicator XXX not found'', verify the code is spelled correctly. Use
+	exttt{unicefdata, search(keyword)} to locate the indicator, then retry with the
+exact code.
+
+	extbf{Disaggregation not available}
+
+Some indicators lack certain dimensions (for example, CME has sex but not age).
+Run \texttt{unicefdata, info(INDICATOR)} to check available disaggregations and
+adjust filters accordingly. Passing \texttt{ALL} to a missing dimension returns an
+empty result set.
+
+	extbf{Network timeout or rate limit}
+
+If the SDMX API is slow or returns HTTP 429 (rate limited), increase retries with
+	exttt{max\_retries(5)} or rerun after a short pause. Large queries can be batched
+by reducing the country list or years, then concatenating results in Stata.
+
+\section{Examples}
+
+\subsection{Discovery: Finding indicators}
+
+Before downloading data, explore available indicators and metadata.
+
+	extbf{Categories (with counts)}
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, categories
+  category                 indicators
+------------------------------------
+  Child Mortality (CME)             39
+  Nutrition                         112
+  Water and Sanitation               57
+  Education                          38
+  HIV/AIDS                           38
+  ... (11 categories listed)
+\end{verbatim}
+\end{stlog}
+
+	extbf{Keyword search}
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, search(mortality) limit(5)
+indicator      name
+---------------------------------------------
+CME_MRY0T4     Under-five mortality rate
+CME_TMY0T4     Infant mortality rate
+CME_ANN_DTHS   Annual deaths (under-5)
+... (5 results displayed)
+\end{verbatim}
+\end{stlog}
+
+	extbf{List indicators in a dataflow}
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicators(CME)
+indicator      name
+---------------------------------------------
+CME_MRY0T4     Under-five mortality rate
+CME_MRY0T17    Under-17 mortality rate
+... (39 CME indicators listed)
+\end{verbatim}
+\end{stlog}
+
+	extbf{Indicator metadata}
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, info(CME_MRY0T4)
+Indicator: CME_MRY0T4 (Under-five mortality rate)
+Dataflow: CME (Child Mortality Estimates)
+Dimensions: sex (YES), age (NO), wealth (YES), residence (NO)
+Source: UNICEF/IGME modelled estimates
+\end{verbatim}
+\end{stlog}
+
+\subsection{Basic data retrieval}
+
+Download under-5 mortality for selected countries:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(CME_MRY0T4) countries(BRA IND CHN) year(2015:2023) clear
+. describe
+. summarize
+\end{verbatim}
+\end{stlog}
+
+The \texttt{clear} option replaces data in memory. Omitting \texttt{countries()} retrieves all countries. The default output is long format with variables: \texttt{countrycode}, \texttt{year}, \texttt{value}, \texttt{indicator}, \texttt{sex}, \texttt{age}, etc.
+
+\subsection{Geographic filtering}
+
+Filter by a targeted set of countries or regions:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(CME_MRY0T4) countries(NGA ETH KEN UGA TZA) year(2020) clear
+. tabulate countrycode
+\end{verbatim}
+\end{stlog}
+
+Use \texttt{countries()} to focus on priority geographies without downloading the full global dataset.
+
+\subsection{Temporal aggregation (latest / MRV)}
+
+Retrieve the most recent observation per country or a rolling window of recent years:
+
+\begin{stlog}
+\begin{verbatim}
+. * Latest value only
+. unicefdata, indicator(CME_MRY0T4) countries(IND BGD PAK) latest clear
+
+. * Three most recent values per country
+. unicefdata, indicator(CME_MRY0T4) countries(IND BGD PAK) mrv(3) clear
+\end{verbatim}
+\end{stlog}
+
+\subsection{Disaggregated analysis}
+
+Retrieve wasting prevalence by wealth quintile and sex:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(NT_ANT_WHZ_NE2) countries(IND BGD PAK) ///
+  year(2020) wealth(ALL) sex(ALL) clear wide_indicators
+\end{verbatim}
+\end{stlog}
+
+The \texttt{wealth(ALL)} option retrieves all quintiles, \texttt{sex(ALL)} gets both male and female disaggregations, and \texttt{wide\_indicators} reshapes data with one column per indicator-dimension combination.
+
+\subsection{Wide format (time series)}
+
+Create year columns for panel analysis:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(CME_MRY0T4) countries(USA GBR FRA DEU) ///
+  year(2000:2023) clear wide
+. list countrycode yr2000 yr2010 yr2020 yr2023
+\end{verbatim}
+\end{stlog}
+
+\subsection{Multiple indicators}
+
+Download several related indicators:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(CME_MRY0T4 CME_MRY0T17 CME_TMY0T4) ///
+  countries(ETH KEN UGA) year(2020) clear
+. table indicator, statistic(mean value) statistic(sd value)
+\end{verbatim}
+\end{stlog}
+
+\subsection{Data validation and quality checks}
+
+After downloading data, verify structure and missingness:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(CME_MRY0T4) countries(BRA USA) year(2015:2023) clear
+. describe
+. codebook countrycode year value
+. misstable summarize
+. duplicates report countrycode year indicator sex age wealth
+\end{verbatim}
+\end{stlog}
+
+Key checks:
+\begin{itemize}
+  \item confirm variable types and labels (ISO3 codes as strings, years numeric);
+  \item inspect missing patterns to ensure gaps align with known data coverage;
+  \item detect duplicates before reshaping or merging with other datasets;
+  \item review value ranges for plausibility given the indicator definition.
+\end{itemize}
+
+\subsection{Metadata enrichment}
+
+Add regional and income group classifications:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata, indicator(ED_CR_L2OR3_PPP) year(2020) ///
+  addmeta(region income_group) dropna clear
+. tabulate region
+. bysort income_group: summarize value
+\end{verbatim}
+\end{stlog}
+
+\section{Implementation notes}
+
+\subsection{Automatic dataflow detection}
+
+Unlike direct SDMX API usage, users need not know which dataflow contains an indicator. The package maintains a YAML index mapping 733+ indicators to their parent dataflows. When \texttt{indicator()} is specified, the package:
+
+\begin{enumerate}
+  \item Looks up the indicator in \texttt{\_unicefdata\_indicators.yaml}
+  \item Retrieves the associated dataflow ID
+  \item Constructs the appropriate SDMX query
+  \item Falls back to alternative dataflows if the primary fails (HTTP 404)
+\end{enumerate}
+
+This design mirrors \texttt{wbopendata}'s approach, prioritizing user convenience over strict SDMX protocol adherence.
+
+\subsection{Performance and API limits}
+
+The UNICEF SDMX API enforces rate limits to protect service availability. \texttt{unicefdata}
+reduces the risk of throttling by:
+
+\begin{itemize}
+  \item batching indicators into single API requests when possible;
+  \item retrying failed calls with backoff when the server returns transient errors;
+  \item caching metadata locally to avoid redundant metadata fetches.
+\end{itemize}
+
+Large queries (for example, all countries $\times$ many years $\times$ all disaggregations)
+can take several minutes and produce sizable datasets. To improve responsiveness:
+
+\begin{itemize}
+  \item start with a small country list or recent years, then expand once verified;
+  \item use \texttt{mrv()} or \texttt{latest} when only the most recent values are needed;
+  \item split very large pulls into batches (by region or indicator group) and append in Stata.
+\end{itemize}
+
+\subsection{YAML metadata architecture}
+
+The package uses five YAML files stored in \texttt{src/\_/}:
+
+\begin{itemize}
+  \item \texttt{\_unicefdata\_indicators.yaml}: Indicator-to-dataflow mapping (733+ indicators)
+  \item \texttt{\_unicefdata\_dataflows.yaml}: Dataflow definitions and schemas (11 dataflows)
+  \item \texttt{\_unicefdata\_countries.yaml}: Country codes and names (ISO 3166-1 alpha-3)
+  \item \texttt{\_unicefdata\_regions.yaml}: Regional aggregates (geographic/economic groups)
+  \item \texttt{\_unicefdata\_codelists.yaml}: Dimension value codes (sex, age, wealth, etc.)
+\end{itemize}
+
+These files are generated via \texttt{unicefdata\_sync} and can be inspected/edited manually. YAML was chosen for its human-readable format and widespread use in API documentation. The \texttt{yaml.ado} package \citep{azevedo2025yaml} provides robust parsing, handling nested structures, lists, and unicode characters. This dependency is automatically installed when \texttt{unicefdata} is installed via SSC.
+
+\subsubsection{Inspecting and editing metadata files}
+
+YAML files live in the Stata PLUS ado directory. To locate and inspect them:
+
+\begin{stlog}
+\begin{verbatim}
+. sysdir PLUS
+. ! notepad "_/_unicefdata_indicators.yaml"
+\end{verbatim}
+\end{stlog}
+
+The metadata files start with a small header documenting version and update date, followed by
+key-value pairs for indicators, dataflows, and codelists. Users may add notes or annotations,
+but should avoid changing field names or indentation. If a file becomes corrupted, rerun
+  \texttt{unicefdata\_sync} to regenerate clean copies from the API.
+
+\subsection{Geographic classification}
+
+The package automatically classifies geographic entities as:
+
+\begin{itemize}
+  \item \textbf{Country}: Sovereign states and territories (e.g., BRA, IND)
+  \item \textbf{Aggregate}: Regional/economic groupings (e.g., SSA for Sub-Saharan Africa)
+\end{itemize}
+
+This classification enables filtering (e.g., \texttt{if geo\_type == "country"}) and prevents mixing countries with aggregates in regression analysis.
+
+\subsection{Metadata synchronization}
+
+The package maintains synchronized YAML metadata files that cache information from the UNICEF SDMX API. Users can update local metadata using the \texttt{unicefdata\_sync} command:
+
+\begin{stlog}
+\begin{verbatim}
+. unicefdata_sync, dataflows
+. unicefdata_sync, indicators
+\end{verbatim}
+\end{stlog}
+
+Synchronization downloads the latest indicator and dataflow definitions from the UNICEF SDMX API and updates the local YAML cache files (located in the installed ado plus directory). This is useful when new indicators are added or metadata changes. By default, the package refreshes cached metadata every 30 days automatically; manual synchronization ensures immediate updates. The \texttt{unicefdata\_xmltoyaml} utility command converts SDMX XML schemas to YAML format for offline inspection, leveraging the same \texttt{yaml.ado} infrastructure used for metadata reading. For details on metadata structure and generation, refer to the METADATA\_GENERATION\_GUIDE.md in the package repository.
+
+\section{Conclusion}
+
+The \texttt{unicefdata} package provides Stata users with streamlined access to UNICEF's comprehensive child welfare database. By abstracting SDMX API complexity into familiar Stata syntax, the package enables researchers to focus on substantive analysis rather than data engineering. Discovery commands facilitate exploration without prior knowledge of indicator codes or dataflow structures. Automatic dataflow detection, flexible filtering, and multiple output formats accommodate diverse research workflows.
+
+The package's YAML-based metadata architecture supports offline operation and manual inspection/editing of indicator definitions. Integration with the broader trilingual ecosystem (R, Python) enables cross-platform reproducibility—analyses written in one language can be translated to others with minimal syntax changes.
+
+Future development will focus on: (1) expanded disaggregation options as UNICEF adds new dimensions; (2) improved handling of temporal misalignment across indicators; (3) integration with spatial data packages for geographic visualization; and (4) performance optimization for large multi-indicator queries.
+
+The \texttt{unicefdata} package demonstrates that API-based data access need not sacrifice ease of use. By following \texttt{wbopendata}'s design philosophy while adapting to SDMX-specific requirements, the package lowers barriers to evidence-based research on child welfare worldwide.
+
+\section*{Acknowledgments}
+The author thanks the UNICEF Data Warehouse team for maintaining the SDMX API infrastructure, and the many users who have contributed feedback and feature suggestions.
+
+\section*{About the author}
+Jo\~{a}o Pedro Azevedo is Chief Statistician at the United Nations Children's Fund (UNICEF), Division of Data, Analytics, Planning and Monitoring, New York. His research interests include poverty measurement, child welfare indicators, and open data infrastructure for development research. He is the author of \texttt{wbopendata} and principal architect of the trilingual unicefData ecosystem.
+
+\bibliographystyle{sj}
+\bibliography{references}
+
+\section*{Supplementary materials}
+The software repository (\url{https://github.com/unicef-drp/unicefData}) includes example scripts in R, Python, and Stata, test suites, and complete documentation. The library is available on CRAN (R), PyPI (Python), and SSC (Stata).
+
+\vspace{1em}
+\noindent\textbf{Suggested citation:} Azevedo, Jo\~{a}o Pedro. 2025. ``unicefData: Trilingual library for accessing UNICEF SDMX indicators.'' UNICEF Division of Data, Analytics, Planning and Monitoring.
+
+\end{document}

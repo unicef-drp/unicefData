@@ -1,4 +1,4 @@
-*! v 1.5.2   06Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.0   12Jan2026               by Joao Pedro Azevedo (UNICEF)
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
@@ -152,6 +152,25 @@ version 11
         exit
     }
 
+    * Check for CATEGORIES subcommand (list categories with indicator counts)
+    if (strpos("`0'", "categories") > 0) {
+        local has_detail = (strpos("`0'", "detail") > 0)
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+
+        local opts ""
+        if (`has_detail') local opts "detail"
+        if (`has_verbose') local opts "`opts' verbose"
+
+        if ("`opts'" == "") {
+            _unicef_list_categories
+        }
+        else {
+            _unicef_list_categories, `opts'
+        }
+
+        exit
+    }
+
     *---------------------------------------------------------------------------
     * Regular syntax for data retrieval
     *---------------------------------------------------------------------------
@@ -188,10 +207,16 @@ version 11
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
                         NOMETAdata                  /// Show brief summary instead of full metadata
+                           NOERROR                     /// Undocumented: suppress printed error messages
                         *                           /// Legacy options
                  ]
 
     quietly {
+
+                 * Allow caller to suppress printed error messages (undocumented)
+                 local noerror_flag 0
+                 if ("`noerror'" != "") local noerror_flag 1
+
 
         *-----------------------------------------------------------------------
         * Validate inputs
@@ -199,31 +224,41 @@ version 11
         * Preserve the requested indicator list for later formatting steps
         local indicator_requested `indicator'
         
-        if ("`indicator'" == "") & ("`dataflow'" == "") {
-            noi di as err "You must specify either indicator() or dataflow()."
-            noi di as text ""
-            noi di as text "{bf:Discovery commands:}"
-            noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
-            noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
-            noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
-            noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
-            noi di as text "  {stata unicefdata, indicators(CME)}           " as text "- List indicators in a dataflow"
-            noi di as text "  {stata unicefdata, info(CME_MRY0T4)}          " as text "- Get indicator details"
-            noi di as text ""
-            noi di as text "{bf:Data retrieval examples:}"
-            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
-            noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA) clear}"
-            noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
-            noi di as text ""
-            noi di as text "{bf:Help:}"
-            noi di as text "  {stata help unicefdata}                       " as text "- Full documentation"
-            exit 198
+        if ("`indicator'" == "" ) & ("`dataflow'" == "") {
+            if (`noerror_flag' == 0) {
+                noi di as err "You must specify either indicator() or dataflow()."
+                noi di as text ""
+                noi di as text "{bf:Discovery commands:}"
+                noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
+                noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
+                noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
+                noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
+                noi di as text "  {stata unicefdata, indicators(CME)}           " as text "- List indicators in a dataflow"
+                noi di as text "  {stata unicefdata, info(CME_MRY0T4)}          " as text "- Get indicator details"
+                noi di as text ""
+                noi di as text "{bf:Data retrieval examples:}"
+                noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) clear}"
+                noi di as text "  {stata unicefdata, indicator(CME_MRY0T4) countries(BRA) clear}"
+                noi di as text "  {stata unicefdata, dataflow(NUTRITION) clear}"
+                noi di as text ""
+                noi di as text "{bf:Help:}"
+                noi di as text "  {stata help unicefdata}                       " as text "- Full documentation"
+            }
+            return scalar success = 0
+            return scalar successcode = 198
+            return local fail_message "Missing indicator() or dataflow()"
+            if (`noerror_flag' == 0) exit 198
+            return
         }
         
         if ("`clear'" == "") {
             if (_N > 0) {
-                noi di as err "You must start with an empty dataset; or enable the clear option."
-                exit 4
+                if (`noerror_flag' == 0) noi di as err "You must start with an empty dataset; or enable the clear option."
+                return scalar success = 0
+                return scalar successcode = 4
+                return local fail_message "Existing dataset in memory; use clear option"
+                if (`noerror_flag' == 0) exit 4
+                return
             }
         }
         
@@ -467,12 +502,16 @@ version 11
             }
             
             * Load combined data
-            if (`first_indicator' == 0) {
+                if (`first_indicator' == 0) {
                 use "`combined_data'", clear
             }
             else {
-                noi di as err "Could not fetch data for any of the specified indicators."
-                exit 677
+                if (`noerror_flag' == 0) noi di as err "Could not fetch data for any of the specified indicators."
+                return scalar success = 0
+                return scalar successcode = 677
+                return local fail_message "Could not fetch data for any of the specified indicators"
+                if (`noerror_flag' == 0) exit 677
+                return
             }
             
             * Skip the single-indicator fetch logic below
@@ -624,6 +663,7 @@ version 11
         
         * Determine if we should use fallback
         local use_fallback = ("`fallback'" != "" | ("`nofallback'" == "" & "`indicator'" != ""))
+        local fallback_used 0  // Track if fallback successfully provided data
         
         * Show fetching message (matches R/Python behavior)
         noi di as text "Fetching page 1..."
@@ -662,6 +702,7 @@ version 11
                 local success 1
                 local dataflow "`r(dataflow)'"
                 local full_url "`r(url)'"
+                local fallback_used 1  // Mark that fallback was used (data already in memory)
                 if ("`verbose'" != "") {
                     noi di as text "Successfully used fallback dataflow: " as result "`dataflow'"
                 }
@@ -669,26 +710,41 @@ version 11
         }
         
         if (`success' == 0) {
-            noi di ""
-            noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
-            noi di as text `"{p 4 4 2}(1) Please check your internet connection by {browse "https://data.unicef.org/" :clicking here}.{p_end}"'
-            noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
-            noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
-            noi di as text `"{p 4 4 2}(4) Consider adjusting Stata timeout: {help netio}.{p_end}"'
-            if ("`indicator'" != "" & "`nofallback'" == "") {
-                noi di as text `"{p 4 4 2}(5) Try specifying a different dataflow().{p_end}"'
+            if (`noerror_flag' == 0) {
+                noi di ""
+                noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
+                noi di as text `"{p 4 4 2}(1) Please check your internet connection by {browse "https://data.unicef.org/" :clicking here}.{p_end}"'
+                noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
+                noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
+                noi di as text `"{p 4 4 2}(4) Consider adjusting Stata timeout: {help netio}.{p_end}"'
+                if ("`indicator'" != "" & "`nofallback'" == "") {
+                    noi di as text `"{p 4 4 2}(5) Try specifying a different dataflow().{p_end}"'
+                }
+                noi di as text `"{p 4 4 2}(6) {browse "https://github.com/unicef-drp/unicefData/issues/new":Report an issue on GitHub} with a detailed description and, if possible, a log with {bf:set trace on} enabled.{p_end}"'
             }
-            noi di as text `"{p 4 4 2}(6) {browse "https://github.com/unicef-drp/unicefData/issues/new":Report an issue on GitHub} with a detailed description and, if possible, a log with {bf:set trace on} enabled.{p_end}"'
-            exit 677
+            * Return structured failure info for callers that capture this program
+            return scalar success = 0
+            return scalar successcode = 677
+            return local fail_message "Could not download data from UNICEF SDMX API"
+            if (`noerror_flag' == 0) exit 677
+            return
         }
         
         *-----------------------------------------------------------------------
-        * Import the CSV data (if not already loaded by fallback)
+        * Import the CSV data
         *-----------------------------------------------------------------------
-        
-        * Check if data is already loaded (from fallback helper)
-        if (_N == 0) {
-            import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+
+        * Import the downloaded CSV into memory.
+        * Only import when there is no data currently loaded, or when the
+        * user explicitly requested `clear'. This avoids overwriting a
+        * non-empty dataset unless the user allowed it.
+        *
+        * If fallback was used, data is already in memory from the fallback helper.
+
+        if ("`fallback_used'" != "1") {
+            if (_N == 0) | ("`clear'" != "") {
+                import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
+            }
         }
         
         } // end skip_single_fetch
@@ -700,7 +756,11 @@ version 11
         
         if (`obs_count' == 0) {
             noi di as text "No data found for the specified query."
-            exit 0
+            return scalar success = 0
+            return scalar successcode = 0
+            return local fail_message "No data found for the specified query"
+            * Note: successcode=0 means no error, just empty result
+            return
         }
         
         *-----------------------------------------------------------------------
@@ -2119,6 +2179,18 @@ program define _unicef_detect_dataflow_prefix, sclass
     }
     else if ("`prefix'" == "SDG") {
         sreturn local dataflow "CHILD_RELATED_SDG"
+    }
+    else if ("`prefix'" == "COD") {
+        sreturn local dataflow "CAUSE_OF_DEATH"
+    }
+    else if ("`prefix'" == "TRGT") {
+        sreturn local dataflow "CHILD_RELATED_SDG"
+    }
+    else if ("`prefix'" == "SPP") {
+        sreturn local dataflow "SOC_PROTECTION"
+    }
+    else if ("`prefix'" == "WT") {
+        sreturn local dataflow "PT"
     }
     else {
         * Default to GLOBAL_DATAFLOW if unknown

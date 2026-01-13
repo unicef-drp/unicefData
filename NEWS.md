@@ -1,5 +1,36 @@
 # unicefData Changelog
 
+## 1.6.0 (2026-01-12)
+
+### Stata Dataflow Enhancements
+* **PT subdataflows**: Extended PT fallback to include PT_CM (child marriage) and PT_FGM (female genital mutilation)
+  - Enables indicators like PT_CM_EMPLOY_12M (168 rows)
+  - Fallback sequence: PT → PT_CM → PT_FGM → CHILD_PROTECTION → GLOBAL_DATAFLOW
+
+* **New prefix-to-dataflow mappings**: Added automatic detection for 4 new indicator prefixes:
+  - `COD` → `CAUSE_OF_DEATH` dataflow (18 indicators with data)
+  - `TRGT` → `CHILD_RELATED_SDG` dataflow
+  - `SPP` → `SOC_PROTECTION` dataflow (236 rows for SPP_GDPPC)
+  - `WT` → `PT` dataflow (92 rows for WT_ADLS_10-17_LBR_ECON)
+
+### Bug Fixes
+* **Fallback import bug**: Fixed duplicate import skip logic when fallback mechanism provides data
+  - Prevents r(601) "file not found" errors on re-import attempts
+  - Properly initializes `fallback_used` flag throughout indicator fetch
+
+### Testing & Validation
+* **Cross-platform parity**: Stata now matches Python performance on all tested indicators
+  - COD indicators: 18 rows ✅ (Python: 18, R: fail)
+  - PT_CM_EMPLOY_12M: 168 rows ✅ (Python: 168, R: fail)
+  - SPP_GDPPC: 236 rows ✅ (Python: 236, R: 236)
+  - WT_ADLS_10-17_LBR_ECON: 92 rows ✅ (Python: 92, R: 92)
+* Seed-42 validation: 19 new Stata successes (0→19, no regressions)
+
+### Breaking Changes
+None — all changes backward-compatible with existing code
+
+---
+
 ## 1.5.2 (2026-01-07)
 
 ### Fixed

@@ -1,0 +1,372 @@
+{
+  "CME_ARR_10T19": {
+    "cached_at": "2026-01-12T13:14:43.736443",
+    "rows": 252,
+    "size_bytes": 43154
+  },
+  "CME_ARR_SBR": {
+    "cached_at": "2026-01-12T13:43:09.789728",
+    "rows": 213,
+    "size_bytes": 32885
+  },
+  "CME_ARR_U5MR": {
+    "cached_at": "2026-01-12T13:43:15.404963",
+    "rows": 245,
+    "size_bytes": 44867
+  },
+  "CME_MRM0": {
+    "cached_at": "2026-01-12T13:44:49.775292",
+    "rows": 11875,
+    "size_bytes": 2284144
+  },
+  "CME_MRM1T11": {
+    "cached_at": "2026-01-12T13:44:58.190520",
+    "rows": 11862,
+    "size_bytes": 2529713
+  },
+  "CME_MRM1T59": {
+    "cached_at": "2026-01-12T13:45:07.044171",
+    "rows": 11862,
+    "size_bytes": 2481338
+  },
+  "CME_MRY0": {
+    "cached_at": "2026-01-12T13:45:25.621626",
+    "rows": 14633,
+    "size_bytes": 2793494
+  },
+  "CME_MRY0T4": {
+    "cached_at": "2026-01-12T13:45:53.250008",
+    "rows": 15194,
+    "size_bytes": 3000578
+  },
+  "CME_MRY10T14": {
+    "cached_at": "2026-01-12T13:46:08.390208",
+    "rows": 8466,
+    "size_bytes": 1720263
+  },
+  "CME_MRY10T19": {
+    "cached_at": "2026-01-12T13:46:27.869927",
+    "rows": 8466,
+    "size_bytes": 1715899
+  },
+  "CME_MRY15T19": {
+    "cached_at": "2026-01-12T13:46:41.577509",
+    "rows": 8466,
+    "size_bytes": 1699111
+  },
+  "CME_MRY15T24": {
+    "cached_at": "2026-01-12T13:46:54.212913",
+    "rows": 8466,
+    "size_bytes": 1698927
+  },
+  "CME_MRY1T4": {
+    "cached_at": "2026-01-12T13:47:15.855148",
+    "rows": 14633,
+    "size_bytes": 3118176
+  },
+  "CME_MRY20T24": {
+    "cached_at": "2026-01-12T13:47:29.354557",
+    "rows": 8466,
+    "size_bytes": 1698786
+  },
+  "CME_MRY5T14": {
+    "cached_at": "2026-01-12T13:47:42.611229",
+    "rows": 8466,
+    "size_bytes": 1861199
+  },
+  "CME_MRY5T24": {
+    "cached_at": "2026-01-12T13:47:57.288582",
+    "rows": 8466,
+    "size_bytes": 1681931
+  },
+  "CME_MRY5T9": {
+    "cached_at": "2026-01-12T13:48:08.677425",
+    "rows": 8466,
+    "size_bytes": 1670856
+  },
+  "CME_PND": {
+    "cached_at": "2026-01-12T13:48:17.696103",
+    "rows": 8102,
+    "size_bytes": 1444728
+  },
+  "CME_SB": {
+    "cached_at": "2026-01-12T13:48:25.700939",
+    "rows": 5976,
+    "size_bytes": 874660
+  },
+  "CME_SBR": {
+    "cached_at": "2026-01-12T13:48:34.204894",
+    "rows": 5976,
+    "size_bytes": 1135169
+  },
+  "CME_TMM0": {
+    "cached_at": "2026-01-12T13:48:47.335228",
+    "rows": 11662,
+    "size_bytes": 1582461
+  },
+  "CME_TMY10T19": {
+    "cached_at": "2026-01-12T14:07:17.826041",
+    "rows": 8466,
+    "size_bytes": 1233670
+  },
+  "CME_TMY15T19": {
+    "cached_at": "2026-01-12T14:07:26.585355",
+    "rows": 8466,
+    "size_bytes": 1229418
+  },
+  "CME_TMY15T24": {
+    "cached_at": "2026-01-12T14:07:33.856420",
+    "rows": 8466,
+    "size_bytes": 1238035
+  },
+  "CME_TMY1T4": {
+    "cached_at": "2026-01-12T14:07:45.252691",
+    "rows": 13440,
+    "size_bytes": 2016270
+  },
+  "CME_TMY20T24": {
+    "cached_at": "2026-01-12T14:07:55.718198",
+    "rows": 8466,
+    "size_bytes": 1232161
+  },
+  "CME_TMY5T14": {
+    "cached_at": "2026-01-12T14:08:03.836294",
+    "rows": 8466,
+    "size_bytes": 1281177
+  },
+  "CME_TMY5T24": {
+    "cached_at": "2026-01-12T14:08:11.519356",
+    "rows": 8466,
+    "size_bytes": 1226011
+  },
+  "CME_TMY5T9": {
+    "cached_at": "2026-01-12T14:08:20.150501",
+    "rows": 8466,
+    "size_bytes": 1190379
+  },
+  "DM_BRTS": {
+    "cached_at": "2026-01-12T14:32:02.599304",
+    "rows": 20424,
+    "size_bytes": 5937138
+  },
+  "DM_BRTS_SURVIVING_1": {
+    "cached_at": "2026-01-12T14:32:19.819668",
+    "rows": 41676,
+    "size_bytes": 12656756
+  },
+  "DM_DPR_CHD": {
+    "cached_at": "2026-01-12T14:32:42.565054",
+    "rows": 17316,
+    "size_bytes": 4955414
+  },
+  "DM_DPR_OLD": {
+    "cached_at": "2026-01-12T14:32:58.778610",
+    "rows": 17316,
+    "size_bytes": 4979001
+  },
+  "DM_DPR_TOT": {
+    "cached_at": "2026-01-12T14:33:18.630013",
+    "rows": 17316,
+    "size_bytes": 4956488
+  },
+  "DM_FRATE_TOT": {
+    "cached_at": "2026-01-12T14:33:27.840313",
+    "rows": 20424,
+    "size_bytes": 5704144
+  },
+  "DM_LIFE_EXP": {
+    "cached_at": "2026-01-12T14:34:54.610910",
+    "rows": 20424,
+    "size_bytes": 5886143
+  },
+  "DM_NET_MG_RATE": {
+    "cached_at": "2026-01-12T14:35:05.731946",
+    "rows": 20424,
+    "size_bytes": 6484442
+  },
+  "DM_POP_TOT": {
+    "cached_at": "2026-01-12T15:02:47.235364",
+    "rows": 23606,
+    "size_bytes": 7019880
+  },
+  "ECD_CHLD_U5_PLYTH-HM": {
+    "cached_at": "2026-01-12T15:02:53.018449",
+    "rows": 680,
+    "size_bytes": 368470
+  },
+  "ECON_ODA_INFLOW_USD": {
+    "cached_at": "2026-01-12T15:02:59.402063",
+    "rows": 201,
+    "size_bytes": 34504
+  },
+  "ED_ROFST_L3": {
+    "cached_at": "2026-01-12T15:03:42.687252",
+    "rows": 123,
+    "size_bytes": 27095
+  },
+  "FD_NEVER_ATTENDED": {
+    "cached_at": "2026-01-12T15:03:47.418086",
+    "rows": 54,
+    "size_bytes": 11824
+  },
+  "GN_ED_ATTN": {
+    "cached_at": "2026-01-12T15:04:23.912172",
+    "rows": 2734,
+    "size_bytes": 452362
+  },
+  "IM_BCG": {
+    "cached_at": "2026-01-12T15:05:22.512765",
+    "rows": 8228,
+    "size_bytes": 2634560
+  },
+  "MG_RFGS_CNTRY_ASYLM_PER_USD_GNI": {
+    "cached_at": "2026-01-12T15:05:32.729846",
+    "rows": 3851,
+    "size_bytes": 1518914
+  },
+  "MNCH_MLRCARE": {
+    "cached_at": "2026-01-12T15:05:38.640317",
+    "rows": 621,
+    "size_bytes": 275005
+  },
+  "NT_CF_MMF": {
+    "cached_at": "2026-01-12T15:06:36.534016",
+    "rows": 4433,
+    "size_bytes": 3030207
+  },
+  "ECON_GVT_EDU_EXP_PTEXP": {
+    "cached_at": "2026-01-12T16:11:30.674395",
+    "rows": 235,
+    "size_bytes": 48221
+  },
+  "ED_READ_L1": {
+    "cached_at": "2026-01-12T16:12:25.888990",
+    "rows": 63,
+    "size_bytes": 15024
+  },
+  "FD_SOCIAL_TRANSFERS": {
+    "cached_at": "2026-01-12T16:12:34.015252",
+    "rows": 41,
+    "size_bytes": 9697
+  },
+  "GN_UNMPLY": {
+    "cached_at": "2026-01-12T16:13:25.393216",
+    "rows": 345,
+    "size_bytes": 61809
+  },
+  "HVA_PMTCT_ART_CVG": {
+    "cached_at": "2026-01-12T16:13:49.636578",
+    "rows": 18,
+    "size_bytes": 9397
+  },
+  "IM_HEPB3": {
+    "cached_at": "2026-01-12T16:14:15.486090",
+    "rows": 6213,
+    "size_bytes": 1929705
+  },
+  "MNCH_ITNOWN": {
+    "cached_at": "2026-01-12T16:14:40.585909",
+    "rows": 283,
+    "size_bytes": 91222
+  },
+  "SPP_MOTHERS_CASH_BNF": {
+    "cached_at": "2026-01-12T16:18:10.699795",
+    "rows": 332,
+    "size_bytes": 66738
+  },
+  "WT_ADLS_15-19_ED_NEET": {
+    "cached_at": "2026-01-12T16:19:51.854417",
+    "rows": 267,
+    "size_bytes": 95749
+  },
+  "ECD_CHLD_36-59M_EDU-PGM": {
+    "cached_at": "2026-01-12T20:39:50.733808",
+    "rows": 432,
+    "size_bytes": 254223
+  },
+  "ECON_SOC_PRO_EXP_PTEXP": {
+    "cached_at": "2026-01-12T16:46:33.385846",
+    "rows": 235,
+    "size_bytes": 45818
+  },
+  "ED_CR_L1": {
+    "cached_at": "2026-01-12T16:46:57.883659",
+    "rows": 122,
+    "size_bytes": 24678
+  },
+  "HVA_PED_ART_NUM": {
+    "cached_at": "2026-01-12T16:48:30.931467",
+    "rows": 1955,
+    "size_bytes": 927426
+  },
+  "IM_IPV1": {
+    "cached_at": "2026-01-12T16:48:52.641522",
+    "rows": 2236,
+    "size_bytes": 743934
+  },
+  "MG_RFGS_CNTRY_ASYLM_PER1000": {
+    "cached_at": "2026-01-12T16:49:01.468358",
+    "rows": 256,
+    "size_bytes": 135070
+  },
+  "MNCH_INSTDEL": {
+    "cached_at": "2026-01-12T16:49:08.994761",
+    "rows": 1179,
+    "size_bytes": 386993
+  },
+  "NT_CF_ZEROFV": {
+    "cached_at": "2026-01-12T16:50:23.333910",
+    "rows": 5008,
+    "size_bytes": 3325543
+  },
+  "SPP_GDPPC": {
+    "cached_at": "2026-01-12T16:51:52.923702",
+    "rows": 236,
+    "size_bytes": 38719
+  },
+  "WS_PPL_H-L": {
+    "cached_at": "2026-01-12T16:52:50.878101",
+    "rows": 2360,
+    "size_bytes": 502581
+  },
+  "WS_PPL_S-B": {
+    "cached_at": "2026-01-12T16:52:58.229243",
+    "rows": 5159,
+    "size_bytes": 1097799
+  },
+  "WT_ADLS_10-17_LBR_ECON": {
+    "cached_at": "2026-01-12T16:53:03.120349",
+    "rows": 92,
+    "size_bytes": 21061
+  },
+  "COD_ALCOHOL_USE_DISORDERS": {
+    "cached_at": "2026-01-12T21:13:54.615903",
+    "rows": 18,
+    "size_bytes": 7256
+  },
+  "PT_CM_EMPLOY_12M": {
+    "cached_at": "2026-01-12T21:14:27.443693",
+    "rows": 168,
+    "size_bytes": 75314
+  },
+  "COD_GALLBLADDER_AND_BILIARY_DISEASES": {
+    "cached_at": "2026-01-12T21:15:18.000952",
+    "rows": 4,
+    "size_bytes": 1957
+  },
+  "COD_HYPERTENSIVE_HEART_DISEASE": {
+    "cached_at": "2026-01-12T21:15:25.013262",
+    "rows": 18,
+    "size_bytes": 7624
+  },
+  "NT_BF_EIBF": {
+    "cached_at": "2026-01-12T21:17:25.881352",
+    "rows": 757,
+    "size_bytes": 439976
+  },
+  "PT_F_20-24_MRD_U15": {
+    "cached_at": "2026-01-12T21:18:41.866622",
+    "rows": 636,
+    "size_bytes": 306748
+  }
+}

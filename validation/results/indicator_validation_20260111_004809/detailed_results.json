@@ -1,0 +1,36 @@
+{
+  "generated": "2026-01-11T00:48:20.244368",
+  "total_tests": 3,
+  "results": [
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 4.065163850784302,
+      "timestamp": "2026-01-11T00:48:13.746305",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_004809\\python\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 6.474102735519409,
+      "timestamp": "2026-01-11T00:48:20.220408",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_004809\\r\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "[WinError 2] The system cannot find the file specified",
+      "rows_returned": 0,
+      "execution_time_sec": 0.007997274398803711,
+      "timestamp": "2026-01-11T00:48:20.236361",
+      "output_file": null
+    }
+  ]
+}
