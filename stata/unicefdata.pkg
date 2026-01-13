@@ -1,4 +1,4 @@
-v 1.5.2
+v 1.6.0
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -13,14 +13,15 @@ d Features:
 d   - Download data by indicator, geography, and time period
 d   - Discovery: categories, flows, search, indicators, info
 d   - Multiple output formats: long, wide, wide_indicators
-d   - Automatic dataflow detection from indicator codes
+d   - Automatic dataflow detection from indicator codes (NEW: COD, TRGT, SPP, WT)
+d   - PT subdataflow support (NEW: PT_CM, PT_FGM)
 d   - Geographic type classification (country vs aggregate)
 d   - YAML-based metadata with sync capabilities
 d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260107
+d Distribution-Date: 20260112
 d
 
 * Main command and help

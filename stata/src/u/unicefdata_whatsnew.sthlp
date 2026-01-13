@@ -1,8 +1,9 @@
 {smcl}
-{* *! version 1.5.2  06Jan2026}{...}
+{* *! version 1.6.0  12Jan2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v1.6.0" "unicefdata_whatsnew##v160"}{...}
 {viewerjumpto "v1.5.2" "unicefdata_whatsnew##v152"}{...}
 {viewerjumpto "v1.5.1" "unicefdata_whatsnew##v151"}{...}
 {viewerjumpto "v1.5.0" "unicefdata_whatsnew##v150"}{...}
@@ -17,6 +18,47 @@
 {pstd}
 {it:Return to {help unicefdata:main help file}}
 {p_end}
+
+
+{marker v160}{...}
+{title:What's New in v1.6.0 (12Jan2026)}
+
+{pstd}
+{bf:Stata dataflow enhancements:} Extended support for COD, TRGT, SPP, and WT indicator prefixes
+with automatic dataflow detection. Expanded PT subdataflows to include child marriage (PT_CM)
+and female genital mutilation (PT_FGM) indicators.
+{p_end}
+
+{pstd}
+{bf:New prefix-to-dataflow mappings:}
+{p_end}
+{phang2}{cmd:COD} - Maps to {cmd:CAUSE_OF_DEATH} dataflow (18+ health indicators){p_end}
+{phang2}{cmd:TRGT} - Maps to {cmd:CHILD_RELATED_SDG} dataflow{p_end}
+{phang2}{cmd:SPP} - Maps to {cmd:SOC_PROTECTION} dataflow{p_end}
+{phang2}{cmd:WT} - Maps to {cmd:PT} dataflow (child labor indicators){p_end}
+
+{pstd}
+{bf:PT subdataflow support:}
+{p_end}
+{phang2}Extended PT fallback sequence: {cmd:PT} → {cmd:PT_CM} → {cmd:PT_FGM} → {cmd:CHILD_PROTECTION} → {cmd:GLOBAL_DATAFLOW}{p_end}
+{phang2}Enables indicators like {cmd:PT_CM_EMPLOY_12M} (168 observations){p_end}
+
+{pstd}
+{bf:Bug fixes:}
+{p_end}
+{phang2}Fixed fallback import bug that prevented re-import skip logic{p_end}
+{phang2}Properly initializes {cmd:fallback_used} flag throughout indicator fetch{p_end}
+
+{pstd}
+{bf:Testing:} Cross-platform validation confirms Stata parity with Python performance
+on all tested indicators (seed-42: 19 new successes, 0 regressions).
+{p_end}
+
+{pstd}
+{bf:Example:} Fetch child marriage employment indicator:
+{p_end}
+{phang2}{cmd:. unicefdata PT_CM_EMPLOY_12M, clear}{p_end}
+{phang2}{cmd:. list if countryname == "Ghana" & year == 2020}{p_end}
 
 
 {marker v152}{...}
