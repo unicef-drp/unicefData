@@ -1,6 +1,7 @@
 # UNICEF API - R Library
 
 [![R 4.0+](https://img.shields.io/badge/R-4.0+-blue.svg)](https://www.r-project.org/)
+[![Version](https://img.shields.io/badge/version-1.6.0-green.svg)](https://github.com/unicef-drp/unicefData)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **R component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
@@ -27,9 +28,18 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 
 ## 🚀 Features
 
+### v1.6.0 (2026-01-12) - Dataflow Enhancements
+
+- **Intelligent fallback sequences**: Prefix-specific fallback chains for PT, COD, TRGT, SPP, WT indicators
+- **PT subdataflow support**: Automatic fallback through PT → PT_CM → PT_FGM → CHILD_PROTECTION → GLOBAL_DATAFLOW
+- **New prefix mappings**: COD (CAUSE_OF_DEATH), TRGT (CHILD_RELATED_SDG), SPP (SOC_PROTECTION), WT (child labor)
+- **Cross-language parity**: Feature alignment with Python and Stata implementations
+
+### Core Features
+
 - **Easy-to-use API**: Simple R interface for UNICEF SDMX data
 - **Auto dataflow detection**: No need to know which dataflow an indicator is in
-- **404-aware fallback**: Invalid indicators return empty data frame (not error) with automatic fallback to GLOBAL_DATAFLOW
+- **404-aware fallback**: Invalid indicators return empty data frame (not error) with automatic fallback sequences
 - **Search capability**: Find indicators using `search_indicators()` and `list_categories()`
 - **Comprehensive coverage**: Access 733 indicators across 15 categories
 - **Automatic data cleaning**: Standardized Tibbles ready for analysis

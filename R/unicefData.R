@@ -1,3 +1,11 @@
+# =============================================================================
+# unicefData.R - R interface to UNICEF SDMX Data API
+# =============================================================================
+# Version: 1.6.0 (2026-01-12)
+# Author: João Pedro Azevedo (UNICEF)
+# License: MIT
+# =============================================================================
+
 # Load required packages for pipe operator
 #' @import dplyr
 #' @importFrom magrittr %>%

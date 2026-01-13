@@ -1,5 +1,9 @@
 # =============================================================================
-# unicef_core.R - Core composable functions for UNICEF API
+# unicef_core.R - Core data fetching with intelligent fallback logic
+# =============================================================================
+# Version: 1.6.0 (2026-01-12)
+# Author: João Pedro Azevedo (UNICEF)
+# License: MIT
 # =============================================================================
 
 #' @import dplyr
