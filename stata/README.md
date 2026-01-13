@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14+-1a5276.svg)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.5.3-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)]()
 
 **Stata package for downloading UNICEF child welfare indicators via SDMX API**
 
@@ -30,11 +30,43 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 
 ---
 
-## 🆕 What's New in v1.5.2
+## 🆕 What's New in v1.6.0
 
-**Released**: January 6, 2026
+**Released**: January 12, 2026
 
-### Patch v1.5.3
+### Added
+- **PT_CM and PT_FGM subdataflow support**: Expanded PT dataflow fallback to include PT_CM (child marriage) and PT_FGM (female genital mutilation) subdataflows. Enables fetching indicators like PT_CM_EMPLOY_12M (168 rows).
+- **New prefix-to-dataflow mappings**: Added auto-detection for 4 new prefixes:
+  - `COD` → `CAUSE_OF_DEATH` (18 indicators with rows)
+  - `TRGT` → `CHILD_RELATED_SDG` 
+  - `SPP` → `SOC_PROTECTION` (236+ rows for SPP_GDPPC)
+  - `WT` → `PT` (92 rows for WT_ADLS_10-17_LBR_ECON)
+
+### Fixed
+- **Fallback import bug**: Skip re-import when fallback mechanism provides data, preventing r(601) "file not found" errors
+- **Dataflow detection**: Automatic prefix-to-dataflow mapping now catches all COD, TRGT, SPP, WT indicators without manual override
+
+### Testing
+- Full seed-42 validation: 19 new Stata successes (up from 0)
+- All fixes backward-compatible with existing code
+- Cross-platform parity with Python performance
+
+### Example
+
+```stata
+* Fetch child marriage employment indicator (now works with v1.6.0)
+unicefdata PT_CM_EMPLOY_12M, clear
+list if countryname == "Ghana"
+
+* Or search for any COD indicator
+unicefdata, search(alcohol) 
+unicefdata COD_ALCOHOL_USE_DISORDERS, clear
+```
+
+---
+
+## Previous: v1.5.3
+
 **Released**: January 7, 2026
 
 ### Fixed
