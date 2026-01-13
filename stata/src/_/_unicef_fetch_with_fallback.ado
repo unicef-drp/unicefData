@@ -69,7 +69,7 @@ program define _unicef_fetch_with_fallback, rclass
             local fallbacks "MNCH GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "PT") {
-            local fallbacks "PT CHILD_PROTECTION GLOBAL_DATAFLOW"
+            local fallbacks "PT PT_CM PT_FGM CHILD_PROTECTION GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "ECD") {
             local fallbacks "ECD GLOBAL_DATAFLOW"
@@ -79,6 +79,18 @@ program define _unicef_fetch_with_fallback, rclass
         }
         else if ("`prefix'" == "SDG") {
             local fallbacks "CHILD_RELATED_SDG SDG GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "COD") {
+            local fallbacks "CAUSE_OF_DEATH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "TRGT") {
+            local fallbacks "CHILD_RELATED_SDG GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "SPP") {
+            local fallbacks "SOC_PROTECTION GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "WT") {
+            local fallbacks "PT PT_CM PT_FGM CHILD_PROTECTION GLOBAL_DATAFLOW"
         }
         else {
             * Unknown prefix - try GLOBAL_DATAFLOW directly
