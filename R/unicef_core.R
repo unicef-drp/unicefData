@@ -108,11 +108,49 @@ detect_dataflow <- function(indicator) {
 # in Python the failing indicator is succeeded by GLOBAL_DATAFLOW, we need the
 # same in R. Let's try detected flow first and if 404, GLOBAL_DATAFLOW. We need
 # a helper function for that:
-get_fallback_dataflows <- function(original_flow) {
-  if (!is.null(original_flow) && !identical(original_flow, "GLOBAL_DATAFLOW")) {
-    return("GLOBAL_DATAFLOW")
+get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
+  # Build prefix-specific fallback chains aligned with Stata/Python
+  fallbacks <- c()
+  
+  # If we have an indicator code, extract prefix for intelligent fallbacks
+  if (!is.null(indicator_code)) {
+    prefix <- strsplit(indicator_code, "_")[[1]][1]
+    
+    # PT prefix: try PT → PT_CM → PT_FGM → CHILD_PROTECTION → GLOBAL_DATAFLOW
+    if (prefix == "PT") {
+      fallbacks <- c("PT", "PT_CM", "PT_FGM", "CHILD_PROTECTION", "GLOBAL_DATAFLOW")
+    }
+    # COD prefix: try CAUSE_OF_DEATH → GLOBAL_DATAFLOW
+    else if (prefix == "COD") {
+      fallbacks <- c("CAUSE_OF_DEATH", "GLOBAL_DATAFLOW")
+    }
+    # TRGT prefix: try CHILD_RELATED_SDG → GLOBAL_DATAFLOW
+    else if (prefix == "TRGT") {
+      fallbacks <- c("CHILD_RELATED_SDG", "GLOBAL_DATAFLOW")
+    }
+    # SPP prefix: try SOC_PROTECTION → GLOBAL_DATAFLOW
+    else if (prefix == "SPP") {
+      fallbacks <- c("SOC_PROTECTION", "GLOBAL_DATAFLOW")
+    }
+    # WT prefix: try PT → CHILD_PROTECTION → GLOBAL_DATAFLOW
+    else if (prefix == "WT") {
+      fallbacks <- c("PT", "CHILD_PROTECTION", "GLOBAL_DATAFLOW")
+    }
+    # Default: just GLOBAL_DATAFLOW
+    else {
+      fallbacks <- c("GLOBAL_DATAFLOW")
+    }
+    
+    # Remove the original_flow from fallbacks to avoid duplicate attempts
+    fallbacks <- setdiff(fallbacks, original_flow)
+  } else {
+    # No indicator code provided, use generic fallback
+    if (!is.null(original_flow) && !identical(original_flow, "GLOBAL_DATAFLOW")) {
+      fallbacks <- c("GLOBAL_DATAFLOW")
+    }
   }
-  character(0)
+  
+  return(fallbacks)
 }
 
 # helper function to fetch and signals 404
@@ -239,7 +277,7 @@ unicefData_raw <- function(
   # Candidate flows: primary + fallbacks
   flows <- dataflow
   if (!is.null(indicator)) {
-    fb <- get_fallback_dataflows(original_flow = dataflow)
+    fb <- get_fallback_dataflows(original_flow = dataflow, indicator_code = indicator[1])
     if (length(fb) > 0) flows <- unique(c(dataflow, fb))
   }
 
