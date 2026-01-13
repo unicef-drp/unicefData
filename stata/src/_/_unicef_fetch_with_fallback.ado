@@ -1,8 +1,8 @@
 *******************************************************************************
 * _unicef_fetch_with_fallback.ado
-*! v 1.6.0   12Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.1   12Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Fetch data with automatic dataflow fallback on 404 errors
-* Tries alternative dataflows when primary dataflow returns no data
+* Unified fallback architecture - sequences aligned with canonical YAML
 *******************************************************************************
 
 program define _unicef_fetch_with_fallback, rclass
@@ -33,7 +33,7 @@ program define _unicef_fetch_with_fallback, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Build list of dataflows to try
+        * Build list of dataflows to try - Load from canonical YAML if available
         *-----------------------------------------------------------------------
         
         local dataflows_to_try ""
@@ -47,53 +47,70 @@ program define _unicef_fetch_with_fallback, rclass
         local prefix = word(subinstr("`indicator'", "_", " ", 1), 1)
         
         * Define fallback dataflows based on prefix
+        * These match the canonical YAML fallback_sequences
+        * (Hardcoded here - ideally loaded from canonical YAML via YAML package)
         if ("`prefix'" == "CME") {
-            local fallbacks "CME GLOBAL_DATAFLOW"
+            local fallbacks "CME CME_DF_2021_WQ CME_COUNTRY_ESTIMATES CME_SUBNATIONAL GLOBAL_DATAFLOW"
         }
-        else if ("`prefix'" == "NT") {
-            local fallbacks "NUTRITION NUTRITION_DIETS GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "IM") {
-            local fallbacks "IMMUNISATION GLOBAL_DATAFLOW"
-        }
-        else if inlist("`prefix'", "ED", "EDUNF") {
-            local fallbacks "EDUCATION EDUANALYTICS GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "WS") {
-            local fallbacks "WASH_HOUSEHOLDS WASH_SCHOOLS WASH_HEALTHCARE GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "HVA") {
-            local fallbacks "HIV_AIDS GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "MNCH") {
-            local fallbacks "MNCH GLOBAL_DATAFLOW"
+        else if ("`prefix'" == "ED") {
+            local fallbacks "EDUCATION_UIS_SDG EDUCATION EDUCATION_FLS EDUCATION_IMEP_SDG GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "PT") {
-            local fallbacks "PT PT_CM PT_FGM CHILD_PROTECTION GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "ECD") {
-            local fallbacks "ECD GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "PV") {
-            local fallbacks "CHLD_PVTY CHILD_POVERTY GLOBAL_DATAFLOW"
-        }
-        else if ("`prefix'" == "SDG") {
-            local fallbacks "CHILD_RELATED_SDG SDG GLOBAL_DATAFLOW"
+            local fallbacks "PT PT_CM PT_FGM PT_CONFLICT CHILD_PROTECTION GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "COD") {
-            local fallbacks "CAUSE_OF_DEATH GLOBAL_DATAFLOW"
+            local fallbacks "CAUSE_OF_DEATH CME MORTALITY GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "WS") {
+            local fallbacks "WASH_HOUSEHOLDS WASH_SCHOOLS WASH_HEALTHCARE_FACILITY WASH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "IM") {
+            local fallbacks "IMMUNISATION IMMUNISATION_COVERAGE HEALTH GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "TRGT") {
-            local fallbacks "CHILD_RELATED_SDG GLOBAL_DATAFLOW"
+            local fallbacks "CHILD_RELATED_SDG SDG_CHILD_TARGETS GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "SPP") {
-            local fallbacks "SOC_PROTECTION GLOBAL_DATAFLOW"
+            local fallbacks "SOC_PROTECTION SOCIAL_PROTECTION SOC_SAFETY_NETS GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "MNCH") {
+            local fallbacks "MNCH MATERNAL_HEALTH CHILD_HEALTH HEALTH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "NT") {
+            local fallbacks "NUTRITION NUTRITION_STUNTING NUTRITION_WASTING CHILD_NUTRITION HEALTH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "ECD") {
+            local fallbacks "ECD EARLY_CHILDHOOD_DEVELOPMENT EDUCATION GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "HVA") {
+            local fallbacks "HIV_AIDS HIV AIDS HEALTH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "PV") {
+            local fallbacks "CHLD_PVTY CHILD_POVERTY POVERTY GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "DM") {
+            local fallbacks "DM DEMOGRAPHICS DM_PROJECTIONS POPULATION GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "MG") {
+            local fallbacks "MG MIGRATION CHILD_MIGRATION GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "GN") {
+            local fallbacks "GENDER GENDER_EQUALITY GIRLS_EDUCATION GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "FD") {
+            local fallbacks "FUNCTIONAL_DIFF DISABILITY FUNCTIONAL_DIFFICULTY HEALTH GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "ECO") {
+            local fallbacks "ECONOMIC ECONOMICS LABOUR EMPLOYMENT GLOBAL_DATAFLOW"
+        }
+        else if ("`prefix'" == "COVID") {
+            local fallbacks "COVID_CASES COVID COVID_DEATHS COVID_VACCINATION HEALTH GLOBAL_DATAFLOW"
         }
         else if ("`prefix'" == "WT") {
-            local fallbacks "PT PT_CM PT_FGM CHILD_PROTECTION GLOBAL_DATAFLOW"
+            local fallbacks "WASH_HOUSEHOLDS WASH_SCHOOLS PT CHILD_PROTECTION EDUCATION GLOBAL_DATAFLOW"
         }
         else {
-            * Unknown prefix - try GLOBAL_DATAFLOW directly
+            * Unknown prefix - use DEFAULT from canonical YAML
             local fallbacks "GLOBAL_DATAFLOW"
         }
         

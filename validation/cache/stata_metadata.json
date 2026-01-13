@@ -368,5 +368,275 @@
     "cached_at": "2026-01-12T21:18:41.866622",
     "rows": 636,
     "size_bytes": 306748
+  },
+  "COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS": {
+    "cached_at": "2026-01-12T23:52:44.302969",
+    "rows": 510,
+    "size_bytes": 218040
+  },
+  "COD_KIDNEY_DISEASES": {
+    "cached_at": "2026-01-12T23:53:01.529689",
+    "rows": 716,
+    "size_bytes": 269948
+  },
+  "COD_HIV_AIDS": {
+    "cached_at": "2026-01-12T23:58:55.654862",
+    "rows": 950,
+    "size_bytes": 340473
+  },
+  "COD_LOWER_RESPIRATORY_INFECTIONS": {
+    "cached_at": "2026-01-12T23:59:06.926566",
+    "rows": 2792,
+    "size_bytes": 1110229
+  },
+  "COD_WHOOPING_COUGH": {
+    "cached_at": "2026-01-12T23:59:16.994619",
+    "rows": 4,
+    "size_bytes": 1767
+  },
+  "ECON_SOC_PRO_EXP_PTGDP": {
+    "cached_at": "2026-01-13T00:00:28.715365",
+    "rows": 159,
+    "size_bytes": 29572
+  },
+  "ED_READ_G23": {
+    "cached_at": "2026-01-13T00:01:13.143516",
+    "rows": 41,
+    "size_bytes": 10141
+  },
+  "FD_FOUNDATIONAL_LEARNING": {
+    "cached_at": "2026-01-13T00:01:18.994157",
+    "rows": 40,
+    "size_bytes": 9407
+  },
+  "HVA_PMTCT_MTCT": {
+    "cached_at": "2026-01-13T00:02:10.590295",
+    "rows": 1461,
+    "size_bytes": 671847
+  },
+  "IM_PAB": {
+    "cached_at": "2026-01-13T00:02:25.377348",
+    "rows": 5282,
+    "size_bytes": 1553213
+  },
+  "MNCH_ADO_TOBACCO": {
+    "cached_at": "2026-01-13T00:03:02.691526",
+    "rows": 146,
+    "size_bytes": 65657
+  },
+  "NT_BW_UNW": {
+    "cached_at": "2026-01-13T00:04:32.403425",
+    "rows": 1316,
+    "size_bytes": 726401
+  },
+  "NT_DANT_BMI_G30_MOD_ADJ": {
+    "cached_at": "2026-01-13T00:04:49.456874",
+    "rows": 11649,
+    "size_bytes": 4735065
+  },
+  "PT_CHLD_5-17_LBR_ECON": {
+    "cached_at": "2026-01-13T00:05:02.045684",
+    "rows": 125,
+    "size_bytes": 126451
+  },
+  "PT_M_20-24_MRD_U18": {
+    "cached_at": "2026-01-13T00:05:23.546324",
+    "rows": 147,
+    "size_bytes": 84994
+  },
+  "PV_VMIR": {
+    "cached_at": "2026-01-13T00:05:30.088750",
+    "rows": 165,
+    "size_bytes": 48206
+  },
+  "SPP_GINI": {
+    "cached_at": "2026-01-13T00:05:36.582502",
+    "rows": 154,
+    "size_bytes": 25546
+  },
+  "WT_ADLS_15-19_LAB_FRC_UNEMP": {
+    "cached_at": "2026-01-13T00:07:09.069122",
+    "rows": 270,
+    "size_bytes": 98651
+  },
+  "COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION": {
+    "cached_at": "2026-01-13T00:21:18.359372",
+    "rows": 8,
+    "size_bytes": 3753
+  },
+  "COD_SICKLE_CELL_DISORDERS_AND_TRAIT": {
+    "cached_at": "2026-01-13T00:21:29.074425",
+    "rows": 484,
+    "size_bytes": 199012
+  },
+  "ECON_GVT_EDU_EXP_PTGDP": {
+    "cached_at": "2026-01-13T00:23:18.403302",
+    "rows": 234,
+    "size_bytes": 44726
+  },
+  "ED_ROFST_L2_UIS_MOD": {
+    "cached_at": "2026-01-13T00:24:17.556108",
+    "rows": 4779,
+    "size_bytes": 1830964
+  },
+  "HVA_EPI_DTH_RT": {
+    "cached_at": "2026-01-13T00:25:12.091138",
+    "rows": 5432,
+    "size_bytes": 2831798
+  },
+  "HVA_PMTCT_ARV_NUM": {
+    "cached_at": "2026-01-13T00:25:21.445505",
+    "rows": 1855,
+    "size_bytes": 1016145
+  },
+  "MNCH_ANC4": {
+    "cached_at": "2026-01-13T00:27:09.457112",
+    "rows": 4734,
+    "size_bytes": 2068116
+  },
+  "MNCH_ORTCF": {
+    "cached_at": "2026-01-13T00:27:19.426892",
+    "rows": 673,
+    "size_bytes": 307706
+  },
+  "NT_ANT_WHZ_PO2": {
+    "cached_at": "2026-01-13T00:30:31.981394",
+    "rows": 15065,
+    "size_bytes": 10318654
+  },
+  "NT_BF_EBF": {
+    "cached_at": "2026-01-13T00:30:45.049578",
+    "rows": 778,
+    "size_bytes": 448123
+  },
+  "NT_BW_LBW": {
+    "cached_at": "2026-01-13T00:30:56.490896",
+    "rows": 6657,
+    "size_bytes": 1841651
+  },
+  "PT_F_15-49_W-BTNG": {
+    "cached_at": "2026-01-13T00:31:44.799643",
+    "rows": 1499,
+    "size_bytes": 837382
+  },
+  "PT_M_18-29_SX-V_AGE-18": {
+    "cached_at": "2026-01-13T00:32:28.585501",
+    "rows": 40,
+    "size_bytes": 36885
+  },
+  "PV_CHLD_DPRV-E2-HS": {
+    "cached_at": "2026-01-13T00:32:44.060204",
+    "rows": 72,
+    "size_bytes": 13132
+  },
+  "WS_HCF_H-L": {
+    "cached_at": "2026-01-13T00:36:57.288182",
+    "rows": 4041,
+    "size_bytes": 1043880
+  },
+  "WS_PPL_M-NPART_AGE_15_19": {
+    "cached_at": "2026-01-13T00:37:24.678293",
+    "rows": 40,
+    "size_bytes": 24093
+  },
+  "WS_PPL_S-FST": {
+    "cached_at": "2026-01-13T00:37:39.425837",
+    "rows": 5209,
+    "size_bytes": 1323548
+  },
+  "WS_SCH_H-F": {
+    "cached_at": "2026-01-13T00:37:59.417043",
+    "rows": 10092,
+    "size_bytes": 2125145
+  },
+  "COD_CHLAMYDIA": {
+    "cached_at": "2026-01-13T01:14:28.695943",
+    "rows": 26,
+    "size_bytes": 9422
+  },
+  "COD_DENGUE": {
+    "cached_at": "2026-01-13T01:14:39.338185",
+    "rows": 70,
+    "size_bytes": 24628
+  },
+  "COD_EXPOSURE_TO_MECHANICAL_FORCES": {
+    "cached_at": "2026-01-13T01:14:53.109277",
+    "rows": 644,
+    "size_bytes": 239881
+  },
+  "COD_ISCHAEMIC_HEART_DISEASE": {
+    "cached_at": "2026-01-13T01:15:04.219367",
+    "rows": 320,
+    "size_bytes": 126804
+  },
+  "COD_LEUKAEMIA": {
+    "cached_at": "2026-01-13T01:15:23.067808",
+    "rows": 1888,
+    "size_bytes": 691299
+  },
+  "COD_STROKE": {
+    "cached_at": "2026-01-13T01:15:41.166992",
+    "rows": 1000,
+    "size_bytes": 360842
+  },
+  "COD_TETANUS": {
+    "cached_at": "2026-01-13T01:15:53.761557",
+    "rows": 32,
+    "size_bytes": 11413
+  },
+  "COD_TUBERCULOSIS": {
+    "cached_at": "2026-01-13T01:16:06.627807",
+    "rows": 1460,
+    "size_bytes": 536828
+  },
+  "ED_ANAR_L3": {
+    "cached_at": "2026-01-13T01:17:32.881327",
+    "rows": 119,
+    "size_bytes": 27245
+  },
+  "ED_CR_L2_UIS_MOD": {
+    "cached_at": "2026-01-13T01:18:21.688174",
+    "rows": 4062,
+    "size_bytes": 1163993
+  },
+  "ED_FLS_NUM": {
+    "cached_at": "2026-01-13T01:18:46.653112",
+    "rows": 44,
+    "size_bytes": 4679
+  },
+  "MG_NEW_INTERNAL_DISP": {
+    "cached_at": "2026-01-13T01:20:10.435327",
+    "rows": 3616,
+    "size_bytes": 1610734
+  },
+  "NT_ANT_WHZ_NE3": {
+    "cached_at": "2026-01-13T01:26:12.639942",
+    "rows": 16969,
+    "size_bytes": 10881044
+  },
+  "NT_CF_FG_0_T_2": {
+    "cached_at": "2026-01-13T01:28:33.752931",
+    "rows": 4997,
+    "size_bytes": 3248029
+  },
+  "NT_SANT_5_19_BAZ_PO1_MOD": {
+    "cached_at": "2026-01-13T03:19:10.889692",
+    "rows": 11649,
+    "size_bytes": 6570438
+  },
+  "PT_CHLD_RES-CARE": {
+    "cached_at": "2026-01-13T03:19:44.641187",
+    "rows": 214,
+    "size_bytes": 95652
+  },
+  "PT_F_18-29_SX-V_AGE-18": {
+    "cached_at": "2026-01-13T03:19:53.638024",
+    "rows": 280,
+    "size_bytes": 256971
+  },
+  "PT_M_15-19_MRD": {
+    "cached_at": "2026-01-13T03:21:25.532254",
+    "rows": 102,
+    "size_bytes": 51597
   }
 }

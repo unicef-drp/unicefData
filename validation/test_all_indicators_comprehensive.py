@@ -67,6 +67,9 @@ from enum import Enum
 import time
 from collections import defaultdict
 
+# Import the new valid indicators sampler
+from valid_indicators_sampler import ValidIndicatorSampler
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -746,11 +749,12 @@ class StataTestRunner:
             # Use /e (execute) without /b to allow error dialogs if needed
             stata_exe = r"C:\Program Files\Stata17\StataMP-64.exe"
             stata_cmd = [stata_exe, "/e", "do", str(do_file)]
+            # Allow longer runtime for large downloads (was 180s)
             result = subprocess.run(
                 stata_cmd,
                 capture_output=True,
                 text=True,
-                timeout=180
+                timeout=420
             )
             
             execution_time = time.time() - start_time
@@ -797,7 +801,7 @@ class StataTestRunner:
                 indicator_code=indicator_code,
                 language="stata",
                 status=TestStatus.TIMEOUT,
-                error_message="Stata test timed out after 180 seconds",
+                error_message="Stata test timed out after 420 seconds",
                 execution_time_sec=execution_time,
             )
         
@@ -973,7 +977,7 @@ class IndicatorValidator:
         return output_dir
     
     def _stratified_sample(self, indicators: Dict, n: int) -> Dict:
-        """Sample indicators stratified by dataflow prefix"""
+        """Sample indicators stratified by dataflow prefix (original implementation)"""
         # Set random seed if provided
         if self.args.seed is not None:
             random.seed(self.args.seed)
@@ -1023,6 +1027,25 @@ class IndicatorValidator:
         
         return sampled
     
+    def _stratified_sample_valid_only(self, indicators: Dict, n: int) -> Dict:
+        """
+        Sample indicators stratified by dataflow prefix (VALID indicators only).
+        
+        This is the improved version that filters out placeholder names and non-indicator codes
+        like EDUCATION, NUTRITION, GENDER, etc. that don't follow UNICEF naming conventions.
+        """
+        sampler = ValidIndicatorSampler(allow_unknown_prefixes=False, verbose=True)
+        
+        # Step 1: Filter to valid indicators only
+        valid_indicators = sampler.filter_valid_indicators(indicators)
+        logger.info(f"Filtered {len(indicators)} total indicators → {len(valid_indicators)} valid indicators")
+        
+        # Step 2: Stratified sample from valid set
+        sample = sampler.stratified_sample(valid_indicators, n=n, seed=self.args.seed)
+        logger.info(f"Stratified sample of {len(sample)} valid indicators")
+        
+        return sample
+    
     def run(self):
         """Run full validation"""
         logger.info("=" * 80)
@@ -1042,10 +1065,24 @@ class IndicatorValidator:
             }
             logger.info(f"Filtered to {len(indicators)} indicators")
         
+        # Apply valid-only filter if requested
+        if self.args.valid_only:
+            logger.info("\n" + "=" * 80)
+            logger.info("FILTERING TO VALID INDICATORS ONLY")
+            logger.info("=" * 80)
+            sampler = ValidIndicatorSampler(allow_unknown_prefixes=False, verbose=True)
+            indicators = sampler.filter_valid_indicators(indicators)
+            logger.info(f"After valid-only filter: {len(indicators)} indicators remain")
+        
         # Apply limit (sequential or stratified)
         if self.args.limit:
             if self.args.random_stratified:
-                indicators = self._stratified_sample(indicators, self.args.limit)
+                if self.args.valid_only:
+                    # Already filtered to valid, use valid-only sampler
+                    indicators = self._stratified_sample_valid_only(indicators, self.args.limit)
+                else:
+                    # Use original sampler (may include invalid codes)
+                    indicators = self._stratified_sample(indicators, self.args.limit)
                 logger.info(f"Stratified random sample of {len(indicators)} indicators")
             else:
                 indicators = dict(list(indicators.items())[:self.args.limit])
@@ -1125,15 +1162,22 @@ class IndicatorValidator:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Comprehensive cross-platform indicator validation",
+        description="Comprehensive cross-platform indicator validation with intelligent sampling",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   python test_all_indicators_comprehensive.py
   python test_all_indicators_comprehensive.py --limit 5
   python test_all_indicators_comprehensive.py --indicators CME_MRY0T4 WSHPOL_SANI_TOTAL
+  python test_all_indicators_comprehensive.py --limit 60 --random-stratified --seed 50
+  python test_all_indicators_comprehensive.py --limit 60 --random-stratified --seed 50 --valid-only
   python test_all_indicators_comprehensive.py --languages python r
   python test_all_indicators_comprehensive.py --countries USA BRA --year 2018
+
+Key Options:
+  --valid-only              Filter out placeholder names (EDUCATION, NUTRITION, etc.)
+  --random-stratified       Stratified sampling across dataflow prefixes
+  --seed N                  Use specific random seed for reproducibility
         """
     )
     
@@ -1144,6 +1188,10 @@ Examples:
     parser.add_argument(
         "--random-stratified", action="store_true", default=False,
         help="Use stratified random sampling across dataflows (requires --limit)"
+    )
+    parser.add_argument(
+        "--valid-only", action="store_true", default=False,
+        help="Filter to valid indicator codes only (skip placeholders like EDUCATION, NUTRITION). Use with --random-stratified for best results."
     )
     parser.add_argument(
         "--seed", type=int, default=None,

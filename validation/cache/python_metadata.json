@@ -1008,5 +1008,170 @@
     "cached_at": "2026-01-12T16:52:58.497797",
     "rows": 92,
     "size_bytes": 20940
+  },
+  "FD_FOUNDATIONAL_LEARNING": {
+    "cached_at": "2026-01-13T00:01:13.329995",
+    "rows": 94,
+    "size_bytes": 32354
+  },
+  "HVA_PMTCT_MTCT": {
+    "cached_at": "2026-01-13T00:02:03.354991",
+    "rows": 1461,
+    "size_bytes": 665222
+  },
+  "IM_PAB": {
+    "cached_at": "2026-01-13T00:02:17.260704",
+    "rows": 5282,
+    "size_bytes": 1577779
+  },
+  "MNCH_ADO_TOBACCO": {
+    "cached_at": "2026-01-13T00:02:56.060888",
+    "rows": 146,
+    "size_bytes": 65158
+  },
+  "NT_BW_UNW": {
+    "cached_at": "2026-01-13T00:04:20.202353",
+    "rows": 1316,
+    "size_bytes": 712622
+  },
+  "NT_DANT_BMI_G30_MOD_ADJ": {
+    "cached_at": "2026-01-13T00:04:33.310189",
+    "rows": 11645,
+    "size_bytes": 4632210
+  },
+  "PT_CHLD_5-17_LBR_ECON": {
+    "cached_at": "2026-01-13T00:04:55.039916",
+    "rows": 125,
+    "size_bytes": 126008
+  },
+  "PT_M_20-24_MRD_U18": {
+    "cached_at": "2026-01-13T00:05:02.290580",
+    "rows": 147,
+    "size_bytes": 84399
+  },
+  "PV_VMIR": {
+    "cached_at": "2026-01-13T00:05:23.712476",
+    "rows": 165,
+    "size_bytes": 48453
+  },
+  "SPP_GINI": {
+    "cached_at": "2026-01-13T00:05:30.252062",
+    "rows": 154,
+    "size_bytes": 25381
+  },
+  "WT_ADLS_15-19_LAB_FRC_UNEMP": {
+    "cached_at": "2026-01-13T00:06:37.847416",
+    "rows": 270,
+    "size_bytes": 97953
+  },
+  "ED_ROFST_L2_UIS_MOD": {
+    "cached_at": "2026-01-13T00:23:58.264090",
+    "rows": 4779,
+    "size_bytes": 1884994
+  },
+  "HVA_EPI_DTH_RT": {
+    "cached_at": "2026-01-13T00:25:02.419805",
+    "rows": 1543,
+    "size_bytes": 804303
+  },
+  "HVA_PMTCT_ARV_NUM": {
+    "cached_at": "2026-01-13T00:25:12.360192",
+    "rows": 1855,
+    "size_bytes": 1012078
+  },
+  "MNCH_ANC4": {
+    "cached_at": "2026-01-13T00:26:56.265583",
+    "rows": 2529,
+    "size_bytes": 1078149
+  },
+  "MNCH_ORTCF": {
+    "cached_at": "2026-01-13T00:27:09.935015",
+    "rows": 673,
+    "size_bytes": 304337
+  },
+  "NT_ANT_WHZ_PO2": {
+    "cached_at": "2026-01-13T00:29:50.910179",
+    "rows": 1078,
+    "size_bytes": 716471
+  },
+  "NT_BF_EBF": {
+    "cached_at": "2026-01-13T00:30:32.375232",
+    "rows": 736,
+    "size_bytes": 420776
+  },
+  "NT_BW_LBW": {
+    "cached_at": "2026-01-13T00:30:45.442574",
+    "rows": 6657,
+    "size_bytes": 1848341
+  },
+  "PT_F_15-49_W-BTNG": {
+    "cached_at": "2026-01-13T00:31:38.040798",
+    "rows": 441,
+    "size_bytes": 248305
+  },
+  "PT_M_18-29_SX-V_AGE-18": {
+    "cached_at": "2026-01-13T00:32:23.368770",
+    "rows": 40,
+    "size_bytes": 36883
+  },
+  "PV_CHLD_DPRV-E2-HS": {
+    "cached_at": "2026-01-13T00:32:35.993941",
+    "rows": 72,
+    "size_bytes": 14086
+  },
+  "WS_HCF_H-L": {
+    "cached_at": "2026-01-13T00:36:33.707809",
+    "rows": 1017,
+    "size_bytes": 251227
+  },
+  "WS_PPL_M-NPART_AGE_15_19": {
+    "cached_at": "2026-01-13T00:36:57.582252",
+    "rows": 40,
+    "size_bytes": 24149
+  },
+  "WS_PPL_S-FST": {
+    "cached_at": "2026-01-13T00:37:25.251319",
+    "rows": 5209,
+    "size_bytes": 1361769
+  },
+  "WS_SCH_H-F": {
+    "cached_at": "2026-01-13T00:37:39.877439",
+    "rows": 3329,
+    "size_bytes": 644732
+  },
+  "ED_CR_L1_UIS_MOD": {
+    "cached_at": "2026-01-13T00:48:49.486476",
+    "rows": 4162,
+    "size_bytes": 1115813
+  },
+  "MG_NEW_INTERNAL_DISP": {
+    "cached_at": "2026-01-13T01:20:00.662408",
+    "rows": 3616,
+    "size_bytes": 1608021
+  },
+  "NT_ANT_WHZ_NE3": {
+    "cached_at": "2026-01-13T01:25:35.362971",
+    "rows": 2904,
+    "size_bytes": 1174109
+  },
+  "NT_CF_FG_0_T_2": {
+    "cached_at": "2026-01-13T01:28:21.283661",
+    "rows": 4947,
+    "size_bytes": 3143518
+  },
+  "NT_SANT_5_19_BAZ_PO1_MOD": {
+    "cached_at": "2026-01-13T01:29:21.257818",
+    "rows": 11649,
+    "size_bytes": 6465845
+  },
+  "PT_CHLD_RES-CARE": {
+    "cached_at": "2026-01-13T03:19:35.104861",
+    "rows": 202,
+    "size_bytes": 86997
+  },
+  "PT_F_18-29_SX-V_AGE-18": {
+    "cached_at": "2026-01-13T03:19:48.772256",
+    "rows": 280,
+    "size_bytes": 255811
   }
 }

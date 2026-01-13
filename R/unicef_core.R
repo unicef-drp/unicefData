@@ -1,7 +1,7 @@
 # =============================================================================
 # unicef_core.R - Core data fetching with intelligent fallback logic
 # =============================================================================
-# Version: 1.6.0 (2026-01-12)
+# Version: 1.6.1 (2026-01-12) - Unified fallback architecture
 # Author: João Pedro Azevedo (UNICEF)
 # License: MIT
 # =============================================================================
@@ -17,6 +17,7 @@ if (!requireNamespace("magrittr", quietly = TRUE)) stop("Package 'magrittr' requ
 if (!requireNamespace("dplyr", quietly = TRUE)) stop("Package 'dplyr' required")
 if (!requireNamespace("httr", quietly = TRUE)) stop("Package 'httr' required")
 if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
+if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 
 `%>%` <- magrittr::`%>%`
 
@@ -32,6 +33,54 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 
   FALSE
 }
+
+# --- Helper: Load Fallback Sequences from Canonical YAML ---
+
+#' Load fallback dataflow sequences from canonical YAML
+#'
+#' Tries canonical location first, then package bundled version.
+#' Falls back to hardcoded defaults if YAML not found.
+#'
+#' @return List with fallback sequences by indicator prefix
+#' @keywords internal
+.load_fallback_sequences_yaml <- function() {
+  # Try canonical location first (parent of R/metadata/current/)
+  canonical_path <- file.path(dirname(getwd()), 'metadata/current/_dataflow_fallback_sequences.yaml')
+  
+  # Fallback to package location
+  if (!file.exists(canonical_path)) {
+    canonical_path <- system.file(
+      'metadata/_dataflow_fallback_sequences.yaml',
+      package = 'unicefData',
+      mustWork = FALSE
+    )
+  }
+  
+  # If YAML file found, load it
+  if (file.exists(canonical_path)) {
+    tryCatch({
+      yaml_data <- yaml::read_yaml(canonical_path)
+      if (!is.null(yaml_data$fallback_sequences)) {
+        return(yaml_data$fallback_sequences)
+      }
+    }, error = function(e) {
+      warning(sprintf("Error loading YAML from %s: %s", canonical_path, e$message))
+    })
+  }
+  
+  # Return hardcoded defaults if YAML not found or error
+  list(
+    PT = c("PT", "PT_CM", "PT_FGM", "CHILD_PROTECTION", "GLOBAL_DATAFLOW"),
+    COD = c("CAUSE_OF_DEATH", "GLOBAL_DATAFLOW"),
+    TRGT = c("CHILD_RELATED_SDG", "GLOBAL_DATAFLOW"),
+    SPP = c("SOC_PROTECTION", "GLOBAL_DATAFLOW"),
+    WT = c("PT", "CHILD_PROTECTION", "GLOBAL_DATAFLOW"),
+    DEFAULT = c("GLOBAL_DATAFLOW")
+  )
+}
+
+# Load fallback sequences at module initialization
+.FALLBACK_SEQUENCES_YAML <- .load_fallback_sequences_yaml()
 
 # --- Helper: Fetch SDMX ---
 
@@ -113,36 +162,19 @@ detect_dataflow <- function(indicator) {
 # same in R. Let's try detected flow first and if 404, GLOBAL_DATAFLOW. We need
 # a helper function for that:
 get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
-  # Build prefix-specific fallback chains aligned with Stata/Python
+  # Build prefix-specific fallback chains from canonical YAML
   fallbacks <- c()
   
   # If we have an indicator code, extract prefix for intelligent fallbacks
   if (!is.null(indicator_code)) {
     prefix <- strsplit(indicator_code, "_")[[1]][1]
     
-    # PT prefix: try PT → PT_CM → PT_FGM → CHILD_PROTECTION → GLOBAL_DATAFLOW
-    if (prefix == "PT") {
-      fallbacks <- c("PT", "PT_CM", "PT_FGM", "CHILD_PROTECTION", "GLOBAL_DATAFLOW")
-    }
-    # COD prefix: try CAUSE_OF_DEATH → GLOBAL_DATAFLOW
-    else if (prefix == "COD") {
-      fallbacks <- c("CAUSE_OF_DEATH", "GLOBAL_DATAFLOW")
-    }
-    # TRGT prefix: try CHILD_RELATED_SDG → GLOBAL_DATAFLOW
-    else if (prefix == "TRGT") {
-      fallbacks <- c("CHILD_RELATED_SDG", "GLOBAL_DATAFLOW")
-    }
-    # SPP prefix: try SOC_PROTECTION → GLOBAL_DATAFLOW
-    else if (prefix == "SPP") {
-      fallbacks <- c("SOC_PROTECTION", "GLOBAL_DATAFLOW")
-    }
-    # WT prefix: try PT → CHILD_PROTECTION → GLOBAL_DATAFLOW
-    else if (prefix == "WT") {
-      fallbacks <- c("PT", "CHILD_PROTECTION", "GLOBAL_DATAFLOW")
-    }
-    # Default: just GLOBAL_DATAFLOW
-    else {
-      fallbacks <- c("GLOBAL_DATAFLOW")
+    # Check if prefix exists in loaded YAML
+    if (prefix %in% names(.FALLBACK_SEQUENCES_YAML)) {
+      fallbacks <- .FALLBACK_SEQUENCES_YAML[[prefix]]
+    } else {
+      # Use default fallback for unknown prefixes
+      fallbacks <- .FALLBACK_SEQUENCES_YAML$DEFAULT %||% c("GLOBAL_DATAFLOW")
     }
     
     # Remove the original_flow from fallbacks to avoid duplicate attempts

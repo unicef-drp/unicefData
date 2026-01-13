@@ -3,11 +3,15 @@ Core UNICEF API Functions
 =========================
 
 Main functions for retrieving data from the UNICEF SDMX API.
+
+Version: 1.6.1 - Unified fallback architecture (canonical YAML-based)
 """
 
 import logging
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple, Dict
 import pandas as pd
+import yaml
+from pathlib import Path
 
 from unicef_api.sdmx import get_sdmx
 from unicef_api.flows import list_dataflows
@@ -177,21 +181,68 @@ def _apply_circa(df: pd.DataFrame, target_years: List[int]) -> pd.DataFrame:
 
 
 # =============================================================================
-# Dataflow Fallback Logic
+# Dataflow Fallback Logic - Load from Canonical YAML
 # =============================================================================
 
-# Alternative dataflows to try when auto-detected dataflow fails with 404
-# Organized by indicator prefix - if one fails, try these alternatives
-DATAFLOW_ALTERNATIVES = {
-    # Education indicators may be in either EDUCATION or EDUCATION_UIS_SDG
-    'ED': ['EDUCATION_UIS_SDG', 'EDUCATION'],
-    # Protection indicators may be in PT, PT_CM, PT_FGM, or other specific flows
-    'PT': ['PT', 'PT_CM', 'PT_FGM'],
-    # Poverty indicators
-    'PV': ['CHLD_PVTY', 'GLOBAL_DATAFLOW'],
-    # Nutrition indicators
-    'NT': ['NUTRITION', 'GLOBAL_DATAFLOW'],
-}
+def _load_fallback_sequences() -> Dict[str, List[str]]:
+    """
+    Load fallback dataflow sequences from canonical YAML file.
+    
+    Tries multiple locations:
+    1. Canonical metadata directory (parent level)
+    2. Package metadata directory (if bundled)
+    
+    Returns:
+        Dict mapping indicator prefix to list of dataflows to try
+        
+    Example:
+        {
+            'CME': ['CME', 'CME_DF_2021_WQ', 'GLOBAL_DATAFLOW'],
+            'ED': ['EDUCATION_UIS_SDG', 'EDUCATION', 'GLOBAL_DATAFLOW'],
+            ...
+        }
+    """
+    fallback_file = None
+    
+    # Try canonical location first (parent of python/metadata/current/)
+    canonical_path = Path(__file__).parent.parent.parent / 'metadata/current/_dataflow_fallback_sequences.yaml'
+    if canonical_path.exists():
+        fallback_file = canonical_path
+    
+    # Fallback to package bundled version
+    if not fallback_file:
+        pkg_path = Path(__file__).parent / 'metadata/_dataflow_fallback_sequences.yaml'
+        if pkg_path.exists():
+            fallback_file = pkg_path
+    
+    # Default fallback if no file found
+    if not fallback_file:
+        logger.warning("Canonical fallback sequences file not found, using defaults")
+        return {
+            'ED': ['EDUCATION_UIS_SDG', 'EDUCATION', 'GLOBAL_DATAFLOW'],
+            'PT': ['PT', 'PT_CM', 'PT_FGM', 'CHILD_PROTECTION', 'GLOBAL_DATAFLOW'],
+            'PV': ['CHLD_PVTY', 'GLOBAL_DATAFLOW'],
+            'NT': ['NUTRITION', 'GLOBAL_DATAFLOW'],
+            'DEFAULT': ['GLOBAL_DATAFLOW'],
+        }
+    
+    try:
+        with open(fallback_file, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+            
+        if 'fallback_sequences' in data:
+            return data['fallback_sequences']
+        
+        logger.warning(f"No 'fallback_sequences' key in {fallback_file}, using defaults")
+        return {'DEFAULT': ['GLOBAL_DATAFLOW']}
+        
+    except Exception as e:
+        logger.error(f"Error loading fallback sequences from {fallback_file}: {e}")
+        return {'DEFAULT': ['GLOBAL_DATAFLOW']}
+
+
+# Load fallback sequences at module initialization
+FALLBACK_SEQUENCES = _load_fallback_sequences()
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -239,13 +290,18 @@ def _fetch_indicator_with_fallback(
     # Get indicator prefix (e.g., 'ED' from 'ED_CR_L1_UIS_MOD')
     prefix = indicator_code.split('_')[0] if '_' in indicator_code else indicator_code[:2]
     
-    # Add alternatives for this prefix (if any)
-    if prefix in DATAFLOW_ALTERNATIVES:
-        for alt in DATAFLOW_ALTERNATIVES[prefix]:
+    # Add alternatives for this prefix from canonical YAML
+    if prefix in FALLBACK_SEQUENCES:
+        for alt in FALLBACK_SEQUENCES[prefix]:
+            if alt not in dataflows_to_try:
+                dataflows_to_try.append(alt)
+    else:
+        # Use default fallback for unknown prefixes
+        for alt in FALLBACK_SEQUENCES.get('DEFAULT', ['GLOBAL_DATAFLOW']):
             if alt not in dataflows_to_try:
                 dataflows_to_try.append(alt)
     
-    # Always add GLOBAL_DATAFLOW as last resort
+    # Ensure GLOBAL_DATAFLOW is always the last resort (if not already there)
     if 'GLOBAL_DATAFLOW' not in dataflows_to_try:
         dataflows_to_try.append('GLOBAL_DATAFLOW')
     
