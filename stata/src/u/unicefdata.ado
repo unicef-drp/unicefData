@@ -1745,13 +1745,57 @@ version 11
         }
         
         *-----------------------------------------------------------------------
-        * Simplify output (aligned with R/Python) - keep essential columns only
+        * CRITICAL FOR CROSS-PLATFORM COMPATIBILITY:
+        * Rename SHORT NAMES back to LONG NAMES before export/return
+        * Ensures CSV exports match R schema: wealth_quintile not wealth, etc.
+        * This maintains internal Stata convenience naming while fixing CSV output
+        *-----------------------------------------------------------------------
+        
+        quietly {
+            * Map short names back to long names for CSV export consistency
+            * These were renamed to short names for Stata convenience (lines 794-807)
+            * Now we reverse that ONLY for final export layer
+            
+            capture confirm variable wealth
+            if (_rc == 0) rename wealth wealth_quintile
+            
+            capture confirm variable wealth_name
+            if (_rc == 0) rename wealth_name wealth_quintile_name
+            
+            capture confirm variable matedu
+            if (_rc == 0) rename matedu maternal_edu_lvl
+            
+            capture confirm variable lb
+            if (_rc == 0) rename lb lower_bound
+            
+            capture confirm variable ub
+            if (_rc == 0) rename ub upper_bound
+            
+            capture confirm variable status
+            if (_rc == 0) rename status obs_status
+            
+            capture confirm variable status_name
+            if (_rc == 0) rename status_name obs_status_name
+            
+            capture confirm variable source
+            if (_rc == 0) rename source data_source
+            
+            capture confirm variable refper
+            if (_rc == 0) rename refper ref_period
+            
+            capture confirm variable notes
+            if (_rc == 0) rename notes country_notes
+        }
+        
+        *-----------------------------------------------------------------------
+        * Output format: Sparse (only columns with data)
+        * Aligned with R/Python: indicators naturally have varying column counts
         *-----------------------------------------------------------------------
         
         if ("`simplify'" != "") {
             * Keep only essential columns like R's simplify option
             local keepvars ""
-            foreach v in iso3 country indicator period value lb ub {
+            foreach v in iso3 country indicator period value lower_bound upper_bound {
                 capture confirm variable `v'
                 if (_rc == 0) {
                     local keepvars "`keepvars' `v'"
