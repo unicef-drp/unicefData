@@ -187,6 +187,31 @@ wealth, residence, maternal education). This uses the dataflow schema files in
 {dlgtab:Output Options}
 
 {pstd}
+{bf:Output Format - Sparse Columns by Default}
+
+{pstd}
+{cmd:unicefdata} uses {bf:sparse output format} by default: only columns with data 
+are included in the result. This means the number of columns varies by indicator based 
+on available disaggregations. For example:
+
+{phang2}• CME_MRY0T4 (under-5 mortality): 20 columns (no wealth/maternal education data){p_end}
+{phang2}• NT_ANT_HAZ_NE2 (stunting): 23 columns (includes wealth quintile data){p_end}
+{phang2}• Indicator with all dimensions: 22-60+ columns depending on available data{p_end}
+
+{pstd}
+Standard column names (always present when data exists):
+
+{phang2}indicator, indicator_name, iso3, country, geo_type, period, value, unit, unit_name,{p_end}
+{phang2}sex, sex_name, age, wealth_quintile, wealth_quintile_name, residence,{p_end}
+{phang2}maternal_edu_lvl, lower_bound, upper_bound, obs_status, obs_status_name, 
+data_source, ref_period, country_notes{p_end}
+
+{pstd}
+Note: This sparse format is consistent across all three platforms (Python, R, Stata).
+Use {cmd:simplify} to keep only essential columns (iso3, country, indicator, period, 
+value, lower_bound, upper_bound).
+
+{pstd}
 {bf:Understanding Output Formats:}
 
 {pstd}
