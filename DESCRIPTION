@@ -9,7 +9,7 @@ Description: A bilingual R and Python client to fetch SDMX CSV series from
     UNICEF's Data Warehouse. Features include automatic pagination, caching
     with memoisation, country name lookups, metadata versioning (vintages),
     and comprehensive indicator support for SDG monitoring.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -29,13 +29,13 @@ Imports:
     purrr,
     rlang,
     digest,
-    tidyr,
-    data.table
+    tidyr
 Suggests:
     testthat (>= 3.0.0),
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    data.table
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/unicef-drp/unicefData
