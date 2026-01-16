@@ -51,6 +51,11 @@
 ^stataonly$
 ^validation$
 
+# Non-standard top-level files
+^CITATION\.cff$
+^PR14_TEST_COVERAGE_SUMMARY\.md$
+^temp$
+
 # Stata files
 ^.*\.do$
 
@@ -68,3 +73,5 @@
 ^stata\.log$
 ^test_multi_indicator\.log$
 ^.*\.log$
+^doc$
+^Meta$

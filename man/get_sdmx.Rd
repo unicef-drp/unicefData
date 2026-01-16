@@ -16,7 +16,7 @@ get_sdmx(
   labels = c("both", "id", "none"),
   tidy = TRUE,
   country_names = TRUE,
-  page_size = 100000L,
+  page_size = 1000000L,
   retry = 3L,
   cache = FALSE,
   sleep = 0.2,
@@ -46,7 +46,7 @@ get_sdmx(
 
 \item{country_names}{Logical; if TRUE, join ISO3 to country names; default TRUE.}
 
-\item{page_size}{Rows per page for CSV; default 100000L.}
+\item{page_size}{Rows per page for CSV; default 1000000L.}
 
 \item{retry}{Number of retries; default 3L.}
 
