@@ -143,44 +143,65 @@ program define _unicef_indicator_info, rclass
                             continue, break
                         }
                         
-                        * Parse field: "    fieldname: value"
+                        * ===================================================================
+                        * FIELD PARSING: "    fieldname: value"
+                        * ===================================================================
+                        * Handle both scalar values (name: John) and list headers (dataflows:)
                         local colon_pos = strpos("`trimmed'", ":")
                         if (`colon_pos' > 0) {
                             local field_name = strtrim(substr("`trimmed'", 1, `colon_pos' - 1))
                             local field_value = strtrim(substr("`trimmed'", `colon_pos' + 1, .))
                             
-                            * Remove quotes if present
+                            * Remove surrounding quotes if present
                             if (substr("`field_value'", 1, 1) == "'" | substr("`field_value'", 1, 1) == `"""') {
                                 local field_value = substr("`field_value'", 2, length("`field_value'") - 2)
                             }
                             
-                            * Check if this field name signals start of a list
-                            * When we hit a new list header, stop collecting from the previous one
+                            * =========================================================
+                            * FIELD TYPE 1: List headers (set flags for list collection)
+                            * =========================================================
+                            * When we see "disaggregations:" or "dataflows:", set flag
+                            * and RESET other list flags (mutually exclusive)
                             if ("`field_name'" == "disaggregations") {
+                                * Header for disaggregations list - start collecting items
                                 local found_disaggs = 1
                                 local found_dataflows = 0
                             }
                             else if ("`field_name'" == "dataflows") {
+                                * Header for dataflows list - start collecting items
+                                * May have scalar value ("dataflows: MNCH") or be empty ("dataflows:" + list below)
                                 local found_dataflows = 1
                                 local found_disaggs = 0
+                                
+                                * If dataflows has a scalar value, capture it immediately
+                                if ("`field_value'" != "") {
+                                    local ind_dataflow "`field_value'"
+                                    * Don't keep flag active - scalar was already handled
+                                    local found_dataflows = 0
+                                }
                             }
                             else if ("`field_name'" == "disaggregations_with_totals") {
+                                * Handle inline list format [A,B,C] or scalar value
                                 if (regexm(`"`field_value'"', "\[(.*)\]")) {
                                     local disagg_totals = regexs(1)
                                 }
                                 else {
                                     local disagg_totals = "`field_value'"
                                 }
+                                * Reset list collection flags (non-list field)
                                 local found_disaggs = 0
                                 local found_dataflows = 0
                             }
                             else {
-                                * For non-list fields, turn off list collection flags
+                                * All other fields: scalars (name, category, parent, etc.)
+                                * Reset list collection flags
                                 local found_disaggs = 0
                                 local found_dataflows = 0
                             }
                             
-                            * Store by field name (only if not a list header)
+                            * =========================================================
+                            * FIELD TYPE 2: Scalar fields (extract values directly)
+                            * =========================================================
                             if ("`field_name'" == "name") {
                                 local ind_name "`field_value'"
                             }
@@ -191,7 +212,7 @@ program define _unicef_indicator_info, rclass
                                 local ind_parent "`field_value'"
                             }
                             else if ("`field_name'" == "dataflow" | "`field_name'" == "dataflows") {
-                                * Only set if it's a single value (not the dataflows: list header)
+                                * Handle dataflows that appear as single scalar field
                                 if ("`field_value'" != "") {
                                     local ind_dataflow "`field_value'"
                                 }
@@ -204,24 +225,29 @@ program define _unicef_indicator_info, rclass
                             }
                         }
                         
-                        * Extract list items under disaggregations or dataflows
+                        * ===================================================================
+                        * LIST ITEMS: "^    - ITEM" lines (under active list header)
+                        * ===================================================================
+                        * Collect items ONLY if we're currently collecting a list
+                        * (found_disaggs=1 means we just saw "disaggregations:" header)
+                        * (found_dataflows=1 means we just saw "dataflows:" header without scalar)
                         if (regexm("`trimmed'", "^\- ")) {
-                            if (`found_disaggs' == 1) {
-                                if (regexm("`trimmed'", "^\- +(.+)$")) {
-                                    local dim = regexs(1)
-                                    local dim = strtrim("`dim'")
-                                    local disagg_raw "`disagg_raw' `dim'"
+                            if (regexm("`trimmed'", "^\- +(.+)$")) {
+                                local item = regexs(1)
+                                local item = strtrim("`item'")
+                                
+                                * Append to appropriate collection based on active flag
+                                if (`found_disaggs' == 1) {
+                                    * Append disaggregation item (space-separated list)
+                                    local disagg_raw "`disagg_raw' `item'"
                                 }
-                            }
-                            else if (`found_dataflows' == 1) {
-                                if (regexm("`trimmed'", "^\- +(.+)$")) {
-                                    local df = regexs(1)
-                                    local df = strtrim("`df'")
+                                else if (`found_dataflows' == 1) {
+                                    * Append dataflow item (comma-separated list)
                                     if ("`ind_dataflow'" == "") {
-                                        local ind_dataflow "`df'"
+                                        local ind_dataflow "`item'"
                                     }
                                     else {
-                                        local ind_dataflow "`ind_dataflow', `df'"
+                                        local ind_dataflow "`ind_dataflow', `item'"
                                     }
                                 }
                             }
