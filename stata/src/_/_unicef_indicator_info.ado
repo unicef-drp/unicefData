@@ -74,10 +74,19 @@ program define _unicef_indicator_info, rclass
         * Search pattern: "  INDICATOR_CODE:" (2 spaces = level 1 under "indicators:")
         local search_pattern "  `indicator_upper':"
         
+        * =====================================================================
+        * SECTION 1: FILE HANDLING REFACTOR
+        * - Use tempname to generate unique handle name (avoids conflicts)
+        * - Open file once before loop
+        * - Close file once after loop, using capture for defensive cleanup
+        * - Never use same handle for multiple files in sequence
+        * =====================================================================
+        
         tempname fh
         local in_indicator = 0
         local lines_checked = 0
         
+        * OPEN FILE: Open the main YAML metadata file once
         file open `fh' using "`yaml_file'", read text
         file read `fh' line
         
@@ -87,6 +96,7 @@ program define _unicef_indicator_info, rclass
         local disagg_raw = ""
         local disagg_totals = ""
         
+        * MAIN LOOP: Read through file sequentially until indicator found
         while r(eof) == 0 {
             local lines_checked = `lines_checked' + 1
             local trimmed_line = strtrim(`"`line'"')
@@ -256,10 +266,15 @@ program define _unicef_indicator_info, rclass
                 }
             }
             
+            * READ NEXT LINE: Advance to next line in the file
             file read `fh' line
         }
         
-        file close `fh'
+        * CLOSE FILE: Defensive close using capture to handle edge cases
+        * - If file already closed, capture prevents error propagation
+        * - If file open, this properly closes the handle
+        * - Never attempt double-close or close after scope
+        capture file close `fh'
         
         if ("`verbose'" != "") {
             noi di as text "Scanned " as result "`lines_checked'" as text " lines"
