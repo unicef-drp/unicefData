@@ -62,8 +62,16 @@ program define _unicef_indicator_info, rclass
         * Searches for "  INDICATOR_CODE:" section, extracts fields, stops early
         *-----------------------------------------------------------------------
         
-        local indicator_upper = upper("`indicator'")
-        local found = 0
+        * STATA MACRO ASSIGNMENT BEST PRACTICE
+        * - Use: local varname value              (direct assignment)
+        * - NOT:  local varname = value           (expression evaluation - slower!)
+        * - Use = ONLY for expressions: local x = `y' + 1
+        * WHY? The = operator causes Stata to parse RHS as math/functions,
+        * leading to unexpected string behavior and slower execution.
+        * Keep simple assignments as direct syntax for clarity and speed.
+        
+        local indicator_upper upper("`indicator'")
+        local found 0
         local ind_name ""
         local ind_category ""
         local ind_parent ""
@@ -83,31 +91,31 @@ program define _unicef_indicator_info, rclass
         * =====================================================================
         
         tempname fh
-        local in_indicator = 0
-        local lines_checked = 0
+        local in_indicator 0
+        local lines_checked 0
         
         * OPEN FILE: Open the main YAML metadata file once
         file open `fh' using "`yaml_file'", read text
         file read `fh' line
         
-        local found_indicator_section = 0
-        local found_disaggs = 0
-        local found_dataflows = 0
-        local disagg_raw = ""
-        local disagg_totals = ""
+        local found_indicator_section 0
+        local found_disaggs 0
+        local found_dataflows 0
+        local disagg_raw ""
+        local disagg_totals ""
         
         * MAIN LOOP: Read through file sequentially until indicator found
         while r(eof) == 0 {
             local lines_checked = `lines_checked' + 1
-            local trimmed_line = strtrim(`"`line'"')
+            local trimmed_line strtrim(`"`line'"')
             
             * First pass: Check if we've found our indicator's section
             if (`in_indicator' == 0) {
                 * Looking for "  INDICATOR_CODE:" at start of line
                 if (substr(`"`line'"', 1, length("`search_pattern'")) == "`search_pattern'") {
-                    local in_indicator = 1
-                    local found = 1
-                    local found_indicator_section = 1
+                    local in_indicator 1
+                    local found 1
+                    local found_indicator_section 1
                     if ("`verbose'" != "") {
                         noi di as text "  → ENTER: Line " as result "`lines_checked'" as text " | Key: " as result "`search_pattern'"
                     }
@@ -121,20 +129,20 @@ program define _unicef_indicator_info, rclass
                         if ("`verbose'" != "") {
                             noi di as text "  ← EXIT: Line " as result "`lines_checked'" as text " | Next key: " as result "`trimmed_line'"
                         }
-                        local in_indicator = 0
-                        local found_indicator_section = 0
-                        local found_disaggs = 0
-                        local found_dataflows = 0
+                        local in_indicator 0
+                        local found_indicator_section 0
+                        local found_disaggs 0
+                        local found_dataflows 0
                     }
                 }
                 else if (regexm("`trimmed_line'", "^[A-Z0-9_-]+:\s*$") & "`trimmed_line'" != "`search_pattern'") {
                     if ("`verbose'" != "") {
                         noi di as text "  ← EXIT: Line " as result "`lines_checked'" as text " | Next key: " as result "`trimmed_line'"
                     }
-                    local in_indicator = 0
-                    local found_indicator_section = 0
-                    local found_disaggs = 0
-                    local found_dataflows = 0
+                    local in_indicator 0
+                    local found_indicator_section 0
+                    local found_disaggs 0
+                    local found_dataflows 0
                 }
                 else {
                     * Parse fields and extract disaggregations
@@ -165,12 +173,12 @@ program define _unicef_indicator_info, rclass
                         * Handle both scalar values (name: John) and list headers (dataflows:)
                         local colon_pos = strpos("`trimmed'", ":")
                         if (`colon_pos' > 0) {
-                            local field_name = strtrim(substr("`trimmed'", 1, `colon_pos' - 1))
-                            local field_value = strtrim(substr("`trimmed'", `colon_pos' + 1, .))
+                            local field_name strtrim(substr("`trimmed'", 1, `colon_pos' - 1))
+                            local field_value strtrim(substr("`trimmed'", `colon_pos' + 1, .))
                             
                             * Remove surrounding quotes if present
                             if (substr("`field_value'", 1, 1) == "'" | substr("`field_value'", 1, 1) == `"""') {
-                                local field_value = substr("`field_value'", 2, length("`field_value'") - 2)
+                                local field_value substr("`field_value'", 2, length("`field_value'") - 2)
                             }
                             
                             * =========================================================
@@ -183,14 +191,14 @@ program define _unicef_indicator_info, rclass
                                 if ("`verbose'" != "") {
                                     noi di as text "    → Capturing: disaggregations" as text " (list header at line " as result "`lines_checked'" as text ")"
                                 }
-                                local found_disaggs = 1
-                                local found_dataflows = 0
+                                local found_disaggs 1
+                                local found_dataflows 0
                             }
                             else if ("`field_name'" == "dataflows") {
                                 * Header for dataflows list - start collecting items
                                 * May have scalar value ("dataflows: MNCH") or be empty ("dataflows:" + list below)
-                                local found_dataflows = 1
-                                local found_disaggs = 0
+                                local found_dataflows 1
+                                local found_disaggs 0
                                 
                                 * If dataflows has a scalar value, capture it immediately
                                 if ("`field_value'" != "") {
@@ -199,7 +207,7 @@ program define _unicef_indicator_info, rclass
                                     }
                                     local ind_dataflow "`field_value'"
                                     * Don't keep flag active - scalar was already handled
-                                    local found_dataflows = 0
+                                    local found_dataflows 0
                                 }
                                 else if ("`verbose'" != "") {
                                     noi di as text "    → Capturing: dataflows" as text " (list header at line " as result "`lines_checked'" as text ")"
@@ -208,21 +216,21 @@ program define _unicef_indicator_info, rclass
                             else if ("`field_name'" == "disaggregations_with_totals") {
                                 * Handle inline list format [A,B,C] or scalar value
                                 if (regexm(`"`field_value'"', "\[(.*)\]")) {
-                                    local disagg_totals = regexs(1)
+                                    local disagg_totals regexs(1)
                                 }
                                 else {
-                                    local disagg_totals = "`field_value'"
+                                    local disagg_totals "`field_value'"
                                 }                                if ("`verbose'" != "") {
                                     noi di as text "    → Captured: disaggregations_with_totals = " as result "`disagg_totals'"
                                 }                                * Reset list collection flags (non-list field)
-                                local found_disaggs = 0
-                                local found_dataflows = 0
+                                local found_disaggs 0
+                                local found_dataflows 0
                             }
                             else {
                                 * All other fields: scalars (name, category, parent, etc.)
                                 * Reset list collection flags
-                                local found_disaggs = 0
-                                local found_dataflows = 0
+                                local found_disaggs 0
+                                local found_dataflows 0
                             }
                             
                             * =========================================================
@@ -310,11 +318,11 @@ program define _unicef_indicator_info, rclass
         *-----------------------------------------------------------------------
         
         local supported_dims ""
-        local has_sex = 0
-        local has_age = 0
-        local has_wealth = 0
-        local has_residence = 0
-        local has_maternal_edu = 0
+        local has_sex 0
+        local has_age 0
+        local has_wealth 0
+        local has_residence 0
+        local has_maternal_edu 0
         
         if ("`verbose'" != "") {
             noi di as text "Extracting disaggregations from enriched metadata"
@@ -338,19 +346,19 @@ program define _unicef_indicator_info, rclass
             
             foreach d of local disagg_raw {
                 if ("`d'" == "SEX") {
-                    local has_sex = 1
+                    local has_sex 1
                 }
                 else if ("`d'" == "AGE") {
-                    local has_age = 1
+                    local has_age 1
                 }
                 else if ("`d'" == "WEALTH_QUINTILE") {
-                    local has_wealth = 1
+                    local has_wealth 1
                 }
                 else if ("`d'" == "RESIDENCE") {
-                    local has_residence = 1
+                    local has_residence 1
                 }
                 else if ("`d'" == "MATERNAL_EDU_LVL" | "`d'" == "MOTHER_EDUCATION") {
-                    local has_maternal_edu = 1
+                    local has_maternal_edu 1
                 }
             }
             local supported_dims = "`disagg_raw'"
