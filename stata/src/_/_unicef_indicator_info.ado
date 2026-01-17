@@ -109,7 +109,7 @@ program define _unicef_indicator_info, rclass
                     local found = 1
                     local found_indicator_section = 1
                     if ("`verbose'" != "") {
-                        noi di as text "Found indicator at line " as result "`lines_checked'"
+                        noi di as text "  → ENTER: Line " as result "`lines_checked'" as text " | Key: " as result "`search_pattern'"
                     }
                 }
             }
@@ -118,6 +118,9 @@ program define _unicef_indicator_info, rclass
                 * Check if we've moved past our indicator
                 if (regexm(`"`line'"', "^[^ ]")) {
                     if (regexm("`trimmed_line'", "^[a-zA-Z]") & "`trimmed_line'" != "" & "`trimmed_line'" != "---") {
+                        if ("`verbose'" != "") {
+                            noi di as text "  ← EXIT: Line " as result "`lines_checked'" as text " | Next key: " as result "`trimmed_line'"
+                        }
                         local in_indicator = 0
                         local found_indicator_section = 0
                         local found_disaggs = 0
@@ -125,6 +128,9 @@ program define _unicef_indicator_info, rclass
                     }
                 }
                 else if (regexm("`trimmed_line'", "^[A-Z0-9_-]+:\s*$") & "`trimmed_line'" != "`search_pattern'") {
+                    if ("`verbose'" != "") {
+                        noi di as text "  ← EXIT: Line " as result "`lines_checked'" as text " | Next key: " as result "`trimmed_line'"
+                    }
                     local in_indicator = 0
                     local found_indicator_section = 0
                     local found_disaggs = 0
@@ -174,6 +180,9 @@ program define _unicef_indicator_info, rclass
                             * and RESET other list flags (mutually exclusive)
                             if ("`field_name'" == "disaggregations") {
                                 * Header for disaggregations list - start collecting items
+                                if ("`verbose'" != "") {
+                                    noi di as text "    → Capturing: disaggregations" as text " (list header at line " as result "`lines_checked'" as text ")"
+                                }
                                 local found_disaggs = 1
                                 local found_dataflows = 0
                             }
@@ -185,9 +194,15 @@ program define _unicef_indicator_info, rclass
                                 
                                 * If dataflows has a scalar value, capture it immediately
                                 if ("`field_value'" != "") {
+                                    if ("`verbose'" != "") {
+                                        noi di as text "    → Captured: dataflows = " as result "`field_value'"
+                                    }
                                     local ind_dataflow "`field_value'"
                                     * Don't keep flag active - scalar was already handled
                                     local found_dataflows = 0
+                                }
+                                else if ("`verbose'" != "") {
+                                    noi di as text "    → Capturing: dataflows" as text " (list header at line " as result "`lines_checked'" as text ")"
                                 }
                             }
                             else if ("`field_name'" == "disaggregations_with_totals") {
@@ -197,8 +212,9 @@ program define _unicef_indicator_info, rclass
                                 }
                                 else {
                                     local disagg_totals = "`field_value'"
-                                }
-                                * Reset list collection flags (non-list field)
+                                }                                if ("`verbose'" != "") {
+                                    noi di as text "    → Captured: disaggregations_with_totals = " as result "`disagg_totals'"
+                                }                                * Reset list collection flags (non-list field)
                                 local found_disaggs = 0
                                 local found_dataflows = 0
                             }
@@ -249,10 +265,16 @@ program define _unicef_indicator_info, rclass
                                 * Append to appropriate collection based on active flag
                                 if (`found_disaggs' == 1) {
                                     * Append disaggregation item (space-separated list)
+                                    if ("`verbose'" != "") {
+                                        noi di as text "      + disaggregations item: \" as result \"`item'\""
+                                    }
                                     local disagg_raw "`disagg_raw' `item'"
                                 }
                                 else if (`found_dataflows' == 1) {
                                     * Append dataflow item (comma-separated list)
+                                    if ("`verbose'" != "") {
+                                        noi di as text "      + dataflows item: \" as result \"`item'\""
+                                    }
                                     if ("`ind_dataflow'" == "") {
                                         local ind_dataflow "`item'"
                                     }
