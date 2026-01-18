@@ -1,6 +1,6 @@
 *******************************************************************************
 * _unicefdata_sync_ind_meta
-*! v 1.1.0   08Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.2.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Helper program for unicefdata_sync: Sync full indicator catalog
 *
 * Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
@@ -8,7 +8,7 @@
 *******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
-    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA]
+    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA ENRICHDATAFLOWS FALLBACKSEQUENCESOUT(string)]
     
     local cache_max_age_days = 30
     local codelist_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
@@ -116,6 +116,12 @@ program define _unicefdata_sync_ind_meta, rclass
         local parser_option "forcepython"
     }
     
+    * Build fallback option if specified
+    local fallback_opt ""
+    if (`"`fallbacksequencesout'"' != "") {
+        local fallback_opt `"fallbacksequencesout("`fallbacksequencesout'")"'
+    }
+    
     capture noisily unicefdata_xmltoyaml, ///
         type(indicators) ///
         xmlfile("`xmlfile'") ///
@@ -125,7 +131,7 @@ program define _unicefdata_sync_ind_meta, rclass
         source("`codelist_url'") ///
         codelistid("CL_UNICEF_INDICATOR") ///
         codelistname("UNICEF Indicator Codelist") ///
-        `parser_option'
+        `parser_option' `enrichdataflows' `fallback_opt'
     
     if (_rc == 0) {
         local n_indicators = r(count)

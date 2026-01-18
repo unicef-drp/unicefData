@@ -1,10 +1,11 @@
 *******************************************************************************
 * _unicef_list_categories.ado
-*! v 1.4.1   07Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.5.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * List all available indicator categories with counts
 * Uses yaml.ado for robust YAML parsing
 * Uses Stata frames (v16+) for better isolation when available
 *
+* v1.5.0: Fix: Read 'parent' field from YAML (actual category) not 'category'
 * v1.4.1: Patch: accept DETAIL option; dispatcher now passes options correctly
 * v1.4.0: MAJOR REWRITE - Direct dataset query instead of 733 yaml get calls
 *         - Much faster: single dataset filter vs 733 individual lookups
@@ -90,12 +91,12 @@ program define _unicef_list_categories, rclass
             * Work directly with the dataset in the frame
             frame `yaml_frame' {
                 * yaml.ado creates dataset with columns: key, value, level, parent, type
-                * Keys look like: indicators_HVA_EPI_LHIV_category (yaml.ado uses _ as separator)
-                * We want all rows where key ends with _category under indicators
+                * Keys look like: indicators_CME_ARR_10T19_parent (yaml.ado uses _ as separator)
+                * The 'parent' field holds the category (e.g., CME, MNCH, HVA)
                 
-                * Keep only category rows (one per indicator)
+                * Keep only parent rows (one per indicator that has a parent/category)
                 * Exclude description entries (keys containing _description_)
-                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_parent$")
                 drop if regexm(key, "_description_")
                 
                 * Count total indicators
@@ -144,10 +145,11 @@ program define _unicef_list_categories, rclass
             * Read YAML (replaces current dataset)
             yaml read using "`yaml_file'", replace
             
-            * Keep only category rows (one per indicator)
+            * Keep only parent rows (one per indicator that has a parent/category)
             * yaml.ado uses underscores as key separator
+            * The 'parent' field holds the category (e.g., CME, MNCH, HVA)
             * Exclude description entries (keys containing _description_)
-            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_category$")
+            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_parent$")
             drop if regexm(key, "_description_")
             
             * Count total indicators

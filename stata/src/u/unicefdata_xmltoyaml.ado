@@ -1,8 +1,10 @@
 *******************************************************************************
 * unicefdata_xmltoyaml
-*! v 2.0.0   07Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 2.2.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Generic XML to YAML parser for SDMX data structures
 * Supports both Python (preferred) and pure Stata (fallback) parsers
+* v2.2.0: Added FALLBACKSEQUENCESOUT option for generating fallback sequences
+* v2.1.0: Added ENRICHDATAFLOWS option for indicator metadata
 *******************************************************************************
 
 /*
@@ -27,7 +29,7 @@ SYNTAX:
     unicefdata_xmltoyaml, type(string) xmlfile(string) outfile(string)
         [agency(string) version(string) contenttype(string) codelistid(string)
          codelistname(string) syncedat(string) source(string) append
-         forcepython forcestata]
+         forcepython forcestata enrichdataflows fallbacksequencesout(string)]
     
 OPTIONS:
     type(string)        - Database type (see SUPPORTED TYPES)
@@ -43,6 +45,10 @@ OPTIONS:
     append              - Append to existing file (no header)
     forcepython         - Force use of Python parser (requires Python 3.6+)
     forcestata          - Force use of pure Stata parser (no Python required)
+    enrichdataflows     - For indicators: query API to add dataflows field
+                          (requires Python + requests package, takes ~1-2 min)
+    fallbacksequencesout(string) - Also generate fallback sequences YAML to
+                          this path (only with enrichdataflows option)
     
 RETURNS:
     r(count)    - Number of items parsed
@@ -64,6 +70,10 @@ EXAMPLE:
     * Force Stata parser (no Python required)
     unicefdata_xmltoyaml, type(dataflows) xmlfile("`xml_data'") ///
         outfile("metadata/dataflows_stataonly.yaml") agency(UNICEF) forcestata
+    
+    * Indicators with dataflow enrichment
+    unicefdata_xmltoyaml, type(indicators) xmlfile("`xml_data'") ///
+        outfile("metadata/indicators.yaml") agency(UNICEF) enrichdataflows
 */
 
 *******************************************************************************
@@ -76,7 +86,8 @@ program define unicefdata_xmltoyaml, rclass
     syntax, TYPE(string) XMLFILE(string) OUTFILE(string) ///
         [AGENCY(string) VERSION(string) CONTENTTYPE(string) ///
          CODELISTID(string) CODELISTNAME(string) SYNCEDAT(string) ///
-         SOURCE(string) APPEND FORCEPYTHON FORCESTATA]
+         SOURCE(string) APPEND FORCEPYTHON FORCESTATA ENRICHDATAFLOWS ///
+         FALLBACKSEQUENCESOUT(string)]
     
     * Set defaults
     if ("`agency'" == "") local agency "UNICEF"
@@ -145,6 +156,18 @@ program define unicefdata_xmltoyaml, rclass
     
     if (`use_python') {
         * Use Python parser
+        * Build enrichdataflows option for Python
+        local enrich_opt ""
+        if ("`enrichdataflows'" != "") {
+            local enrich_opt "enrichdataflows"
+        }
+        
+        * Build fallback sequences option for Python
+        local fallback_opt ""
+        if ("`fallbacksequencesout'" != "") {
+            local fallback_opt `"fallbacksequencesout("`fallbacksequencesout'")"'
+        }
+        
         capture noisily unicefdata_xmltoyaml_py, ///
             type("`type'") ///
             xmlfile("`xmlfile'") ///
@@ -153,7 +176,8 @@ program define unicefdata_xmltoyaml, rclass
             version("`version'") ///
             source("`source'") ///
             codelistid("`codelistid'") ///
-            codelistname("`codelistname'")
+            codelistname("`codelistname'") ///
+            `enrich_opt' `fallback_opt'
         
         local py_rc = _rc
         if (`py_rc' == 0) {

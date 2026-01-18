@@ -1,24 +1,42 @@
 *******************************************************************************
 * _unicef_search_indicators.ado
-*! v 1.4.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Search UNICEF indicators by keyword using YAML metadata
-* Uses yaml.ado for robust YAML parsing
-* Uses Stata frames (v16+) for better isolation when available
+* Uses direct file parsing for robust, yaml.ado-independent operation
 *
-* v1.4.0: MAJOR REWRITE - Direct dataset query instead of 733 yaml get calls
-*         - Much faster: single dataset operations vs individual lookups
-*         - More robust: avoids frame context/return value issues
-* v1.3.2: Fixed frame naming (use explicit yaml_ prefix for clarity)
-* v1.3.1: Added dataflow() filter option (aligned with Python/R category filter)
+* v1.6.0: ENHANCEMENT - Search by dataflow by default, with category option
+*         - Default: search keyword in code, name, OR dataflow list
+*         - With category option: search keyword in code, name, OR category
+*         - Aligns with typical use case (finding indicators by dataflow)
+* v1.5.5: BUG FIX - Correct Stata quoting and indent detection
+*         - Fixed regex patterns to use compound quotes (no backslash escaping)
+*         - Fixed indicator key detection to check indent on orig_line
+*         - Pattern ['\"] changed to ['"] with compound-quoted regex
+*         - Prevents false detection of field names like "code: CME"
+* v1.5.4: REFACTOR - Use numbered locals for names
+*         - Store names as match_name1, match_name2, etc. instead of list
+*         - Eliminates parsing issues with parentheses in names
+* v1.5.3: BUG FIX - Compound quotes for all name processing
+*         - Use compound quotes when calling lower(), strpos() on names
+*         - Names with parentheses like "(aged 1-4)" require protection
+* v1.5.2: BUG FIX - Use gettoken with bind for names with parentheses
+*         - Names like "rate (aged 1-4 years)" were causing r(132) errors
+*         - gettoken handles balanced parens/brackets properly
+* v1.5.1: BUG FIXES - Apply same fixes as dataflows command
+*         - Check original line for indent (not trimmed)
+*         - Add hyphen to indicator regex for codes like PT_F_15-19_FGM_TND
+*         - Add continue when exiting dataflows list
+* v1.5.0: REWRITE - Direct file parsing instead of yaml.ado
+*         - Scans YAML line-by-line to collect indicator data
+*         - Searches code, name, and parent (category) fields
+*         - Optional dataflow filter with direct list scanning
+*         - No yaml.ado dependency (avoids list flattening issues)
 *******************************************************************************
 
 program define _unicef_search_indicators, rclass
-    version 14.0
+    version 11.0
     
-    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) VERBOSE METApath(string)]
-    
-    * Check if frames are available (Stata 16+)
-    local use_frames = (c(stata_version) >= 16)
+    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) CATEGORY VERBOSE METApath(string)]
     
     quietly {
     
@@ -62,191 +80,249 @@ program define _unicef_search_indicators, rclass
         }
         
         *-----------------------------------------------------------------------
-        * Read YAML and search using direct dataset operations
-        * This is MUCH faster than calling yaml get for each indicator
+        * Search using direct file parsing
+        * Scans YAML line-by-line to find matching indicators
         *-----------------------------------------------------------------------
         
         local keyword_lower = lower("`keyword'")
+        local df_filter_upper = upper("`dataflow'")
         local matches ""
-        local match_names ""
+        * Use numbered locals for names (avoids issues with parens in names)
+        * match_name1, match_name2, ... will be set during processing
         local match_dataflows ""
         local n_matches = 0
+        local n_collected = 0
         
-        if (`use_frames') {
-            *-------------------------------------------------------------------
-            * Stata 16+ - use frames for better isolation
-            *-------------------------------------------------------------------
-            local yaml_frame_base "unicef_search"
-            local yaml_frame "yaml_`yaml_frame_base'"
-            capture frame drop `yaml_frame'
+        *-----------------------------------------------------------------------
+        * Parse YAML file directly
+        *-----------------------------------------------------------------------
+        
+        tempname fh
+        file open `fh' using "`yaml_file'", read text
+        
+        * State tracking
+        local in_indicators = 0
+        local current_ind = ""
+        local current_name = ""
+        local current_parent = ""
+        local current_dataflows = ""
+        local in_dataflows_list = 0
+        
+        file read `fh' line
+        
+        while r(eof) == 0 {
+            local trimmed = strtrim(`"`macval(line)'"')
             
-            * Read YAML into a frame (yaml.ado stores as key/value dataset)
-            yaml read using "`yaml_file'", frame(`yaml_frame_base')
+            * Check for indicators: section start
+            if ("`trimmed'" == "indicators:") {
+                local in_indicators = 1
+                file read `fh' line
+                continue
+            }
             
-            * Work directly with the dataset in the frame
-            frame `yaml_frame' {
-                * yaml.ado creates keys like: indicators_CME_MRM0_code, indicators_CME_MRM0_name, etc.
-                * Keep only code, name, category, dataflow rows under indicators
-                * Exclude description entries (keys containing _description_)
-                keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category|dataflow)$")
-                drop if regexm(key, "_description_")
+            * Only process if in indicators section
+            if (`in_indicators' == 1) {
                 
-                * Extract indicator ID and attribute type from key
-                * Key format: indicators_<INDICATOR_ID>_<attribute>
-                * We need to extract INDICATOR_ID (which may contain underscores)
-                
-                * Get the attribute (last part after final underscore)
-                gen attribute = ""
-                replace attribute = "code" if regexm(key, "_code$")
-                replace attribute = "name" if regexm(key, "_name$")
-                replace attribute = "category" if regexm(key, "_category$")
-                replace attribute = "dataflow" if regexm(key, "_dataflow$")
-                
-                * Extract indicator ID (between "indicators_" and "_code/name/category/dataflow")
-                gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category|dataflow)$")
-                
-                * Reshape to wide: one row per indicator with code, name, category columns
-                keep ind_id attribute value
-                reshape wide value, i(ind_id) j(attribute) string
-                
-                * Rename for clarity
-                capture rename valuecode code
-                capture rename valuename name
-                capture rename valuecategory category
-                capture rename valuedataflow dataflow
-                
-                * Handle missing values
-                capture replace code = ind_id if missing(code) | code == ""
-                capture replace name = "" if missing(name)
-                capture replace category = "N/A" if missing(category) | category == ""
-                capture replace dataflow = "N/A" if missing(dataflow) | dataflow == ""
-                
-                * Create lowercase versions for case-insensitive search
-                gen code_lower = lower(code)
-                gen name_lower = lower(name)
-                gen cat_lower = lower(category)
-                
-                * Search for keyword in code, name, or category
-                gen found = (strpos(code_lower, "`keyword_lower'") > 0) | ///
-                            (strpos(name_lower, "`keyword_lower'") > 0) | ///
-                            (strpos(cat_lower, "`keyword_lower'") > 0)
-                
-                * Apply dataflow filter if specified
-                if ("`dataflow'" != "") {
-                    local df_upper = upper("`dataflow'")
-                    gen cat_upper = upper(category)
-                    replace found = 0 if cat_upper != "`df_upper'"
-                    drop cat_upper
+                * Detect end of indicators section (new top-level key without indent)
+                local orig_line `"`macval(line)'"'
+                if (substr("`orig_line'", 1, 1) != " " & "`trimmed'" != "" & !regexm("`trimmed'", "^#")) {
+                    if (!regexm("`trimmed'", "^-")) {
+                        * Process final indicator if pending
+                        if ("`current_ind'" != "" & `n_collected' < `limit') {
+                            * Check if keyword matches
+                            local code_lower = lower("`current_ind'")
+                            local name_lower = lower(`"`current_name'"')
+                            local parent_lower = lower("`current_parent'")
+                            
+                            local is_match = 0
+                            if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
+                            if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
+                            * Search in category or dataflow (unless dataflow filter specified)
+                            if ("`category'" != "") {
+                                if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
+                            }
+                            else if ("`df_filter_upper'" == "") {
+                                * Only search in dataflows if no dataflow filter specified
+                                local df_lower = lower("`current_dataflows'")
+                                if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
+                            }
+                            
+                            * Apply dataflow filter if specified (check parent field)
+                            if (`is_match' == 1 & "`df_filter_upper'" != "") {
+                                local parent_upper = upper("`current_parent'")
+                                if ("`parent_upper'" != "`df_filter_upper'") {
+                                    local is_match = 0
+                                }
+                            }
+                            
+                            if (`is_match' == 1) {
+                                local n_matches = `n_matches' + 1
+                                local n_collected = `n_collected' + 1
+                                local matches "`matches' `current_ind'"
+                                local match_name`n_collected' `"`current_name'"'
+                                * Use parent as the display "dataflow"
+                                local match_dataflows "`match_dataflows' `current_parent'"
+                            }
+                        }
+                        local in_indicators = 0
+                        file read `fh' line
+                        continue
+                    }
                 }
                 
-                * Keep only matches
-                keep if found == 1
-                
-                * Sort by code for consistent output
-                sort code
-                
-                * Limit results
-                local n_matches = _N
-                if (`n_matches' > `limit') {
-                    keep in 1/`limit'
-                    local n_matches = `limit'
-                }
-                
-                * Extract results into locals
-                forvalues i = 1/`n_matches' {
-                    local ind_code = code[`i']
-                    local ind_name = name[`i']
-                    local ind_df = dataflow[`i']
+                * Detect new indicator entry (2-space indent, ends with :)
+                * Note: Stata regex doesn't support {2}, use literal two spaces
+                local is_indicator_key = regexm(`"`orig_line'"', "^  [A-Za-z][A-Za-z0-9_-]*:[ ]*$")
+                if (`is_indicator_key') {
                     
-                    local matches "`matches' `ind_code'"
-                    local match_names `"`match_names' "`ind_name'""'
-                    local match_dataflows "`match_dataflows' `ind_df'"
+                    * Process previous indicator if exists
+                    if ("`current_ind'" != "" & `n_collected' < `limit') {
+                        local code_lower = lower("`current_ind'")
+                        local name_lower = lower(`"`current_name'"')
+                        local parent_lower = lower("`current_parent'")
+                        
+                        local is_match = 0
+                        if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
+                        if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
+                        * Search in category or dataflow (unless dataflow filter specified)
+                        if ("`category'" != "") {
+                            if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
+                        }
+                        else if ("`df_filter_upper'" == "") {
+                            * Only search in dataflows if no dataflow filter specified
+                            local df_lower = lower("`current_dataflows'")
+                            if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
+                        }
+                        
+                        * Apply dataflow filter if specified (check parent field)
+                        if (`is_match' == 1 & "`df_filter_upper'" != "") {
+                            local parent_upper = upper("`current_parent'")
+                            if ("`parent_upper'" != "`df_filter_upper'") {
+                                local is_match = 0
+                            }
+                        }
+                        
+                        if (`is_match' == 1) {
+                            local n_matches = `n_matches' + 1
+                            local n_collected = `n_collected' + 1
+                            local matches "`matches' `current_ind'"
+                            local match_name`n_collected' `"`current_name'"'
+                            local match_dataflows "`match_dataflows' `current_parent'"
+                        }
+                    }
+                    
+                    * Start new indicator
+                    local current_ind = subinstr("`trimmed'", ":", "", .)
+                    local current_name = ""
+                    local current_parent = ""
+                    local current_dataflows = ""
+                    local in_dataflows_list = 0
+                    
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse name field (format: name: 'text' or name: text)
+                if (regexm(`"`trimmed'"', `"^name:[ ]*['"](.*)['"]$"')) {
+                    local current_name = regexs(1)
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                * Handle unquoted names
+                if (regexm(`"`trimmed'"', `"^name:[ ]*([^']+)$"')) {
+                    local current_name = regexs(1)
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse parent field (this is the category)
+                if (regexm("`trimmed'", "^parent:[ ]*(.+)$")) {
+                    local current_parent = regexs(1)
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse dataflows field (may be list or inline)
+                if (regexm("`trimmed'", "^dataflows:[ ]*\[(.+)\]$")) {
+                    * Inline list: dataflows: [CME, GLOBAL_DATAFLOW]
+                    local dflist = regexs(1)
+                    local dflist = subinstr("`dflist'", ",", " ", .)
+                    local dflist = subinstr("`dflist'", "'", "", .)
+                    local dflist = subinstr("`dflist'", `"""', "", .)
+                    local current_dataflows = strtrim("`dflist'")
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                
+                if (regexm("`trimmed'", "^dataflows:[ ]*$")) {
+                    * Block list starting - set flag
+                    local in_dataflows_list = 1
+                    local current_dataflows = ""
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse dataflows list items
+                if (`in_dataflows_list' == 1) {
+                    if (regexm("`trimmed'", "^- (.+)$")) {
+                        local df_item = regexs(1)
+                        local df_item = strtrim("`df_item'")
+                        local current_dataflows "`current_dataflows' `df_item'"
+                        file read `fh' line
+                        continue
+                    }
+                    else if (!regexm("`trimmed'", "^-")) {
+                        * End of dataflows list - continue to re-process this line
+                        local in_dataflows_list = 0
+                        continue
+                    }
                 }
             }
             
-            * Clean up frame
-            capture frame drop `yaml_frame'
+            file read `fh' line
         }
-        else {
-            *-------------------------------------------------------------------
-            * Stata 14/15 - use preserve/restore
-            *-------------------------------------------------------------------
-            preserve
+        
+        * Process final indicator if exists
+        if ("`current_ind'" != "" & `n_collected' < `limit' & `in_indicators' == 1) {
+            local code_lower = lower("`current_ind'")
+            local name_lower = lower(`"`current_name'"')
+            local parent_lower = lower("`current_parent'")
             
-            * Read YAML (replaces current dataset)
-            yaml read using "`yaml_file'", replace
-            
-            * Keep only code, name, category, dataflow rows under indicators
-            * Exclude description entries (keys containing _description_)
-            keep if regexm(key, "^indicators_[A-Za-z0-9_]+_(code|name|category|dataflow)$")
-            drop if regexm(key, "_description_")
-            
-            * Extract attribute type from key
-            gen attribute = ""
-            replace attribute = "code" if regexm(key, "_code$")
-            replace attribute = "name" if regexm(key, "_name$")
-            replace attribute = "category" if regexm(key, "_category$")
-            replace attribute = "dataflow" if regexm(key, "_dataflow$")
-            
-            * Extract indicator ID
-            gen ind_id = regexs(1) if regexm(key, "^indicators_(.+)_(code|name|category|dataflow)$")
-            
-            * Reshape to wide
-            keep ind_id attribute value
-            reshape wide value, i(ind_id) j(attribute) string
-            
-            * Rename for clarity
-            capture rename valuecode code
-            capture rename valuename name
-            capture rename valuecategory category
-            capture rename valuedataflow dataflow
-            
-            * Handle missing values
-            capture replace code = ind_id if missing(code) | code == ""
-            capture replace name = "" if missing(name)
-            capture replace category = "N/A" if missing(category) | category == ""
-            capture replace dataflow = "N/A" if missing(dataflow) | dataflow == ""
-            
-            * Search
-            gen code_lower = lower(code)
-            gen name_lower = lower(name)
-            gen cat_lower = lower(category)
-            gen found = (strpos(code_lower, "`keyword_lower'") > 0) | ///
-                        (strpos(name_lower, "`keyword_lower'") > 0) | ///
-                        (strpos(cat_lower, "`keyword_lower'") > 0)
-            
-            * Apply dataflow filter if specified
-            if ("`dataflow'" != "") {
-                local df_upper = upper("`dataflow'")
-                gen cat_upper = upper(category)
-                replace found = 0 if cat_upper != "`df_upper'"
-                drop cat_upper
+            local is_match = 0
+            if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
+            if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
+            * Search in category or dataflow (unless dataflow filter specified)
+            if ("`category'" != "") {
+                if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
+            }
+            else if ("`df_filter_upper'" == "") {
+                * Only search in dataflows if no dataflow filter specified
+                local df_lower = lower("`current_dataflows'")
+                if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
             }
             
-            * Keep only matches
-            keep if found == 1
-            sort code
-            
-            * Limit results
-            local n_matches = _N
-            if (`n_matches' > `limit') {
-                keep in 1/`limit'
-                local n_matches = `limit'
+            * Apply dataflow filter if specified (check parent field)
+            if (`is_match' == 1 & "`df_filter_upper'" != "") {
+                local parent_upper = upper("`current_parent'")
+                if ("`parent_upper'" != "`df_filter_upper'") {
+                    local is_match = 0
+                }
             }
             
-            * Extract results
-            forvalues i = 1/`n_matches' {
-                local ind_code = code[`i']
-                local ind_name = name[`i']
-                local ind_df = dataflow[`i']
-                
-                local matches "`matches' `ind_code'"
-                local match_names `"`match_names' "`ind_name'""'
-                local match_dataflows "`match_dataflows' `ind_df'"
+            if (`is_match' == 1) {
+                local n_matches = `n_matches' + 1
+                local n_collected = `n_collected' + 1
+                local matches "`matches' `current_ind'"
+                local match_name`n_collected' `"`current_name'"'
+                local match_dataflows "`match_dataflows' `current_parent'"
             }
-            
-            restore
         }
+        
+        file close `fh'
         
         local matches = strtrim("`matches'")
         
@@ -259,16 +335,19 @@ program define _unicef_search_indicators, rclass
     noi di ""
     noi di as text "{hline 70}"
     if ("`dataflow'" != "") {
-        noi di as text "Search Results for: " as result "`keyword'" as text " in " as result "`dataflow'"
+        noi di as text "Search Results for: " as result "`keyword'" as text " in dataflow " as result "`dataflow'"
+    }
+    else if ("`category'" != "") {
+        noi di as text "Search Results for: " as result "`keyword'" as text " in categories"
     }
     else {
-        noi di as text "Search Results for: " as result "`keyword'"
+        noi di as text "Search Results for: " as result "`keyword'" as text " in dataflows"
     }
     
     * Dynamic column widths based on screen size
     local linesize = c(linesize)
     local col_ind = 2
-    local col_df = 28
+    local col_cat = 28
     local col_name = 48
     local name_width = `linesize' - `col_name' - 2
     if (`name_width' < 20) local name_width = 20
@@ -286,36 +365,38 @@ program define _unicef_search_indicators, rclass
         noi di ""
         noi di as text "  Tips:"
         noi di as text "  - Try a different search term"
-        noi di as text "  - Use {bf:unicefdata, categories} to see available dataflows"
+        noi di as text "  - Use {bf:unicefdata, categories} to see available categories"
         noi di as text "  - Use {bf:unicefdata, search(keyword)} without dataflow filter"
     }
     else {
-        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_df') "{ul:Dataflow}" _col(`col_name') "{ul:Name (click for metadata)}"
+        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_cat') "{ul:Category}" _col(`col_name') "{ul:Name (click for metadata)}"
         noi di ""
         
-        forvalues i = 1/`n_matches' {
+        forvalues i = 1/`n_collected' {
             local ind : word `i' of `matches'
-            local df : word `i' of `match_dataflows'
-            local nm : word `i' of `match_names'
+            local cat : word `i' of `match_dataflows'
+            
+            * Get name from numbered local (handles parens safely)
+            local nm `"`match_name`i''"'
             
             * Truncate name based on available width
-            if (length("`nm'") > `name_width') {
-                local nm = substr("`nm'", 1, `name_width' - 3) + "..."
+            if (length(`"`nm'"') > `name_width') {
+                local nm = substr(`"`nm'"', 1, `name_width' - 3) + "..."
             }
             
             * Hyperlinks:
             * - Indicator: show sample usage with indicator() option
-            * - Dataflow: show dataflow schema with dataflow() option
+            * - Category: show indicators in category
             * - Name: show metadata with info() option
-            if ("`df'" != "" & "`df'" != "N/A") {
-                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}" as text _col(`col_df') "{stata unicefdata, dataflow(`df'):`df'}" _col(`col_name') "{stata unicefdata, info(`ind'):`nm'}"
+            if ("`cat'" != "" & "`cat'" != "N/A") {
+                noi di as text _col(`col_ind') `"{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}"' as text _col(`col_cat') `"{stata unicefdata, indicators(`cat'):`cat'}"' _col(`col_name') `"{stata unicefdata, info(`ind'):`nm'}"'
             }
             else {
-                noi di as text _col(`col_ind') "{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}" as text _col(`col_df') "`df'" _col(`col_name') "{stata unicefdata, info(`ind'):`nm'}"
+                noi di as text _col(`col_ind') `"{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}"' as text _col(`col_cat') "`cat'" _col(`col_name') `"{stata unicefdata, info(`ind'):`nm'}"'
             }
         }
         
-        if (`n_matches' >= `limit') {
+        if (`n_collected' >= `limit') {
             noi di ""
             noi di as text "  (Showing first `limit' matches. Use limit() option for more.)"
         }
@@ -325,7 +406,15 @@ program define _unicef_search_indicators, rclass
     noi di as text "{hline `linesize'}"
     noi di as text "Found: " as result `n_matches' as text " indicator(s)"
     noi di as text "{hline `linesize'}"
-    noi di as text "{it:Note: Search matches keyword in code, name, or category. Count may differ from categories table.}"
+    if ("`dataflow'" != "") {
+        noi di as text "{it:Note: Search matches keyword in code or name, filtered by dataflow.}"
+    }
+    else if ("`category'" != "") {
+        noi di as text "{it:Note: Search matches keyword in code, name, or category.}"
+    }
+    else {
+        noi di as text "{it:Note: Search matches keyword in code, name, or dataflow.}"
+    }
     
     *---------------------------------------------------------------------------
     * Return values
@@ -343,6 +432,14 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.5.0   16Jan2026   by Joao Pedro Azevedo
+*   - REWRITE: Direct file parsing instead of yaml.ado
+*   - Scans YAML line-by-line to collect indicator data
+*   - Uses 'parent' field as category (matches YAML structure)
+*   - Optional dataflow filter with direct list scanning
+*   - No yaml.ado dependency (avoids list flattening issues)
+*   - Version 11.0 compatible (no frames required)
+*
 * v 1.4.0   17Dec2025   by Joao Pedro Azevedo
 *   - MAJOR REWRITE: Direct dataset query instead of 733 yaml get calls
 *   - Performance: reshape + strpos filter vs individual lookups

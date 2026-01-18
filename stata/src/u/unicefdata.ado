@@ -1,10 +1,20 @@
-*! v 1.6.0   12Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.8.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
 * Download indicators from UNICEF Data Warehouse via SDMX API
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
+*
+* NEW in v1.8.0:
+* - Added SUBNATIONAL option to enable access to subnational dataflows
+* - Without subnational option, WASH_HOUSEHOLD_SUBNAT and other *_SUBNAT dataflows are blocked
+*
+* NEW in v1.7.0:
+* - Removed hardcoded prefix-to-dataflow mappings (fixes WS_HCF_* incorrect dataflow)
+* - Primary dataflow detection now uses _get_dataflow_direct (metadata-driven)
+* - Fallback chain: _get_dataflow_direct → _get_dataflow_for_indicator → GLOBAL_DATAFLOW
+* - Deprecated _unicef_detect_dataflow_prefix (kept for backward compatibility only)
 *
 * NEW in v1.5.2: 
 * - Enhanced wide_indicators: now creates empty columns for all requested indicators
@@ -14,17 +24,27 @@ version 11
 *
 * NEW in v1.5.1: CI test improvements (offline YAML-based tests)
     
-    * Check for FLOWS subcommand (list available dataflows)
-    if (strpos("`0'", "flows") > 0) {
-        local has_detail = (strpos("`0'", "detail") > 0)
-        local has_verbose = (strpos("`0'", "verbose") > 0)
-        if (`has_detail') {
-            _unicef_list_dataflows, detail `=cond(`has_verbose', "verbose", "")'
+    * Check for FLOWS/DATAFLOWS subcommand (list available dataflows with counts)
+    * Accept both "flows" and "dataflows" for user convenience
+    if (strpos("`0'", "flows") > 0 | strpos("`0'", "dataflows") > 0) {
+        * Don't match "dataflow(" which is the filter option
+        if (strpos("`0'", "dataflow(") == 0) {
+            local has_detail = (strpos("`0'", "detail") > 0)
+            local has_verbose = (strpos("`0'", "verbose") > 0)
+            local has_dups = (strpos("`0'", "dups") > 0)
+            local opts ""
+            if (`has_detail') local opts "`opts' detail"
+            if (`has_verbose') local opts "`opts' verbose"
+            if (`has_dups') local opts "`opts' dups"
+            local opts = strtrim("`opts'")
+            if ("`opts'" != "") {
+                _unicef_list_dataflows, `opts'
+            }
+            else {
+                _unicef_list_dataflows
+            }
+            exit
         }
-        else {
-            _unicef_list_dataflows `=cond(`has_verbose', "verbose", "")'
-        }
-        exit
     }
     
     * Check for SEARCH subcommand
@@ -54,8 +74,21 @@ version 11
             local dataflow_filter = substr("`remaining'", `df_start', `df_end' - `df_start' + 1)
         }
         
+        * Check for category option (search by category instead of dataflow)
+        local has_category = (strpos("`remaining'", "category") > 0)
+        
+        * Build options string
+        local search_opts = ""
         if ("`dataflow_filter'" != "") {
-            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val') dataflow("`dataflow_filter'")
+            local search_opts "`search_opts' dataflow(`dataflow_filter')"
+        }
+        if (`has_category') {
+            local search_opts "`search_opts' category"
+        }
+        local search_opts = strtrim("`search_opts'")
+        
+        if ("`search_opts'" != "") {
+            _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val') `search_opts'
         }
         else {
             _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
@@ -196,6 +229,7 @@ version 11
                         MRV(integer 0)              /// N most recent values
                         DROPNA                      /// Drop missing values
                         SIMPLIFY                    /// Essential columns only
+                        noSPARSE                    /// Keep all standard columns (default: sparse)
                         RAW                         /// Raw SDMX output
                         ADDmeta(string)             /// Add metadata columns (region, income_group)
                         VERSION(string)             /// SDMX version
@@ -206,8 +240,10 @@ version 11
                         VALIDATE                    /// Validate inputs against codelists
                         FALLBACK                    /// Try alternative dataflows on 404
                         NOFallback                  /// Disable dataflow fallback
+                        NOFILTER                    /// Fetch ALL disaggregations (50-100x more data)
                         NOMETAdata                  /// Show brief summary instead of full metadata
-                           NOERROR                     /// Undocumented: suppress printed error messages
+                        NOERROR                     /// Undocumented: suppress printed error messages
+                        SUBNATIONAL                 /// Enable access to subnational dataflows
                         *                           /// Legacy options
                  ]
 
@@ -216,8 +252,6 @@ version 11
                  * Allow caller to suppress printed error messages (undocumented)
                  local noerror_flag 0
                  if ("`noerror'" != "") local noerror_flag 1
-
-
         *-----------------------------------------------------------------------
         * Validate inputs
         *-----------------------------------------------------------------------
@@ -277,6 +311,19 @@ version 11
         }
         if ("`residence'" == "") {
             local residence "_T"
+        }
+        if ("`maternal_edu'" == "") {
+            local maternal_edu "_T"
+        }
+        
+        *-----------------------------------------------------------------------
+        * Build filter vector for get_sdmx (dimension order: sex age wealth residence maternal_edu)
+        *-----------------------------------------------------------------------
+        
+        local filter_vector "`sex' `age' `wealth' `residence' `maternal_edu'"
+        
+        if ("`verbose'" != "") {
+            noi di as text "Filter vector: " as result "`filter_vector'"
         }
         if ("`maternal_edu'" == "") {
             local maternal_edu "_T"
@@ -389,8 +436,29 @@ version 11
                 _unicef_detect_dataflow_yaml "`ind'" "`metadata_path'"
                 local ind_dataflow "`s(dataflow)'"
                 
-                * Build URL for this indicator
-                local ind_key ".`ind'."
+                * Check for subnational dataflows and warn/block accordingly
+                * Patterns: *_SUBNAT, *_SUB, *_SUBNATIONAL, *_SUBNAT_* (country-specific)
+                local is_subnat = 0
+                if (strmatch(upper("`ind_dataflow'"), "*_SUBNAT") | strmatch(upper("`ind_dataflow'"), "*_SUB") | strmatch(upper("`ind_dataflow'"), "*_SUBNATIONAL") | strmatch(upper("`ind_dataflow'"), "*_SUBNAT_*")) {
+                    local is_subnat = 1
+                }
+                
+                if (`is_subnat' == 1) {
+                    if ("`subnational'" == "") {
+                        * Block: skip this indicator
+                        noi di as text "  {bf:⚠} Skipping `ind': subnational dataflow `ind_dataflow' requires {bf:subnational} option"
+                        continue
+                    }
+                    else {
+                        * Warn: proceeding with subnational data
+                        noi di as text "  {bf:⚠} `ind' uses subnational dataflow `ind_dataflow' (large dataset)"
+                    }
+                }
+                
+                * Build URL key using schema-aware dimension construction
+                * Extract dataflow schema and build key with explicit dimension filters
+                _unicef_build_schema_key "`ind'" "`ind_dataflow'" "`metadata_path'" `nofilter'
+                local ind_key = r(key)
                 local ind_rel_path "data/UNICEF,`ind_dataflow',`version'/`ind_key'"
                 
                 local ind_query "format=csv&labels=both"
@@ -416,46 +484,72 @@ version 11
                     sleep 1000
                 }
                 
-                * Try fallback if primary failed
+                * Try fallback if primary failed - use direct get_sdmx loop
                 if (`ind_success' == 0) {
-                    _unicef_fetch_with_fallback, indicator("`ind'") ///
-                        dataflow("`ind_dataflow'") ///
-                        base_url("`base_url'") ///
-                        version("`version'") ///
-                        start_year("`start_year'") ///
-                        end_year("`end_year'") ///
-                        page_size(`page_size') ///
-                        max_retries(`max_retries') ///
-                        `verbose'
+                    * Get list of fallback dataflows from YAML metadata
+                    _get_dataflow_direct `ind'
+                    local ind_fallback_dataflows "`r(dataflows)'"
                     
-                    if ("`r(success)'" == "1") {
-                        local ind_success 1
-                        * Data is now in memory from fallback helper
-                        * Convert types for safe appending
-                        capture confirm variable time_period
-                        if (_rc == 0) {
-                            capture confirm string variable time_period
-                            if (_rc != 0) {
-                                tostring time_period, replace force
-                            }
-                        }
-                        capture confirm variable obs_value
-                        if (_rc == 0) {
-                            capture confirm string variable obs_value
-                            if (_rc != 0) {
-                                tostring obs_value, replace force
-                            }
+                    if ("`ind_fallback_dataflows'" == "") {
+                        local ind_fallback_dataflows "GLOBAL_DATAFLOW"
+                    }
+                    
+                    * Try each dataflow directly with get_sdmx
+                    local fallback_attempt 0
+                    foreach ind_fallback_df of local ind_fallback_dataflows {
+                        local fallback_attempt = `fallback_attempt' + 1
+                        
+                        if ("`verbose'" != "") {
+                            noi di as text "  Fallback attempt `fallback_attempt' for `ind': trying dataflow `ind_fallback_df'..."
                         }
                         
-                        if (`first_indicator' == 1) {
-                            save "`combined_data'", replace
-                            local first_indicator = 0
+                        * Call get_sdmx directly with filter vector
+                        capture noisily get_sdmx, ///
+                            indicator("`ind'") ///
+                            dataflow("`ind_fallback_df'") ///
+                            filter("`filter_vector'") ///
+                            start_period("`start_year'") ///
+                            end_period("`end_year'") ///
+                            `verbose'
+                        
+                        if (_rc == 0 & _N > 0) {
+                            local ind_success = 1
+                            if ("`verbose'" != "") {
+                                noi di as text "✓ Successfully fetched `ind' from fallback dataflow: " as result "`ind_fallback_df'"
+                            }
+                            
+                            * Data is now in memory from get_sdmx
+                            * Convert types for safe appending
+                            capture confirm variable time_period
+                            if (_rc == 0) {
+                                capture confirm string variable time_period
+                                if (_rc != 0) {
+                                    tostring time_period, replace force
+                                }
+                            }
+                            capture confirm variable obs_value
+                            if (_rc == 0) {
+                                capture confirm string variable obs_value
+                                if (_rc != 0) {
+                                    tostring obs_value, replace force
+                                }
+                            }
+                            
+                            if (`first_indicator' == 1) {
+                                save "`combined_data'", replace
+                                local first_indicator = 0
+                            }
+                            else {
+                                append using "`combined_data'", force
+                                save "`combined_data'", replace
+                            }
+                            continue, break
                         }
                         else {
-                            append using "`combined_data'", force
-                            save "`combined_data'", replace
+                            if ("`verbose'" != "") {
+                                noi di as text "  Fallback dataflow `ind_fallback_df' failed or returned no data for `ind'"
+                            }
                         }
-                        continue
                     }
                 }
                 
@@ -522,13 +616,57 @@ version 11
             local skip_single_fetch 0
             
             if ("`dataflow'" == "") & ("`indicator'" != "") {
-                _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
-                local dataflow "`s(dataflow)'"
-                local indicator_name "`s(indicator_name)'"
+                * Detect dataflow from enriched metadata using indicator info
+                _unicef_indicator_info, indicator("`indicator'") brief
+                local dataflow "`r(primary_dataflow)'"
+                local all_dataflows "`r(dataflow)'"
+                local indicator_name "`r(name)'"
                 * Always show auto-detected dataflow (matches R/Python behavior)
                 noi di as text "Auto-detected dataflow '" as result "`dataflow'" as text "'"
                 if ("`verbose'" != "" & "`indicator_name'" != "") {
                     noi di as text "Indicator: " as result "`indicator_name'"
+                }
+            }
+            
+            *-------------------------------------------------------------------
+            * Check for subnational dataflows and warn/block accordingly
+            *-------------------------------------------------------------------
+            
+            if ("`dataflow'" != "") {
+                * Check if this is a subnational dataflow
+                * Patterns: *_SUBNAT, *_SUB, *_SUBNATIONAL, *_SUBNAT_* (country-specific)
+                local is_subnat = 0
+                if (strmatch(upper("`dataflow'"), "*_SUBNAT") | strmatch(upper("`dataflow'"), "*_SUB") | strmatch(upper("`dataflow'"), "*_SUBNATIONAL") | strmatch(upper("`dataflow'"), "*_SUBNAT_*")) {
+                    local is_subnat = 1
+                }
+                
+                if (`is_subnat' == 1) {
+                    if ("`subnational'" == "") {
+                        * Block: subnational option not specified
+                        if (`noerror_flag' == 0) {
+                            noi di as err ""
+                            noi di as err "{p 4 4 2}Dataflow '{bf:`dataflow'}' contains subnational data.{p_end}"
+                            noi di as err "{p 4 4 2}Subnational dataflows are restricted by default due to large data volumes.{p_end}"
+                            noi di as text ""
+                            noi di as text "{p 4 4 2}To access this dataflow, add the {bf:subnational} option:{p_end}"
+                            noi di as text ""
+                            noi di as text `"  {stata unicefdata, indicator(`indicator') subnational clear}"'
+                            noi di as text ""
+                        }
+                        return scalar success = 0
+                        return scalar successcode = 198
+                        return local fail_message "Subnational dataflow requires subnational option"
+                        if (`noerror_flag' == 0) exit 198
+                        return
+                    }
+                    else {
+                        * Warn: subnational option specified, proceed with warning
+                        noi di as text ""
+                        noi di as result "{bf:⚠ Subnational data warning:}"
+                        noi di as text "{p 4 4 2}Dataflow '{bf:`dataflow'}' contains subnational data.{p_end}"
+                        noi di as text "{p 4 4 2}These datasets can be very large and may take considerable time to download.{p_end}"
+                        noi di as text ""
+                    }
                 }
             }
             
@@ -629,37 +767,11 @@ version 11
         
         if (`skip_single_fetch' == 0) {
         
-        * Base path: data/UNICEF,{dataflow},{version}/{indicator_key}
-        local indicator_key = cond("`indicator'" != "", "." + "`indicator'" + ".", ".")
-        local rel_path "data/UNICEF,`dataflow',`version'/`indicator_key'"
-        
-        * Query parameters
-        local query_params "format=csv&labels=both"
-        
-        if (`start_year' > 0) {
-            local query_params "`query_params'&startPeriod=`start_year'"
-        }
-        
-        if (`end_year' > 0) {
-            local query_params "`query_params'&endPeriod=`end_year'"
-        }
-        
-        local query_params "`query_params'&startIndex=0&count=`page_size'"
-        
-        * Full URL
-        local full_url "`base_url'/`rel_path'?`query_params'"
-        
-        if ("`verbose'" != "") {
-            noi di as text "Fetching from: " as result "`full_url'"
-        }
-        
         *-----------------------------------------------------------------------
-        * Download data (with optional fallback)
+        * Primary fetch using get_sdmx (with filter vector)
         *-----------------------------------------------------------------------
         
         set checksum off
-        
-        tempfile tempdata
         
         * Determine if we should use fallback
         local use_fallback = ("`fallback'" != "" | ("`nofallback'" == "" & "`indicator'" != ""))
@@ -668,18 +780,34 @@ version 11
         * Show fetching message (matches R/Python behavior)
         noi di as text "Fetching page 1..."
         
-        * Try to copy the file with retries
+        * Clear dataset before fetching (get_sdmx doesn't have clear option)
+        clear
+        
+        * Try primary dataflow with get_sdmx (includes filter vector in URL)
         local success 0
-        forvalues attempt = 1/`max_retries' {
-            capture copy "`full_url'" "`tempdata'", replace public
-            if (_rc == 0) {
-                local success 1
-                continue, break
-            }
+        
+        * Build get_sdmx call with conditional year parameters
+        local year_opts ""
+        if (`start_year' > 0) local year_opts "`year_opts' start_period(`start_year')"
+        if (`end_year' > 0) local year_opts "`year_opts' end_period(`end_year')"
+        
+        capture noisily get_sdmx, ///
+            indicator("`indicator'") ///
+            dataflow("`dataflow'") ///
+            filter("`filter_vector'") ///
+            `year_opts' ///
+            `verbose'
+        
+        if (_rc == 0 & _N > 0) {
+            local success 1
             if ("`verbose'" != "") {
-                noi di as text "Attempt `attempt' failed. Retrying..."
+                noi di as text "✓ Successfully fetched from primary dataflow: " as result "`dataflow'"
             }
-            sleep 1000
+        }
+        else {
+            if ("`verbose'" != "") {
+                noi di as text "Primary dataflow `dataflow' failed or returned no data"
+            }
         }
         
         * If primary download failed and fallback is enabled, try alternatives
@@ -688,23 +816,48 @@ version 11
                 noi di as text "Primary dataflow failed, trying alternatives..."
             }
             
-            _unicef_fetch_with_fallback, indicator("`indicator'") ///
-                dataflow("`dataflow'") ///
-                base_url("`base_url'") ///
-                version("`version'") ///
-                start_year("`start_year'") ///
-                end_year("`end_year'") ///
-                page_size(`page_size') ///
-                max_retries(`max_retries') ///
-                `verbose'
+            * Use all detected dataflows, skip the primary (already tried above)
+            local fallback_dataflows "`all_dataflows'"
             
-            if ("`r(success)'" == "1") {
-                local success 1
-                local dataflow "`r(dataflow)'"
-                local full_url "`r(url)'"
-                local fallback_used 1  // Mark that fallback was used (data already in memory)
+            * If no dataflows detected, add defaults
+            if ("`fallback_dataflows'" == "") {
+                local fallback_dataflows "GLOBAL_DATAFLOW"
+            }
+            
+            * Try each dataflow directly with get_sdmx
+            local fallback_attempt 0
+            foreach fallback_df of local fallback_dataflows {
+                * Skip the primary dataflow (already tried)
+                if ("`fallback_df'" == "`dataflow'") continue
+                
+                local fallback_attempt = `fallback_attempt' + 1
+                
                 if ("`verbose'" != "") {
-                    noi di as text "Successfully used fallback dataflow: " as result "`dataflow'"
+                    noi di as text "  Fallback attempt `fallback_attempt': trying dataflow `fallback_df'..."
+                }
+                
+                * Call get_sdmx directly with filter vector
+                capture noisily get_sdmx, ///
+                    indicator("`indicator'") ///
+                    dataflow("`fallback_df'") ///
+                    filter("`filter_vector'") ///
+                    start_period("`start_year'") ///
+                    end_period("`end_year'") ///
+                    `verbose'
+                
+                if (_rc == 0 & _N > 0) {
+                    local success 1
+                    local dataflow "`fallback_df'"
+                    local fallback_used 1
+                    if ("`verbose'" != "") {
+                        noi di as text "✓ Successfully fetched from fallback dataflow: " as result "`fallback_df'"
+                    }
+                    continue, break
+                }
+                else {
+                    if ("`verbose'" != "") {
+                        noi di as text "  Fallback dataflow `fallback_df' failed or returned no data"
+                    }
                 }
             }
         }
@@ -1788,9 +1941,49 @@ version 11
         }
         
         *-----------------------------------------------------------------------
-        * Output format: Sparse (only columns with data)
-        * Aligned with R/Python: indicators naturally have varying column counts
+        * Output format: Sparse (only columns with data) vs Full Schema
+        * sparse (default): Drop columns that are entirely empty
+        * nosparse: Keep all standard columns for cross-platform consistency
         *-----------------------------------------------------------------------
+        
+        * Default is sparse behavior (drop empty columns)
+        * nosparse keeps all standard columns even if empty
+        local do_sparse = 1
+        if ("`sparse'" == "nosparse") local do_sparse = 0
+        
+        * Standard column schema (matches R/Python)
+        local standard_cols "indicator indicator_name iso3 country geo_type period value unit unit_name sex sex_name age wealth_quintile wealth_quintile_name residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes"
+        
+        if (`do_sparse' == 0) {
+            * nosparse: Add missing standard columns as empty
+            foreach col of local standard_cols {
+                capture confirm variable `col'
+                if (_rc != 0) {
+                    * Column doesn't exist - add it as empty string
+                    gen str1 `col' = ""
+                }
+            }
+        }
+        else {
+            * sparse: Drop columns that are entirely empty/missing
+            foreach v of varlist * {
+                capture confirm string variable `v'
+                if (_rc == 0) {
+                    * String variable - check if all empty
+                    quietly count if !missing(`v') & `v' != ""
+                    if (r(N) == 0) {
+                        drop `v'
+                    }
+                }
+                else {
+                    * Numeric variable - check if all missing
+                    quietly count if !missing(`v')
+                    if (r(N) == 0) {
+                        drop `v'
+                    }
+                }
+            }
+        }
         
         if ("`simplify'" != "") {
             * Keep only essential columns like R's simplify option
@@ -2169,9 +2362,17 @@ program define _unicef_detect_dataflow_yaml, sclass
         }
     }
     
-    * Fallback to prefix-based detection if YAML not available or indicator not found
-    _unicef_detect_dataflow_prefix "`indicator'"
-    sreturn local dataflow "`s(dataflow)'"
+    * Fallback to direct YAML metadata lookup (replaces hardcoded prefix mapping)
+    * _get_dataflow_direct uses comprehensive metadata with fallback to _get_dataflow_for_indicator
+    capture _get_dataflow_direct "`indicator'"
+    if (_rc == 0 & "`r(dataflows)'" != "") {
+        sreturn local dataflow "`r(dataflows)'"
+        sreturn local indicator_name ""
+        exit
+    }
+    
+    * Final fallback: use GLOBAL_DATAFLOW if all else fails
+    sreturn local dataflow "GLOBAL_DATAFLOW"
     sreturn local indicator_name ""
     
 end
@@ -2179,67 +2380,30 @@ end
 
 *******************************************************************************
 * Helper program: Fallback prefix-based dataflow detection
+* DEPRECATED: This function is kept for backward compatibility only.
+* Use _get_dataflow_direct for metadata-driven lookup instead.
 *******************************************************************************
 
 program define _unicef_detect_dataflow_prefix, sclass
     args indicator
     
-    * Extract prefix from indicator (first part before underscore)
-    local prefix = word(subinstr("`indicator'", "_", " ", 1), 1)
+    * DEPRECATED: Redirect to direct YAML metadata lookup
+    * This hardcoded approach is no longer used; keeping for backward compatibility
+    capture _get_dataflow_direct "`indicator'"
+    if (_rc == 0 & "`r(dataflows)'" != "") {
+        sreturn local dataflow "`r(dataflows)'"
+        exit
+    }
     
-    * Known indicator-to-dataflow mappings (aligned with R/Python)
-    if ("`prefix'" == "CME") {
-        sreturn local dataflow "CME"
+    * If _get_dataflow_direct is not available, use cache-based fallback
+    capture _get_dataflow_for_indicator `indicator'
+    if (_rc == 0 & "`r(dataflows)'" != "") {
+        sreturn local dataflow "`r(first)'"
+        exit
     }
-    else if ("`prefix'" == "NT") {
-        sreturn local dataflow "NUTRITION"
-    }
-    else if ("`prefix'" == "IM") {
-        sreturn local dataflow "IMMUNISATION"
-    }
-    else if inlist("`prefix'", "ED", "EDUNF") {
-        sreturn local dataflow "EDUCATION"
-    }
-    else if ("`prefix'" == "WS") {
-        sreturn local dataflow "WASH_HOUSEHOLDS"
-    }
-    else if ("`prefix'" == "HVA") {
-        sreturn local dataflow "HIV_AIDS"
-    }
-    else if ("`prefix'" == "MNCH") {
-        sreturn local dataflow "MNCH"
-    }
-    else if ("`prefix'" == "PT") {
-        sreturn local dataflow "PT"
-    }
-    else if ("`prefix'" == "ECD") {
-        sreturn local dataflow "ECD"
-    }
-    else if ("`prefix'" == "PV") {
-        sreturn local dataflow "CHLD_PVTY"
-    }
-    else if ("`prefix'" == "CCRI") {
-        sreturn local dataflow "CCRI"
-    }
-    else if ("`prefix'" == "SDG") {
-        sreturn local dataflow "CHILD_RELATED_SDG"
-    }
-    else if ("`prefix'" == "COD") {
-        sreturn local dataflow "CAUSE_OF_DEATH"
-    }
-    else if ("`prefix'" == "TRGT") {
-        sreturn local dataflow "CHILD_RELATED_SDG"
-    }
-    else if ("`prefix'" == "SPP") {
-        sreturn local dataflow "SOC_PROTECTION"
-    }
-    else if ("`prefix'" == "WT") {
-        sreturn local dataflow "PT"
-    }
-    else {
-        * Default to GLOBAL_DATAFLOW if unknown
-        sreturn local dataflow "GLOBAL_DATAFLOW"
-    }
+    
+    * Final fallback: GLOBAL_DATAFLOW
+    sreturn local dataflow "GLOBAL_DATAFLOW"
     
 end
 
@@ -2297,9 +2461,15 @@ end
 program define _unicef_detect_dataflow, sclass
     args indicator
     
-    * Call the new prefix-based detection
-    _unicef_detect_dataflow_prefix "`indicator'"
-    sreturn local dataflow "`s(dataflow)'"
+    * Use direct YAML metadata lookup (replaces hardcoded prefix mapping)
+    capture _get_dataflow_direct "`indicator'"
+    if (_rc == 0 & "`r(dataflows)'" != "") {
+        sreturn local dataflow "`r(dataflows)'"
+        exit
+    }
+    
+    * Final fallback
+    sreturn local dataflow "GLOBAL_DATAFLOW"
     
 end
 

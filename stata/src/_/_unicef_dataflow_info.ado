@@ -97,6 +97,15 @@ program define _unicef_dataflow_info, rclass
             }
         }
         
+        * Show indicators in this dataflow
+        di as text ""
+        di as text "{hline 60}"
+        di as result "Indicators in Dataflow: `df_upper'"
+        di as text "{hline 60}"
+        di as text ""
+        
+        _unicef_list_indicators, dataflow("`df_upper'")
+        
         return local dataflow "`df_upper'"
         exit
     }
@@ -228,5 +237,14 @@ program define _unicef_dataflow_info, rclass
     return scalar attributes = `attr_count'
     return local dimension_list "`dim_list'"
     return local attribute_list "`attr_list'"
+    
+    * Now show indicators in this dataflow
+    di as text ""
+    di as text "{hline 70}"
+    di as result "Indicators in Dataflow: `df_upper'"
+    di as text "{hline 70}"
+    di as text ""
+    
+    _unicef_list_indicators, dataflow("`df_upper'")
 end
 

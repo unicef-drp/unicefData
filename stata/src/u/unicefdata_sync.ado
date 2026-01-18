@@ -1,8 +1,10 @@
 *******************************************************************************
 * unicefdata_sync
-*! v 1.2.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.4.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Sync UNICEF metadata from SDMX API to local YAML files
 * Creates standardized YAML files with watermarks matching R/Python format
+* v1.4.0: Added fallbacksequences option to auto-generate fallback sequences file
+* v1.3.0: Added enrichdataflows option to add dataflow mappings to indicators
 * v1.2.0: Added selective sync options (all, dataflows, codelists, countries, regions, indicators, history)
 * v1.1.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
@@ -33,7 +35,7 @@ WATERMARK FORMAT:
     - <counts>: item counts
     
 SYNTAX:
-    unicefdata_sync [, path(string) suffix(string) verbose force forcepython forcestata]
+    unicefdata_sync [, path(string) suffix(string) verbose force forcepython forcestata enrichdataflows]
     
 OPTIONS:
     path(string)   - Directory for metadata files (default: auto-detect)
@@ -43,6 +45,8 @@ OPTIONS:
     force          - Force sync even if cache is fresh
     forcepython    - Force use of Python parser for XML processing (requires Python 3.6+)
     forcestata     - Force use of pure Stata parser (no Python required)
+    enrichdataflows - Query API to add dataflow mappings to each indicator
+                     (requires Python + requests package, takes ~1-2 min)
     
 EXAMPLES:
     . unicefdata_sync
@@ -66,7 +70,8 @@ program define unicefdata_sync, rclass
     version 14.0
     
     syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA ///
-              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY]
+              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY ///
+              ENRICHDATAFLOWS FALLBACKSEQUENCES]
     
     * Validate parser options
     if ("`forcepython'" != "" & "`forcestata'" != "") {
@@ -89,6 +94,11 @@ program define unicefdata_sync, rclass
         local do_countries 1
         local do_regions 1
         local do_indicators 1
+        * When syncing ALL, automatically enable enrichdataflows for most complete data
+        * (unless explicitly disabled by user with a future option)
+        if ("`enrichdataflows'" == "" & "`all'" != "") {
+            local enrichdataflows "enrichdataflows"
+        }
     }
     else {
         local do_dataflows = ("`dataflows'" != "")
@@ -126,6 +136,7 @@ program define unicefdata_sync, rclass
     local FILE_SYNC_HISTORY "_unicefdata_sync_history`sfx'.yaml"
     local FILE_IND_META "_unicefdata_indicators_metadata`sfx'.yaml"
     local FILE_DF_INDEX "_dataflow_index`sfx'.yaml"
+    local FILE_FALLBACK "_dataflow_fallback_sequences`sfx'.yaml"
     
     * Get current timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
@@ -410,16 +421,25 @@ program define unicefdata_sync, rclass
         di as text "  📁 Syncing full indicator catalog..."
     }
     
+    * Build fallback sequences option if specified
+    local fallback_opt ""
+    if ("`fallbacksequences'" != "") {
+        local fallback_opt `"fallbacksequencesout("`current_dir'`FILE_FALLBACK'")"'
+    }
+    
     local n_full_indicators = 0
     local ind_cached = 0
     capture noisily {
         _unicefdata_sync_ind_meta, ///
             outfile("`current_dir'`FILE_IND_META'") ///
             agency("`agency'") ///
-            `force' `parser_opt'
+            `force' `parser_opt' `enrichdataflows' `fallback_opt'
         local n_full_indicators = r(count)
         local ind_cached = r(cached)
         local files_created "`files_created' `FILE_IND_META'"
+        if ("`fallbacksequences'" != "") {
+            local files_created "`files_created' `FILE_FALLBACK'"
+        }
     }
     
     if (_rc != 0) {
@@ -1382,9 +1402,9 @@ program define _unicefdata_sync_dataflow_index, rclass
         file close `infh'
     }
     
-    * Individual dataflow schema files will be created in _dataflows/ subfolder:
-    * _dataflows/{DATAFLOW_ID}.yaml
-    local dataflows_dir "`outdir'_dataflows/"
+    * Individual dataflow schema files will be created in __dataflows/ subfolder:
+    * __dataflows/{DATAFLOW_ID}.yaml
+    local dataflows_dir "`outdir'__dataflows/"
     capture mkdir "`dataflows_dir'"
     
     * Open index file
@@ -1463,7 +1483,7 @@ program define _unicefdata_sync_dataflow_index, rclass
                 syncedat("`synced_at'")
             
             if ("`verbose'" != "") {
-                di as text "       ✓ _dataflows/`df_id'.yaml"
+                di as text "       ✓ __dataflows/`df_id'.yaml"
             }
             
             local success_count = `success_count' + 1
@@ -1631,7 +1651,7 @@ end
 *******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
-    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA]
+    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA ENRICHDATAFLOWS FALLBACKSEQUENCESOUT(string)]
     
     local cache_max_age_days = 30
     local codelist_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
@@ -1742,6 +1762,12 @@ program define _unicefdata_sync_ind_meta, rclass
         local parser_option "forcepython"
     }
     
+    * Build fallback sequences option
+    local fallback_opt ""
+    if ("`fallbacksequencesout'" != "") {
+        local fallback_opt `"fallbacksequencesout("`fallbacksequencesout'")"'
+    }
+    
     capture noisily unicefdata_xmltoyaml, ///
         type(indicators) ///
         xmlfile("`xmlfile'") ///
@@ -1751,7 +1777,7 @@ program define _unicefdata_sync_ind_meta, rclass
         source("`codelist_url'") ///
         codelistid("CL_UNICEF_INDICATOR") ///
         codelistname("UNICEF Indicator Codelist") ///
-        `parser_option'
+        `parser_option' `enrichdataflows' `fallback_opt'
     
     if (_rc == 0) {
         local n_indicators = r(count)
