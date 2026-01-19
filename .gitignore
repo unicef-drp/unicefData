@@ -127,3 +127,5 @@ stata/qa/check_*.log
 
 # Generated package files
 *.tar.gz
+/doc/
+/Meta/

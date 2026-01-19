@@ -15,7 +15,7 @@
 #' @param labels One of "both","id","none"; default "both".
 #' @param tidy Logical; if TRUE, rename core columns and retain metadata; default TRUE.
 #' @param country_names Logical; if TRUE, join ISO3 to country names; default TRUE.
-#' @param page_size Rows per page for CSV; default 100000L.
+#' @param page_size Rows per page for CSV; default 1000000L.
 #' @param retry Number of retries; default 3L.
 #' @param cache Logical; if TRUE, cache per flow on disk; default FALSE.
 #' @param sleep Pause (in seconds) between pages; default 0.2.
@@ -44,7 +44,7 @@ get_sdmx <- function(
   labels        = c("both","id","none"),
   tidy          = TRUE,
   country_names = TRUE,
-  page_size     = 100000L,
+  page_size     = 1000000L,
   retry         = 3L,
   cache         = FALSE,
   sleep         = 0.2,

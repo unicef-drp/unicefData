@@ -19,7 +19,7 @@ unicefData(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
-  page_size = 1e+05,
+  page_size = 1e+06,
   detail = c("data", "structure"),
   version = NULL,
   format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
@@ -48,7 +48,7 @@ unicefdata(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
-  page_size = 1e+05,
+  page_size = 1e+06,
   detail = c("data", "structure"),
   version = NULL,
   format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
@@ -99,7 +99,7 @@ Previously called 'retry'. Both parameter names are supported.}
 
 \item{cache}{Logical; if TRUE, memoises results.}
 
-\item{page_size}{Integer rows per page (default: 100000).}
+\item{page_size}{Integer rows per page (default: 1000000).}
 
 \item{detail}{"data" (default) or "structure" for metadata.}
 

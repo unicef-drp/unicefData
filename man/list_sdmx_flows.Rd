@@ -7,7 +7,7 @@
 list_sdmx_flows(
   agency = "UNICEF",
   retry = 3L,
-  cache_dir = tools::R_user_dir("get_sdmx", "cache")
+  cache_dir = tools::R_user_dir("unicefdata", "cache")
 )
 }
 \arguments{

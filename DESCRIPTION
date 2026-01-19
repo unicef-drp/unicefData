@@ -1,6 +1,7 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
 Version: 1.5.2
+Date: 2026-01-16
 Authors@R: c(
     person("Joao Pedro", "Azevedo", email = "jazevedo@unicef.org", role = c("aut", "cre")),
     person("Garen", "Avanesian", role = "aut"))
@@ -31,7 +32,11 @@ Imports:
     tidyr
 Suggests:
     testthat (>= 3.0.0),
-    devtools
+    devtools,
+    knitr,
+    rmarkdown,
+    data.table
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/unicef-drp/unicefData
 BugReports: https://github.com/unicef-drp/unicefData/issues

@@ -1,0 +1,19 @@
+citHeader("To cite unicefData in publications use:")
+
+citEntry(
+  entry    = "Manual",
+  title    = "unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data",
+  author   = c(
+    person("Joao Pedro", "Azevedo"),
+    person("Garen", "Avanesian")
+  ),
+  year     = "2026",
+  note     = "R package version 1.5.2",
+  url      = "https://github.com/unicef-drp/unicefData",
+  textVersion = paste(
+    "Azevedo, Joao Pedro and Avanesian, Garen (2026).",
+    "unicefData: Trilingual R, Python, and Stata library for UNICEF SDMX data.",
+    "R package version 1.5.2.",
+    "https://github.com/unicef-drp/unicefData"
+  )
+)
