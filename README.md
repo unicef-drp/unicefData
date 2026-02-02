@@ -60,7 +60,7 @@ print(head(df))
 
 ```stata
 * Don't know the indicator code? Search for it!
-unicefdata, categories        // List all categories
+unicefdata, flows             // List all dataflows
 unicefdata, search(mortality)  // Search by keyword
 unicefdata, dataflow(CME)     // Show dataflow schema (dimensions, attributes)
 
@@ -75,7 +75,153 @@ list iso3 country indicator period value in 1/10
 help unicefdata
 ```
 
+#### Tiered Discovery (Stata)
+
+Discovery commands include tier filters to control which indicators appear:
+
+- Default: Tier 1 only (verified and downloadable)
+- `showtier2`: include Tier 2 (officially defined, no data) — warning shown
+- `showtier3` / `showlegacy`: include Tier 3 (legacy/undocumented) — warning shown
+- `showall`: include Tiers 1–3
+- `showorphans`: include orphan indicators (taxonomy maintenance)
+
+Examples:
+
+```stata
+unicefdata, search(stunting) limit(10)          // Tier 1
+unicefdata, search(stunting) limit(10) showtier2
+unicefdata, search(stunting) limit(10) showtier3
+unicefdata, search(stunting) limit(20) showall
+```
+
+#### Tier Classification System
+
+The package uses a 4-tier system to classify indicator availability and reliability:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    TIER CLASSIFICATION                          │
+└─────────────────────────────────────────────────────────────────┘
+
+Tier 1 (480 indicators) - ✅ VERIFIED AND DOWNLOADABLE
+├─ Has valid dataflow mapping (e.g., CME, NT, MNCH)
+├─ Data available via SDMX API
+├─ Fully tested and validated
+└─ Example: CME_MRY0T4 (Under-5 mortality)
+
+Tier 2 (0 indicators) - ⚠️  LIMITED/DEPRECATED
+├─ Has dataflow but marked as limited access
+├─ May have restricted availability
+└─ Use with caution
+
+Tier 3 (0 indicators) - ⚠️  NO DATA AVAILABLE
+├─ Has 'nodata' or empty dataflow mapping
+├─ Metadata exists but no data in API
+└─ Indicator definition only
+
+Tier 4 (258 indicators) - ❌ NO DATAFLOW MAPPING
+├─ No dataflow information available
+├─ Cannot be downloaded via API
+├─ Orphan indicators (taxonomy maintenance)
+└─ Example: CME (parent category, not downloadable)
+
+┌─────────────────────────────────────────────────────────────────┐
+│              DOWNLOAD TROUBLESHOOTING BY TIER                   │
+└─────────────────────────────────────────────────────────────────┘
+
+Error: "Could not fetch data from any dataflow"
+│
+├─ Check indicator tier:
+│   └─ unicefdata, search(YourIndicatorCode)
+│
+├─ If Tier 1: Network/API issue
+│   ├─ Check internet connection
+│   ├─ Verify firewall settings
+│   ├─ Try: set timeout1 30
+│   └─ Check: https://sdmx.data.unicef.org/
+│
+├─ If Tier 3/4: Indicator not downloadable
+│   ├─ Search for related Tier 1 indicators
+│   ├─ Example: Search child indicators of category
+│   └─ unicefdata, search(RelatedTerm) limit(20)
+│
+└─ Alternative: Manually specify dataflow
+    └─ unicefdata, indicator(CODE) dataflow(DATAFLOW_NAME)
+
+```
+
 > **Note:** You don't need to specify `dataflow`! The package automatically detects it from the indicator code on first use, fetching the complete indicator codelist (733 indicators) from the UNICEF SDMX API.
+
+---
+
+## 🆕 What's New in v2.0.4 (Stata)
+
+**Bug Fix Release** - February 1, 2026
+
+* **False warning fix**: Resolved issue where valid disaggregation filters showed "NOT supported" warnings
+  - Fixed metadata_path reset logic (line 707 of unicefdata.ado)
+  - Changed from unconditional reset to conditional fallback
+  - Eliminates false warnings while maintaining error detection
+  - Validated: 32/32 cross-platform indicators (100% consistency)
+
+* **Examples documentation refresh**: Updated unicefdata_examples.ado to match v2.0.4 API
+  - Improved syntax clarity
+  - Better disaggregation handling examples
+  - Aligned with latest metadata system
+
+* **Cross-platform alignment**: Python (sdmx_client.py) and R (unicefData.R, unicef_core.R) updated for consistency
+  - All three platforms now use corrected metadata_path handling logic
+  - Python tests: 28/28 passing (1 optional)
+  - R tests: 8/8 passing (100%)
+
+## 🆕 What's New in v2.0.0 (Stata)
+
+**Major Quality Milestone** - All QA tests passing (38/38, 100% success rate)
+
+* **SYNC-02 Enrichment Fix**: Resolved critical path extraction bug
+  - Fixed directory path extraction logic in metadata enrichment pipeline
+  - Phase 2-3 enrichment now working: tier classification + disaggregations
+  - Previously: 37/38 tests passing (SYNC-02 failed)
+  - Now: 38/38 tests passing in 10m 17s
+
+* **Enhanced Reliability**: Metadata synchronization pipeline fully operational
+  - All enrichment phases complete successfully
+  - Improved YAML file path resolution
+  - Better error handling and diagnostics
+
+## 🆕 What's New in v1.10.0 (Stata)
+
+**Released**: January 19, 2026
+
+### Added (Stata)
+- **Regression snapshot testing (REGR-01)**: Baseline comparison system to detect silent API data regressions using historical snapshots with ±0.01 tolerance
+- **Country name generation**: Automatically generates `country` variable from `iso3` codes using country lookup table
+- **Enhanced UTF-8 support**: Full Unicode character preservation across XML→YAML→Stata pipeline
+- **Enhanced info() display**: Shows SDMX dimension codes alongside human-readable values with clickable API Query URLs
+- **Debug options**: Added `debug`, `trace`, and `verbose` options for troubleshooting
+- **Improved error handling**: Better error messages and fallback behavior for missing data
+
+### Fixed (Stata)
+- YAML metadata parsing now uses `yaml get` (compatible with all yaml package versions)
+- wide_indicators reshape now correctly creates indicator columns
+- Unicode accents preserved in country names (e.g., "Côte d'Ivoire")
+- Case-insensitive CSV variable renaming (handles Stata's automatic lowercase conversion)
+
+### Quality Metrics (Stata)
+- **Test coverage**: ✅ **30/30 tests passing (100% coverage)**
+- **Test suite**: 6 categories (ENV, DL, DIS, FILT, META, EDGE, REGR) with comprehensive QA documentation
+- **Regression baselines**: 2 validated snapshots (mortality, vaccination) for API stability monitoring
+- **Platforms**: Tested on Windows, macOS, Linux
+- **Stata versions**: Compatible with Stata 14+
+
+## What's New in v1.9.0 (Stata)
+
+**Released**: January 17, 2026
+
+### Added (Stata)
+- Tiered discovery options in `unicefdata`: default Tier 1; opt-in `showtier2`, `showtier3`, `showall`, `showorphans`
+- Warning messages when non-default tiers are included to indicate provenance and risk
+- Examples do-file for tiers: `doc/examples/run_tier_examples.do`
 
 ---
 
@@ -647,10 +793,177 @@ indicator_info("CME_MRY0T4")
 
 ## Metadata Synchronization
 
-The unicefData package maintains synchronized YAML metadata files across all three platforms (Python, R, Stata). These files contain dataflow definitions, indicator catalogs, country codes, and codelist mappings.
+### Quick Start (Automated)
 
-### Python
+**Stata (Recommended):**
+```stata
+* Full metadata refresh (all files, all languages)
+unicefdata_refresh_all, verbose
 
+* Check metadata age
+unicefdata_sync, verbose
+
+* Force manual sync (without staleness warning)
+unicefdata_sync, force verbose
+```
+
+**PowerShell (Cross-language sync):**
+```powershell
+# Sync Stata metadata to Python/R
+.\scripts\sync_metadata_cross_language.ps1
+```
+
+**Python:**
+```python
+from tests import orchestrator_metadata
+orchestrator_metadata.sync_all()
+```
+
+**R:**
+```r
+source("tests/sync_metadata_r.R")
+```
+
+---
+
+### Metadata Refresh Workflow
+
+The package uses a **4-step metadata refresh workflow** to ensure consistency:
+
+1. **Base metadata** — Sync core structures (dataflows, codelists, countries, regions)
+2. **Dataflow dimension values** — Query SDMX `/data/` endpoint to extract actual values for each dimension
+3. **Indicator enrichment** — Fetch complete indicator codelist with dataflow mappings
+4. **Dimension enrichment** — Add available dimension values to indicator metadata
+
+**Command:**
+```stata
+unicefdata_refresh_all, verbose
+```
+
+**What it does:**
+- Runs `unicefdata_sync` for base metadata
+- Calls Python script `build_dataflow_metadata.py` to query API for dimension values
+- Re-syncs indicator metadata with dataflow mappings
+- Calls Python script `enrich_indicators_metadata.py` to add dimension values
+- Updates sync history with timestamps and checksums
+
+**Output:**
+```
+┌─────────────────────────────────────────────┐
+│ unicefData Metadata Refresh Summary         │
+└─────────────────────────────────────────────┘
+
+  ✓ Step 1: Base metadata synced
+  ✓ Step 2: Dataflow dimension values extracted
+  ✓ Step 3: Indicator metadata enriched
+  ⚠ Step 4: Dimension enrichment skipped (Python script not found)
+
+Metadata files updated:
+  - _unicefdata_dataflows.yaml
+  - _unicefdata_dataflow_metadata.yaml
+  - _unicefdata_indicators_metadata.yaml
+  - _unicefdata_countries.yaml
+  - _unicefdata_regions.yaml
+  - _unicefdata_sync_history.yaml
+
+All metadata synced successfully.
+```
+
+---
+
+### Staleness Detection
+
+The package **automatically warns** if metadata is >30 days old:
+
+```stata
+. unicefdata, indicator(CME_MRY0T4) clear
+
+⚠ WARNING: Metadata is 45 days old (last sync: 2025-11-15)
+
+  Metadata may be outdated. Consider refreshing:
+
+  {stata unicefdata_refresh_all, verbose}  (full refresh - recommended)
+  {stata unicefdata_sync, force verbose}   (selective refresh)
+
+  To suppress this warning, use: unicefdata_sync, force
+```
+
+**Note:** Staleness check only runs when:
+- User does NOT specify `force` option
+- Sync history file exists
+- `verbose` option shows age even if <30 days
+
+---
+
+### Automated Refresh (GitHub Actions)
+
+Metadata is automatically refreshed **every Monday at 2 AM UTC** via GitHub Actions workflow. See [`.github/workflows/metadata-sync.yml`](.github/workflows/metadata-sync.yml) for implementation.
+
+The workflow:
+- Runs Python scripts to query SDMX API for latest dimension values
+- Updates metadata files if changes detected
+- Auto-commits with `[skip ci]` to prevent loops
+- Creates GitHub issue if refresh fails
+
+**Manual trigger:** Go to Actions tab → "Weekly Metadata Refresh" → Run workflow
+
+---
+
+### Cross-Language Metadata Sync
+
+To ensure Python, R, and Stata use **identical metadata**, run:
+
+```powershell
+# Copies metadata from Stata (canonical) to Python/R
+.\scripts\sync_metadata_cross_language.ps1
+
+# Dry run (preview changes)
+.\scripts\sync_metadata_cross_language.ps1 -DryRun
+```
+
+**What it syncs:**
+- `_unicefdata_dataflow_metadata.yaml` (dimension values)
+- `_unicefdata_indicators_metadata.yaml` (indicator→dataflow mappings)
+- `_unicefdata_dataflows.yaml` (dataflow schemas)
+- `_unicefdata_countries.yaml`, `_unicefdata_regions.yaml`
+- `_unicefdata_sync_history.yaml` (sync timestamps)
+
+**Output:**
+```
+  ≡ SAME: _unicefdata_dataflows.yaml → Python (hash: 7f3a2b9c4d1e6...)
+  ↻ UPDATE: _unicefdata_dataflow_metadata.yaml → Python
+    Source: a1b2c3d4e5f6...
+    Target: 9z8y7x6w5v4u...
+  + NEW: _unicefdata_indicators_metadata.yaml → R
+
+  Files synced:  3
+  Files skipped: 2
+  Errors:        0
+
+✓ Cross-language metadata sync complete
+```
+
+---
+
+### Metadata Consistency Check
+
+To verify all three languages have matching metadata:
+
+```bash
+python tests/report_metadata_status.py
+```
+
+This reports:
+- File existence across languages
+- SHA256 checksums (detects drift)
+- Timestamp discrepancies
+- Missing files
+
+---
+
+### Language-Specific Sync (Advanced)
+
+**Python:**
 ```python
 import sys
 sys.path.insert(0, 'python')
@@ -666,58 +979,33 @@ ms.sync_all(verbose=True)
 # Generate dataflow schemas (dataflows/*.yaml)
 sync_dataflow_schemas(output_dir='python/metadata/current')
 
-# Generate full indicator catalog (counts vary)
+# Generate full indicator catalog
 refresh_indicator_cache()
 ```
 
-**Generated files:** `python/metadata/current/`
-- `_unicefdata_dataflows.yaml` - dataflow catalog
-- `_unicefdata_indicators.yaml` - common SDG indicators (subset)
-- `_unicefdata_codelists.yaml` - dimension codelists
-- `_unicefdata_countries.yaml` - country codes
-- `_unicefdata_regions.yaml` - regional codes
-- `unicef_indicators_metadata.yaml` - full indicator catalog
-- `dataflow_index.yaml` - Dataflow schema index
-- `dataflows/*.yaml` - individual dataflow schemas
-Counts vary by API updates and sync date.
-
-### R
-
+**R:**
 ```r
-# Set working directory to R folder
 setwd("R")
-
-# Load and run metadata sync
 source("metadata_sync.R")
 sync_all_metadata(verbose = TRUE)
 
-# Generate full indicator catalog
 source("indicator_registry.R")
 refresh_indicator_cache()
 
-# Generate dataflow schemas (requires schema_sync.R)
 source("schema_sync.R")
 sync_dataflow_schemas()
 ```
 
-**Generated files:** `R/metadata/current/`
-- Same file structure as Python
-
-### Stata
-
+**Stata:**
 ```stata
-* Standard sync (uses Python for large XML files when available)
+* Standard sync (uses Python for large XML when available)
 unicefdata_sync, verbose
 
 * Pure Stata sync (with suffix for separate files)
 unicefdata_sync, suffix("_stataonly") verbose
-
-* View help for all options
-help unicefdata_sync
 ```
 
-**Generated files:** `stata/metadata/current/`
-- Same file structure as Python/R
+**Generated files:** All languages produce identical YAML files in their respective `metadata/current/` directories
 - `*_stataonly.yaml` files when using suffix option
 
 #### ⚠️ Stata Limitations
@@ -800,6 +1088,52 @@ See the examples directories:
 
 ---
 
+## Testing & Validation
+
+The **unicefData** package includes a comprehensive cross-platform validation framework to ensure data consistency and API compatibility across all three languages (Python, R, Stata).
+
+### Quick Validation Run
+
+```bash
+cd validation
+python run_validation.py --limit 10 --seed 42 --languages python r stata
+```
+
+**Parameters:**
+- `--limit`: Number of indicators to test (default: 10)
+- `--seed`: Random seed for reproducibility (default: 42)
+- `--languages`: Which platforms to test: python, r, stata (default: python)
+- `--valid-only`: Test only Tier 1 indicators (default: true)
+- `--verbose`: Enable verbose output (flag)
+
+### Validation Results
+
+Results are cached for speed and stored in:
+- **Logs**: `logs/YYYYMMDD/indicator_validation_HHMMSS/`
+- **Cache**: `cache/{language}/*.csv` with metadata tracking
+- **Results**: `results/YYYYMMDD/` with per-language summaries
+
+### Validation Features
+
+✓ **Cross-Platform Consistency**: Tests same indicators across Python, R, and Stata  
+✓ **Smart Caching**: Uses cached data for ~3000x speedup  
+✓ **Automatic Metadata Loading**: Dataflow detection, region codes, indicators  
+✓ **Error Detection**: Identifies platform-specific issues (e.g., 404s, timeouts)  
+✓ **Reproducibility**: Fixed seed ensures consistent indicator selection  
+
+### Troubleshooting Validation Issues
+
+- **"No cached indicators found"** → First run; cache will build automatically
+- **"Codelists file not found"** → Non-critical; metadata manager provides defaults
+- **Platform inconsistencies** → Check logs in `logs/` for per-platform errors
+
+For detailed information, see:
+- [VALIDATION_QUICK_START.md](VALIDATION_QUICK_START.md) — Command reference
+- [ROOT_CAUSE_ANALYSIS.md](ROOT_CAUSE_ANALYSIS.md) — Architecture and fixes
+- [VALIDATION_SUMMARY_*.md](VALIDATION_SUMMARY_20260120.md) — Recent runs
+
+---
+
 ## Project Structure
 
 ```
@@ -817,6 +1151,13 @@ unicefData/
 │   ├── src/_/              # Internal subroutines
 │   ├── metadata/current/   # Stata metadata files
 │   └── examples/           # Stata examples
+├── validation/             # Cross-platform validation framework
+│   ├── run_validation.py   # Entry point for validation runs
+│   ├── scripts/            # Orchestration and test engine
+│   ├── cache/              # Test data cache (per-language)
+│   ├── logs/               # Detailed test logs
+│   ├── results/            # Validation results and summaries
+│   └── README.md           # Validation documentation
 ├── tests/                  # Cross-platform test utilities
 │   ├── orchestrator_metadata.py     # Master sync orchestrator
 │   ├── sync_metadata_python.py      # Python metadata sync
