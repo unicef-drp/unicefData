@@ -76,7 +76,7 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
           pak-version: devel
-          cache-version: 8
+          cache-version: 7
           upgrade: 'TRUE'
 
       - uses: r-lib/actions/check-r-package@v2
