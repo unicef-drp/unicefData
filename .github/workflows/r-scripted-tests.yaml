@@ -1,18 +1,41 @@
+# R Scripted Tests Workflow
+# Runs custom R test scripts (not testthat-based R CMD check tests)
+#
+# Pinned to ubuntu-22.04 for pandoc/citation tooling compatibility
+# See: https://github.com/r-lib/actions/issues/994
+
 name: R Scripted Tests
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/r-scripted-tests.yaml'
   pull_request:
-    branches:
-      - '**'
+    branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'tests/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/r-scripted-tests.yaml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   r-tests:
-    runs-on: ubuntu-latest
+    name: R Scripted Tests
+    # Pinned to ubuntu-22.04 for pandoc-citeproc availability
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
 

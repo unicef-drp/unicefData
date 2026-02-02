@@ -1,26 +1,43 @@
+# Python Tests Workflow
+# Runs pytest suite for the unicef_api Python package
+#
+# Pinned to ubuntu-22.04 for pandoc/citation tooling compatibility
+# See: https://github.com/r-lib/actions/issues/994
+
 name: Python Tests
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [main, develop]
+    paths:
+      - 'python/**'
+      - '.github/workflows/python-tests.yaml'
   pull_request:
-    branches:
-      - '**'
+    branches: [main, develop]
+    paths:
+      - 'python/**'
+      - '.github/workflows/python-tests.yaml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: Python ${{ matrix.python-version }}
+    # Pinned to ubuntu-22.04 for consistency across workflows
+    runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -34,12 +51,12 @@ jobs:
     - name: Run tests with pytest
       run: |
         cd python
-        pytest tests/ --cov=unicef_api --cov-report=xml
+        pytest tests/ --cov=unicef_api --cov-report=xml -v
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./python/coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+        flags: python
+        name: python-${{ matrix.python-version }}
         fail_ci_if_error: false

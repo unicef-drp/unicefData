@@ -1,16 +1,41 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# R-CMD-check Workflow
+# Standard R package checks across multiple platforms and R versions
+#
+# Derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 #
 # Fix (2026-02-02): Changed ubuntu-latest to ubuntu-22.04 to avoid
 # pandoc-citeproc unavailability issue on Ubuntu 24.04
 # See: https://github.com/r-lib/actions/issues/994
+
+name: R-CMD-check
+
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'man/**'
+      - 'inst/**'
+      - 'vignettes/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'man/**'
+      - 'inst/**'
+      - 'vignettes/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/check.yaml'
+  workflow_dispatch:
 
-name: R-CMD-check
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions: read-all
 
@@ -26,8 +51,7 @@ jobs:
         config:
           - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          # Use ubuntu-22.04 instead of ubuntu-latest to avoid
-          # pandoc-citeproc package unavailability on Ubuntu 24.04
+          # Pinned to ubuntu-22.04 for pandoc-citeproc availability
           - {os: ubuntu-22.04,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-22.04,   r: 'release'}
           - {os: ubuntu-22.04,   r: 'oldrel-1'}
