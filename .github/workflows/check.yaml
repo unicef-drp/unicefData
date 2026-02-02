@@ -39,18 +39,11 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Clean pak and R caches (post-setup)
-        run: |
-          rm -rf /home/runner/work/_temp/Library/_cache || true
-          rm -rf ~/.cache/R/pak || true
-          rm -rf /tmp/RtmpXXXXXX || true
-        if: runner.os == 'Linux'
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
-          cache-version: 4
+          cache-version: 5
 
       - uses: r-lib/actions/check-r-package@v2
         with:
