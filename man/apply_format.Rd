@@ -4,7 +4,7 @@
 \alias{apply_format}
 \title{Apply format transformation}
 \usage{
-apply_format(df, format)
+apply_format(df, format, pivot = NULL)
 }
 \description{
 Apply format transformation

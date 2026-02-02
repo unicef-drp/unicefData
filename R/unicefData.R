@@ -1,3 +1,11 @@
+# =============================================================================
+# unicefData.R - R interface to UNICEF SDMX Data API
+# =============================================================================
+# Version: 2.0.0 (2026-01-31)
+# Author: João Pedro Azevedo (UNICEF)
+# License: MIT
+# =============================================================================
+
 # Load required packages for pipe operator
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -262,11 +270,14 @@ list_unicef_codelist <- memoise::memoise(
 #'     \item Integer vector: Explicit list of years (e.g., c(2015, 2018, 2020))
 #'   }
 #' @param sex Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).
+#' @param totals Logical; if FALSE (default), excludes observations with _T (total) codes in dimension values,
+#'   matching Python/Stata behavior. Set to TRUE to include totals.
 #' @param age Filter by age group. Default is NULL (keeps totals).
 #' @param wealth Filter by wealth quintile. Default is NULL (keeps totals).
 #' @param residence Filter by residence (e.g. "URBAN", "RURAL"). Default is NULL (keeps totals).
 #' @param maternal_edu Filter by maternal education. Default is NULL (keeps totals).
 #' @param tidy Logical; if TRUE (default), returns cleaned tibble with standardized column names.
+#' @param include_label_columns Logical; if FALSE (default), drops human-readable label-expansion columns added by SDMX when labels=both; produces a codes-only schema consistent across R/Python/Stata.
 #' @param country_names Logical; if TRUE (default), adds country name column.
 #' @param max_retries Number of retry attempts on failure (default: 3).
 #'   Previously called 'retry'. Both parameter names are supported.
@@ -274,9 +285,14 @@ list_unicef_codelist <- memoise::memoise(
 #' @param page_size Integer rows per page (default: 100000).
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
+#' @param labels Label format for SDMX requests: "id" (codes only, default),
+#'   "name" (labels only), or "both" (codes and labels).
+#' @param metadata Metadata detail level: "light" (default) or "full".
 #' @param format Output format: "long" (default), "wide" (years as columns),
 #'   "wide_indicators" (indicators as columns), or wide by dimension:
 #'   "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu".
+#' @param pivot Character vector of column(s) to pivot to wide format.
+#'   Alternative to format parameter for custom pivoting.
 #' @param latest Logical; if TRUE, keep only the most recent non-missing value per country.
 #'   The year may differ by country. Useful for cross-sectional analysis.
 #' @param circa Logical; if TRUE, for each specified year find the closest available
@@ -295,6 +311,19 @@ list_unicef_codelist <- memoise::memoise(
 #'   automatic removal of duplicates.
 #' @return Tibble with indicator data, or xml_document if detail="structure".
 #'   The 'period' column contains decimal years (see Time Period Handling section).
+#'
+#' @section Cross-Platform Consistency:
+#' By default, unicefData returns a codes-only schema that matches the Python
+#' and Stata implementations. Specifically:
+#' - SDMX requests use codes (`labels=id`) or client-side filtering removes
+#'   human-readable label-expansion columns.
+#' - Output keeps standardized lowercase context columns (e.g., `iso3`,
+#'   `indicator`, `period`, `value`) plus code columns for dimensions.
+#' - Indicator-specific dimension code columns are preserved (often lowercase).
+#' - Duplicate label columns are not included unless
+#'   `include_label_columns = TRUE` is explicitly set.
+#'
+#' This ensures column/row counts align across R, Python, and Stata by default.
 #'
 #' @examples
 #' \dontrun{
@@ -353,19 +382,24 @@ unicefData <- function(
     countries     = NULL,
     year          = NULL,
     sex           = "_T",
+    totals        = FALSE,
     age           = NULL,
     wealth        = NULL,
     residence     = NULL,
     maternal_edu  = NULL,
     tidy          = TRUE,
+    include_label_columns = FALSE,
     country_names = TRUE,
     max_retries   = 3,
     cache         = FALSE,
     page_size     = 100000,
     detail        = c("data", "structure"),
     version       = NULL,
+    labels        = "id",
+    metadata      = "light",
     # NEW: Post-production options
-    format        = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
+    format        = c("long", "wide", "wide_indicators", "wide_attributes", "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
+    pivot         = NULL,
     latest        = FALSE,
     circa         = FALSE,
     add_metadata  = NULL,
@@ -383,6 +417,19 @@ unicefData <- function(
 
   format <- match.arg(format)
   detail <- match.arg(detail)
+
+  # Validate metadata parameter
+  if (!metadata %in% c("light", "full")) {
+    stop(sprintf("metadata must be 'light' or 'full', got '%s'", metadata))
+  }
+
+  # Backward compatibility: include_label_columns overrides metadata if explicitly set
+  # include_label_columns = TRUE -> metadata = "full"
+  # include_label_columns = FALSE -> metadata = "light" (default)
+  if (!missing(include_label_columns)) {
+    warning("include_label_columns is deprecated. Use metadata='light' or metadata='full' instead.")
+    metadata <- if (isTRUE(include_label_columns)) "full" else "light"
+  }
 
   # Auto-adjust filters for wide formats
   if (format == "wide_sex") sex <- "ALL"
@@ -434,7 +481,9 @@ unicefData <- function(
       max_retries = max_retries,
       version = version,
       page_size = page_size,
-      verbose = TRUE
+      verbose = TRUE,
+      totals = totals,
+      labels = labels
     )
   }
 
@@ -452,7 +501,11 @@ unicefData <- function(
   is_default_filters <- (sex == "_T") # Add others if they were params
 
   if (!raw || !is_default_filters) {
-    result <- filter_unicef_data(result, sex = sex, age = age, wealth = wealth, residence = residence, maternal_edu = maternal_edu)
+    # Pass indicator code and dataflow for metadata-driven filtering
+    # Uses disaggregations_with_totals and dataflow-specific logic (e.g., NUTRITION uses Y0T4 for age)
+    ind_code <- if (!is.null(indicator) && length(indicator) == 1) indicator else NULL
+    df_code <- if (!is.null(dataflow) && length(dataflow) == 1) dataflow else NULL
+    result <- filter_unicef_data(result, indicator_code = ind_code, dataflow = df_code, sex = sex, age = age, wealth = wealth, residence = residence, maternal_edu = maternal_edu)
   }
 
   # Add spacing after logs for single dataflow (verbose mode)
@@ -492,6 +545,79 @@ unicefData <- function(
             by = "iso3"
           )
       }
+  }
+
+  # Apply column filtering based on metadata parameter
+  if (!raw && tidy && !is.null(result) && nrow(result) > 0 && metadata == "light") {
+    # Strategy: Keep ONLY essential standardized columns to match Python/Stata
+    # This ensures cross-platform consistency in column count and names
+    # Keep:
+    # 1. Essential lowercase standardized columns (renamed by clean_unicef_data)
+    # 2. ALL lowercase dimension columns (indicator-specific like vaccine, ecd_domain, sub_sector)
+    # Remove:
+    # - Columns with spaces in names (e.g., "Cause group", "Unit multiplier")
+    # - Title Case words not in essential list (redundant label expansions)
+    # - Uppercase metadata attributes (UNIT_MULTIPLIER, OBS_CONF, etc.) - for cross-platform consistency
+
+    nm <- names(result)
+
+    # Patterns for columns to REMOVE:
+    has_space <- grepl(" ", nm, fixed = TRUE)  # Has space -> always a label, remove it
+
+    # Essential standardized columns (lowercased by clean_unicef_data) - KEEP
+    # Matches Python CRITICAL_COLUMNS for cross-platform consistency
+    # NOTE: Does NOT include label columns (sex_name, wealth_quintile_name, etc.) - these are controlled by labels parameter
+    essential_lowercase <- c(
+      "iso3", "country", "indicator", "period", "value", "indicator_name",
+      "geo_type", "unit", "unit_name", "sex", "age",
+      "wealth_quintile", "residence", "maternal_edu_lvl",
+      "lower_bound", "upper_bound", "obs_status", "obs_status_name",
+      "data_source", "ref_period", "country_notes", "time_detail", "current_age"
+    )
+
+    # Exclusion list: label columns and metadata annotation columns (not critical)
+    # These are lowercase but should still be excluded from metadata="light" mode
+    exclude_cols <- c(
+      "sex_name", "age_name", "wealth_quintile_name", "residence_name", "maternal_edu_lvl_name",
+      "unit_multiplier", "series_footnote", "rank", "coverage_time", "source_link",
+      "obs_conf", "obs_footnote", "time_period_method", "data_source_priority",
+      "custodian", "wgtd_sampl_size", "cause_group", "ethnic_group_name",
+      "disability_status_name", "education_level_name", "admin_level_name",
+      "ref_area_parent", "sowc_flag_a", "sowc_flag_b", "sowc_flag_c"
+    )
+
+    # Patterns to KEEP:
+    is_essential <- nm %in% essential_lowercase
+    is_lowercase_dimension <- grepl("^[a-z][a-z0-9_]*$", nm)  # Lowercase = indicator-specific dimension code
+    is_excluded <- nm %in% exclude_cols  # Explicitly excluded label/metadata columns
+
+    # Column is a LABEL (remove) if: has space OR (is Title Case and not essential)
+    # Title Case = starts with capital, has lowercase (like "Age", "Country", "Indicator")
+    is_title_case <- grepl("^[A-Z][a-z]+$", nm)
+    # Also remove all uppercase metadata attributes (UNIT_MULTIPLIER, OBS_CONF, etc.)
+    is_uppercase_metadata <- grepl("^[A-Z][A-Z0-9_]*$", nm)
+    is_label <- has_space | (is_title_case & !is_essential) | is_uppercase_metadata | is_excluded
+
+    # Keep everything that's NOT a label (keep essentials and lowercase dimensions only)
+    result <- result[, !is_label, drop = FALSE]
+
+    # Reorder columns to match Python/Stata standard order for cross-platform consistency
+    # Standard order: iso3, country, period, geo_type, indicator, indicator_name, value, ...
+    # Matches Python CRITICAL_COLUMNS exactly (no label columns like sex_name, wealth_quintile_name)
+    standard_order <- c(
+      "iso3", "country", "period", "geo_type", "indicator", "indicator_name",
+      "value", "unit", "unit_name", "sex", "age",
+      "wealth_quintile", "residence", "maternal_edu_lvl",
+      "lower_bound", "upper_bound", "obs_status", "obs_status_name",
+      "data_source", "ref_period", "country_notes", "time_detail", "current_age"
+    )
+
+    # Get actual columns present in result
+    present_standard <- standard_order[standard_order %in% names(result)]
+    # Get any remaining columns not in standard order (indicator-specific dimensions)
+    remaining <- setdiff(names(result), standard_order)
+    # Reorder: standard columns first, then remaining
+    result <- result[, c(present_standard, remaining), drop = FALSE]
   }
 
   # 4. Post-processing (Metadata, MRV, Latest, Format)
@@ -534,7 +660,7 @@ unicefData <- function(
 
   # Format transformation
   if (format != "long" && "iso3" %in% names(result)) {
-    result <- apply_format(result, format)
+    result <- apply_format(result, format, pivot)
   }
 
   # Simplify columns
@@ -638,8 +764,13 @@ apply_latest <- function(df) {
 
 #' Apply format transformation
 #' @keywords internal
-apply_format <- function(df, format) {
+apply_format <- function(df, format, pivot = NULL) {
   if (format == "wide") {
+    # Years as columns (time-series format) - aligned with Stata behavior
+    message("Note: format='wide' returns years as columns (time-series format).")
+    message("      Other options: 'wide_indicators' (indicators as columns),")
+    message("                     'wide_attributes' with pivot= (disaggregation as columns)")
+
     # Countries as rows, years as columns
     n_indicators <- dplyr::n_distinct(df$indicator)
     if (n_indicators > 1) {
@@ -687,7 +818,57 @@ apply_format <- function(df, format) {
         values_from = value
       )
 
+  } else if (format == "wide_attributes") {
+    # Disaggregation dimension becomes columns
+    # Valid pivot dimensions: sex, age, wealth_quintile, residence, maternal_edu_lvl
+    valid_pivots <- c("sex", "age", "wealth_quintile", "residence", "maternal_edu_lvl")
+
+    if (is.null(pivot)) {
+      message("Error: 'wide_attributes' requires pivot= parameter.")
+      message(sprintf("       Valid options: %s", paste(valid_pivots, collapse = ", ")))
+      return(df)
+    }
+
+    # Handle compound pivot (vector of dimensions)
+    pivot_cols <- if (is.character(pivot)) pivot else as.character(pivot)
+
+    # Validate pivot columns
+    for (p in pivot_cols) {
+      if (!p %in% valid_pivots) {
+        message(sprintf("Warning: '%s' is not a standard disaggregation dimension.", p))
+        message(sprintf("         Valid options: %s", paste(valid_pivots, collapse = ", ")))
+      }
+      if (!p %in% names(df)) {
+        message(sprintf("Error: Column '%s' not found in data. Cannot pivot.", p))
+        return(df)
+      }
+    }
+
+    # Identify columns to keep as index
+    id_cols <- c("iso3", "period")
+    if ("country" %in% names(df)) id_cols <- c(id_cols[1], "country", id_cols[2])
+    if ("indicator" %in% names(df)) id_cols <- c(id_cols, "indicator")
+    for (col in c("region", "income_group", "continent")) {
+      if (col %in% names(df)) id_cols <- c(id_cols, col)
+    }
+    # Add non-pivot disaggregation dimensions to index
+    for (dim in valid_pivots) {
+      if (dim %in% names(df) && !dim %in% pivot_cols) {
+        id_cols <- c(id_cols, dim)
+      }
+    }
+
+    df %>%
+      tidyr::pivot_wider(
+        id_cols = dplyr::all_of(id_cols),
+        names_from = dplyr::all_of(pivot_cols),
+        values_from = value,
+        names_prefix = "value_"
+      )
+
   } else if (format %in% c("wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu")) {
+    # DEPRECATED: Use wide_attributes with pivot= instead
+    message(sprintf("Note: format='%s' is deprecated. Use format='wide_attributes', pivot='...' instead.", format))
 
     # Map format to column name
     pivot_col <- switch(format,
@@ -946,6 +1127,7 @@ get_continents <- function() {
 #' @param agency Character agency ID (default "UNICEF").
 #' @param retry Integer. Number of retries for transient HTTP failures.
 #' @param cache_dir Directory for memoised cache.
+#' @param max_retries Integer. Number of retry attempts (default: 3). Alternative name for 'retry' parameter.
 #' @return A tibble with columns \code{id}, \code{agency}, \code{version}, \code{name}.
 #' @export
 list_dataflows <- function(

@@ -4,7 +4,7 @@
 \alias{fetch_sdmx_text}
 \title{Fetch SDMX content as text}
 \usage{
-fetch_sdmx_text(url, ua, retry)
+fetch_sdmx_text(url, ua = .unicefData_ua, retry)
 }
 \arguments{
 \item{url}{URL to fetch}

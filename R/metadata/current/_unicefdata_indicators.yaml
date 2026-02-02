@@ -1,249 +1,3172 @@
 _metadata:
   platform: R
   version: 2.0.0
-  synced_at: '2025-12-09T02:25:54Z'
-  source: unicef_api.config + SDMX API
+  synced_at: '2026-01-25T13:17:13Z'
+  source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/latest
   agency: UNICEF
   content_type: indicators
-  total_indicators: 25
-  dataflows_covered: 12
-  indicators_per_dataflow:
-    CME: 2
-    NUTRITION: 3
-    EDUCATION_UIS_SDG: 5
-    IMMUNISATION: 2
-    HIV_AIDS: 1
-    WASH_HOUSEHOLDS: 3
-    MNCH: 3
-    PT: 2
-    PT_CM: 1
-    PT_FGM: 1
-    ECD: 1
-    CHLD_PVTY: 1
+  total_indicators: 738
+  codelist_id: CL_UNICEF_INDICATOR
+  codelist_name: Indicators
 indicators:
+  CME:
+    code: CME
+    name: Child mortality
+    dataflow: ~
+  CME_ARR_10T19:
+    code: CME_ARR_10T19
+    name: Annual Rate of Reduction in Mortality Rate Age 10-19
+    dataflow: ~
+  CME_ARR_SBR:
+    code: CME_ARR_SBR
+    name: Annual rate of reduction in stillbirth rate
+    dataflow: ~
+  CME_ARR_U5MR:
+    code: CME_ARR_U5MR
+    name: Annual rate of reduction in under-five mortality rate
+    dataflow: ~
+  CME_COVID_CASES:
+    code: CME_COVID_CASES
+    name: Covid cases
+    dataflow: ~
+  CME_COVID_CASES_SHARE:
+    code: CME_COVID_CASES_SHARE
+    name: Covid cases share
+    dataflow: ~
+  CME_COVID_DEATHS:
+    code: CME_COVID_DEATHS
+    name: Covid deaths
+    dataflow: ~
+  CME_COVID_DEATHS_SHARE:
+    code: CME_COVID_DEATHS_SHARE
+    name: Covid deaths share
+    dataflow: ~
   CME_MRM0:
     code: CME_MRM0
     name: Neonatal mortality rate
-    dataflow: CME
-    sdg_target: 3.2.2
-    unit: Deaths per 1,000 live births
-    description: null
-    dimensions: null
-    source: config
+    dataflow: ~
+  CME_MRM1T11:
+    code: CME_MRM1T11
+    name: Mortality rate age 1-11 months
+    dataflow: ~
+  CME_MRM1T59:
+    code: CME_MRM1T59
+    name: Mortality rate 1-59 months
+    dataflow: ~
+  CME_MRY0:
+    code: CME_MRY0
+    name: Infant mortality rate
+    dataflow: ~
   CME_MRY0T4:
     code: CME_MRY0T4
-    name: Under-5 mortality rate
-    dataflow: CME
-    sdg_target: 3.2.1
-    unit: Deaths per 1,000 live births
-    description: null
-    dimensions: null
-    source: config
-  NT_ANT_HAZ_NE2_MOD:
-    code: NT_ANT_HAZ_NE2_MOD
-    name: Stunting prevalence (moderate + severe)
-    dataflow: NUTRITION
-    sdg_target: 2.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  NT_ANT_WHZ_NE2:
-    code: NT_ANT_WHZ_NE2
-    name: Wasting prevalence (moderate + severe)
-    dataflow: NUTRITION
-    sdg_target: 2.2.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  NT_ANT_WHZ_PO2_MOD:
-    code: NT_ANT_WHZ_PO2_MOD
-    name: Overweight prevalence (moderate + severe)
-    dataflow: NUTRITION
-    sdg_target: 2.2.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Under-five mortality rate
+    dataflow: ~
+  CME_MRY10T14:
+    code: CME_MRY10T14
+    name: Mortality rate age 10-14
+    dataflow: ~
+  CME_MRY10T19:
+    code: CME_MRY10T19
+    name: Mortality rate age 10-19
+    dataflow: ~
+  CME_MRY15T19:
+    code: CME_MRY15T19
+    name: Mortality rate age 15-19
+    dataflow: ~
+  CME_MRY15T24:
+    code: CME_MRY15T24
+    name: Mortality rate age 15-24
+    dataflow: ~
+  CME_MRY1T4:
+    code: CME_MRY1T4
+    name: Child mortality rate (aged 1-4 years)
+    dataflow: ~
+  CME_MRY20T24:
+    code: CME_MRY20T24
+    name: Mortality rate age 20-24
+    dataflow: ~
+  CME_MRY5T14:
+    code: CME_MRY5T14
+    name: Mortality rate (children aged 5 to 14 years)
+    dataflow: ~
+  CME_MRY5T24:
+    code: CME_MRY5T24
+    name: Mortality rate age 5-24
+    dataflow: ~
+  CME_MRY5T9:
+    code: CME_MRY5T9
+    name: Mortality rate age 5-9
+    dataflow: ~
+  CME_PND:
+    code: CME_PND
+    name: Neonatal deaths as a percentage of under-five deaths
+    dataflow: ~
+  CME_SB:
+    code: CME_SB
+    name: Stillbirths
+    dataflow: ~
+  CME_SBR:
+    code: CME_SBR
+    name: Stillbirth rate
+    dataflow: ~
+  CME_TMM0:
+    code: CME_TMM0
+    name: Neonatal deaths
+    dataflow: ~
+  CME_TMM1T11:
+    code: CME_TMM1T11
+    name: Deaths age 1-11 months
+    dataflow: ~
+  CME_TMM1T59:
+    code: CME_TMM1T59
+    name: Deaths age 1-59 months
+    dataflow: ~
+  CME_TMY0:
+    code: CME_TMY0
+    name: Infant deaths
+    dataflow: ~
+  CME_TMY0T4:
+    code: CME_TMY0T4
+    name: Under-five deaths
+    dataflow: ~
+  CME_TMY10T14:
+    code: CME_TMY10T14
+    name: Deaths aged 10 to 14
+    dataflow: ~
+  CME_TMY10T19:
+    code: CME_TMY10T19
+    name: Deaths aged 10 to 19
+    dataflow: ~
+  CME_TMY15T19:
+    code: CME_TMY15T19
+    name: Deaths aged 15 to 19
+    dataflow: ~
+  CME_TMY15T24:
+    code: CME_TMY15T24
+    name: Deaths aged 15 to 24
+    dataflow: ~
+  CME_TMY1T4:
+    code: CME_TMY1T4
+    name: Child deaths (aged 1-4 years)
+    dataflow: ~
+  CME_TMY20T24:
+    code: CME_TMY20T24
+    name: Deaths aged 20 to 24
+    dataflow: ~
+  CME_TMY5T14:
+    code: CME_TMY5T14
+    name: Deaths (children aged 5-14)
+    dataflow: ~
+  CME_TMY5T24:
+    code: CME_TMY5T24
+    name: Deaths aged 5 to 24
+    dataflow: ~
+  CME_TMY5T9:
+    code: CME_TMY5T9
+    name: Deaths aged 5 to 9
+    dataflow: ~
+  COD_ACUTE_HEPATITIS_A:
+    code: COD_ACUTE_HEPATITIS_A
+    name: Acute hepatitis A
+    dataflow: ~
+  COD_ACUTE_HEPATITIS_B:
+    code: COD_ACUTE_HEPATITIS_B
+    name: Acute hepatitis B
+    dataflow: ~
+  COD_AFRICAN_TRYPANOSOMIASIS:
+    code: COD_AFRICAN_TRYPANOSOMIASIS
+    name: African trypanosomiasis
+    dataflow: ~
+  COD_ALCOHOL_USE_DISORDERS:
+    code: COD_ALCOHOL_USE_DISORDERS
+    name: Alcohol use disorders
+    dataflow: ~
+  COD_ALZHEIMER_DISEASE_AND_OTHER_DEMENTIAS:
+    code: COD_ALZHEIMER_DISEASE_AND_OTHER_DEMENTIAS
+    name: Alzheimer disease and other dementias
+    dataflow: ~
+  COD_APPENDICITIS:
+    code: COD_APPENDICITIS
+    name: Appendicitis
+    dataflow: ~
+  COD_ASTHMA:
+    code: COD_ASTHMA
+    name: Asthma
+    dataflow: ~
+  COD_BLADDER_CANCER:
+    code: COD_BLADDER_CANCER
+    name: Bladder cancer
+    dataflow: ~
+  COD_BRAIN_AND_NERVOUS_SYSTEM_CANCERS:
+    code: COD_BRAIN_AND_NERVOUS_SYSTEM_CANCERS
+    name: Brain and nervous system cancers
+    dataflow: ~
+  COD_BREAST_CANCER:
+    code: COD_BREAST_CANCER
+    name: Breast cancer
+    dataflow: ~
+  COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS:
+    code: COD_CARDIOMYOPATHY_MYOCARDITIS_ENDOCARDITIS
+    name: Cardiomyopathy, myocarditis, endocarditis
+    dataflow: ~
+  COD_CERVIX_UTERI_CANCER:
+    code: COD_CERVIX_UTERI_CANCER
+    name: Cervix uteri cancer
+    dataflow: ~
+  COD_CHLAMYDIA:
+    code: COD_CHLAMYDIA
+    name: Chlamydia
+    dataflow: ~
+  COD_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE:
+    code: COD_CHRONIC_OBSTRUCTIVE_PULMONARY_DISEASE
+    name: Chronic obstructive pulmonary disease
+    dataflow: ~
+  COD_CIRRHOSIS_OF_THE_LIVER:
+    code: COD_CIRRHOSIS_OF_THE_LIVER
+    name: Cirrhosis of the liver
+    dataflow: ~
+  COD_COLLECTIVE_VIOLENCE_AND_LEGAL_INTERVENTION:
+    code: COD_COLLECTIVE_VIOLENCE_AND_LEGAL_INTERVENTION
+    name: Collective violence and legal intervention
+    dataflow: ~
+  COD_COLON_AND_RECTUM_CANCERS:
+    code: COD_COLON_AND_RECTUM_CANCERS
+    name: Colon and rectum cancers
+    dataflow: ~
+  COD_CONGENITAL_ANOMALIES:
+    code: COD_CONGENITAL_ANOMALIES
+    name: Congenital anomalies
+    dataflow: ~
+  COD_CYSTICERCOSIS:
+    code: COD_CYSTICERCOSIS
+    name: Cysticercosis
+    dataflow: ~
+  COD_DENGUE:
+    code: COD_DENGUE
+    name: Dengue
+    dataflow: ~
+  COD_DIABETES_MELLITUS:
+    code: COD_DIABETES_MELLITUS
+    name: Diabetes mellitus
+    dataflow: ~
+  COD_DIARRHOEAL_DISEASES:
+    code: COD_DIARRHOEAL_DISEASES
+    name: Diarrhoeal diseases
+    dataflow: ~
+  COD_DIPHTHERIA:
+    code: COD_DIPHTHERIA
+    name: Diphtheria
+    dataflow: ~
+  COD_DROWNING:
+    code: COD_DROWNING
+    name: Drowning
+    dataflow: ~
+  COD_DRUG_USE_DISORDERS:
+    code: COD_DRUG_USE_DISORDERS
+    name: Drug use disorders
+    dataflow: ~
+  COD_ECHINOCOCCOSIS:
+    code: COD_ECHINOCOCCOSIS
+    name: Echinococcosis
+    dataflow: ~
+  COD_ENCEPHALITIS:
+    code: COD_ENCEPHALITIS
+    name: Encephalitis
+    dataflow: ~
+  COD_EPILEPSY:
+    code: COD_EPILEPSY
+    name: Epilepsy
+    dataflow: ~
+  COD_EXPOSURE_TO_MECHANICAL_FORCES:
+    code: COD_EXPOSURE_TO_MECHANICAL_FORCES
+    name: Exposure to mechanical forces
+    dataflow: ~
+  COD_FALLS:
+    code: COD_FALLS
+    name: Falls
+    dataflow: ~
+  COD_FIRE_HEAT_AND_HOT_SUBSTANCES:
+    code: COD_FIRE_HEAT_AND_HOT_SUBSTANCES
+    name: Fire, heat and hot substances
+    dataflow: ~
+  COD_GALLBLADDER_AND_BILIARY_DISEASES:
+    code: COD_GALLBLADDER_AND_BILIARY_DISEASES
+    name: Gallbladder and biliary diseases
+    dataflow: ~
+  COD_GENITAL_HERPES:
+    code: COD_GENITAL_HERPES
+    name: Genital herpes
+    dataflow: ~
+  COD_GONORRHOEA:
+    code: COD_GONORRHOEA
+    name: Gonorrhoea
+    dataflow: ~
+  COD_HIV_AIDS:
+    code: COD_HIV_AIDS
+    name: HIV/AIDS
+    dataflow: ~
+  COD_HYPERTENSIVE_HEART_DISEASE:
+    code: COD_HYPERTENSIVE_HEART_DISEASE
+    name: Hypertensive heart disease
+    dataflow: ~
+  COD_IDIOPATHIC_INTELLECTUAL_DISABILITY:
+    code: COD_IDIOPATHIC_INTELLECTUAL_DISABILITY
+    name: Idiopathic intellectual disability
+    dataflow: ~
+  COD_INFLAMMATORY_BOWEL_DISEASE:
+    code: COD_INFLAMMATORY_BOWEL_DISEASE
+    name: Inflammatory bowel disease
+    dataflow: ~
+  COD_INTERPERSONAL_VIOLENCE:
+    code: COD_INTERPERSONAL_VIOLENCE
+    name: Interpersonal violence
+    dataflow: ~
+  COD_IRON_DEFICIENCY_ANAEMIA:
+    code: COD_IRON_DEFICIENCY_ANAEMIA
+    name: Iron-deficiency anaemia
+    dataflow: ~
+  COD_ISCHAEMIC_HEART_DISEASE:
+    code: COD_ISCHAEMIC_HEART_DISEASE
+    name: Ischaemic heart disease
+    dataflow: ~
+  COD_KIDNEY_CANCER:
+    code: COD_KIDNEY_CANCER
+    name: Kidney cancer
+    dataflow: ~
+  COD_KIDNEY_DISEASES:
+    code: COD_KIDNEY_DISEASES
+    name: Kidney diseases
+    dataflow: ~
+  COD_LEISHMANIASIS:
+    code: COD_LEISHMANIASIS
+    name: Leishmaniasis
+    dataflow: ~
+  COD_LEUKAEMIA:
+    code: COD_LEUKAEMIA
+    name: Leukaemia
+    dataflow: ~
+  COD_LIVER_CANCER:
+    code: COD_LIVER_CANCER
+    name: Liver cancer
+    dataflow: ~
+  COD_LOWER_RESPIRATORY_INFECTIONS:
+    code: COD_LOWER_RESPIRATORY_INFECTIONS
+    name: Lower respiratory infections
+    dataflow: ~
+  COD_LYMPHOMAS_MULTIPLE_MYELOMA:
+    code: COD_LYMPHOMAS_MULTIPLE_MYELOMA
+    name: Lymphomas, multiple myeloma
+    dataflow: ~
+  COD_MALARIA:
+    code: COD_MALARIA
+    name: Malaria
+    dataflow: ~
+  COD_MATERNAL_CONDITIONS:
+    code: COD_MATERNAL_CONDITIONS
+    name: Maternal conditions
+    dataflow: ~
+  COD_MEASLES:
+    code: COD_MEASLES
+    name: Measles
+    dataflow: ~
+  COD_MELANOMA_AND_OTHER_SKIN_CANCERS:
+    code: COD_MELANOMA_AND_OTHER_SKIN_CANCERS
+    name: Melanoma and other skin cancers
+    dataflow: ~
+  COD_MENINGITIS:
+    code: COD_MENINGITIS
+    name: Meningitis
+    dataflow: ~
+  COD_MESOTHELIOMA:
+    code: COD_MESOTHELIOMA
+    name: Mesothelioma
+    dataflow: ~
+  COD_MOUTH_AND_OROPHARYNX_CANCERS:
+    code: COD_MOUTH_AND_OROPHARYNX_CANCERS
+    name: Mouth and oropharynx cancers
+    dataflow: ~
+  COD_NATURAL_DISASTERS:
+    code: COD_NATURAL_DISASTERS
+    name: Natural disasters
+    dataflow: ~
+  COD_OESOPHAGUS_CANCER:
+    code: COD_OESOPHAGUS_CANCER
+    name: Oesophagus cancer
+    dataflow: ~
+  COD_OVARY_CANCER:
+    code: COD_OVARY_CANCER
+    name: Ovary cancer
+    dataflow: ~
+  COD_PANCREAS_CANCER:
+    code: COD_PANCREAS_CANCER
+    name: Pancreas cancer
+    dataflow: ~
+  COD_PANCREATITIS:
+    code: COD_PANCREATITIS
+    name: Pancreatitis
+    dataflow: ~
+  COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION:
+    code: COD_PARALYTIC_ILEUS_AND_INTESTINAL_OBSTRUCTION
+    name: Paralytic ileus and intestinal obstruction
+    dataflow: ~
+  COD_PEPTIC_ULCER_DISEASE:
+    code: COD_PEPTIC_ULCER_DISEASE
+    name: Peptic ulcer disease
+    dataflow: ~
+  COD_POISONINGS:
+    code: COD_POISONINGS
+    name: Poisonings
+    dataflow: ~
+  COD_PROTEIN_ENERGY_MALNUTRITION:
+    code: COD_PROTEIN_ENERGY_MALNUTRITION
+    name: Protein-energy malnutrition
+    dataflow: ~
+  COD_RABIES:
+    code: COD_RABIES
+    name: Rabies
+    dataflow: ~
+  COD_RHEUMATIC_HEART_DISEASE:
+    code: COD_RHEUMATIC_HEART_DISEASE
+    name: Rheumatic heart disease
+    dataflow: ~
+  COD_ROAD_INJURY:
+    code: COD_ROAD_INJURY
+    name: Road injury
+    dataflow: ~
+  COD_SELF_HARM:
+    code: COD_SELF_HARM
+    name: Self-harm
+    dataflow: ~
+  COD_SICKLE_CELL_DISORDERS_AND_TRAIT:
+    code: COD_SICKLE_CELL_DISORDERS_AND_TRAIT
+    name: Sickle cell disorders and trait
+    dataflow: ~
+  COD_SKIN_DISEASES:
+    code: COD_SKIN_DISEASES
+    name: Skin diseases
+    dataflow: ~
+  COD_STOMACH_CANCER:
+    code: COD_STOMACH_CANCER
+    name: Stomach cancer
+    dataflow: ~
+  COD_STROKE:
+    code: COD_STROKE
+    name: Stroke
+    dataflow: ~
+  COD_SYPHILIS:
+    code: COD_SYPHILIS
+    name: Syphilis
+    dataflow: ~
+  COD_TESTICULAR_CANCER:
+    code: COD_TESTICULAR_CANCER
+    name: Testicular cancer
+    dataflow: ~
+  COD_TETANUS:
+    code: COD_TETANUS
+    name: Tetanus
+    dataflow: ~
+  COD_THALASSAEMIAS:
+    code: COD_THALASSAEMIAS
+    name: Thalassaemias
+    dataflow: ~
+  COD_THYROID_CANCER:
+    code: COD_THYROID_CANCER
+    name: Thyroid cancer
+    dataflow: ~
+  COD_TRACHEA_BRONCHUS_LUNG_CANCERS:
+    code: COD_TRACHEA_BRONCHUS_LUNG_CANCERS
+    name: Trachea, bronchus, lung cancers
+    dataflow: ~
+  COD_TRICHOMONIASIS:
+    code: COD_TRICHOMONIASIS
+    name: Trichomoniasis
+    dataflow: ~
+  COD_TUBERCULOSIS:
+    code: COD_TUBERCULOSIS
+    name: Tuberculosis
+    dataflow: ~
+  COD_UPPER_RESPIRATORY_INFECTIONS:
+    code: COD_UPPER_RESPIRATORY_INFECTIONS
+    name: Upper respiratory infections
+    dataflow: ~
+  COD_WHOOPING_COUGH:
+    code: COD_WHOOPING_COUGH
+    name: Whooping cough
+    dataflow: ~
+  COD_YELLOW_FEVER:
+    code: COD_YELLOW_FEVER
+    name: Yellow fever
+    dataflow: ~
+  DM:
+    code: DM
+    name: Demography
+    dataflow: ~
+  DM_AVG_HH_SIZE:
+    code: DM_AVG_HH_SIZE
+    name: Average household size
+    dataflow: ~
+  DM_BRTS:
+    code: DM_BRTS
+    name: Number of births
+    dataflow: ~
+  DM_DPR_CHD:
+    code: DM_DPR_CHD
+    name: Child dependency ratio
+    dataflow: ~
+  DM_DPR_OLD:
+    code: DM_DPR_OLD
+    name: Old age dependency ratio
+    dataflow: ~
+  DM_DPR_TOT:
+    code: DM_DPR_TOT
+    name: Total dependency ratio
+    dataflow: ~
+  DM_FRATE_TOT:
+    code: DM_FRATE_TOT
+    name: Total fertility rate
+    dataflow: ~
+  DM_HH_INTERNET:
+    code: DM_HH_INTERNET
+    name: Households with Internet access
+    dataflow: ~
+  DM_HH_O65:
+    code: DM_HH_O65
+    name: Share of households with at least one member age 65+
+    dataflow: ~
+  DM_HH_PC:
+    code: DM_HH_PC
+    name: Households with personal computer
+    dataflow: ~
+  DM_HH_U18:
+    code: DM_HH_U18
+    name: Share of households with at least one member under age 18
+    dataflow: ~
+  DM_LIFE_EXP:
+    code: DM_LIFE_EXP
+    name: Life expectancy
+    dataflow: ~
+  DM_NET_MG_RATE:
+    code: DM_NET_MG_RATE
+    name: Net migration rate (per 1,000 population)
+    dataflow: ~
+  DM_OVERCR3:
+    code: DM_OVERCR3
+    name: Overcrowding +3
+    dataflow: ~
+  DM_OVERCR5:
+    code: DM_OVERCR5
+    name: Overcrowding +5
+    dataflow: ~
+  DM_POP_15TO24:
+    code: DM_POP_15TO24
+    name: Youth population from 15 to 24
+    dataflow: ~
+  DM_POP_ADLCNT:
+    code: DM_POP_ADLCNT
+    name: Adolescent population (10-19)
+    dataflow: ~
+  DM_POP_ADLCNT_PROP:
+    code: DM_POP_ADLCNT_PROP
+    name: Adolescent population as proportion of total population (%)
+    dataflow: ~
+  DM_POP_GRT:
+    code: DM_POP_GRT
+    name: Population annual growth rate
+    dataflow: ~
+  DM_POP_TOT:
+    code: DM_POP_TOT
+    name: Total population
+    dataflow: ~
+  DM_POP_U18:
+    code: DM_POP_U18
+    name: Population under age 18
+    dataflow: ~
+  DM_POP_U5:
+    code: DM_POP_U5
+    name: Population under age 5
+    dataflow: ~
+  DM_POP_URBN:
+    code: DM_POP_URBN
+    name: Percentage of population by urban-rural national definitions at mid-year
+    dataflow: ~
+  DM_POP_U_GRT:
+    code: DM_POP_U_GRT
+    name: Annual rate of change of the population by urban-rural national definitions
+    dataflow: ~
+  ECD_CHLD_24-59M_ADLT_SRC:
+    code: ECD_CHLD_24-59M_ADLT_SRC
+    name: Percentage of children (aged 24-59 months) with whom any adult household
+      member has engaged in 4 or more activities to provide early stimulation and
+      responsive care in the last 3 days
+    dataflow: ~
+  ECD_CHLD_24-59M_FHR-SPT-LNG:
+    code: ECD_CHLD_24-59M_FHR-SPT-LNG
+    name: Percentage of children (aged 24-59 months) whose father has engaged in 4
+      or more activities to provide early stimulation and responsive care in the last
+      3 days
+    dataflow: ~
+  ECD_CHLD_36-59M_EDU-PGM:
+    code: ECD_CHLD_36-59M_EDU-PGM
+    name: Percentage of children aged 36-59 months attending an early childhood education
+      programme
+    dataflow: ~
+  ECD_CHLD_U5_BKS-HM:
+    code: ECD_CHLD_U5_BKS-HM
+    name: Percentage of children under age 5 who have 3 or more children's books
+    dataflow: ~
+  ECD_CHLD_U5_LFT-ALN:
+    code: ECD_CHLD_U5_LFT-ALN
+    name: Percentage of children under age 5 left alone or under the supervision of
+      another child younger than 10 years of age for more than 1 hour at least once
+      in the last week
+    dataflow: ~
+  ECD_CHLD_U5_PLYTH-HM:
+    code: ECD_CHLD_U5_PLYTH-HM
+    name: Percentage of children under age 5 who play with 2 or more types of playthings
+    dataflow: ~
+  ECON:
+    code: ECON
+    name: Economic
+    dataflow: ~
+  ECON_GVT_EDU_EXP_PTEXP:
+    code: ECON_GVT_EDU_EXP_PTEXP
+    name: government expenditure on education (% government budget)
+    dataflow: ~
+  ECON_GVT_EDU_EXP_PTGDP:
+    code: ECON_GVT_EDU_EXP_PTGDP
+    name: government expenditure on education (% GDP)
+    dataflow: ~
+  ECON_GVT_EXP_PTGDP:
+    code: ECON_GVT_EXP_PTGDP
+    name: government expenditure (% GDP)
+    dataflow: ~
+  ECON_GVT_HLTH_EXP_PTEXP:
+    code: ECON_GVT_HLTH_EXP_PTEXP
+    name: government expenditure on health (% government budget)
+    dataflow: ~
+  ECON_GVT_HLTH_EXP_PTGDP:
+    code: ECON_GVT_HLTH_EXP_PTGDP
+    name: government expenditure on health (% GDP)
+    dataflow: ~
+  ECON_GVT_REV_PTGDP:
+    code: ECON_GVT_REV_PTGDP
+    name: government revenue (%GDP)
+    dataflow: ~
+  ECON_ODA_INFLOW_PTGNI:
+    code: ECON_ODA_INFLOW_PTGNI
+    name: ODA inflow (%GNI)
+    dataflow: ~
+  ECON_ODA_INFLOW_USD:
+    code: ECON_ODA_INFLOW_USD
+    name: ODA inflow (USD)
+    dataflow: ~
+  ECON_ODA_OUTFLOW_PTGNI:
+    code: ECON_ODA_OUTFLOW_PTGNI
+    name: ODA outflow (%GNI)
+    dataflow: ~
+  ECON_ODA_OUTFLOW_USD:
+    code: ECON_ODA_OUTFLOW_USD
+    name: ODA outflow (USD)
+    dataflow: ~
+  ECON_SOC_PRO_EXP_PTEXP:
+    code: ECON_SOC_PRO_EXP_PTEXP
+    name: government expenditure on social protection (% government budget)
+    dataflow: ~
+  ECON_SOC_PRO_EXP_PTGDP:
+    code: ECON_SOC_PRO_EXP_PTGDP
+    name: government expenditure on social protection (% GDP)
+    dataflow: ~
+  EDUCATION:
+    code: EDUCATION
+    name: Education
+    dataflow: ~
+  ED_15-24_LR:
+    code: ED_15-24_LR
+    name: Youth literacy rate for 15-24 years
+    dataflow: ~
   ED_ANAR_L02:
     code: ED_ANAR_L02
-    name: Adjusted net attendance rate, lower secondary
-    dataflow: EDUCATION_UIS_SDG
-    sdg_target: 4.1.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  ED_CR_L1_UIS_MOD:
-    code: ED_CR_L1_UIS_MOD
-    name: Completion rate, primary education
-    dataflow: EDUCATION_UIS_SDG
-    sdg_target: 4.1.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  ED_CR_L2_UIS_MOD:
-    code: ED_CR_L2_UIS_MOD
-    name: Completion rate, lower secondary education
-    dataflow: EDUCATION_UIS_SDG
-    sdg_target: 4.1.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Adjusted net attendance rate, one year before the official primary entry
+      age
+    dataflow: ~
+  ED_ANAR_L1:
+    code: ED_ANAR_L1
+    name: Adjusted net attendance rate for children of primary school age
+    dataflow: ~
+  ED_ANAR_L2:
+    code: ED_ANAR_L2
+    name: Adjusted net attendance rate for adolescents of lower secondary school age
+    dataflow: ~
+  ED_ANAR_L3:
+    code: ED_ANAR_L3
+    name: Adjusted net attendance rate for youth of upper secondary school age
+    dataflow: ~
+  ED_ATTND_FRML_INST:
+    code: ED_ATTND_FRML_INST
+    name: Percentage of population aged 6-17 attending a formal educational institution
+      (%)
+    dataflow: ~
+  ED_CR_L1:
+    code: ED_CR_L1
+    name: Completion rate for children of primary school age
+    dataflow: ~
+  ED_CR_L2:
+    code: ED_CR_L2
+    name: Completion rate for adolescents of lower secondary school age
+    dataflow: ~
+  ED_CR_L3:
+    code: ED_CR_L3
+    name: Completion rate for youth of upper secondary education school age
+    dataflow: ~
+  ED_LN_M_G2_3:
+    code: ED_LN_M_G2_3
+    name: Proportion of children and young people a) in grade 2 or 3 achieving at
+      least a minimum proficiency level in (ii) mathematics
+    dataflow: ~
+  ED_LN_M_L1:
+    code: ED_LN_M_L1
+    name: Proportion of children and young people b) at the end of primary education
+      achieving at least a minimum proficiency level in (ii) mathematics
+    dataflow: ~
+  ED_LN_M_L2:
+    code: ED_LN_M_L2
+    name: Proportion of children and young people c) at the end of lower secondary
+      educationachieving at least a minimum proficiency level in (ii) mathematics
+    dataflow: ~
+  ED_LN_R_G2_3:
+    code: ED_LN_R_G2_3
+    name: Proportion of children and young people a) in grade 2 or 3 achieving at
+      least a minimum proficiency level in (i) reading
+    dataflow: ~
+  ED_LN_R_L1:
+    code: ED_LN_R_L1
+    name: Proportion of children and young people b) at the end of primary education
+      achieving at least a minimum proficiency level in (i) reading
+    dataflow: ~
+  ED_LN_R_L2:
+    code: ED_LN_R_L2
+    name: Proportion of children and young people c) at the end of lower secondary
+      education achieving at least a minimum proficiency level in (i) reading
+    dataflow: ~
+  ED_MAT_G23:
+    code: ED_MAT_G23
+    name: Proportion of students in Grade 2 or 3 achieving at least a minimum proficiency
+      level in mathematics
+    dataflow: ~
+  ED_MAT_L1:
+    code: ED_MAT_L1
+    name: Proportion of students at the end of primary achieving at least a minimum
+      proficiency level in mathematics
+    dataflow: ~
   ED_MAT_L2:
     code: ED_MAT_L2
-    name: Minimum proficiency in mathematics, lower secondary
-    dataflow: EDUCATION_UIS_SDG
-    sdg_target: 4.1.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Proportion of students at the end of lower secondary achieving at least
+      a minimum proficiency level in mathematics
+    dataflow: ~
+  ED_NERA_L02:
+    code: ED_NERA_L02
+    name: Adjusted net enrolment rate, one year before the official primary entry
+      age
+    dataflow: ~
+  ED_PUP_PER_MATH_BOOK:
+    code: ED_PUP_PER_MATH_BOOK
+    name: Average number of pupils per mathematics textbook in primary education
+    dataflow: ~
+  ED_PUP_PER_READ_BOOK:
+    code: ED_PUP_PER_READ_BOOK
+    name: Average number of pupils per reading textbook in primary education
+    dataflow: ~
+  ED_READ_G23:
+    code: ED_READ_G23
+    name: Proportion of students in Grade 2 or 3 achieving at least a minimum proficiency
+      level in reading
+    dataflow: ~
+  ED_READ_L1:
+    code: ED_READ_L1
+    name: Proportion of students at the end of primary achieving at least a minimum
+      proficiency level in reading
+    dataflow: ~
   ED_READ_L2:
     code: ED_READ_L2
-    name: Minimum proficiency in reading, lower secondary
-    dataflow: EDUCATION_UIS_SDG
-    sdg_target: 4.1.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  IM_DTP3:
-    code: IM_DTP3
-    name: DTP3 immunisation coverage
-    dataflow: IMMUNISATION
-    sdg_target: 3.b.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  IM_MCV1:
-    code: IM_MCV1
-    name: Measles 1st dose coverage
-    dataflow: IMMUNISATION
-    sdg_target: 3.b.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Proportion of students at the end of lower secondary achieving at least
+      a minimum proficiency level in reading
+    dataflow: ~
+  ED_RLRI:
+    code: ED_RLRI
+    name: Remote Learning Readiness Index
+    dataflow: ~
+  ED_RLRI_L02:
+    code: ED_RLRI_L02
+    name: Remote learning readiness index, one year before the official primary entry
+      age
+    dataflow: ~
+  ED_RLRI_L1:
+    code: ED_RLRI_L1
+    name: Remote learning readiness index for children of primary school age
+    dataflow: ~
+  ED_RLRI_L2:
+    code: ED_RLRI_L2
+    name: Remote learning readiness index for adolescents of lower secondary school
+      age
+    dataflow: ~
+  ED_RLRI_L3:
+    code: ED_RLRI_L3
+    name: Remote learning readiness index for youth of upper secondary school age
+    dataflow: ~
+  ED_ROFST_L0:
+    code: ED_ROFST_L0
+    name: Out-of-school rate for children one year younger than official entry age
+    dataflow: ~
+  ED_ROFST_L02_ADM:
+    code: ED_ROFST_L02_ADM
+    name: Out-of-school rate for children one year younger than official entry age
+      (administrative data)
+    dataflow: ~
+  ED_ROFST_L1:
+    code: ED_ROFST_L1
+    name: Out-of-school rate for children of primary school age
+    dataflow: ~
+  ED_ROFST_L1_ADM:
+    code: ED_ROFST_L1_ADM
+    name: Out-of-school rate for children of primary school age (administrative data)
+    dataflow: ~
+  ED_ROFST_L2:
+    code: ED_ROFST_L2
+    name: Out-of-school rate for adolescents of lower secondary school age
+    dataflow: ~
+  ED_ROFST_L2_ADM:
+    code: ED_ROFST_L2_ADM
+    name: Out-of-school rate for adolescents of lower secondary school age (administrative
+      data)
+    dataflow: ~
+  ED_ROFST_L3:
+    code: ED_ROFST_L3
+    name: Out-of-school rate for youth of upper secondary school age
+    dataflow: ~
+  ED_ROFST_L3_ADM:
+    code: ED_ROFST_L3_ADM
+    name: Out-of-school rate for youth of upper secondary school age (administrative
+      data)
+    dataflow: ~
+  FD_ANAR:
+    code: FD_ANAR
+    name: Adjusted net attendance rate (Functional difficulties)
+    dataflow: ~
+  FD_EARLY_CH_EDU:
+    code: FD_EARLY_CH_EDU
+    name: Early childhood education (Functional difficulties)
+    dataflow: ~
+  FD_EARLY_STIM:
+    code: FD_EARLY_STIM
+    name: Early stimulation and responsive care (Functional difficulties)
+    dataflow: ~
+  FD_FOUNDATIONAL_LEARNING:
+    code: FD_FOUNDATIONAL_LEARNING
+    name: Foundational learning skills (Functional difficulties)
+    dataflow: ~
+  FD_FUNC_DIFFICULTY:
+    code: FD_FUNC_DIFFICULTY
+    name: Children with disabilities (Functional difficulties)
+    dataflow: ~
+  FD_NEVER_ATTENDED:
+    code: FD_NEVER_ATTENDED
+    name: Never attended school (Functional difficulties)
+    dataflow: ~
+  FD_OOS:
+    code: FD_OOS
+    name: Out of school (Functional difficulties)
+    dataflow: ~
+  FD_SANITATION_FACILITIES:
+    code: FD_SANITATION_FACILITIES
+    name: Sanitation facilities on premises (Functional difficulties)
+    dataflow: ~
+  FD_SEVER_PHY_PUNISH:
+    code: FD_SEVER_PHY_PUNISH
+    name: Severe physical punishment (Functional difficulties)
+    dataflow: ~
+  FD_SOCIAL_TRANSFERS:
+    code: FD_SOCIAL_TRANSFERS
+    name: Social transfers (Functional difficulties)
+    dataflow: ~
+  FD_STUNTING:
+    code: FD_STUNTING
+    name: Moderate and severe stunting (Functional difficulties)
+    dataflow: ~
+  FD_UNDERWEIGHT:
+    code: FD_UNDERWEIGHT
+    name: Moderate and severe underweight (Functional difficulties)
+    dataflow: ~
+  FUNCTIONAL_DIFF:
+    code: FUNCTIONAL_DIFF
+    name: Functional difficulties
+    dataflow: ~
+  GENDER:
+    code: GENDER
+    name: Gender
+    dataflow: ~
+  GN_ANEMIA_ADOL_GRL:
+    code: GN_ANEMIA_ADOL_GRL
+    name: adolescent girls with any anaemia
+    dataflow: ~
+  GN_ED_ATTN:
+    code: GN_ED_ATTN
+    name: Educational attainment of the population (aged 25 years and older)
+    dataflow: ~
+  GN_FB_BNK_ACCSS:
+    code: GN_FB_BNK_ACCSS
+    name: Proportion of adolescents and adults (aged 15 years and older) with an account
+      at a financial institution or mobile money service provider
+    dataflow: ~
+  GN_IDX:
+    code: GN_IDX
+    name: Social Institutions and Gender Index (SIGI)
+    dataflow: ~
+  GN_IDX_CAT:
+    code: GN_IDX_CAT
+    name: Social Institutions and Gender Index Categorical (SIGI)
+    dataflow: ~
+  GN_IT_MOB_OWN:
+    code: GN_IT_MOB_OWN
+    name: Proportion of individuals who own a mobile telephone
+    dataflow: ~
+  GN_LF_PTCPN:
+    code: GN_LF_PTCPN
+    name: Labour force participation rate
+    dataflow: ~
+  GN_MTNTY_LV_BNFTS:
+    code: GN_MTNTY_LV_BNFTS
+    name: Maternity leave benefits
+    dataflow: ~
+  GN_PTNTY_LV_BNFTS:
+    code: GN_PTNTY_LV_BNFTS
+    name: Paternity leave benefits
+    dataflow: ~
+  GN_SG_LGL_GENARCH:
+    code: GN_SG_LGL_GENARCH
+    name: 'Legal frameworks that promote, enforce, and monitor gender equality- Area
+      1: Overarching legal frameworks and public life'
+    dataflow: ~
+  GN_SG_LGL_GENEQEMP:
+    code: GN_SG_LGL_GENEQEMP
+    name: 'Legal frameworks that promote, enforce, and monitor gender equality- Area
+      3: Employment and economic benefits'
+    dataflow: ~
+  GN_SG_LGL_GENMARFAM:
+    code: GN_SG_LGL_GENMARFAM
+    name: 'Legal frameworks that promote, enforce, and monitor gender equality- Area
+      4: Marriage and family'
+    dataflow: ~
+  GN_SG_LGL_GENVAW:
+    code: GN_SG_LGL_GENVAW
+    name: 'Legal frameworks that promote, enforce, and monitor gender equality- Area
+      2: Violence against women'
+    dataflow: ~
+  GN_STUNT_ADOL_GRL:
+    code: GN_STUNT_ADOL_GRL
+    name: stunting among adolescent girls
+    dataflow: ~
+  GN_TIMEUSE:
+    code: GN_TIMEUSE
+    name: Time use
+    dataflow: ~
+  GN_UNMPLY:
+    code: GN_UNMPLY
+    name: Labour force unemployment rate
+    dataflow: ~
+  HIV_AIDS:
+    code: HIV_AIDS
+    name: HIV/AIDS
+    dataflow: ~
+  HVA_ADOL_ART_RECEIVE:
+    code: HVA_ADOL_ART_RECEIVE
+    name: Reported number of adolescents receiving ART
+    dataflow: ~
+  HVA_ADOL_ART_RECEIVE_LIVING_HIV:
+    code: HVA_ADOL_ART_RECEIVE_LIVING_HIV
+    name: Per cent of adolescents living with HIV receiving ART
+    dataflow: ~
+  HVA_EPI_DTH_ANN_0-19:
+    code: HVA_EPI_DTH_ANN_0-19
+    name: Estimated number of annual AIDS-related deaths (children aged 0-19 years)
+    dataflow: ~
+  HVA_EPI_DTH_ANN_15-24:
+    code: HVA_EPI_DTH_ANN_15-24
+    name: Estimated number of annual AIDS-related deaths (adolescents and young people
+      aged 15-24 years)
+    dataflow: ~
+  HVA_EPI_DTH_RT:
+    code: HVA_EPI_DTH_RT
+    name: Estimated rate of annual AIDS-related deaths (per 100,000 population)
+    dataflow: ~
+  HVA_EPI_DTH_RT_0-14:
+    code: HVA_EPI_DTH_RT_0-14
+    name: Estimated rate of annual AIDS-related deaths (per 100,000 population, children
+      aged 0-14 years)
+    dataflow: ~
+  HVA_EPI_DTH_RT_10-19:
+    code: HVA_EPI_DTH_RT_10-19
+    name: Estimated rate of annual AIDS-related deaths (per 100,000 population, adolescents
+      aged 10-19 years)
+    dataflow: ~
+  HVA_EPI_INF_ANN_0-19:
+    code: HVA_EPI_INF_ANN_0-19
+    name: Estimated number of new HIV infections (children aged 0-19 years)
+    dataflow: ~
+  HVA_EPI_INF_ANN_15-24:
+    code: HVA_EPI_INF_ANN_15-24
+    name: Estimated number of new HIV infections (adolescents and young people aged
+      15-24 years)
+    dataflow: ~
   HVA_EPI_INF_RT:
     code: HVA_EPI_INF_RT
-    name: HIV incidence rate
-    dataflow: HIV_AIDS
-    sdg_target: 3.3.1
-    unit: Per 1,000 uninfected population
-    description: null
-    dimensions: null
-    source: config
-  WS_PPL_W-SM:
-    code: WS_PPL_W-SM
-    name: Population using safely managed drinking water services
-    dataflow: WASH_HOUSEHOLDS
-    sdg_target: 6.1.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  WS_PPL_S-SM:
-    code: WS_PPL_S-SM
-    name: Population using safely managed sanitation services
-    dataflow: WASH_HOUSEHOLDS
-    sdg_target: 6.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  WS_PPL_H-B:
-    code: WS_PPL_H-B
-    name: Population with basic handwashing facilities
-    dataflow: WASH_HOUSEHOLDS
-    sdg_target: 6.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Estimated incidence rate (new HIV infection per 1,000 uninfected population)
+    dataflow: ~
+  HVA_EPI_LHIV_0-19:
+    code: HVA_EPI_LHIV_0-19
+    name: Estimated number of children (aged 0-19 years) living with HIV
+    dataflow: ~
+  HVA_EPI_LHIV_15-24:
+    code: HVA_EPI_LHIV_15-24
+    name: Estimated number of adolescents and young people (aged 15-24 years) living
+      with HIV
+    dataflow: ~
+  HVA_PED_ART_CVG:
+    code: HVA_PED_ART_CVG
+    name: Per cent of children (aged 0-14 years) living with HIV and receiving antiretroviral
+      therapy (ART)
+    dataflow: ~
+  HVA_PED_ART_NUM:
+    code: HVA_PED_ART_NUM
+    name: Reported number of children (aged 0-14 years) receiving antiretroviral treatment
+      (ART)
+    dataflow: ~
+  HVA_PED_EID_CVG:
+    code: HVA_PED_EID_CVG
+    name: Per cent of infants born to pregnant women living with HIV who received
+      a virological test for HIV within 2 months of birth
+    dataflow: ~
+  HVA_PED_EID_NUM:
+    code: HVA_PED_EID_NUM
+    name: Reported number of infants born to pregnant women living with HIV who received
+      a virological test for HIV within 2 months of birth
+    dataflow: ~
+  HVA_PED_LOST:
+    code: HVA_PED_LOST
+    name: Estimated number of children (aged 0-17 years) who have lost one or both
+      parents due to all causes
+    dataflow: ~
+  HVA_PED_LOST_AIDS:
+    code: HVA_PED_LOST_AIDS
+    name: Estimated number of children (aged 0-17 years) who have lost one or both
+      parents due to AIDS
+    dataflow: ~
+  HVA_PMTCT_ART_CVG:
+    code: HVA_PMTCT_ART_CVG
+    name: Per cent of pregnant women living with HIV receiving lifelong ART
+    dataflow: ~
+  HVA_PMTCT_ART_NUM:
+    code: HVA_PMTCT_ART_NUM
+    name: Reported number of pregnant women living with HIV receiving lifelong antiretroviral
+      treatment (ART)
+    dataflow: ~
+  HVA_PMTCT_ARV_CVG:
+    code: HVA_PMTCT_ARV_CVG
+    name: Per cent of pregnant women living with HIV receiving effective ARVs for
+      PMTCT (excludes single-dose nevirapine)
+    dataflow: ~
+  HVA_PMTCT_ARV_NUM:
+    code: HVA_PMTCT_ARV_NUM
+    name: Reported number of pregnant woment living with HIV receiving anitretroviral
+      treatments (ARVs) for prevention of mother to child transmission programmes
+      (PMTCT)
+    dataflow: ~
+  HVA_PMTCT_MTCT:
+    code: HVA_PMTCT_MTCT
+    name: Mother-to-child HIV transmission rate
+    dataflow: ~
+  HVA_PMTCT_PWLHIV:
+    code: HVA_PMTCT_PWLHIV
+    name: Estimated number of pregnant women living with HIV
+    dataflow: ~
+  HVA_PMTCT_STAT_CVG:
+    code: HVA_PMTCT_STAT_CVG
+    name: Per cent of pregnant women presenting at ANC who were tested for HIV or
+      already knew their HIV positive status
+    dataflow: ~
+  HVA_PMTCT_STAT_NUM:
+    code: HVA_PMTCT_STAT_NUM
+    name: Reported number of pregnant women presenting at antenatal clinics (ANC)
+      who were tested for HIV or already knew their HIV positive status
+    dataflow: ~
+  HVA_PMTCT_TEST_CVG:
+    code: HVA_PMTCT_TEST_CVG
+    name: Per cent of pregnant women presenting at ANC who were tested for HIV or
+      already knew their HIV positive status
+    dataflow: ~
+  HVA_PMTCT_TEST_NUM:
+    code: HVA_PMTCT_TEST_NUM
+    name: Reported number of pregnant women presenting at antenatal clinics (ANC)
+      who were tested for HIV or already knew their HIV positive status
+    dataflow: ~
+  HVA_PREV_CNDM_MULT:
+    code: HVA_PREV_CNDM_MULT
+    name: Per cent of young people (aged 15-24 years) who had more than one sexual
+      partner in the past 12 months reporting the use of a condom during their last
+      sexual intercourse
+    dataflow: ~
+  HVA_PREV_CNDM_REG:
+    code: HVA_PREV_CNDM_REG
+    name: Per cent of young people (aged 15-24 years) who had sex with a non-marital,
+      non-cohabitating partner in the past 12 months reporting the use of a condom
+      during their last sexual intercourse
+    dataflow: ~
+  HVA_PREV_KNOW:
+    code: HVA_PREV_KNOW
+    name: Per cent of young people (aged 15-24 years) with comprehensive, correct
+      knowledge of HIV
+    dataflow: ~
+  HVA_PREV_KNOW_TEST:
+    code: HVA_PREV_KNOW_TEST
+    name: Per cent of young people (aged 15-24 years) who know a place to get tested
+      for HIV
+    dataflow: ~
+  HVA_PREV_STIGMA:
+    code: HVA_PREV_STIGMA
+    name: Per cent of people (aged 15-49 years) expressing discriminatory attitudes
+      towards people living with HIV
+    dataflow: ~
+  HVA_PREV_TEST_RES:
+    code: HVA_PREV_TEST_RES
+    name: Per cent of young people (aged 15-24 years) who have ever been tested for
+      HIV and received the result of the last test
+    dataflow: ~
+  HVA_PREV_TEST_RES_12:
+    code: HVA_PREV_TEST_RES_12
+    name: Per cent of young people (aged 15-24 years) who were tested for HIV in the
+      last 12 months and received the result of the last test
+    dataflow: ~
+  IMMUNISATION:
+    code: IMMUNISATION
+    name: Immunization
+    dataflow: ~
+  IM_BCG:
+    code: IM_BCG
+    name: Percentage of live births who received bacille Calmette-Guerin (vaccine
+      against tuberculosis)
+    dataflow: ~
+  IM_DTP1:
+    code: IM_DTP1
+    name: Percentage of surviving infants who received the first dose of DTP-containing
+      vaccine
+    dataflow: ~
+  IM_DTP3:
+    code: IM_DTP3
+    name: Percentage of surviving infants who received the third dose of DTP-containing
+      vaccine
+    dataflow: ~
+  IM_HEPB3:
+    code: IM_HEPB3
+    name: Percentage of surviving infants who received the third dose of hep B-containing
+      vaccine
+    dataflow: ~
+  IM_HEPBB:
+    code: IM_HEPBB
+    name: Percentage of live births who received hepatitis-B-containing vaccine within
+      24 hours of birth
+    dataflow: ~
+  IM_HIB3:
+    code: IM_HIB3
+    name: Percentage of surviving infants who received the third dose of Hib-containing
+      vaccine
+    dataflow: ~
+  IM_HPV:
+    code: IM_HPV
+    name: Percentage of females who received the last dose of human papillomavirus
+      (HPV) vaccine per national schedule
+    dataflow: ~
+  IM_IPV1:
+    code: IM_IPV1
+    name: Percentage of surviving infants who received the first dose of inactivated
+      polio-containing vaccine
+    dataflow: ~
+  IM_MCV1:
+    code: IM_MCV1
+    name: Percentage of surviving infants who received the first dose of measles-containing
+      vaccine
+    dataflow: ~
+  IM_MCV2:
+    code: IM_MCV2
+    name: Percentage of children who received the 2nd dose of measles-containing vaccine,
+      as per administered in the national schedule
+    dataflow: ~
+  IM_PAB:
+    code: IM_PAB
+    name: Percentage of newborns protected at birth against tetanus with tetanus toxoid
+    dataflow: ~
+  IM_PCV3:
+    code: IM_PCV3
+    name: Percentage of surviving infants who received the third dose of pneumococcal
+      conjugate-containing vaccine (PCV)
+    dataflow: ~
+  IM_POL3:
+    code: IM_POL3
+    name: Percentage of surviving infants who received the third dose of inactivated
+      polio-containing vaccine
+    dataflow: ~
+  IM_RCV1:
+    code: IM_RCV1
+    name: Percentage of surviving infants who received the first dose of rubella-containing
+      vaccine
+    dataflow: ~
+  IM_ROTAC:
+    code: IM_ROTAC
+    name: Percentage of surviving infants who received the last dose of rotavirus-containing
+      vaccine (2nd or 3rd dose depending on vaccine used)
+    dataflow: ~
+  IM_YFV:
+    code: IM_YFV
+    name: Percentage of surviving infants who received yellow fever- containing vaccine
+      (for countries at risk and where the vaccine is in the national schedule)
+    dataflow: ~
+  MG:
+    code: MG
+    name: Migration
+    dataflow: ~
+  MG_ASYLM:
+    code: MG_ASYLM
+    name: Asylum seekers
+    dataflow: ~
+  MG_ASYLM_CNTRY_ASYLM:
+    code: MG_ASYLM_CNTRY_ASYLM
+    name: Asylum seekers, by country of asylum
+    dataflow: ~
+  MG_ASYLM_CNTRY_DEST:
+    code: MG_ASYLM_CNTRY_DEST
+    name: Asylum seekers, by country of destination
+    dataflow: ~
+  MG_INTERNAL_DISP_PERS:
+    code: MG_INTERNAL_DISP_PERS
+    name: Internally displaced persons (IDPs)
+    dataflow: ~
+  MG_INTNL-MG-NUM_U18_IN_HOST:
+    code: MG_INTNL-MG-NUM_U18_IN_HOST
+    name: Number of child migrants (under age 18) in host countries
+    dataflow: ~
+  MG_INTNL-MG-PCNT_T-POP:
+    code: MG_INTNL-MG-PCNT_T-POP
+    name: International migrants as a percentage of total population of country/area
+    dataflow: ~
+  MG_INTNL-MG-PCT_U18:
+    code: MG_INTNL-MG-PCT_U18
+    name: Percentage of under 18 among total international migrants
+    dataflow: ~
+  MG_INTNL_MG:
+    code: MG_INTNL_MG
+    name: International migrants
+    dataflow: ~
+  MG_INTNL_MG_CNTRY_DEST:
+    code: MG_INTNL_MG_CNTRY_DEST
+    name: International migrants, by country of destination
+    dataflow: ~
+  MG_INTNL_MG_CNTRY_ORIGIN:
+    code: MG_INTNL_MG_CNTRY_ORIGIN
+    name: International migrants, by country of origin
+    dataflow: ~
+  MG_NEW_INTERNAL_DISP:
+    code: MG_NEW_INTERNAL_DISP
+    name: New internal displacements
+    dataflow: ~
+  MG_RFGS:
+    code: MG_RFGS
+    name: Refugees
+    dataflow: ~
+  MG_RFGS-PCT_U18:
+    code: MG_RFGS-PCT_U18
+    name: Percentage of under 18 among total refugees
+    dataflow: ~
+  MG_RFGS_CAMP:
+    code: MG_RFGS_CAMP
+    name: Number of refugees in camps or collective accommodation
+    dataflow: ~
+  MG_RFGS_CAMP_U18:
+    code: MG_RFGS_CAMP_U18
+    name: Number of child refugees in camps (under age 18)
+    dataflow: ~
+  MG_RFGS_CNTRY_ASYLM:
+    code: MG_RFGS_CNTRY_ASYLM
+    name: Refugees, by country of asylum
+    dataflow: ~
+  MG_RFGS_CNTRY_ASYLM_PER1000:
+    code: MG_RFGS_CNTRY_ASYLM_PER1000
+    name: Refugees by host country, per 1000 population
+    dataflow: ~
+  MG_RFGS_CNTRY_ASYLM_PER_USD_GNI:
+    code: MG_RFGS_CNTRY_ASYLM_PER_USD_GNI
+    name: Refugees by host country, per 1 USD GNI per capita
+    dataflow: ~
+  MG_RFGS_CNTRY_ORIGIN:
+    code: MG_RFGS_CNTRY_ORIGIN
+    name: Refugees, by country of origin
+    dataflow: ~
+  MG_RFGS_INDIV_ACC:
+    code: MG_RFGS_INDIV_ACC
+    name: Number of refugees in individual accommodation
+    dataflow: ~
+  MG_RFGS_INDIV_ACC_U18:
+    code: MG_RFGS_INDIV_ACC_U18
+    name: Number of child refugees in individual accommodation (under age 18)
+    dataflow: ~
+  MG_RFGS_UNK_ACC:
+    code: MG_RFGS_UNK_ACC
+    name: Number of refugees in unknown type of accommodation
+    dataflow: ~
+  MG_RFGS_UNK_ACC_U18:
+    code: MG_RFGS_UNK_ACC_U18
+    name: Number of child refugees in unknown type of accommodation (under age 18)
+    dataflow: ~
+  MG_RTCN_RGHTS:
+    code: MG_RTCN_RGHTS
+    name: Ratification of human rights instruments
+    dataflow: ~
+  MG_UNRWA_RFGS_CNTRY_ASYLM:
+    code: MG_UNRWA_RFGS_CNTRY_ASYLM
+    name: Refugees under UNRWA mandate, by host country
+    dataflow: ~
+  MNCH:
+    code: MNCH
+    name: Maternal, child and newborn health
+    dataflow: ~
   MNCH_ABR:
     code: MNCH_ABR
-    name: Adolescent birth rate
-    dataflow: MNCH
-    sdg_target: 3.7.2
-    unit: Births per 1,000 women aged 15-19
-    description: null
-    dimensions: null
-    source: config
+    name: Adolescent birth rate (number of live births to adolescent women per 1,000
+      adolescent women)
+    dataflow: ~
+  MNCH_ADO_ALCOHOL:
+    code: MNCH_ADO_ALCOHOL
+    name: Percentage of adolescents (aged 15-19 years) who had at least one alcoholic
+      drink at any time during the last 12 months
+    dataflow: ~
+  MNCH_ADO_INSUFF_PHYS:
+    code: MNCH_ADO_INSUFF_PHYS
+    name: Insufficient physical activity among school going adolescents
+    dataflow: ~
+  MNCH_ADO_TOBACCO:
+    code: MNCH_ADO_TOBACCO
+    name: Percentage of adolescents (aged 13-15 years) who smoked cigarettes or used
+      smoked or smokeless tobacco products at any time during the last month
+    dataflow: ~
+  MNCH_ANC1:
+    code: MNCH_ANC1
+    name: Antenatal care 1+ visit - percentage of women (aged 15-49 years) attended
+      at least once during pregnancy by skilled health personnel
+    dataflow: ~
+  MNCH_ANC4:
+    code: MNCH_ANC4
+    name: Antenatal care 4+ visits - percentage of women (aged 15-49 years) attended
+      at least four times during pregnancy by any provider
+    dataflow: ~
+  MNCH_BIRTH18:
+    code: MNCH_BIRTH18
+    name: Early childbearing - percentage of women (aged 20-24 years) who gave birth
+      before age 18
+    dataflow: ~
+  MNCH_CSEC:
+    code: MNCH_CSEC
+    name: C-section rate - percentage of deliveries by cesarean section
+    dataflow: ~
+  MNCH_DEMAND_FP:
+    code: MNCH_DEMAND_FP
+    name: Demand for family planning satisfied with modern methods - percentage of
+      women (aged 15-49 years)
+    dataflow: ~
+  MNCH_DIARCARE:
+    code: MNCH_DIARCARE
+    name: Careseeking for diarrhoea - percentage of children (under age 5) with diarrhoea
+      for whom advice or treatment was sought from a health facility or provider
+    dataflow: ~
+  MNCH_INFDEC:
+    code: MNCH_INFDEC
+    name: Proportion of women aged 15-19 years who make their own informed decisions
+      regarding sexual relations, contraceptive use and reproductive health care
+    dataflow: ~
+  MNCH_INSTDEL:
+    code: MNCH_INSTDEL
+    name: Institutional deliveries - percentage of deliveries in a health facility
+    dataflow: ~
+  MNCH_IPTP:
+    code: MNCH_IPTP
+    name: IPTp for pregnant women - percentage of women (aged 15-49 years) who received
+      three or more doses of intermittent preventive treatment during antenatal care
+      visits during their last pregnancy
+    dataflow: ~
+  MNCH_ITN:
+    code: MNCH_ITN
+    name: ITN use by children - percentage of children (under age 5) who slept under
+      an insecticide-treated mosquito net the night prior to the survey
+    dataflow: ~
+  MNCH_ITN2:
+    code: MNCH_ITN2
+    name: Household with insecticide treated net (ITN) and/or indoor residual spraying
+      (IRS) - percentage of households with at least one ITN for every two persons
+      and/or IRS in the past 12 months
+    dataflow: ~
+  MNCH_ITNOWN:
+    code: MNCH_ITNOWN
+    name: Percentage of households with at least one insecticide-treated mosquito
+      net (ITN)
+    dataflow: ~
+  MNCH_ITNPREG:
+    code: MNCH_ITNPREG
+    name: Pregnant women sleeping under ITN - percentage of pregnant women (aged 15-49
+      years) who slept under an insecticide-treated net the previous night
+    dataflow: ~
+  MNCH_LIFE_EXPECTANCY:
+    code: MNCH_LIFE_EXPECTANCY
+    name: Life expectancy at birth - number of years newborn female children would
+      live if subject to the mortality risks prevailing for the cross section of population
+      at the time of their birth (estimated)
+    dataflow: ~
+  MNCH_LTR_MATERNAL_DEATH:
+    code: MNCH_LTR_MATERNAL_DEATH
+    name: Lifetime risk of maternal death (probability (1 in X) that a 15-year-old
+      girl (in the year of the estimate) will eventually die from a maternal cause)
+    dataflow: ~
+  MNCH_MATERNAL_DEATHS:
+    code: MNCH_MATERNAL_DEATHS
+    name: Maternal deaths (estimated)
+    dataflow: ~
+  MNCH_MLRACT:
+    code: MNCH_MLRACT
+    name: Malaria, first line treatment - percentage of febrile children (under age
+      5) receiving ACT (first line antimalarial drug), among those receiving any antimalarial
+      drugs
+    dataflow: ~
+  MNCH_MLRCARE:
+    code: MNCH_MLRCARE
+    name: Careseeking for febrile children - percentage of children (under age 5)
+      with fever for whom advice or treatment was sought from a health facility or
+      provider
+    dataflow: ~
+  MNCH_MLRDIAG:
+    code: MNCH_MLRDIAG
+    name: Malaria diagnostics - percentage of febrile children (under age 5) who had
+      a finger or heel stick for malaria testing
+    dataflow: ~
   MNCH_MMR:
     code: MNCH_MMR
-    name: Maternal mortality ratio
-    dataflow: MNCH
-    sdg_target: 3.1.1
-    unit: Deaths per 100,000 live births
-    description: null
-    dimensions: null
-    source: config
+    name: Maternal mortality ratio (number of maternal deaths per 100,000 live births)
+    dataflow: ~
+  MNCH_ORS:
+    code: MNCH_ORS
+    name: Diarrhoea treatment - percentage of children (under age 5) with diarrhoea
+      who received ORS (packets or pre-packaged fluids)
+    dataflow: ~
+  MNCH_ORSZINC:
+    code: MNCH_ORSZINC
+    name: Diarrhoea treatment - percentage of children (under age 5) with diarrhoea
+      who received ORS and zinc
+    dataflow: ~
+  MNCH_ORTCF:
+    code: MNCH_ORTCF
+    name: Diarrhoea treatment - percentage of children (under age 5) with diarrhoea
+      who received ORT (oral rehydration salts or recommended homemade fluids or increased
+      fluids) and continued feeding
+    dataflow: ~
+  MNCH_PNCMOM:
+    code: MNCH_PNCMOM
+    name: Postnatal care for mothers - percentage of women (aged 15-49 years) who
+      received postnatal care within 2 days of giving birth
+    dataflow: ~
+  MNCH_PNCNB:
+    code: MNCH_PNCNB
+    name: Postnatal care for newborns - percentage of newborns who have a postnatal
+      contact with a health provider within 2 days of delivery
+    dataflow: ~
+  MNCH_PNEUCARE:
+    code: MNCH_PNEUCARE
+    name: Careseeking for ARI - percentage of children (under age 5) with acute respiratory
+      infection symptoms whom advice or treatment was sought from a health facility
+      or provider
+    dataflow: ~
+  MNCH_PNEUMORT:
+    code: MNCH_PNEUMORT
+    name: Percentage deaths of children under 5 years of age due to pneumonia
+    dataflow: ~
   MNCH_SAB:
     code: MNCH_SAB
-    name: Skilled attendant at birth
-    dataflow: MNCH
-    sdg_target: 3.1.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  PT_CHLD_Y0T4_REG:
-    code: PT_CHLD_Y0T4_REG
-    name: Birth registration (children under 5)
-    dataflow: PT
-    sdg_target: 16.9.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Skilled birth attendant - percentage of deliveries attended by skilled health
+      personnel
+    dataflow: ~
+  MNCH_UHC:
+    code: MNCH_UHC
+    name: Coverage of essential health services
+    dataflow: ~
+  MNCH_UHC_RMNCH:
+    code: MNCH_UHC_RMNCH
+    name: Universal health coverage index for reproductive, maternal, newborn and
+      child-health interventions
+    dataflow: ~
+  MNCH_ZINC:
+    code: MNCH_ZINC
+    name: Diarrhoea treatment - percentage of children (under age 5) with diarrhoea
+      who received zinc
+    dataflow: ~
+  NT_ANE_WOM_15_19:
+    code: NT_ANE_WOM_15_19
+    name: Anaemia prevalence in women aged 15-19
+    dataflow: ~
+  NT_ANT_BAZ_AVG:
+    code: NT_ANT_BAZ_AVG
+    name: Mean BMI-for-age
+    dataflow: ~
+  NT_ANT_BAZ_NE1:
+    code: NT_ANT_BAZ_NE1
+    name: BMI-for-age <-1 SD
+    dataflow: ~
+  NT_ANT_BAZ_NE1_T_NE2:
+    code: NT_ANT_BAZ_NE1_T_NE2
+    name: BMI-for-age <-1 SD and ≥ -2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_BAZ_NE2:
+    code: NT_ANT_BAZ_NE2
+    name: BMI-for-age <-2 SD
+    dataflow: ~
+  NT_ANT_BAZ_NE2_T_NE3:
+    code: NT_ANT_BAZ_NE2_T_NE3
+    name: BMI-for-age <-2 SD and ≥ -3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_BAZ_NE3:
+    code: NT_ANT_BAZ_NE3
+    name: BMI-for-age <-3 SD
+    dataflow: ~
+  NT_ANT_BAZ_PO1:
+    code: NT_ANT_BAZ_PO1
+    name: BMI-for-age >+1 SD
+    dataflow: ~
+  NT_ANT_BAZ_PO1_T_PO2:
+    code: NT_ANT_BAZ_PO1_T_PO2
+    name: BMI-for-age >+1 SD and ≤+2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_BAZ_PO2:
+    code: NT_ANT_BAZ_PO2
+    name: BMI-for-age >+2 SD
+    dataflow: ~
+  NT_ANT_BAZ_PO2_T_PO3:
+    code: NT_ANT_BAZ_PO2_T_PO3
+    name: BMI-for-age >+2 SD and ≤+3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_BAZ_PO3:
+    code: NT_ANT_BAZ_PO3
+    name: BMI-for-age >+3 SD
+    dataflow: ~
+  NT_ANT_BAZ_SD:
+    code: NT_ANT_BAZ_SD
+    name: BMI-for-age (Standard Deviation)
+    dataflow: ~
+  NT_ANT_COMB:
+    code: NT_ANT_COMB
+    name: Wasted, Overweight or Stunted
+    dataflow: ~
+  NT_ANT_FREE:
+    code: NT_ANT_FREE
+    name: No Wasting, Overweight, Stunting
+    dataflow: ~
+  NT_ANT_HAZWHZ_NE2_NE2:
+    code: NT_ANT_HAZWHZ_NE2_NE2
+    name: Height-for-age <-2SD & Weight-for-height <-2SD
+    dataflow: ~
+  NT_ANT_HAZWHZ_NE2_PO2:
+    code: NT_ANT_HAZWHZ_NE2_PO2
+    name: Height-for-age <-2SD & Weight-for-height >+2SD
+    dataflow: ~
+  NT_ANT_HAZWHZ_NE3_NE2:
+    code: NT_ANT_HAZWHZ_NE3_NE2
+    name: Height-for-age <-3SD & Weight-for-height <-2SD
+    dataflow: ~
+  NT_ANT_HAZWHZ_NE3_PO2:
+    code: NT_ANT_HAZWHZ_NE3_PO2
+    name: Height-for-age <-3SD & Weight-for-height >+2SD
+    dataflow: ~
+  NT_ANT_HAZ_AVG:
+    code: NT_ANT_HAZ_AVG
+    name: Mean Height-for-age
+    dataflow: ~
+  NT_ANT_HAZ_NE1:
+    code: NT_ANT_HAZ_NE1
+    name: Height-for-age <-1 SD
+    dataflow: ~
+  NT_ANT_HAZ_NE1_T_NE2:
+    code: NT_ANT_HAZ_NE1_T_NE2
+    name: Height-for-age <-1 SD and ≥ -2 SD (Mild Stunting only), Survey Estimates
+    dataflow: ~
+  NT_ANT_HAZ_NE2:
+    code: NT_ANT_HAZ_NE2
+    name: Height-for-age <-2 SD (stunting)
+    dataflow: ~
+  NT_ANT_HAZ_NE2_MOD:
+    code: NT_ANT_HAZ_NE2_MOD
+    name: Height-for-age <-2 SD (stunting), Modeled Estimates
+    dataflow: ~
+  NT_ANT_HAZ_NE2_MOD_NUMTH:
+    code: NT_ANT_HAZ_NE2_MOD_NUMTH
+    name: Height-for-age <-2 SD (Stunting) Modeled Estimates, Numbers Affected
+    dataflow: ~
+  NT_ANT_HAZ_NE2_ONLY:
+    code: NT_ANT_HAZ_NE2_ONLY
+    name: Height-for-age <-2SD but weight-for-height ≥-2SD and weight-for-height ≤2SD
+    dataflow: ~
+  NT_ANT_HAZ_NE2_T_NE3:
+    code: NT_ANT_HAZ_NE2_T_NE3
+    name: Height-for-age <-2 SD and ≥ -3 SD (Moderate Stunting only), Survey Estimates
+    dataflow: ~
+  NT_ANT_HAZ_NE3:
+    code: NT_ANT_HAZ_NE3
+    name: Height-for-age <-3 SD (Severe Stunting)
+    dataflow: ~
+  NT_ANT_HAZ_PO1:
+    code: NT_ANT_HAZ_PO1
+    name: Height-for-age >+1 SD
+    dataflow: ~
+  NT_ANT_HAZ_PO1_T_PO2:
+    code: NT_ANT_HAZ_PO1_T_PO2
+    name: Height-for-age >+1 SD and ≤+2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_HAZ_PO2:
+    code: NT_ANT_HAZ_PO2
+    name: Height-for-age >+2 SD
+    dataflow: ~
+  NT_ANT_HAZ_PO2_T_PO3:
+    code: NT_ANT_HAZ_PO2_T_PO3
+    name: Height-for-age >+2 SD and ≤+3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_HAZ_PO3:
+    code: NT_ANT_HAZ_PO3
+    name: Height-for-age >+3 SD
+    dataflow: ~
+  NT_ANT_HAZ_SD:
+    code: NT_ANT_HAZ_SD
+    name: Height-for-age (Standard Deviation)
+    dataflow: ~
+  NT_ANT_SAM_T:
+    code: NT_ANT_SAM_T
+    name: Total number of children with SAM admitted for treatment
+    dataflow: ~
+  NT_ANT_WAZWHZ_NE2_NE2:
+    code: NT_ANT_WAZWHZ_NE2_NE2
+    name: Weight-for-age <-2SD & Weight-for-height <-2SD
+    dataflow: ~
+  NT_ANT_WAZWHZ_NE3_NE2:
+    code: NT_ANT_WAZWHZ_NE3_NE2
+    name: Weight-for-age <-3SD & Weight-for-height <-2SD
+    dataflow: ~
+  NT_ANT_WAZ_AVG:
+    code: NT_ANT_WAZ_AVG
+    name: Weight-for-age (Mean)
+    dataflow: ~
+  NT_ANT_WAZ_NE1:
+    code: NT_ANT_WAZ_NE1
+    name: Weight-for-age <-1 SD
+    dataflow: ~
+  NT_ANT_WAZ_NE1_T_NE2:
+    code: NT_ANT_WAZ_NE1_T_NE2
+    name: Weight-for-age <-1 SD and ≥ -2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WAZ_NE2:
+    code: NT_ANT_WAZ_NE2
+    name: Weight-for-age <-2 SD (Underweight)
+    dataflow: ~
+  NT_ANT_WAZ_NE2_T_NE3:
+    code: NT_ANT_WAZ_NE2_T_NE3
+    name: Weight-for-age <-2 SD and ≥ -3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WAZ_NE3:
+    code: NT_ANT_WAZ_NE3
+    name: Weight-for-age <-3 SD (Severe Underweight)
+    dataflow: ~
+  NT_ANT_WAZ_PO1:
+    code: NT_ANT_WAZ_PO1
+    name: Weight-for-age >+1 SD
+    dataflow: ~
+  NT_ANT_WAZ_PO1_T_PO2:
+    code: NT_ANT_WAZ_PO1_T_PO2
+    name: Weight-for-age >+1 SD and ≤+2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WAZ_PO2:
+    code: NT_ANT_WAZ_PO2
+    name: Weight-for-age (>+2 SD)
+    dataflow: ~
+  NT_ANT_WAZ_PO2_T_PO3:
+    code: NT_ANT_WAZ_PO2_T_PO3
+    name: Weight-for-age >+2 SD and ≤+3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WAZ_PO3:
+    code: NT_ANT_WAZ_PO3
+    name: Weight-for-age (>+3 SD)
+    dataflow: ~
+  NT_ANT_WAZ_SD:
+    code: NT_ANT_WAZ_SD
+    name: Weight-for-age (Standard Deviation)
+    dataflow: ~
+  NT_ANT_WHZ_AVG:
+    code: NT_ANT_WHZ_AVG
+    name: Mean Weight-for-height
+    dataflow: ~
+  NT_ANT_WHZ_NE1:
+    code: NT_ANT_WHZ_NE1
+    name: Weight-for-height <-1 SD
+    dataflow: ~
+  NT_ANT_WHZ_NE1_T_NE2:
+    code: NT_ANT_WHZ_NE1_T_NE2
+    name: Weight-for-height <-1 SD and ≥ -2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WHZ_NE2:
+    code: NT_ANT_WHZ_NE2
+    name: Weight-for-height <-2 SD (wasting)
+    dataflow: ~
+  NT_ANT_WHZ_NE2_ONLY:
+    code: NT_ANT_WHZ_NE2_ONLY
+    name: Weight-for-height <-2SD but height-for-age ≥-2SD
+    dataflow: ~
+  NT_ANT_WHZ_NE2_T_NE3:
+    code: NT_ANT_WHZ_NE2_T_NE3
+    name: Weight-for-height <-2 SD and ≥ -3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WHZ_NE3:
+    code: NT_ANT_WHZ_NE3
+    name: Weight-for-height <-3 SD (severe wasting)
+    dataflow: ~
+  NT_ANT_WHZ_PO1:
+    code: NT_ANT_WHZ_PO1
+    name: Weight-for-height >+1 SD
+    dataflow: ~
+  NT_ANT_WHZ_PO1_T_PO2:
+    code: NT_ANT_WHZ_PO1_T_PO2
+    name: Weight-for-height >+1 SD and ≤+2 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WHZ_PO2:
+    code: NT_ANT_WHZ_PO2
+    name: Weight-for-height >+2 SD (overweight)
+    dataflow: ~
+  NT_ANT_WHZ_PO2_MOD:
+    code: NT_ANT_WHZ_PO2_MOD
+    name: Weight-for-height >+2 SD (overweight), Modeled Estimates
+    dataflow: ~
+  NT_ANT_WHZ_PO2_MOD_NUMTH:
+    code: NT_ANT_WHZ_PO2_MOD_NUMTH
+    name: Weight-for-height >+2 SD (Overweight) Modeled Estimates, Numbers Affected
+    dataflow: ~
+  NT_ANT_WHZ_PO2_ONLY:
+    code: NT_ANT_WHZ_PO2_ONLY
+    name: Weight-for-height >+2SD but height-for-age ≥-2SD
+    dataflow: ~
+  NT_ANT_WHZ_PO2_T_PO3:
+    code: NT_ANT_WHZ_PO2_T_PO3
+    name: Weight-for-height >+2 SD and ≤+3 SD, Survey Estimates
+    dataflow: ~
+  NT_ANT_WHZ_PO3:
+    code: NT_ANT_WHZ_PO3
+    name: Weight-for-height >+3 SD
+    dataflow: ~
+  NT_ANT_WHZ_SD:
+    code: NT_ANT_WHZ_SD
+    name: Weight-for-height (Standard Deviation)
+    dataflow: ~
+  NT_BF_CBF_12_15:
+    code: NT_BF_CBF_12_15
+    name: Continued breastfeeding (12-15 months)
+    dataflow: ~
+  NT_BF_CBF_12_23:
+    code: NT_BF_CBF_12_23
+    name: Continued breastfeeding (12-23 months)
+    dataflow: ~
+  NT_BF_CBF_20_23:
+    code: NT_BF_CBF_20_23
+    name: Continued breastfeeding (20-23 months)
+    dataflow: ~
+  NT_BF_EBF:
+    code: NT_BF_EBF
+    name: Ever breastfed (0-23 months)
+    dataflow: ~
+  NT_BF_EIBF:
+    code: NT_BF_EIBF
+    name: Early initiation of breastfeeding
+    dataflow: ~
+  NT_BF_EXBF:
+    code: NT_BF_EXBF
+    name: Exclusive breastfeeding (0-5 months)
+    dataflow: ~
+  NT_BF_EXBF_2D:
+    code: NT_BF_EXBF_2D
+    name: Exclusively Breastfed for the First Two Days After Birth
+    dataflow: ~
+  NT_BF_MIXMF:
+    code: NT_BF_MIXMF
+    name: Mixed Milk Feeding (0-5 months)
+    dataflow: ~
+  NT_BF_PRED_BF:
+    code: NT_BF_PRED_BF
+    name: Predominantly breastfeeding (children aged 0 to 5 months)
+    dataflow: ~
+  NT_BW_LBW:
+    code: NT_BW_LBW
+    name: Prevalence of low birth weight among new-borns
+    dataflow: ~
+  NT_BW_LBW_MOD:
+    code: NT_BW_LBW_MOD
+    name: Number (in thousands) of live births that weighed less than 2500 g (Modeled
+      Estimates)
+    dataflow: ~
+  NT_BW_LBW_MOD_NUMTH:
+    code: NT_BW_LBW_MOD_NUMTH
+    name: Number (in thousands) of live births that weighed less than 2500 g (Modeled
+      Estimates)
+    dataflow: ~
+  NT_BW_UNW:
+    code: NT_BW_UNW
+    name: Percentage of births without a birth weight in the data source
+    dataflow: ~
+  NT_CF_ASF:
+    code: NT_CF_ASF
+    name: Egg and/or flesh foods consumption (6-23months)
+    dataflow: ~
+  NT_CF_BREASTMILK:
+    code: NT_CF_BREASTMILK
+    name: Food group- Breastmilk (6-23months)
+    dataflow: ~
+  NT_CF_DAIRY:
+    code: NT_CF_DAIRY
+    name: Food group- Dairy (milk, infant formula, yogurt, cheese) (6-23months)
+    dataflow: ~
+  NT_CF_EGGS:
+    code: NT_CF_EGGS
+    name: Food group- Eggs (6-23months)
+    dataflow: ~
+  NT_CF_FF:
+    code: NT_CF_FF
+    name: Food group- Flesh foods (meat, poultry, fish and organ meats) (6-23months)
+    dataflow: ~
+  NT_CF_GRAINS:
+    code: NT_CF_GRAINS
+    name: Food group- Grains, roots, tubers and plantains (6-23months)
+    dataflow: ~
+  NT_CF_ISSSF_FL:
+    code: NT_CF_ISSSF_FL
+    name: Introduction to solid, semi-solid foods (6-8 months)
+    dataflow: ~
+  NT_CF_LEGUMES:
+    code: NT_CF_LEGUMES
+    name: Food group- Pulses (beans, peas, lentils), nuts and seeds (6-23months)
+    dataflow: ~
+  NT_CF_MAD:
+    code: NT_CF_MAD
+    name: Minimum acceptable diet (children aged 6-23 months)
+    dataflow: ~
+  NT_CF_MDD:
+    code: NT_CF_MDD
+    name: Minimum diet diversity (children aged 6 to 23 months)
+    dataflow: ~
+  NT_CF_MMF:
+    code: NT_CF_MMF
+    name: Minimum meal frequency (children aged 6 to 23 months)
+    dataflow: ~
+  NT_CF_OTHER_FV:
+    code: NT_CF_OTHER_FV
+    name: Food group- Other fruits and vegetables (6-23months)
+    dataflow: ~
+  NT_CF_VITA:
+    code: NT_CF_VITA
+    name: Food group- Vitamin-A rich fruits and vegetables (6-23months)
+    dataflow: ~
+  NT_CF_ZEROFV:
+    code: NT_CF_ZEROFV
+    name: Zero vegetable or fruit consumption (6-23months)
+    dataflow: ~
+  NT_FOOD_INSEC_HH:
+    code: NT_FOOD_INSEC_HH
+    name: Prevalence of moderate + severe food insecurity in the adult population
+    dataflow: ~
+  NT_IOD_ANY_TH:
+    code: NT_IOD_ANY_TH
+    name: Iodized salt consumption (>0 ppm) among all tested households
+    dataflow: ~
+  NT_IOD_ANY_TS:
+    code: NT_IOD_ANY_TS
+    name: Iodized salt consumption (>0 ppm) among all tested households with salt
+    dataflow: ~
+  NT_OVERWEIGHT:
+    code: NT_OVERWEIGHT
+    name: Overweight
+    dataflow: ~
+  NT_SANT_10_19_BAZ_NE2_MOD:
+    code: NT_SANT_10_19_BAZ_NE2_MOD
+    name: Prevalence of thinness among children aged 10-19 years, BMI < -2 standard
+      deviations below the median (Crude estimate)
+    dataflow: ~
+  NT_SANT_10_19_BAZ_PO1_MOD:
+    code: NT_SANT_10_19_BAZ_PO1_MOD
+    name: Prevalence of overweight among children aged 10-19 years, BMI > +1 standard
+      deviations above the median (Crude estimate)
+    dataflow: ~
+  NT_THINNESS:
+    code: NT_THINNESS
+    name: Thinness
+    dataflow: ~
+  NT_VAS_S1:
+    code: NT_VAS_S1
+    name: Vitamin A Supplementation, Semester 1 Coverage
+    dataflow: ~
+  NT_VAS_S2:
+    code: NT_VAS_S2
+    name: Vitamin A Supplementation, Semester 2 Coverage
+    dataflow: ~
+  NT_VAS_TWODOSE:
+    code: NT_VAS_TWODOSE
+    name: Vitamin A Supplementation, two-dose coverage
+    dataflow: ~
+  NUTRITION:
+    code: NUTRITION
+    name: Nutrition
+    dataflow: ~
+  PT:
+    code: PT
+    name: Child protection and development
+    dataflow: ~
+  PT_ADLS_10-14_LBR_HC:
+    code: PT_ADLS_10-14_LBR_HC
+    name: Percentage of adolescents (aged 10-14 years) engaged in household chores
+    dataflow: ~
+  PT_ADLT_PS_NEC:
+    code: PT_ADLT_PS_NEC
+    name: Percentage of adults who think that physical punishment is necessary to
+      raise/educate children
+    dataflow: ~
   PT_CHLD_1-14_PS-PSY-V_CGVR:
     code: PT_CHLD_1-14_PS-PSY-V_CGVR
-    name: Children experiencing violent discipline
-    dataflow: PT
-    sdg_target: 16.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  PT_F_20-24_MRD_U18_TND:
-    code: PT_F_20-24_MRD_U18_TND
-    name: Child marriage (women married by 18)
-    dataflow: PT_CM
-    sdg_target: 5.3.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Percentage of children (aged 1-14 years) who experienced any physical punishment
+      and/or psychological aggression by caregivers
+    dataflow: ~
+  PT_CHLD_5-17_LBR_ECON:
+    code: PT_CHLD_5-17_LBR_ECON
+    name: Percentage of children (aged 5-17 years) engaged in child labour (economic
+      activities)
+    dataflow: ~
+  PT_CHLD_5-17_LBR_ECON-HC:
+    code: PT_CHLD_5-17_LBR_ECON-HC
+    name: Percentage of children (aged 5-17 years) engaged in child labour (economic
+      activities and household chores)
+    dataflow: ~
+  PT_CHLD_CONFLICT:
+    code: PT_CHLD_CONFLICT
+    name: Estimated number of children (aged 0-17 years) exposed to conflict
+    dataflow: ~
+  PT_CHLD_DN:
+    code: PT_CHLD_DN
+    name: Rate of children in detention
+    dataflow: ~
+  PT_CHLD_RES-CARE:
+    code: PT_CHLD_RES-CARE
+    name: Rate of children in residential care
+    dataflow: ~
+  PT_CHLD_Y0T4_REG:
+    code: PT_CHLD_Y0T4_REG
+    name: Percentage of children under age 5 whose births are registered
+    dataflow: ~
+  PT_CM_BANK:
+    code: PT_CM_BANK
+    name: Percentage of women aged 20 to 24 years who have an account at a bank or
+      other financial institution, by child marriage status
+    dataflow: ~
+  PT_CM_BIRTHS18:
+    code: PT_CM_BIRTHS18
+    name: Percentage of women aged 20 to 24 years who gave birth before age 18, by
+      child marriage status
+    dataflow: ~
+  PT_CM_BIRTHS20:
+    code: PT_CM_BIRTHS20
+    name: Percentage of women aged 20 to 24 years who gave birth before age 20, by
+      child marriage status
+    dataflow: ~
+  PT_CM_DEC_FAMILY:
+    code: PT_CM_DEC_FAMILY
+    name: Percentage of women aged 20 to 24 years who usually decide (alone or with
+      their spouses) about visits to the women's families, by child marriage status
+    dataflow: ~
+  PT_CM_EMPLOY_12M:
+    code: PT_CM_EMPLOY_12M
+    name: Percentage of women aged 20 to 24 years who have had a job in the past 12
+      months, by child marriage status
+    dataflow: ~
+  PT_CM_IPV_12M:
+    code: PT_CM_IPV_12M
+    name: Percentage of women aged 20 to 24 years who experienced intimate partner
+      violence in the past 12 months, by child marriage status
+    dataflow: ~
+  PT_CM_MRD_SCHOOL:
+    code: PT_CM_MRD_SCHOOL
+    name: Percentage of adolescent girls aged 15 to 17 years who are currently married
+      or in union, by schooling status
+    dataflow: ~
+  PT_CM_NM_SCHOOL:
+    code: PT_CM_NM_SCHOOL
+    name: Percentage of adolescent girls aged 15 to 17 years who were never married
+      or in union, by schooling status
+    dataflow: ~
+  PT_CM_W_BTNG:
+    code: PT_CM_W_BTNG
+    name: Percentage of women aged 20 to 24 years who believe a husband is justified
+      in beating his wife under certain circumstances, by child marriage status
+    dataflow: ~
+  PT_FUNC_DIFFICULTY:
+    code: PT_FUNC_DIFFICULTY
+    name: Percentage of children aged 2-17 years  with any functional difficulty in
+      at least one domain
+    dataflow: ~
+  PT_F_0-14_FGM:
+    code: PT_F_0-14_FGM
+    name: Percentage of girls (aged 0-14 years) who have undergone female genital
+      mutilation (FGM)
+    dataflow: ~
+  PT_F_15-17_SX-V:
+    code: PT_F_15-17_SX-V
+    name: Percentage of girls (aged 15-17 years) who have experienced sexual violence
+    dataflow: ~
+  PT_F_15-17_SX-V_HLP:
+    code: PT_F_15-17_SX-V_HLP
+    name: Percentage of girls (aged 15-17 years) who have ever experienced any sexual
+      violence and sought help from a professional
+    dataflow: ~
+  PT_F_15-19_MRD:
+    code: PT_F_15-19_MRD
+    name: Percentage of girls aged 15-19 years who are currently married or in union
+    dataflow: ~
   PT_F_15-49_FGM:
     code: PT_F_15-49_FGM
-    name: Female genital mutilation prevalence (15-49)
-    dataflow: PT_FGM
-    sdg_target: 5.3.2
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
-  ECD_CHLD_LMPSL:
-    code: ECD_CHLD_LMPSL
-    name: Children developmentally on track (literacy-numeracy, physical, social-emotional,
-      learning)
-    dataflow: ECD
-    sdg_target: 4.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Percentage of girls and women (aged 15-49 years) who have undergone female
+      genital mutilation (FGM)
+    dataflow: ~
+  PT_F_15-49_FGM_ELIM:
+    code: PT_F_15-49_FGM_ELIM
+    name: Percentage of women (aged 15-49 years) who think that FGM should be eliminated
+    dataflow: ~
+  PT_F_15-49_W-BTNG:
+    code: PT_F_15-49_W-BTNG
+    name: Percentage of women (aged 15-49 years) who consider a husband to be justified
+      in hitting or beating his wife for at least one of the specified reasons
+    dataflow: ~
+  PT_F_18-29_SX-V_AGE-18:
+    code: PT_F_18-29_SX-V_AGE-18
+    name: Percentage of women (aged 18-29 years) who experienced sexual violence by
+      age 18
+    dataflow: ~
+  PT_F_20-24_MRD_U15:
+    code: PT_F_20-24_MRD_U15
+    name: Percentage of women (aged 20-24 years) married or in union before age 15
+    dataflow: ~
+  PT_F_20-24_MRD_U15_PRJ:
+    code: PT_F_20-24_MRD_U15_PRJ
+    name: Projected percentage of women aged 20 to 24 years who were first married
+      or in union before age 15
+    dataflow: ~
+  PT_F_20-24_MRD_U15_TND:
+    code: PT_F_20-24_MRD_U15_TND
+    name: Percentage of women aged 20 to 24 years who were first married or in union
+      before age 15 (UNICEF analysis, trend)
+    dataflow: ~
+  PT_F_20-24_MRD_U18:
+    code: PT_F_20-24_MRD_U18
+    name: Percentage of women (aged 20-24 years) married or in union before age 18
+    dataflow: ~
+  PT_F_20-24_MRD_U18_PRJ:
+    code: PT_F_20-24_MRD_U18_PRJ
+    name: Projected percentage of women aged 20 to 24 years who were first married
+      or in union before age 18
+    dataflow: ~
+  PT_F_20-24_MRD_U18_TND:
+    code: PT_F_20-24_MRD_U18_TND
+    name: Percentage of women aged 20 to 24 years who were first married or in union
+      before age 18 (UNICEF analysis, trend)
+    dataflow: ~
+  PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH:
+    code: PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH
+    name: Percentage of ever-partnered women and girls (aged 15 years and older) subjected
+      to physical, sexual or psychological violence by a current or former intimate
+      partner in the previous 12 months
+    dataflow: ~
+  PT_F_GE15_SX_V_PTNR_12MNTH:
+    code: PT_F_GE15_SX_V_PTNR_12MNTH
+    name: Women and girls aged 15 and older subjected to sexual violence by persons
+      other than an intimate partner in the previous 12 months
+    dataflow: ~
+  PT_F_TMRD15:
+    code: PT_F_TMRD15
+    name: Total number of girls and women of all ages who were first married or in
+      union before age 15
+    dataflow: ~
+  PT_F_TMRD18:
+    code: PT_F_TMRD18
+    name: Total number of girls and women of all ages who were first married or in
+      union before age 18
+    dataflow: ~
+  PT_M_15-17_SX-V:
+    code: PT_M_15-17_SX-V
+    name: Percentage of boys (aged 15-17 years) who have experienced sexual violence
+    dataflow: ~
+  PT_M_15-17_SX-V_HLP:
+    code: PT_M_15-17_SX-V_HLP
+    name: Percentage of boys (aged 15-17 years) who have ever experienced any sexual
+      violence and sought help from a professional
+    dataflow: ~
+  PT_M_15-19_MRD:
+    code: PT_M_15-19_MRD
+    name: Percentage of boys aged 15-19 years who are currently married or in union
+    dataflow: ~
+  PT_M_15-49_FGM_ELIM:
+    code: PT_M_15-49_FGM_ELIM
+    name: Percentage of boys and men (aged 15-49 years) who think that FGM should
+      be eliminated
+    dataflow: ~
+  PT_M_15-49_W-BTNG:
+    code: PT_M_15-49_W-BTNG
+    name: Percentage of men (aged 15-49 years) who consider a husband to be justified
+      in hitting or beating his wife for at least one of the specified reasons
+    dataflow: ~
+  PT_M_18-29_SX-V_AGE-18:
+    code: PT_M_18-29_SX-V_AGE-18
+    name: Percentage of men (aged 18-29 years) who experienced sexual violence by
+      age 18
+    dataflow: ~
+  PT_M_20-24_MRD_U18:
+    code: PT_M_20-24_MRD_U18
+    name: Percentage of men (aged 20-24 years) married or in union before age 18
+    dataflow: ~
+  PT_ST_13-15_BUL_30-DYS:
+    code: PT_ST_13-15_BUL_30-DYS
+    name: Percentage of students (aged 13-15 years) who reported being bullied on
+      1 or more days in the past 30 days
+    dataflow: ~
+  PV:
+    code: PV
+    name: Child poverty
+    dataflow: ~
+  PV_ADOLESCENT:
+    code: PV_ADOLESCENT
+    name: Adolescent poverty
+    dataflow: ~
+  PV_CHLD_DPRV-AVG-HS:
+    code: PV_CHLD_DPRV-AVG-HS
+    name: Average number of deprivations suffered per child. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-AVG-POV-HS:
+    code: PV_CHLD_DPRV-AVG-POV-HS
+    name: Average number of deprivations for children suffering at least one deprivation.
+      Homogeneous moderate standards
+    dataflow: ~
+  PV_CHLD_DPRV-AVG-POV-S-HS:
+    code: PV_CHLD_DPRV-AVG-POV-S-HS
+    name: Average number of deprivations for children suffering at least one deprivation.
+      Homogeneous severe standards
+    dataflow: ~
+  PV_CHLD_DPRV-AVG-S-HS:
+    code: PV_CHLD_DPRV-AVG-S-HS
+    name: Average number of deprivations suffered per child. Homogeneous severe standards
+    dataflow: ~
+  PV_CHLD_DPRV-E1-HS:
+    code: PV_CHLD_DPRV-E1-HS
+    name: Percentage Children suffering exactly one deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-E2-HS:
+    code: PV_CHLD_DPRV-E2-HS
+    name: Percentage Children suffering exactly two deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-E3-HS:
+    code: PV_CHLD_DPRV-E3-HS
+    name: Percentage Children suffering exactly three deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-E4-HS:
+    code: PV_CHLD_DPRV-E4-HS
+    name: Percentage Children suffering exactly four deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-E5-HS:
+    code: PV_CHLD_DPRV-E5-HS
+    name: Percentage Children suffering exactly five deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-L1-HS:
+    code: PV_CHLD_DPRV-L1-HS
+    name: Percentage children suffering at least one deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-L2-HS:
+    code: PV_CHLD_DPRV-L2-HS
+    name: Percentage children suffering at least two deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-L3-HS:
+    code: PV_CHLD_DPRV-L3-HS
+    name: Percentage children suffering at least three deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-L4-HS:
+    code: PV_CHLD_DPRV-L4-HS
+    name: Percentage children suffering at least four deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-L5-HS:
+    code: PV_CHLD_DPRV-L5-HS
+    name: Percentage children suffering at least five deprivation. Homogeneous moderate
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-E1-HS:
+    code: PV_CHLD_DPRV-S-E1-HS
+    name: Percentage Children suffering exactly one deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-E2-HS:
+    code: PV_CHLD_DPRV-S-E2-HS
+    name: Percentage Children suffering exactly two deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-E3-HS:
+    code: PV_CHLD_DPRV-S-E3-HS
+    name: Percentage Children suffering exactly three deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-E4-HS:
+    code: PV_CHLD_DPRV-S-E4-HS
+    name: Percentage Children suffering exactly four deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-E5-HS:
+    code: PV_CHLD_DPRV-S-E5-HS
+    name: Percentage Children suffering exactly five deprivation. Homogeneous severe
+      standards
+    dataflow: ~
   PV_CHLD_DPRV-S-L1-HS:
     code: PV_CHLD_DPRV-S-L1-HS
-    name: Children in severe deprivation (health and shelter)
-    dataflow: CHLD_PVTY
-    sdg_target: 1.2.1
-    unit: Percentage
-    description: null
-    dimensions: null
-    source: config
+    name: Percentage children suffering at least one deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-L2-HS:
+    code: PV_CHLD_DPRV-S-L2-HS
+    name: Percentage children suffering at least two deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-L3-HS:
+    code: PV_CHLD_DPRV-S-L3-HS
+    name: Percentage children suffering at least three deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-L4-HS:
+    code: PV_CHLD_DPRV-S-L4-HS
+    name: Percentage children suffering at least four deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_DPRV-S-L5-HS:
+    code: PV_CHLD_DPRV-S-L5-HS
+    name: Percentage children suffering at least five deprivation. Homogeneous severe
+      standards
+    dataflow: ~
+  PV_CHLD_HLD-SCL-TRNS:
+    code: PV_CHLD_HLD-SCL-TRNS
+    name: Percentage of children living in the households that received any type of
+      social transfers
+    dataflow: ~
+  PV_CHLD_INCM-PL:
+    code: PV_CHLD_INCM-PL
+    name: Children living in households with income below the national poverty line
+      (as a % of all children)
+    dataflow: ~
+  PV_GAP:
+    code: PV_GAP
+    name: Poverty gap (%)
+    dataflow: ~
+  PV_LEVEL:
+    code: PV_LEVEL
+    name: Poverty Level
+    dataflow: ~
+  PV_POP_SP:
+    code: PV_POP_SP
+    name: Proportion of population covered by social protection floors/systems, by
+      sex, distinguishing children, unemployed persons, older persons, persons with
+      disabilities, pregnant women, newborns, work-injury victims and the poor and
+      the vulnerable
+    dataflow: ~
+  PV_POP_TOT_PV:
+    code: PV_POP_TOT_PV
+    name: Population in total poverty (%)
+    dataflow: ~
+  PV_POP_XTR_PV:
+    code: PV_POP_XTR_PV
+    name: Population in extreme poverty (%)
+    dataflow: ~
+  PV_PRO_PSS:
+    code: PV_PRO_PSS
+    name: Pro-poor public social spending
+    dataflow: ~
+  PV_PRO_PSS_DIRECT_TRANSFER:
+    code: PV_PRO_PSS_DIRECT_TRANSFER
+    name: Pro-poor public social spending, direct transfers (%)
+    dataflow: ~
+  PV_PRO_PSS_EDU:
+    code: PV_PRO_PSS_EDU
+    name: Pro-poor public social spending, education (%)
+    dataflow: ~
+  PV_PRO_PSS_HEALTH:
+    code: PV_PRO_PSS_HEALTH
+    name: Pro-poor public social spending, health (%)
+    dataflow: ~
+  PV_SVRTY:
+    code: PV_SVRTY
+    name: Severity of total poverty (%)
+    dataflow: ~
+  PV_VMIR:
+    code: PV_VMIR
+    name: Vast Majority Income Ratio
+    dataflow: ~
+  SPP:
+    code: SPP
+    name: Social Protection
+    dataflow: ~
+  SPP_CHLD_POV_PROF:
+    code: SPP_CHLD_POV_PROF
+    name: Child Poverty Profile
+    dataflow: ~
+  SPP_CHLD_SOC_PROT:
+    code: SPP_CHLD_SOC_PROT
+    name: Proportion of children covered by social protection
+    dataflow: ~
+  SPP_DIST_SOC_PROT_BNFT:
+    code: SPP_DIST_SOC_PROT_BNFT
+    name: Distribution of Social Protection Benefits (%)
+    dataflow: ~
+  SPP_GDPPC:
+    code: SPP_GDPPC
+    name: GDP per capita (current US$)
+    dataflow: ~
+  SPP_GINI:
+    code: SPP_GINI
+    name: Gini Coefficient
+    dataflow: ~
+  SPP_HSLD_INCOME_SHARE:
+    code: SPP_HSLD_INCOME_SHARE
+    name: Share of household income (%)
+    dataflow: ~
+  SPP_MOTHERS_CASH_BNF:
+    code: SPP_MOTHERS_CASH_BNF
+    name: Mothers with newborns receiving cash benefit (%)
+    dataflow: ~
+  SPP_PALMA:
+    code: SPP_PALMA
+    name: Palma Index of income inequality
+    dataflow: ~
+  SPP_VMI:
+    code: SPP_VMI
+    name: VMI (vast majority index of income inequality)
+    dataflow: ~
+  TRGT:
+    code: TRGT
+    name: National Targets
+    dataflow: ~
+  TRGT_2025_NT_ANE_WOM_15_49_MOD:
+    code: TRGT_2025_NT_ANE_WOM_15_49_MOD
+    name: National target (Year 2025) for Anaemia prevalence in women of reproductive
+      age
+    dataflow: ~
+  TRGT_2025_NT_ANT_HAZ_NE2_MOD:
+    code: TRGT_2025_NT_ANT_HAZ_NE2_MOD
+    name: National target (Year 2025) for Stunting
+    dataflow: ~
+  TRGT_2025_NT_ANT_WHZ_NE2:
+    code: TRGT_2025_NT_ANT_WHZ_NE2
+    name: National target (Year 2025) for Wasting
+    dataflow: ~
+  TRGT_2025_NT_ANT_WHZ_NE3:
+    code: TRGT_2025_NT_ANT_WHZ_NE3
+    name: National target (Year 2025) for Severe Wasting
+    dataflow: ~
+  TRGT_2025_NT_ANT_WHZ_PO2_MOD:
+    code: TRGT_2025_NT_ANT_WHZ_PO2_MOD
+    name: National target (Year 2025) for Overweight
+    dataflow: ~
+  TRGT_2025_NT_BF_EXBF:
+    code: TRGT_2025_NT_BF_EXBF
+    name: National target (Year 2025) for Exclusive Breastfeeding
+    dataflow: ~
+  TRGT_2025_NT_BW_LBW:
+    code: TRGT_2025_NT_BW_LBW
+    name: National target (Year 2025) for low birth weight
+    dataflow: ~
+  TRGT_2030_CME_MRM0:
+    code: TRGT_2030_CME_MRM0
+    name: National target (Year 2030) for Neonatal mortality rate
+    dataflow: ~
+  TRGT_2030_CME_MRY0T4:
+    code: TRGT_2030_CME_MRY0T4
+    name: National target (Year 2030) for Under-five mortality rate
+    dataflow: ~
+  TRGT_2030_CME_SBR:
+    code: TRGT_2030_CME_SBR
+    name: National target (Year 2030) for stillbirth rate
+    dataflow: ~
+  TRGT_2030_ECD_CHLD_36-59M_LMPSL:
+    code: TRGT_2030_ECD_CHLD_36-59M_LMPSL
+    name: National target (Year 2030) for Early Childhood Development Index
+    dataflow: ~
+  TRGT_2030_ED_ANAR_L02:
+    code: TRGT_2030_ED_ANAR_L02
+    name: National target (Year 2030) for School atendance (pre-primary)
+    dataflow: ~
+  TRGT_2030_ED_CR_L1:
+    code: TRGT_2030_ED_CR_L1
+    name: National target (Year 2030) for Completion rate (primary)
+    dataflow: ~
+  TRGT_2030_ED_CR_L2:
+    code: TRGT_2030_ED_CR_L2
+    name: National target (Year 2030) for Completion rate (lower secondary)
+    dataflow: ~
+  TRGT_2030_ED_CR_L3:
+    code: TRGT_2030_ED_CR_L3
+    name: National target (Year 2030) for Completion rate (upper secondary)
+    dataflow: ~
+  TRGT_2030_ED_MAT_G23:
+    code: TRGT_2030_ED_MAT_G23
+    name: National target (Year 2030) for Math proficiency (grade 2/3)
+    dataflow: ~
+  TRGT_2030_ED_MAT_L1:
+    code: TRGT_2030_ED_MAT_L1
+    name: National target (Year 2030) for Math proficiency (primary)
+    dataflow: ~
+  TRGT_2030_ED_MAT_L2:
+    code: TRGT_2030_ED_MAT_L2
+    name: National target (Year 2030) for Math proficiency (lower secondary)
+    dataflow: ~
+  TRGT_2030_ED_READ_G23:
+    code: TRGT_2030_ED_READ_G23
+    name: National target (Year 2030) for Reading proficiency (grade 2/3)
+    dataflow: ~
+  TRGT_2030_ED_READ_L1:
+    code: TRGT_2030_ED_READ_L1
+    name: National target (Year 2030) for Reading proficiency (primary)
+    dataflow: ~
+  TRGT_2030_ED_READ_L2:
+    code: TRGT_2030_ED_READ_L2
+    name: National target (Year 2030) for Reading proficiency (lower secondary)
+    dataflow: ~
+  TRGT_2030_ED_ROFST_L1:
+    code: TRGT_2030_ED_ROFST_L1
+    name: National target (Year 2030) for Out-of-school (primary)
+    dataflow: ~
+  TRGT_2030_ED_ROFST_L2:
+    code: TRGT_2030_ED_ROFST_L2
+    name: National target (Year 2030) for Out-of-school (lower secondary)
+    dataflow: ~
+  TRGT_2030_ED_ROFST_L3:
+    code: TRGT_2030_ED_ROFST_L3
+    name: National target (Year 2030) for Out-of-school (upper secondary)
+    dataflow: ~
+  TRGT_2030_GN_SG_LGL_GENEQEMP:
+    code: TRGT_2030_GN_SG_LGL_GENEQEMP
+    name: National target (Year 2030) for Gender Legal frameworks
+    dataflow: ~
+  TRGT_2030_HVA_EPI_INF_RT_0-14:
+    code: TRGT_2030_HVA_EPI_INF_RT_0-14
+    name: National target (Year 2030) for HIV Infections (0-14y/o, both Sexes)
+    dataflow: ~
+  TRGT_2030_HVA_EPI_INF_RT_15-19:
+    code: TRGT_2030_HVA_EPI_INF_RT_15-19
+    name: National target (Year 2030) for HIV Infections (15-19y/o, both Sexes)
+    dataflow: ~
+  TRGT_2030_IM_DTP3:
+    code: TRGT_2030_IM_DTP3
+    name: National target (Year 2030) for DTP3 coverage
+    dataflow: ~
+  TRGT_2030_IM_HPV:
+    code: TRGT_2030_IM_HPV
+    name: National target (Year 2030) for HPVc coverage
+    dataflow: ~
+  TRGT_2030_IM_MCV1:
+    code: TRGT_2030_IM_MCV1
+    name: National target (Year 2030) for MCV1 coverage
+    dataflow: ~
+  TRGT_2030_IM_MCV2:
+    code: TRGT_2030_IM_MCV2
+    name: National target (Year 2030) for MCV2 coverage
+    dataflow: ~
+  TRGT_2030_IM_PCV3:
+    code: TRGT_2030_IM_PCV3
+    name: National target (Year 2030) for PCV3 coverage
+    dataflow: ~
+  TRGT_MNCH_ABR:
+    code: TRGT_MNCH_ABR
+    name: National target (Year 2030) for Adolescent birth rate (15-19)
+    dataflow: ~
+  TRGT_MNCH_INFDEC:
+    code: TRGT_MNCH_INFDEC
+    name: National target (Year 2030) for Reproductive health agency
+    dataflow: ~
+  TRGT_MNCH_MMR:
+    code: TRGT_MNCH_MMR
+    name: National target (Year 2030) for Maternal mortality ratio
+    dataflow: ~
+  TRGT_MNCH_SAB:
+    code: TRGT_MNCH_SAB
+    name: National target (Year 2030) for Skilled birth attendant
+    dataflow: ~
+  TRGT_MNCH_UHC:
+    code: TRGT_MNCH_UHC
+    name: National target (Year 2030) for Coverage of essential health services
+    dataflow: ~
+  TRGT_2030_NT_ANE_WOM_15_49_MOD:
+    code: TRGT_2030_NT_ANE_WOM_15_49_MOD
+    name: National target (Year 2030) for Anaemia prevalence in women of reproductive
+      age
+    dataflow: ~
+  TRGT_2030_NT_ANT_HAZ_NE2_MOD:
+    code: TRGT_2030_NT_ANT_HAZ_NE2_MOD
+    name: National target (Year 2030) for Stunting
+    dataflow: ~
+  TRGT_2030_NT_ANT_WHZ_NE2:
+    code: TRGT_2030_NT_ANT_WHZ_NE2
+    name: National target (Year 2030) for Wasting
+    dataflow: ~
+  TRGT_2030_NT_ANT_WHZ_NE3:
+    code: TRGT_2030_NT_ANT_WHZ_NE3
+    name: National target (Year 2030) for Severe Wasting
+    dataflow: ~
+  TRGT_2030_NT_ANT_WHZ_PO2_MOD:
+    code: TRGT_2030_NT_ANT_WHZ_PO2_MOD
+    name: National target (Year 2030) for Overweight
+    dataflow: ~
+  TRGT_2030_NT_BF_EXBF:
+    code: TRGT_2030_NT_BF_EXBF
+    name: National target (Year 2030) for Exclusive Breastfeeding
+    dataflow: ~
+  TRGT_2030_NT_BW_LBW:
+    code: TRGT_2030_NT_BW_LBW
+    name: National target (Year 2030) for low birth weight
+    dataflow: ~
+  TRGT_2030_PT_CHLD_1-14_PS-PSY-V_CGVR:
+    code: TRGT_2030_PT_CHLD_1-14_PS-PSY-V_CGVR
+    name: National target (Year 2030) for Violent discipline
+    dataflow: ~
+  TRGT_2030_PT_CHLD_5-17_LBR_ECON:
+    code: TRGT_2030_PT_CHLD_5-17_LBR_ECON
+    name: National target (Year 2030) for Child labour
+    dataflow: ~
+  TRGT_2030_PT_CHLD_5-17_LBR_ECON-HC:
+    code: TRGT_2030_PT_CHLD_5-17_LBR_ECON-HC
+    name: National target (Year 2030) for Child labour
+    dataflow: ~
+  TRGT_2030_PT_CHLD_Y0T4_REG:
+    code: TRGT_2030_PT_CHLD_Y0T4_REG
+    name: National target (Year 2030) for Birth registration
+    dataflow: ~
+  TRGT_2030_PT_F_15-49_FGM:
+    code: TRGT_2030_PT_F_15-49_FGM
+    name: National target (Year 2030) for Female genital mutilation
+    dataflow: ~
+  TRGT_2030_PT_F_18-29_SX-V_AGE-18:
+    code: TRGT_2030_PT_F_18-29_SX-V_AGE-18
+    name: National target (Year 2030) for Sexual violence in childhood (Female)
+    dataflow: ~
+  TRGT_2030_PT_F_20-24_MRD_U15:
+    code: TRGT_2030_PT_F_20-24_MRD_U15
+    name: National target (Year 2030) for Child Marriage
+    dataflow: ~
+  TRGT_2030_PT_F_20-24_MRD_U18:
+    code: TRGT_2030_PT_F_20-24_MRD_U18
+    name: National target (Year 2030) for Child Marriage
+    dataflow: ~
+  TRGT_2030_PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH:
+    code: TRGT_2030_PT_F_GE15_PS-SX-EM_V_PTNR_12MNTH
+    name: National target (Year 2030) for Intimate partner violence
+    dataflow: ~
+  TRGT_2030_PT_M_18-29_SX-V_AGE-18:
+    code: TRGT_2030_PT_M_18-29_SX-V_AGE-18
+    name: National target (Year 2030) for Sexual violence in childhood (Male)
+    dataflow: ~
+  TRGT_2030_PV_CHLD_AllPOP_NATPOVL:
+    code: TRGT_2030_PV_CHLD_AllPOP_NATPOVL
+    name: National target (Year 2030) for Population in poverty
+    dataflow: ~
+  TRGT_2030_PV_CHLD_DPRV-S-L1-HS:
+    code: TRGT_2030_PV_CHLD_DPRV-S-L1-HS
+    name: National target (Year 2030) for Child poverty
+    dataflow: ~
+  TRGT_2030_PV_CHLD_INCM-PL:
+    code: TRGT_2030_PV_CHLD_INCM-PL
+    name: National target (Year 2030) for Children in poor households
+    dataflow: ~
+  TRGT_2030_PV_CHLD_SP:
+    code: TRGT_2030_PV_CHLD_SP
+    name: National target (Year 2030) for Children covered by Social Protection
+    dataflow: ~
+  TRGT_2030_SDG111_215:
+    code: TRGT_2030_SDG111_215
+    name: National target (Year 2030) for Children in HH below PPPU$ 2.15
+    dataflow: ~
+  TRGT_2030_WS_PPL_H-B:
+    code: TRGT_2030_WS_PPL_H-B
+    name: National target (Year 2030) for Basic hygiene
+    dataflow: ~
+  TRGT_2030_WS_PPL_S-ALB:
+    code: TRGT_2030_WS_PPL_S-ALB
+    name: National target (Year 2030) for At least basic sanitation
+    dataflow: ~
+  TRGT_2030_WS_PPL_S-OD:
+    code: TRGT_2030_WS_PPL_S-OD
+    name: National target (Year 2030) for Open defecation
+    dataflow: ~
+  TRGT_2030_WS_PPL_S-SM:
+    code: TRGT_2030_WS_PPL_S-SM
+    name: National target (Year 2030) for Safely managed sanitation
+    dataflow: ~
+  TRGT_2030_WS_PPL_W-ALB:
+    code: TRGT_2030_WS_PPL_W-ALB
+    name: National target (Year 2030) for At least basic drinking water
+    dataflow: ~
+  TRGT_2030_WS_PPL_W-SM:
+    code: TRGT_2030_WS_PPL_W-SM
+    name: National target (Year 2030) for Safely managed drinking water
+    dataflow: ~
+  TRGT_CME:
+    code: TRGT_CME
+    name: Child mortality National Targets
+    dataflow: ~
+  TRGT_ED:
+    code: TRGT_ED
+    name: Education National Targets
+    dataflow: ~
+  TRGT_GN:
+    code: TRGT_GN
+    name: Gender National Targets
+    dataflow: ~
+  TRGT_HVA:
+    code: TRGT_HVA
+    name: HIV/AIDS National Targets
+    dataflow: ~
+  TRGT_IM:
+    code: TRGT_IM
+    name: Immunization National Targets
+    dataflow: ~
+  TRGT_MNCH:
+    code: TRGT_MNCH
+    name: Maternal and child health National Targets
+    dataflow: ~
+  TRGT_NT:
+    code: TRGT_NT
+    name: Nutrition National Targets
+    dataflow: ~
+  TRGT_PT:
+    code: TRGT_PT
+    name: Child protection National Targets
+    dataflow: ~
+  TRGT_PV:
+    code: TRGT_PV
+    name: Child poverty National Targets
+    dataflow: ~
+  TRGT_WS:
+    code: TRGT_WS
+    name: WASH National Targets
+    dataflow: ~
+  WS:
+    code: WS
+    name: Water, sanitation and hygiene
+    dataflow: ~
+  WS_HCF_C-B:
+    code: WS_HCF_C-B
+    name: Proportion of health care facilities with basic cleaning services
+    dataflow: ~
+  WS_HCF_C-L:
+    code: WS_HCF_C-L
+    name: Proportion of health care facilities with limited cleaning services
+    dataflow: ~
+  WS_HCF_C-N:
+    code: WS_HCF_C-N
+    name: Proportion of health care facilities with no cleaning service
+    dataflow: ~
+  WS_HCF_H-B:
+    code: WS_HCF_H-B
+    name: Proportion of health care facilities with basic hygiene services
+    dataflow: ~
+  WS_HCF_H-L:
+    code: WS_HCF_H-L
+    name: Proportion of health care facilities with limited hygiene services
+    dataflow: ~
+  WS_HCF_H-N:
+    code: WS_HCF_H-N
+    name: Proportion of health care facilities with no hygiene service
+    dataflow: ~
+  WS_HCF_S-B:
+    code: WS_HCF_S-B
+    name: Proportion of health care facilities with basic sanitation services
+    dataflow: ~
+  WS_HCF_S-L:
+    code: WS_HCF_S-L
+    name: Proportion of health care facilities with limited sanitation services
+    dataflow: ~
+  WS_HCF_S-N:
+    code: WS_HCF_S-N
+    name: Proportion of health care facilities with no sanitation service
+    dataflow: ~
+  WS_HCF_W-B:
+    code: WS_HCF_W-B
+    name: Proportion of health care facilities with basic water services
+    dataflow: ~
+  WS_HCF_W-L:
+    code: WS_HCF_W-L
+    name: Proportion of health care facilities with limited water services
+    dataflow: ~
+  WS_HCF_W-N:
+    code: WS_HCF_W-N
+    name: Proportion of health care facilities with no water service
+    dataflow: ~
+  WS_HCF_WM-B:
+    code: WS_HCF_WM-B
+    name: Proportion of health care facilities with basic health care waste management
+      services
+    dataflow: ~
+  WS_HCF_WM-L:
+    code: WS_HCF_WM-L
+    name: Proportion of health care facilities with limited health care waste management
+      services
+    dataflow: ~
+  WS_HCF_WM-N:
+    code: WS_HCF_WM-N
+    name: Proportion of health care facilities with no health care waste management
+      service
+    dataflow: ~
+  WS_PPL_H-B:
+    code: WS_PPL_H-B
+    name: Proportion of population with a handwashing facility with soap and water
+      available at home
+    dataflow: ~
+  WS_PPL_H-L:
+    code: WS_PPL_H-L
+    name: Proportion of population with a limited handwashing facility
+    dataflow: ~
+  WS_PPL_H-N:
+    code: WS_PPL_H-N
+    name: Proportion of population with no handwashing facility at home
+    dataflow: ~
+  WS_PPL_M-NPART_AGE_15_19:
+    code: WS_PPL_M-NPART_AGE_15_19
+    name: Percentage of adolescent girls aged 15-19 years who did not participate
+      in school, work, or social activities during their last menstrual period
+    dataflow: ~
+  WS_PPL_S-ALB:
+    code: WS_PPL_S-ALB
+    name: Proportion of population using at least basic sanitation services
+    dataflow: ~
+  WS_PPL_S-B:
+    code: WS_PPL_S-B
+    name: Proportion of population using basic sanitation services
+    dataflow: ~
+  WS_PPL_S-DIS:
+    code: WS_PPL_S-DIS
+    name: Proportion of population using on-site sanitation facilities with human
+      waste disposed in situ
+    dataflow: ~
+  WS_PPL_S-FST:
+    code: WS_PPL_S-FST
+    name: Proportion of population using of on-site sanitation facilities with human
+      waste treated off-site
+    dataflow: ~
+  WS_PPL_S-I:
+    code: WS_PPL_S-I
+    name: Proportion of population using improved sanitation facilities
+    dataflow: ~
+  WS_PPL_S-L:
+    code: WS_PPL_S-L
+    name: Proportion of population using limited sanitation services
+    dataflow: ~
+  WS_PPL_S-LAT:
+    code: WS_PPL_S-LAT
+    name: Proportion of population using improved latrines and other improved facilities
+    dataflow: ~
+  WS_PPL_S-OD:
+    code: WS_PPL_S-OD
+    name: Proportion of population practising open defecation
+    dataflow: ~
+  WS_PPL_S-SEP:
+    code: WS_PPL_S-SEP
+    name: Proportion of population using sanitation facilities connected to septic
+      tanks
+    dataflow: ~
+  WS_PPL_S-SEW:
+    code: WS_PPL_S-SEW
+    name: Proportion of population using sanitation facilities connected to sewer
+      networks
+    dataflow: ~
+  WS_PPL_S-SM:
+    code: WS_PPL_S-SM
+    name: Proportion of population using safely managed sanitation services
+    dataflow: ~
+  WS_PPL_S-UI:
+    code: WS_PPL_S-UI
+    name: Proportion of population using unimproved sanitation facilites
+    dataflow: ~
+  WS_PPL_S-WWT:
+    code: WS_PPL_S-WWT
+    name: Proportion of population using sanitation facilities connected to sewer
+      networks and with sewage treated to at least secondary levels
+    dataflow: ~
+  WS_PPL_W-ALB:
+    code: WS_PPL_W-ALB
+    name: Proportion of population using at least basic drinking water services
+    dataflow: ~
+  WS_PPL_W-AVA:
+    code: WS_PPL_W-AVA
+    name: Proportion of population using improved drinking water sources available
+      when needed
+    dataflow: ~
+  WS_PPL_W-B:
+    code: WS_PPL_W-B
+    name: Proportion of population using basic drinking water services
+    dataflow: ~
+  WS_PPL_W-I:
+    code: WS_PPL_W-I
+    name: Proportion of population using improved drinking water sources
+    dataflow: ~
+  WS_PPL_W-L:
+    code: WS_PPL_W-L
+    name: Proportion of population using limited drinking water services
+    dataflow: ~
+  WS_PPL_W-NP:
+    code: WS_PPL_W-NP
+    name: Proportion of population using non-piped improved drinking water sources
+    dataflow: ~
+  WS_PPL_W-P:
+    code: WS_PPL_W-P
+    name: Proportion of population using piped drinking water sources
+    dataflow: ~
+  WS_PPL_W-PRE:
+    code: WS_PPL_W-PRE
+    name: Proportion of population using improved drinking water sources located on
+      premises
+    dataflow: ~
+  WS_PPL_W-QUA:
+    code: WS_PPL_W-QUA
+    name: Proportion of population using of improved drinking water sources free from
+      faecal and priority chemical contamination
+    dataflow: ~
+  WS_PPL_W-SM:
+    code: WS_PPL_W-SM
+    name: Proportion of population using safely managed drinking water services
+    dataflow: ~
+  WS_PPL_W-SW:
+    code: WS_PPL_W-SW
+    name: Proportion of population using surface water
+    dataflow: ~
+  WS_PPL_W-UI:
+    code: WS_PPL_W-UI
+    name: Proportion of population using unimproved drinking water sources
+    dataflow: ~
+  WS_SCH_H-B:
+    code: WS_SCH_H-B
+    name: Proportion of schools with basic hygiene services
+    dataflow: ~
+  WS_SCH_H-L:
+    code: WS_SCH_H-L
+    name: Proportion of schools with limited hygiene services
+    dataflow: ~
+  WS_SCH_H-N:
+    code: WS_SCH_H-N
+    name: Proportion of schools with no hygiene service
+    dataflow: ~
+  WS_SCH_S-B:
+    code: WS_SCH_S-B
+    name: Proportion of schools with basic sanitation services
+    dataflow: ~
+  WS_SCH_S-L:
+    code: WS_SCH_S-L
+    name: Proportion of schools with limited sanitation services
+    dataflow: ~
+  WS_SCH_S-N:
+    code: WS_SCH_S-N
+    name: Proportion of schools with no sanitation service
+    dataflow: ~
+  WS_SCH_W-B:
+    code: WS_SCH_W-B
+    name: Proportion of schools with basic drinking water services
+    dataflow: ~
+  WS_SCH_W-L:
+    code: WS_SCH_W-L
+    name: Proportion of schools with limited drinking water services
+    dataflow: ~
+  WS_SCH_W-N:
+    code: WS_SCH_W-N
+    name: Proportion of schools with no drinking water service
+    dataflow: ~
+  WT:
+    code: WT
+    name: Transition to work
+    dataflow: ~
+  WT_ADLS_10-17_LBR_ECON:
+    code: WT_ADLS_10-17_LBR_ECON
+    name: Child labour thresholds (economic activity)
+    dataflow: ~
+  WT_ADLS_10-17_LBR_HC:
+    code: WT_ADLS_10-17_LBR_HC
+    name: Child labour thresholds (household chores)
+    dataflow: ~
+  WT_ADLS_10-17_TIME_ECON:
+    code: WT_ADLS_10-17_TIME_ECON
+    name: Time spent in economic activities
+    dataflow: ~
+  WT_ADLS_10-17_TIME_HC:
+    code: WT_ADLS_10-17_TIME_HC
+    name: Time spent in household chores
+    dataflow: ~
+  WT_ADLS_15-19_ED_NEET:
+    code: WT_ADLS_15-19_ED_NEET
+    name: Percentage of adolescents (aged 15-19 years) not in education, employment
+      or training
+    dataflow: ~
+  WT_ADLS_15-19_LAB_FRC_UNEMP:
+    code: WT_ADLS_15-19_LAB_FRC_UNEMP
+    name: Percentage of adolescents (aged 15-19 years) in the labour force who are
+      unemployed
+    dataflow: ~
+  WS_SCH_H-F:
+    code: WS_SCH_H-F
+    name: Proportion of schools with handwashing facilities
+    dataflow: ~
+  WS_SCH_S-I:
+    code: WS_SCH_S-I
+    name: Proportion of schools with improved sanitation facilities
+    dataflow: ~
+  WS_SCH_W-I:
+    code: WS_SCH_W-I
+    name: Proportion of schools with improved drinking water sources
+    dataflow: ~
+  IM_IPV2:
+    code: IM_IPV2
+    name: Percentage of surviving infants who received the second dose of inactivated
+      polio-containing vaccine
+    dataflow: ~
+  IM_MENGA:
+    code: IM_MENGA
+    name: Percentage of surviving infants who received Meningococcal A conjugate vaccine
+    dataflow: ~
+  HVA_EPI_LHIV:
+    code: HVA_EPI_LHIV
+    name: Estimated number of children living with HIV
+    dataflow: ~
+  HVA_EPI_DTH_ANN:
+    code: HVA_EPI_DTH_ANN
+    name: Estimated number of annual AIDS-related deaths
+    dataflow: ~
+  HVA_EPI_INF_ANN:
+    code: HVA_EPI_INF_ANN
+    name: Estimated number of new HIV infections
+    dataflow: ~
+  DM_POP_CHILD_PROP:
+    code: DM_POP_CHILD_PROP
+    name: Children population as proportion of total population (%)
+    dataflow: ~
+  PT_F_PS-SX_V_PTNR_12MNTH:
+    code: PT_F_PS-SX_V_PTNR_12MNTH
+    name: Percentage of ever-partnered girls aged 15 to 19 years who have experienced
+      physical and/or sexual violence by a current or former intimate partner in the
+      last 12 months
+    dataflow: ~
+  PV_PRO_PSS_HEALTH_BOTTOM20:
+    code: PV_PRO_PSS_HEALTH_BOTTOM20
+    name: Pro-poor public social spending, health - Bottom quintile (%)
+    dataflow: ~
+  PV_PRO_PSS_EDU_BOTTOM20:
+    code: PV_PRO_PSS_EDU_BOTTOM20
+    name: Pro-poor public social spending, education - Bottom quintile (%)
+    dataflow: ~
+  PV_PRO_PSS_DIRECT_TRANSFER_BOTTOM20:
+    code: PV_PRO_PSS_DIRECT_TRANSFER_BOTTOM20
+    name: Pro-poor public social spending, direct transfers - Bottom quintile (%)
+    dataflow: ~
+  PV_PRO_PSS_BOTTOM20:
+    code: PV_PRO_PSS_BOTTOM20
+    name: Pro-poor public public social spending - Bottom quintile
+    dataflow: ~
+  TRGT_2030_ECD_CHLD_LMPSL:
+    code: TRGT_2030_ECD_CHLD_LMPSL
+    name: Proportion of children aged 24-59 months of age who are developmentally
+      on track in health, learning and psychosocial well-being, by sex
+    dataflow: ~
+  NT_CF_FG_0_T_2:
+    code: NT_CF_FG_0_T_2
+    name: Severe food poverty
+    dataflow: ~
+  NT_CF_FG_3_T_4:
+    code: NT_CF_FG_3_T_4
+    name: Moderate food poverty
+    dataflow: ~
+  NT_DANT_BMI_L18_MOD:
+    code: NT_DANT_BMI_L18_MOD
+    name: Prevalence of underweight among adults, BMI < 18.5 (Age-standardized estimate)
+    dataflow: ~
+  NT_SANT_5_19_BAZ_NE2_MOD:
+    code: NT_SANT_5_19_BAZ_NE2_MOD
+    name: Percentage of thinness among children aged 5-19 years, BMI < -2 standard
+      deviations below the median (crude estimate)
+    dataflow: ~
+  NT_SANT_5_19_BAZ_PO1_MOD:
+    code: NT_SANT_5_19_BAZ_PO1_MOD
+    name: Percentage of overweight among children aged 5-19 years, BMI > +1 standard
+      deviations above the median (crude estimate)
+    dataflow: ~
+  NT_ANE_WOM_15_49_MOD:
+    code: NT_ANE_WOM_15_49_MOD
+    name: Prevalence of anaemia in women aged 15-49 (Modeled Estimates)
+    dataflow: ~
+  ECD_CHLD_LMPSL:
+    code: ECD_CHLD_LMPSL
+    name: Proportion of children aged 24-59 months of age who are developmentally
+      on track in health, learning and psychosocial well-being, by sex
+    dataflow: ~
+  ED_CR_L1_UIS_MOD:
+    code: ED_CR_L1_UIS_MOD
+    name: Completion rate for children of primary school age (Modeled)
+    dataflow: ~
+  ED_CR_L2_UIS_MOD:
+    code: ED_CR_L2_UIS_MOD
+    name: Completion rate for adolescents of lower secondary school age (Modeled)
+    dataflow: ~
+  ED_CR_L3_UIS_MOD:
+    code: ED_CR_L3_UIS_MOD
+    name: Completion rate for youth of upper secondary education school age (Modeled)
+    dataflow: ~
+  ED_FLS_NUM:
+    code: ED_FLS_NUM
+    name: Foundational Numeracy Skills
+    dataflow: ~
+  ED_FLS_READ:
+    code: ED_FLS_READ
+    name: Foundational Reading Skills
+    dataflow: ~
+  ED_ROFST_L3_UIS:
+    code: ED_ROFST_L3_UIS
+    name: Out-of-school rate for youth of upper secondary school age (Modeled)
+    dataflow: ~
+  ED_SE_LPV_PRIM:
+    code: ED_SE_LPV_PRIM
+    name: Learning Poverty Rate
+    dataflow: ~
+  ED_ROFST_L1_UIS:
+    code: ED_ROFST_L1_UIS
+    name: Out-of-school rate for children of primary school age (Modeled)
+    dataflow: ~
+  ED_ROFST_L2_UIS:
+    code: ED_ROFST_L2_UIS
+    name: Out-of-school rate for adolescents of lower secondary school age (Modeled)
+    dataflow: ~
+  ED_ANAR_L01:
+    code: ED_ANAR_L01
+    name: Net enrolment rate, early childhood education
+    dataflow: ~
+  ED_SE_LPV_PRIM_LD:
+    code: ED_SE_LPV_PRIM_LD
+    name: Learning Deprivation
+    dataflow: ~
+  ED_SE_LPV_PRIM_SD:
+    code: ED_SE_LPV_PRIM_SD
+    name: Schooling Deprivation
+    dataflow: ~
+  ED_PRYA_AG15T24:
+    code: ED_PRYA_AG15T24
+    name: Participation rate of youth and adults in formal and non-formal education
+      and training in the previous 12 months, 15-24 years old (%)
+    dataflow: ~
+  ED_ROFST_L02:
+    code: ED_ROFST_L02
+    name: Out-of-school rate for children one year before the official primary entry
+      age (%)
+    dataflow: ~
+  ED_ROFST_L1_UIS_MOD:
+    code: ED_ROFST_L1_UIS_MOD
+    name: Out-of-school rate for children of primary school age (%), (modelled data)
+    dataflow: ~
+  ED_ROFST_L2_UIS_MOD:
+    code: ED_ROFST_L2_UIS_MOD
+    name: Out-of-school rate for adolescents of lower secondary school age (%), (modelled
+      data)
+    dataflow: ~
+  ED_ROFST_L3_UIS_MOD:
+    code: ED_ROFST_L3_UIS_MOD
+    name: Out-of-school rate for youth of upper secondary school age (%), (modelled
+      data)
+    dataflow: ~
+  PT_CHLD_1-14_PS-PSY-V_CGVR_TND:
+    code: PT_CHLD_1-14_PS-PSY-V_CGVR_TND
+    name: Percentage of children (aged 1-14 years) who experienced any physical punishment
+      and/or psychological aggression by caregivers (UNICEF analysis, trend)
+    dataflow: ~
+  DM_BRTS_SURVIVING_1:
+    code: DM_BRTS_SURVIVING_1
+    name: Live Births Surviving to Age 1
+    dataflow: ~
+  PT_F_15-49_FGM_TND:
+    code: PT_F_15-49_FGM_TND
+    name: Percentage of girls and women (aged 15-49 years) who have undergone female
+      genital mutilation (FGM) (UNICEF analysis, trend)
+    dataflow: ~
+  NT_BW_WEI:
+    code: NT_BW_WEI
+    name: Children with a birth weight
+    dataflow: ~
+  NT_DANT_BMI_G25_MOD:
+    code: NT_DANT_BMI_G25_MOD
+    name: Prevalence of overweight among adults, BMI ≥ 25 (Crude estimate)
+    dataflow: ~
+  NT_DANT_BMI_G30_MOD_ADJ:
+    code: NT_DANT_BMI_G30_MOD_ADJ
+    name: Prevalence of obesity among adults, BMI ≥ 30 (Age-standardized estimate)
+    dataflow: ~
+  NT_SANT_5_19_BAZ_PO2_MOD:
+    code: NT_SANT_5_19_BAZ_PO2_MOD
+    name: Prevalence of obesity among children aged 5-19 years, BMI > +2 standard
+      deviations above the median (Crude estimate)
+    dataflow: ~
+  ECD_CHLD_LMPSL_PRXY:
+    code: ECD_CHLD_LMPSL_PRXY
+    name: 'Percentage of children aged 36-59 months who are developmentally on track
+      in at least three of the following four domains: literacy-numeracy, physical,
+      social-emotional and learning'
+    dataflow: ~
+  MNCH_CSEC_TND:
+    code: MNCH_CSEC_TND
+    name: C-section rate - percentage of deliveries by cesarean section (trends)
+    dataflow: ~
+  MNCH_INSTDEL_TND:
+    code: MNCH_INSTDEL_TND
+    name: Institutional deliveries - percentage of deliveries in a health facility
+      (trends)
+    dataflow: ~
+  PT_F_15-19_FGM_TND:
+    code: PT_F_15-19_FGM_TND
+    name: Trend in FGM prevalence among girls aged 15-19
+    dataflow: ~
+  DM_POP_PS_URBN:
+    code: DM_POP_PS_URBN
+    name: Population by urban-rural national definitions
+    dataflow: ~
+  DM_POP_DOU:
+    code: DM_POP_DOU
+    name: Percentage of population by degree of urbanization at mid-year
+    dataflow: ~
+  DM_POP_PS_DOU:
+    code: DM_POP_PS_DOU
+    name: Population by degree of urbanization at mid-year
+    dataflow: ~
+  DM_POP_DOU_GRT:
+    code: DM_POP_DOU_GRT
+    name: Annual rate of change of the population by degree of urbanization
+    dataflow: ~
+  DM_BU_PC_DOU:
+    code: DM_BU_PC_DOU
+    name: Built-up area per capita by degree of urbanization (m2)
+    dataflow: ~

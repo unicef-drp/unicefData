@@ -11,7 +11,9 @@ filter_unicef_data(
   wealth = NULL,
   residence = NULL,
   maternal_edu = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  indicator_code = NULL,
+  dataflow = NULL
 )
 }
 \arguments{
@@ -28,7 +30,15 @@ filter_unicef_data(
 \item{maternal_edu}{Character string for maternal education filter.}
 
 \item{verbose}{Logical, print progress messages.}
+
+\item{indicator_code}{Optional indicator code to enable metadata-driven filtering.
+Placed at end to preserve backward compatibility with existing positional calls.}
+
+\item{dataflow}{Optional dataflow name for dataflow-specific filtering logic.
+For NUTRITION dataflow, age defaults to Y0T4 instead of _T.}
 }
 \description{
 Filters data to specific disaggregations or defaults to totals.
+Uses indicator metadata (disaggregations_with_totals) to determine which
+dimensions have _T totals and should be filtered by default.
 }

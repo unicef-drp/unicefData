@@ -1,7 +1,7 @@
 _metadata:
   platform: R
   version: 2.0.0
-  synced_at: '2025-12-09T02:25:53Z'
+  synced_at: '2026-01-25T13:17:13Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF
   agency: UNICEF
   content_type: codelists
@@ -9,13 +9,12 @@ _metadata:
   codes_per_list:
     CL_AGE: 446
     CL_WEALTH_QUINTILE: 16
-    CL_RESIDENCE: 3
+    CL_RESIDENCE: 11
     CL_UNIT_MEASURE: 80
     CL_OBS_STATUS: 38
 codelists:
   CL_AGE:
     id: CL_AGE
-    name: Age group code list
     agency: UNICEF
     version: latest
     codes:
@@ -465,10 +464,8 @@ codelists:
       Y_GE95: 95 years old and over
       _T: Total
       _U: Unknown
-    last_updated: '2025-12-09T02:25:52Z'
   CL_WEALTH_QUINTILE:
     id: CL_WEALTH_QUINTILE
-    name: Wealth Quintile
     agency: UNICEF
     version: latest
     codes:
@@ -488,20 +485,24 @@ codelists:
       R60: Richest 60%
       R80: Richest 80%
       _T: Total
-    last_updated: '2025-12-09T02:25:52Z'
   CL_RESIDENCE:
     id: CL_RESIDENCE
-    name: Type of Residence (Urbanisation)
     agency: UNICEF
     version: latest
     codes:
       _T: Total
-      U: Urban
-      R: Rural
-    last_updated: '2025-12-09T02:25:52Z'
+      U: Urban area
+      R: Rural area
+      CITY: City
+      TSUB: Town and semi-dense area
+      DTOW: Dense town
+      STOW: Semi-dense town
+      SUBU: Suburban or peri-urban area
+      VILL: Village
+      DISP: Dispersed rural area
+      UNIN: Mostly uninhabited area
   CL_UNIT_MEASURE:
     id: CL_UNIT_MEASURE
-    name: Unit of Measure
     agency: UNICEF
     version: latest
     codes:
@@ -511,12 +512,12 @@ codelists:
       BIRTHS_1000: 1000 Births
       D: Number of deaths
       DPIA: Adjusted disability parity index
-      D_PER_1000_1: وفيات لكل 1000 طفل بعمر سنة واحدة
+      D_PER_1000_1: Deaths per 1,000 children aged 1
       D_PER_1000_10: Deaths per 1,000 children aged 10
       D_PER_1000_15: Deaths per 1,000 youths aged 15
       D_PER_1000_20: Deaths per 1,000 youths aged 20
-      D_PER_1000_5: وفيات لكل 1000 طفل بعمر 5 سنوات
-      D_PER_1000_B: وفيات لكل 1000 مولود حي
+      D_PER_1000_5: Deaths per 1,000 children aged 5
+      D_PER_1000_B: Deaths per 1,000 live births
       EUR: Euro
       GDP_CAP: As % of GDP per capita
       GDP_PERC: '% of GDP'
@@ -585,10 +586,8 @@ codelists:
       RATE: Rate
       D_PER_100000_BIRTHS: Deaths per 100000 births
       1_IN_X: 1 in X
-    last_updated: '2025-12-09T02:25:53Z'
   CL_OBS_STATUS:
     id: CL_OBS_STATUS
-    name: Observation Status
     agency: UNICEF
     version: latest
     codes:
@@ -630,4 +629,3 @@ codelists:
       EXCL: Excluded
       BEP: Time series break; estimated value; provisional value
       PRED: Predicted
-    last_updated: '2025-12-09T02:25:53Z'

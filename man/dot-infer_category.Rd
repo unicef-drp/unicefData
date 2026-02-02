@@ -2,7 +2,7 @@
 % Please edit documentation in R/indicator_registry.R
 \name{.infer_category}
 \alias{.infer_category}
-\title{Infer dataflow category from indicator code prefix}
+\title{Infer organizational CATEGORY from indicator code prefix}
 \usage{
 .infer_category(indicator_code)
 }
@@ -10,9 +10,16 @@
 \item{indicator_code}{Character. The indicator code}
 }
 \value{
-Character. The inferred dataflow name
+Character. The inferred organizational category name
 }
 \description{
-Infer dataflow category from indicator code prefix
+DEPRECATED FOR DATAFLOW DETECTION: This function infers category for
+organizational grouping only. For actual API dataflow detection, use
+get_dataflow_for_indicator() which implements the canonical fallback
+sequence from _dataflow_fallback_sequences.yaml.
+}
+\details{
+Note: Category != Dataflow. For example, WS_HCF_* indicators have
+category='WASH' but dataflow='WASH_HEALTHCARE_FACILITY'.
 }
 \keyword{internal}

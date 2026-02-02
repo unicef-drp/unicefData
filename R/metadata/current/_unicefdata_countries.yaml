@@ -1,7 +1,7 @@
 _metadata:
   platform: R
   version: 2.0.0
-  synced_at: '2025-12-09T02:25:53Z'
+  synced_at: '2026-01-25T13:17:13Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
   agency: UNICEF
   content_type: countries
@@ -100,7 +100,7 @@ countries:
   GUF: French Guiana
   GUM: Guam
   GUY: Guyana
-  HKG: الصين، منطقة هونغ كونغ الإدارية الخاصة
+  HKG: China, Hong Kong Special Administrative Region
   HND: Honduras
   HRV: Croatia
   HTI: Haiti
@@ -136,7 +136,7 @@ countries:
   LTU: Lithuania
   LUX: Luxembourg
   LVA: Latvia
-  MAC: الصين، منطقة ماكاو الإدارية الخاصة
+  MAC: China, Macao Special Administrative Region
   MAF: Saint Martin (French part)
   MAR: Morocco
   MCO: Monaco
@@ -166,7 +166,7 @@ countries:
   NGA: Nigeria
   NIC: Nicaragua
   NIU: Niue
-  NLD: هولندا
+  NLD: Netherlands (Kingdom of the)
   NOR: Norway
   NPL: Nepal
   NRU: Nauru
@@ -209,7 +209,7 @@ countries:
   SVN: Slovenia
   SWE: Sweden
   SWZ: Eswatini
-  SXM: سانت مارتن (الجزء الهولندي)
+  SXM: Sint Maarten
   SYC: Seychelles
   SYR: Syrian Arab Republic
   TCA: Turks and Caicos Islands
@@ -223,9 +223,9 @@ countries:
   TON: Tonga
   TTO: Trinidad and Tobago
   TUN: Tunisia
-  TUR: تركيا
+  TUR: Türkiye
   TUV: Tuvalu
-  TWN: Taïwan
+  TWN: China, Taiwan Province of China
   TZA: United Republic of Tanzania
   UGA: Uganda
   UKR: Ukraine
@@ -260,31 +260,31 @@ countries:
   UNDEV_LD: Less Developed Regions (UN Regions)
   UNFPA_AP: Asia and the Pacific (UNFPA)
   UNFPA_AS: Arab States (UNFPA)
-  UNFPA_EECA: Europe de l’Est et Asie centrale
+  UNFPA_EECA: Eastern Europe and Central Asia (UNFPA)
   UNFPA_ESA: East and Southern Africa (UNFPA)
   UNFPA_LAC: Latin America and the Caribbean (UNFPA)
   UNFPA_REGIONS: UNFPA regions (UNFPA)
   UNFPA_WCA: West and Central Africa (UNFPA)
-  UNICEF_EAP: Asia Oriental y Pacífico
+  UNICEF_EAP: East Asia and Pacific (UNICEF Rep.Regions)
   UNICEF_EAPRO: East Asia and Pacific (UNICEF Prog.regions)
-  UNICEF_ECA: Europa y Asia Central
+  UNICEF_ECA: Europe and Central Asia (UNICEF Rep.Regions)
   UNICEF_ECARO: Europe and Central Asia (UNICEF Prog.regions)
-  UNICEF_EECA: Europa del Este y Asia Central
-  UNICEF_ESA: África Oriental y Meridional
+  UNICEF_EECA: Eastern Europe and Central Asia (UNICEF Rep.Regions)
+  UNICEF_ESA: Eastern and Southern Africa (UNICEF Rep.Regions)
   UNICEF_ESARO: Eastern and Southern Africa (UNICEF Prog.regions)
-  UNICEF_LAC: América Latina y el Caribe
+  UNICEF_LAC: Latin America and the Caribbean (UNICEF Rep.Regions)
   UNICEF_LACRO: Latin America and the Caribbean (UNICEF Prog.regions)
-  UNICEF_MENA: Oriente Medio y África del Norte
+  UNICEF_MENA: Middle East and North Africa (UNICEF Rep.Regions)
   UNICEF_MENARO: Middle East and North Africa (UNICEF Prog.regions)
-  UNICEF_NA: América del Norte
+  UNICEF_NA: North America (UNICEF Rep.Regions)
   UNICEF_PROG_REG_GLOBAL: UNICEF Programme Regions - Global
   UNICEF_REP_REG_GLOBAL: UNICEF reporting regions - Global
   UNICEF_ROSA: South Asia (UNICEF Prog.regions)
-  UNICEF_SA: Asia Meridional
-  UNICEF_SSA: África Subsahariana
-  UNICEF_WCA: África Occidental y Central
+  UNICEF_SA: South Asia (UNICEF Rep.Regions)
+  UNICEF_SSA: Sub-Saharan Africa (UNICEF Rep.Regions)
+  UNICEF_WCA: West and Central Africa (UNICEF Rep.Regions)
   UNICEF_WCARO: West and Central Africa (UNICEF Prog.regions)
-  UNICEF_WE: Europa Occidental
+  UNICEF_WE: Western Europe (UNICEF Rep.Regions)
   UNICEF_XCH: World excluding China (UNICEF Rep.Regions)
   UNSDG_AUSTRALIANEWZEALAND: Australia and New Zealand (UNSDG)
   UNSDG_CARIBBEAN: Caribbean (UNSDG)
@@ -298,7 +298,7 @@ countries:
   UNSDG_EUROPE: Europe (UNSDG)
   UNSDG_EUROPENORTHERNAMR: Europe and Northern America (UNSDG)
   UNSDG_LAC: Latin America and the Caribbean (UNSDG)
-  UNSDG_LDC: Países menos adelantados
+  UNSDG_LDC: Least Developed Countries (LDC) (UNSDG)
   UNSDG_LLDC: Landlocked developing countries (LLDC) (UNSDG)
   UNSDG_MELANESIA: Melanesia (UNSDG)
   UNSDG_MIDDLEAFR: Middle Africa (UNSDG)

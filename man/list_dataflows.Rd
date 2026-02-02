@@ -2,16 +2,27 @@
 % Please edit documentation in R/unicefData.R
 \name{list_dataflows}
 \alias{list_dataflows}
-\title{List available UNICEF dataflows}
+\title{List available UNICEF SDMX dataflows}
 \usage{
-list_dataflows(max_retries = 3)
+list_dataflows(
+  agency = "UNICEF",
+  retry = NULL,
+  cache_dir = tools::R_user_dir("unicefdata", "cache"),
+  max_retries = 3
+)
 }
 \arguments{
-\item{max_retries}{Number of retry attempts (default: 3)}
+\item{agency}{Character agency ID (default "UNICEF").}
+
+\item{retry}{Integer. Number of retries for transient HTTP failures.}
+
+\item{cache_dir}{Directory for memoised cache.}
+
+\item{max_retries}{Integer. Number of retry attempts (default: 3). Alternative name for 'retry' parameter.}
 }
 \value{
-Tibble with columns: id, agency, version
+A tibble with columns \code{id}, \code{agency}, \code{version}, \code{name}.
 }
 \description{
-Alias for list_unicef_flows() with consistent naming.
+Convenience wrapper around \code{list_sdmx_flows()} for parity with Python.
 }

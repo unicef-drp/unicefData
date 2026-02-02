@@ -14,7 +14,9 @@ unicefData_raw(
   max_retries = 3,
   version = NULL,
   page_size = 1e+05,
-  verbose = TRUE
+  verbose = TRUE,
+  totals = FALSE,
+  labels = "id"
 )
 
 unicefdata_raw(
@@ -26,7 +28,9 @@ unicefdata_raw(
   max_retries = 3,
   version = NULL,
   page_size = 1e+05,
-  verbose = TRUE
+  verbose = TRUE,
+  totals = FALSE,
+  labels = "id"
 )
 }
 \arguments{
@@ -47,6 +51,10 @@ unicefdata_raw(
 \item{page_size}{Integer, number of rows per page.}
 
 \item{verbose}{Logical, print progress messages.}
+
+\item{totals}{Logical, include total aggregations.}
+
+\item{labels}{Character, label format ("id" or "name").}
 }
 \description{
 Low-level fetcher for UNICEF SDMX API.
