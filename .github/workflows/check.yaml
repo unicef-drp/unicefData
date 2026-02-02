@@ -51,7 +51,7 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
           cache-version: 3
-          lockfile-create-lib: never
+          lockfile-create-lib: "never"
 
       - uses: r-lib/actions/check-r-package@v2
         with:
