@@ -2,22 +2,22 @@ id: DM_PROJECTIONS
 name: Projection Demography
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:14:52.343265+00:00'
+synced_at: '2026-01-25T14:44:38.066838+00:00'
 dimensions:
 - id: REF_AREA
   position: 1
   codelist: CL_COUNTRY
   values:
-  - BDI
-  - COM
-  - DJI
-  - ERI
-  - ETH
-  - KEN
-  - MDG
-  - MWI
-  - MUS
-  - MYT
+  - AU
+  - AU_CENTRAL_AFRICA
+  - AU_EASTERN_AFRICA
+  - AU_NORTHERN_AFRICA
+  - AU_SOUTHERN_AFRICA
+  - AU_WESTERN_AFRICA
+  - AUREC_AMU
+  - AUREC_CEN_SAD
+  - AUREC_COMESA
+  - AUREC_IGAD
   is_exhaustive: false
   total_values_count: 130
 - id: INDICATOR

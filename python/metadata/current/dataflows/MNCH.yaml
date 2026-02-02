@@ -2,7 +2,7 @@ id: MNCH
 name: Maternal, child and newborn health
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:15:55.875410+00:00'
+synced_at: '2026-01-25T14:45:58.036672+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

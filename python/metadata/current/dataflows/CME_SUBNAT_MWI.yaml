@@ -2,7 +2,7 @@ id: CME_SUBNAT_MWI
 name: CME Malawi
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:13:43.272278+00:00'
+synced_at: '2026-01-25T14:43:27.496087+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

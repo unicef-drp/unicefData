@@ -2,7 +2,7 @@ id: CME_COUNTRY_PROFILES_DATA
 name: CME Country profiles data
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:12:22.317363+00:00'
+synced_at: '2026-01-25T14:42:02.375449+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

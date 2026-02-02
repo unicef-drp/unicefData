@@ -1,13 +1,23 @@
-"""
+"""  
 Core UNICEF API Functions
 =========================
 
 Main functions for retrieving data from the UNICEF SDMX API.
+
+Version: 2.0.0 (2026-01-31)
+Unified fallback architecture with canonical YAML-based metadata.
+
+Cross-platform alignment: R, Python, Stata all use identical:
+- Fallback dataflow sequences
+- Indicator metadata
+- Output column schemas
 """
 
 import logging
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple, Dict
 import pandas as pd
+import yaml
+from pathlib import Path
 
 from unicef_api.sdmx import get_sdmx
 from unicef_api.flows import list_dataflows
@@ -177,21 +187,144 @@ def _apply_circa(df: pd.DataFrame, target_years: List[int]) -> pd.DataFrame:
 
 
 # =============================================================================
-# Dataflow Fallback Logic
+# Dataflow Fallback Logic - Load from Canonical YAML
 # =============================================================================
 
-# Alternative dataflows to try when auto-detected dataflow fails with 404
-# Organized by indicator prefix - if one fails, try these alternatives
-DATAFLOW_ALTERNATIVES = {
-    # Education indicators may be in either EDUCATION or EDUCATION_UIS_SDG
-    'ED': ['EDUCATION_UIS_SDG', 'EDUCATION'],
-    # Protection indicators may be in PT, PT_CM, PT_FGM, or other specific flows
-    'PT': ['PT', 'PT_CM', 'PT_FGM'],
-    # Poverty indicators
-    'PV': ['CHLD_PVTY', 'GLOBAL_DATAFLOW'],
-    # Nutrition indicators
-    'NT': ['NUTRITION', 'GLOBAL_DATAFLOW'],
-}
+def _load_fallback_sequences() -> Dict[str, List[str]]:
+    """
+    Load fallback dataflow sequences from canonical YAML file.
+    
+    Tries multiple locations:
+    1. Canonical metadata directory (parent level)
+    2. Package metadata directory (if bundled)
+    
+    Returns:
+        Dict mapping indicator prefix to list of dataflows to try
+        
+    Example:
+        {
+            'CME': ['CME', 'CME_DF_2021_WQ', 'GLOBAL_DATAFLOW'],
+            'ED': ['EDUCATION_UIS_SDG', 'EDUCATION', 'GLOBAL_DATAFLOW'],
+            ...
+        }
+    """
+    fallback_file = None
+    
+    # Try canonical location first (parent of python/metadata/current/)
+    canonical_path = Path(__file__).parent.parent.parent / 'metadata/current/_dataflow_fallback_sequences.yaml'
+    if canonical_path.exists():
+        fallback_file = canonical_path
+    
+    # Fallback to package bundled version
+    if not fallback_file:
+        pkg_path = Path(__file__).parent / 'metadata/_dataflow_fallback_sequences.yaml'
+        if pkg_path.exists():
+            fallback_file = pkg_path
+    
+    # Default fallback if no file found
+    if not fallback_file:
+        logger.warning("Canonical fallback sequences file not found, using defaults")
+        return {
+            'ED': ['EDUCATION_UIS_SDG', 'EDUCATION', 'GLOBAL_DATAFLOW'],
+            'PT': ['PT', 'PT_CM', 'PT_FGM', 'CHILD_PROTECTION', 'GLOBAL_DATAFLOW'],
+            'PV': ['CHLD_PVTY', 'GLOBAL_DATAFLOW'],
+            'NT': ['NUTRITION', 'GLOBAL_DATAFLOW'],
+            'DEFAULT': ['GLOBAL_DATAFLOW'],
+        }
+    
+    try:
+        with open(fallback_file, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+            
+        if 'fallback_sequences' in data:
+            return data['fallback_sequences']
+        
+        logger.warning(f"No 'fallback_sequences' key in {fallback_file}, using defaults")
+        return {'DEFAULT': ['GLOBAL_DATAFLOW']}
+        
+    except Exception as e:
+        logger.error(f"Error loading fallback sequences from {fallback_file}: {e}")
+        return {'DEFAULT': ['GLOBAL_DATAFLOW']}
+
+
+def _load_indicators_metadata() -> Dict[str, dict]:
+    """
+    Load comprehensive indicators metadata from canonical YAML file.
+    
+    This provides O(1) direct lookup of the correct dataflow for each indicator,
+    matching R's .INDICATORS_METADATA_YAML functionality.
+    
+    Tries multiple locations (same as R's search order):
+    1. metadata/current/_unicefdata_indicators_metadata.yaml
+    2. stata/src/__unicefdata_indicators_metadata.yaml (canonical source)
+    3. Package bundled version
+    
+    Returns:
+        Dict mapping indicator code -> {dataflow: str, ...metadata}
+        
+    Example:
+        {
+            'COD_ALCOHOL_USE_DISORDERS': {
+                'code': 'COD_ALCOHOL_USE_DISORDERS',
+                'dataflow': 'CAUSE_OF_DEATH',
+                'name': 'Alcohol use disorders',
+                ...
+            },
+            ...
+        }
+    """
+    import os
+    
+    candidates = []
+    
+    # Get the repository root (parent of python/)
+    # python/unicef_api/core.py -> python/ -> repo_root/
+    repo_root = Path(__file__).parent.parent.parent
+
+    # Priority 1: R metadata (canonical cross-language location)
+    # This ensures Python and R use the same source of truth
+    r_meta = repo_root / 'R' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    if r_meta.exists():
+        candidates.append(r_meta)
+
+    # Priority 2: Python package bundled metadata
+    python_meta = repo_root / 'python' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    if python_meta.exists():
+        candidates.append(python_meta)
+
+    # Priority 3: stata/src/_/_unicefdata_indicators_metadata.yaml (canonical source in -dev repo)
+    stata_path = repo_root / 'stata' / 'src' / '_' / '_unicefdata_indicators_metadata.yaml'
+    if stata_path.exists():
+        candidates.append(stata_path)
+
+    # Priority 4: metadata/current/ (if it exists)
+    canonical_path = repo_root / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    if canonical_path.exists():
+        candidates.append(canonical_path)
+    
+    # Try each candidate
+    for candidate in candidates:
+        try:
+            logger.info(f"Attempting to load indicators metadata from: {candidate}")
+            with open(candidate, 'r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+                if data and 'indicators' in data:
+                    num_indicators = len(data['indicators'])
+                    logger.info(f"✅ Loaded comprehensive indicators metadata: {num_indicators} indicators from {candidate.name}")
+                    return data['indicators']
+                else:
+                    logger.warning(f"⚠️ File exists but has no 'indicators' key: {candidate}")
+        except Exception as e:
+            logger.warning(f"Error loading {candidate}: {e}. Trying next location...")
+    
+    # No metadata file found - will fall back to prefix-based logic
+    logger.warning("No comprehensive indicators metadata found. Will use prefix-based fallback sequences only.")
+    return {}
+
+
+# Load fallback sequences and indicators metadata at module initialization
+FALLBACK_SEQUENCES = _load_fallback_sequences()
+INDICATORS_METADATA = _load_indicators_metadata()
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -210,14 +343,20 @@ def _fetch_indicator_with_fallback(
     sex: str = "_T",
     max_retries: int = 3,
     tidy: bool = True,
+    totals: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch indicator data with automatic dataflow fallback on 404 errors.
     
+                totals=totals,
+    1. Tier 1: Direct lookup in comprehensive indicators metadata (O(1))
+    2. Tier 2: Prefix-based fallback sequences from canonical YAML
+    3. Tier 3: Try all dataflows in sequence until success
+    
     If the initial dataflow returns a 404 (Not Found), this function will
-    automatically try alternative dataflows based on the indicator prefix.
-    This handles cases where the UNICEF API metadata reports an indicator
-    in one dataflow but the data actually exists in another.
+    automatically try alternative dataflows. This handles cases where the
+    UNICEF API metadata reports an indicator in one dataflow but the data
+    actually exists in another.
     
     Args:
         client: UNICEFSDMXClient instance
@@ -233,25 +372,85 @@ def _fetch_indicator_with_fallback(
     Returns:
         DataFrame with indicator data, or empty DataFrame if all attempts fail
     """
-    # Build list of dataflows to try
-    dataflows_to_try = [dataflow]
+    # Build list of dataflows to try using 3-tier logic (matching R)
+    dataflows_to_try = []
     
-    # Get indicator prefix (e.g., 'ED' from 'ED_CR_L1_UIS_MOD')
+    # ==========================================================================
+    # TIER 1: Direct metadata lookup (O(1) - fastest and most accurate)
+    # ==========================================================================
+    # Check comprehensive indicators metadata for correct dataflow
+    # This matches R's .INDICATORS_METADATA_YAML lookup
+    if indicator_code in INDICATORS_METADATA:
+        meta = INDICATORS_METADATA[indicator_code]
+        if 'dataflow' in meta or 'dataflows' in meta:
+            # Handle both singular 'dataflow' and plural 'dataflows' keys
+            # The metadata may have: dataflow: "CME" OR dataflows: ["FUNCTIONAL_DIFF", "GLOBAL_DATAFLOW"]
+            dataflow_value = meta.get('dataflow') or meta.get('dataflows')
+
+            # If it's a list, use all dataflows in order (first is primary)
+            if isinstance(dataflow_value, list):
+                for df in dataflow_value:
+                    if df and df not in dataflows_to_try:
+                        dataflows_to_try.append(df)
+                _logger.debug(
+                    f"[Tier 1] Found {indicator_code} in metadata: dataflows={dataflow_value}"
+                )
+            elif dataflow_value and dataflow_value not in dataflows_to_try:
+                # Single dataflow string
+                dataflows_to_try.append(dataflow_value)
+                _logger.debug(
+                    f"[Tier 1] Found {indicator_code} in metadata: dataflow={dataflow_value}"
+                )
+    
+    # ==========================================================================
+    # TIER 2: Prefix-based fallback sequences
+    # ==========================================================================
+    # Get indicator prefix (e.g., 'COD' from 'COD_ALCOHOL_USE_DISORDERS')
     prefix = indicator_code.split('_')[0] if '_' in indicator_code else indicator_code[:2]
+    prefix = prefix.upper()
     
-    # Add alternatives for this prefix (if any)
-    if prefix in DATAFLOW_ALTERNATIVES:
-        for alt in DATAFLOW_ALTERNATIVES[prefix]:
+    # Add alternatives for this prefix from canonical YAML
+    if prefix in FALLBACK_SEQUENCES:
+        for alt in FALLBACK_SEQUENCES[prefix]:
             if alt not in dataflows_to_try:
                 dataflows_to_try.append(alt)
+        _logger.debug(
+            f"[Tier 2] Using prefix-based sequence for {indicator_code} (prefix={prefix}): "
+            f"{FALLBACK_SEQUENCES[prefix]}"
+        )
+    else:
+        # Use default fallback for unknown prefixes
+        for alt in FALLBACK_SEQUENCES.get('DEFAULT', ['GLOBAL_DATAFLOW']):
+            if alt not in dataflows_to_try:
+                dataflows_to_try.append(alt)
+        _logger.debug(
+            f"[Tier 2] Using DEFAULT sequence for {indicator_code} (prefix={prefix} unknown)"
+        )
     
-    # Always add GLOBAL_DATAFLOW as last resort
+    # Add the originally requested dataflow if not already there AND not GLOBAL_DATAFLOW
+    # (GLOBAL_DATAFLOW is added at the end as last resort, so don't insert it early)
+    if dataflow and dataflow != 'GLOBAL_DATAFLOW' and dataflow not in dataflows_to_try:
+        # Insert after metadata but before fallback sequences
+        dataflows_to_try.insert(1 if dataflows_to_try else 0, dataflow)
+    
+    # Ensure GLOBAL_DATAFLOW is always the last resort
     if 'GLOBAL_DATAFLOW' not in dataflows_to_try:
         dataflows_to_try.append('GLOBAL_DATAFLOW')
     
+    # ==========================================================================
+    # TIER 3: Try all dataflows in sequence until success
+    # ==========================================================================
     last_error = None
     
+    _logger.info(
+        f"Will try {len(dataflows_to_try)} dataflows for '{indicator_code}': {dataflows_to_try}"
+    )
+    
     for df_attempt in dataflows_to_try:
+        # Log fallback attempts (matching R's verbose output)
+        if df_attempt != dataflows_to_try[0]:
+            _logger.info(f"Trying fallback dataflow '{df_attempt}'...")
+        
         try:
             df = client.fetch_indicator(
                 indicator_code=indicator_code,
@@ -260,15 +459,16 @@ def _fetch_indicator_with_fallback(
                 end_year=end_year,
                 dataflow=df_attempt,
                 sex_disaggregation=sex,
+                totals=False,
                 max_retries=max_retries,
                 return_raw=not tidy,
             )
             
             if not df.empty:
-                if df_attempt != dataflow:
+                if df_attempt != dataflows_to_try[0]:
                     _logger.info(
                         f"Successfully fetched '{indicator_code}' using fallback "
-                        f"dataflow '{df_attempt}' (original '{dataflow}' failed)"
+                        f"dataflow '{df_attempt}' (primary '{dataflows_to_try[0]}' failed)"
                     )
                 return df
                 
@@ -277,12 +477,12 @@ def _fetch_indicator_with_fallback(
             if df_attempt != dataflows_to_try[-1]:
                 _logger.debug(
                     f"Dataflow '{df_attempt}' returned 404 for '{indicator_code}', "
-                    f"trying alternatives..."
+                    f"trying next dataflow..."
                 )
             continue
             
         except Exception as e:
-            # For non-404 errors, don't try alternatives
+            # For non-404 errors, don't try alternatives (fatal errors)
             _logger.error(f"Error fetching '{indicator_code}': {e}")
             raise
     
@@ -305,11 +505,12 @@ def _fetch_with_fallback(
     sex: str = "_T",
     max_retries: int = 3,
     tidy: bool = True,
+    totals: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch multiple indicators using get_sdmx() with fallback logic.
     
-    This is an internal helper that combines multiple indicator fetches
+            totals=totals,
     and applies the dataflow fallback mechanism.
     
     Args:
@@ -370,11 +571,13 @@ def unicefData(
     year: Union[int, str, List[int], Tuple[int, int], None] = None,
     dataflow: Optional[str] = None,
     sex: str = "_T",
+    totals: bool = False,
     tidy: bool = True,
     country_names: bool = True,
     max_retries: int = 3,
     # NEW: Post-production options
     format: str = "long",
+    pivot: Optional[Union[str, List[str]]] = None,
     latest: bool = False,
     circa: bool = False,
     add_metadata: Optional[List[str]] = None,
@@ -406,6 +609,9 @@ def unicefData(
             Examples: "CME", "NUTRITION", "EDUCATION_UIS_SDG"
         sex: Sex disaggregation filter.
             "_T" = Total (default), "F" = Female, "M" = Male, None = all
+        totals: If True, explicitly append `_T` for each known dimension using
+            schema to ensure totals across all dimensions (analogous to Stata's
+            efficient filter). Default False.
         tidy: If True, returns cleaned DataFrame with standardized columns.
             If False, returns raw API response.
         country_names: If True, adds country name column (requires tidy=True).
@@ -416,8 +622,13 @@ def unicefData(
         # Post-production options:
         format: Output format. Options:
             - "long" (default): One row per observation
-            - "wide": Countries as rows, years as columns (pivoted)
-            - "wide_indicators": Years as rows, indicators as columns
+            - "wide": Years as columns (time-series format, aligned with Stata)
+            - "wide_indicators": Indicators as columns
+            - "wide_attributes": Disaggregation dimension as columns (requires pivot=)
+        pivot: For format="wide_attributes", the dimension(s) to pivot.
+            - Single dimension: pivot="sex"
+            - Compound: pivot=["sex", "wealth_quintile"]
+            - Valid dimensions: sex, age, wealth_quintile, residence, maternal_edu_lvl
         latest: If True, keep only the most recent non-missing value per country.
             The year may differ by country. Useful for cross-sectional analysis.
         circa: If True, for each specified year find the closest available data point.
@@ -565,6 +776,7 @@ def unicefData(
         start_year=start_year,
         end_year=end_year,
         sex=sex,
+        totals=totals,
         max_retries=max_retries,
         tidy=not raw,
     )
@@ -657,12 +869,30 @@ def unicefData(
     
     # 5. Format transformation (long/wide)
     if format != "long" and 'iso3' in result.columns:
-        result = _apply_format(result, format, indicators)
+        result = _apply_format(result, format, indicators, pivot=pivot)
     
     # 6. Simplify columns
     if simplify:
         result = _simplify_columns(result, format)
-    
+
+    # 7. Standardize column order for cross-platform consistency
+    # Order: iso3, country, period, geo_type, indicator, indicator_name, then rest
+    if not raw and result is not None and len(result) > 0 and format == "long":
+        standard_order = [
+            'iso3', 'country', 'period', 'geo_type', 'indicator', 'indicator_name',
+            'value', 'unit', 'unit_name', 'sex', 'sex_name', 'age',
+            'wealth_quintile', 'wealth_quintile_name', 'residence', 'maternal_edu_lvl',
+            'lower_bound', 'upper_bound', 'obs_status', 'obs_status_name',
+            'data_source', 'ref_period', 'country_notes'
+        ]
+
+        # Get columns present in result that are in standard order
+        present_standard = [col for col in standard_order if col in result.columns]
+        # Get remaining columns not in standard order
+        remaining = [col for col in result.columns if col not in standard_order]
+        # Reorder: standard columns first, then remaining
+        result = result[present_standard + remaining]
+
     return result
 
 
@@ -748,9 +978,21 @@ def _apply_latest(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[idx].reset_index(drop=True)
 
 
-def _apply_format(df: pd.DataFrame, format: str, indicators: List[str]) -> pd.DataFrame:
-    """Transform between long and wide formats."""
+def _apply_format(df: pd.DataFrame, format: str, indicators: List[str], pivot: str = None) -> pd.DataFrame:
+    """Transform between long and wide formats.
+
+    Args:
+        df: Input DataFrame
+        format: One of "long", "wide", "wide_indicators", "wide_attributes"
+        indicators: List of indicator codes
+        pivot: For wide_attributes, the dimension to pivot (e.g., "sex", "age")
+    """
     if format == "wide":
+        # Years as columns (time-series format) - aligned with Stata behavior
+        print("Note: format='wide' returns years as columns (time-series format).")
+        print("      Other options: 'wide_indicators' (indicators as columns),")
+        print("                     'wide_attributes' with pivot= (disaggregation as columns)")
+
         # Countries as rows, years as columns
         # Only works well for single indicator
         if 'indicator' in df.columns and df['indicator'].nunique() > 1:
@@ -801,10 +1043,66 @@ def _apply_format(df: pd.DataFrame, format: str, indicators: List[str]) -> pd.Da
             values='value',
             aggfunc='first'
         ).reset_index()
-        
+
         # Flatten column names
         df.columns.name = None
-    
+
+    elif format == "wide_attributes":
+        # Disaggregation dimension becomes columns
+        # Valid pivot dimensions: sex, age, wealth_quintile, residence, maternal_edu_lvl
+        valid_pivots = ['sex', 'age', 'wealth_quintile', 'residence', 'maternal_edu_lvl']
+
+        if pivot is None:
+            print("Error: 'wide_attributes' requires pivot= parameter.")
+            print(f"       Valid options: {', '.join(valid_pivots)}")
+            return df
+
+        # Handle compound pivot (list of dimensions)
+        if isinstance(pivot, str):
+            pivot_cols = [pivot]
+        else:
+            pivot_cols = list(pivot)
+
+        # Validate pivot columns
+        for p in pivot_cols:
+            if p not in valid_pivots:
+                print(f"Warning: '{p}' is not a standard disaggregation dimension.")
+                print(f"         Valid options: {', '.join(valid_pivots)}")
+            if p not in df.columns:
+                print(f"Error: Column '{p}' not found in data. Cannot pivot.")
+                return df
+
+        # Identify columns to keep as index
+        index_cols = ['iso3', 'period']
+        if 'country' in df.columns:
+            index_cols.insert(1, 'country')
+        if 'indicator' in df.columns:
+            index_cols.append('indicator')
+        for col in ['region', 'income_group', 'continent']:
+            if col in df.columns:
+                index_cols.append(col)
+        # Add non-pivot disaggregation dimensions to index
+        for dim in valid_pivots:
+            if dim in df.columns and dim not in pivot_cols:
+                index_cols.append(dim)
+
+        # Pivot on the specified dimension(s)
+        df = df.pivot_table(
+            index=index_cols,
+            columns=pivot_cols,
+            values='value',
+            aggfunc='first'
+        ).reset_index()
+
+        # Flatten column names if multi-index
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = ['_'.join(str(c) for c in col if c) if isinstance(col, tuple) else col for col in df.columns]
+        else:
+            # Rename value columns with prefix
+            df.columns = [f"value_{c}" if c not in index_cols else c for c in df.columns]
+
+        df.columns.name = None
+
     return df
 
 

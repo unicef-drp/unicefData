@@ -2,7 +2,7 @@ id: WASH_HEALTHCARE_FACILITY
 name: WASH Healthcare Facility
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:16:39.878486+00:00'
+synced_at: '2026-01-25T14:46:48.030278+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

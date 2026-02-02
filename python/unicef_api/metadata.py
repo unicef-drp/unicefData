@@ -147,8 +147,17 @@ class MetadataSync:
         self.agency = agency
         self.max_age_days = max_age_days
         self.session = requests.Session()
+        # Set default headers with dynamic User-Agent (match sdmx_client.py)
+        try:
+            from unicef_api import __version__
+            import platform
+            py_ver = platform.python_version()
+            system = platform.system()
+            ua = f"unicefData-Python/{__version__} (Python/{py_ver}; {system}) (+https://github.com/unicef-drp/unicefData)"
+        except Exception:
+            ua = 'unicefData-Python/unknown (+https://github.com/unicef-drp/unicefData)'
         self.session.headers.update({
-            'User-Agent': 'unicefData/0.2.1 (+https://github.com/unicef-drp/unicefData)'
+            'User-Agent': ua
         })
     
     # -------------------------------------------------------------------------
@@ -285,79 +294,79 @@ class MetadataSync:
         # 1. Sync dataflows
         try:
             if verbose:
-                print("  📁 Fetching dataflows...")
+                print("  [*] Fetching dataflows...")
             dataflows = self.sync_dataflows(verbose=False)
             results['dataflows'] = len(dataflows)
             results['files_created'].append(self.FILE_DATAFLOWS)
             if verbose:
-                print(f"     ✓ {self.FILE_DATAFLOWS} - {len(dataflows)} dataflows")
+                print(f"     OK {self.FILE_DATAFLOWS} - {len(dataflows)} dataflows")
         except Exception as e:
             results['errors'].append(f"Dataflows: {str(e)}")
             if verbose:
-                print(f"     ✗ Dataflows error: {e}")
+                print(f"     X Dataflows error: {e}")
         
         # 2. Sync codelists (excluding countries/regions)
         try:
             if verbose:
-                print("  📁 Fetching codelists...")
+                print("  [*] Fetching codelists...")
             codelists = self.sync_codelists(verbose=False)
             results['codelists'] = len(codelists)
             results['files_created'].append(self.FILE_CODELISTS)
             if verbose:
                 codelist_detail = ", ".join([f"{k}: {len(v.codes)}" for k, v in list(codelists.items())[:3]])
-                print(f"     ✓ {self.FILE_CODELISTS} - {len(codelists)} codelists")
-                print(f"       • {codelist_detail}...")
+                print(f"     OK {self.FILE_CODELISTS} - {len(codelists)} codelists")
+                print(f"       - {codelist_detail}...")
         except Exception as e:
             results['errors'].append(f"Codelists: {str(e)}")
             if verbose:
-                print(f"     ✗ Codelists error: {e}")
+                print(f"     X Codelists error: {e}")
         
         # 3. Sync countries (separate file)
         try:
             if verbose:
-                print("  📁 Fetching country codes...")
+                print("  [*] Fetching country codes...")
             countries = self.sync_countries(verbose=False)
             results['countries'] = len(countries)
             results['files_created'].append(self.FILE_COUNTRIES)
             if verbose:
-                print(f"     ✓ {self.FILE_COUNTRIES} - {len(countries)} country codes")
+                print(f"     OK {self.FILE_COUNTRIES} - {len(countries)} country codes")
         except Exception as e:
             results['errors'].append(f"Countries: {str(e)}")
             if verbose:
-                print(f"     ✗ Countries error: {e}")
+                print(f"     X Countries error: {e}")
         
         # 4. Sync regions (separate file)
         try:
             if verbose:
-                print("  📁 Fetching regional codes...")
+                print("  [*] Fetching regional codes...")
             regions = self.sync_regions(verbose=False)
             results['regions'] = len(regions)
             results['files_created'].append(self.FILE_REGIONS)
             if verbose:
-                print(f"     ✓ {self.FILE_REGIONS} - {len(regions)} regional codes")
+                print(f"     OK {self.FILE_REGIONS} - {len(regions)} regional codes")
         except Exception as e:
             results['errors'].append(f"Regions: {str(e)}")
             if verbose:
-                print(f"     ✗ Regions error: {e}")
+                print(f"     X Regions error: {e}")
         
         # 5. Generate indicator catalog from config
         try:
             if verbose:
-                print("  📁 Building indicator catalog...")
+                print("  [*] Building indicator catalog...")
             indicators, indicators_by_dataflow = self.sync_indicators(verbose=False)
             results['indicators'] = len(indicators)
             results['indicators_by_dataflow'] = {k: len(v) for k, v in indicators_by_dataflow.items()}
             results['files_created'].append(self.FILE_INDICATORS)
             if verbose:
-                print(f"     ✓ {self.FILE_INDICATORS} - {len(indicators)} indicators")
+                print(f"     OK {self.FILE_INDICATORS} - {len(indicators)} indicators")
                 for df, count in list(indicators_by_dataflow.items())[:5]:
-                    print(f"       • {df}: {count} indicators")
+                    print(f"       - {df}: {count} indicators")
                 if len(indicators_by_dataflow) > 5:
-                    print(f"       • ... and {len(indicators_by_dataflow) - 5} more dataflows")
+                    print(f"       - ... and {len(indicators_by_dataflow) - 5} more dataflows")
         except Exception as e:
             results['errors'].append(f"Indicators: {str(e)}")
             if verbose:
-                print(f"     ✗ Indicators error: {e}")
+                print(f"     X Indicators error: {e}")
         
         # 6. Create vintage snapshot
         if create_vintage:
@@ -378,7 +387,7 @@ class MetadataSync:
             print(f"  - Countries:   {results['countries']}")
             print(f"  - Regions:     {results['regions']}")
             if results['errors']:
-                print(f"  ⚠️  Errors: {len(results['errors'])}")
+                print(f"  !  Errors: {len(results['errors'])}")
                 for err in results['errors']:
                     print(f"     - {err}")
             print(f"  Vintage: {vintage_date}")
@@ -459,7 +468,7 @@ class MetadataSync:
                     codelists[cl_id] = cl
             except Exception as e:
                 if verbose:
-                    print(f"    ⚠️  Could not fetch {cl_id}: {e}")
+                    print(f"    !  Could not fetch {cl_id}: {e}")
         
         # Save with watermark
         codelists_dict = self._create_watermarked_dict(
@@ -535,30 +544,29 @@ class MetadataSync:
         return regions
     
     def sync_indicators(self, verbose: bool = True) -> Tuple[Dict[str, IndicatorMetadata], Dict[str, List[str]]]:
-        """Sync indicator catalog from config and API.
+        """Sync indicator catalog from comprehensive metadata.
         
         Returns:
             Tuple of (indicators dict, indicators_by_dataflow dict)
         """
         if verbose:
-            print("  Building indicator catalog from shared config...")
+            print("  Building indicator catalog from comprehensive metadata...")
         
-        # Try to load from shared config file (same as R)
+        # Load from comprehensive indicators metadata (same source as client)
         try:
-            from unicef_api.config_loader import load_shared_indicators
-            COMMON_INDICATORS = load_shared_indicators()
-        except (ImportError, FileNotFoundError):
-            # Fall back to hardcoded config
-            try:
-                from unicef_api.config import COMMON_INDICATORS
-            except ImportError:
-                COMMON_INDICATORS = {}
+            from unicef_api.sdmx_client import UNICEFSDMXClient
+            client = UNICEFSDMXClient()
+            comprehensive_metadata = client._indicators_metadata
+        except Exception as e:
+            if verbose:
+                print(f"    Warning: Could not load comprehensive metadata: {e}")
+            comprehensive_metadata = {}
         
         indicators = {}
         indicators_by_dataflow = {}
         
-        for code, info in COMMON_INDICATORS.items():
-            sdg_target = info.get('sdg')
+        for code, info in comprehensive_metadata.items():
+            sdg_target = info.get('sdg_target')
             dataflow = info.get('dataflow', 'GLOBAL_DATAFLOW')
             
             indicators[code] = IndicatorMetadata(
@@ -568,7 +576,7 @@ class MetadataSync:
                 sdg_target=sdg_target,
                 unit=info.get('unit'),
                 description=info.get('description'),
-                source='config'
+                source='comprehensive_metadata'
             )
             
             # Track by dataflow
