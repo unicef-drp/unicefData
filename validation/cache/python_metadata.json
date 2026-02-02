@@ -1,0 +1,72 @@
+{
+  "CME_MRM0": {
+    "cached_at": "2026-01-30T22:40:34.038725",
+    "rows": 11875,
+    "size_bytes": 2506584
+  },
+  "COD_ALCOHOL_USE_DISORDERS": {
+    "cached_at": "2026-01-30T22:41:39.246606",
+    "rows": 18,
+    "size_bytes": 7410
+  },
+  "COD_HYPERTENSIVE_HEART_DISEASE": {
+    "cached_at": "2026-01-30T22:41:46.200620",
+    "rows": 18,
+    "size_bytes": 7777
+  },
+  "ECD_CHLD_U5_BKS-HM": {
+    "cached_at": "2026-01-30T22:43:25.452442",
+    "rows": 369,
+    "size_bytes": 193232
+  },
+  "ECON_GVT_EXP_PTGDP": {
+    "cached_at": "2026-01-30T22:43:33.428050",
+    "rows": 235,
+    "size_bytes": 42789
+  },
+  "FD_EARLY_CH_EDU": {
+    "cached_at": "2026-01-30T22:43:46.786922",
+    "rows": 115,
+    "size_bytes": 38717
+  },
+  "GN_FB_BNK_ACCSS": {
+    "cached_at": "2026-01-30T22:43:53.506084",
+    "rows": 478,
+    "size_bytes": 126386
+  },
+  "HVA_EPI_INF_ANN": {
+    "cached_at": "2026-01-30T22:44:00.897324",
+    "rows": 1562,
+    "size_bytes": 725197
+  },
+  "IM_RCV1": {
+    "cached_at": "2026-01-30T22:44:08.740482",
+    "rows": 6075,
+    "size_bytes": 1896189
+  },
+  "MNCH_ADO_ALCOHOL": {
+    "cached_at": "2026-01-30T22:44:45.595974",
+    "rows": 457,
+    "size_bytes": 181142
+  },
+  "PT_F_20-24_MRD_U18_TND": {
+    "cached_at": "2026-01-30T22:46:32.234389",
+    "rows": 1175,
+    "size_bytes": 632436
+  },
+  "SPP_CHLD_POV_PROF": {
+    "cached_at": "2026-01-30T22:47:07.666014",
+    "rows": 376,
+    "size_bytes": 65298
+  },
+  "WS_PPL_W-I": {
+    "cached_at": "2026-01-30T22:47:14.715732",
+    "rows": 7105,
+    "size_bytes": 1634713
+  },
+  "WT_ADLS_10-17_LBR_HC": {
+    "cached_at": "2026-01-30T22:47:22.817675",
+    "rows": 92,
+    "size_bytes": 20650
+  }
+}
