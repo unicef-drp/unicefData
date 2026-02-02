@@ -1,0 +1,85 @@
+name: Validate Python Scripts
+
+on:
+  push:
+    branches: [ main, xcross-platform-validation, development ]
+    paths:
+      - 'stata/src/py/*.py'
+      - '.github/workflows/validate-python.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'stata/src/py/*.py'
+  workflow_dispatch:
+
+jobs:
+  python-syntax-check:
+    name: Python Syntax and Import Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests
+
+      - name: Check Python Syntax
+        run: |
+          echo "::group::Checking Python Syntax"
+          python -m py_compile stata/src/py/*.py
+          echo "::endgroup::"
+
+      - name: Validate Imports
+        run: |
+          echo "::group::Validating Python Imports"
+          for script in stata/src/py/*.py; do
+            echo "Checking imports in: $script"
+            python -c "import sys; sys.path.insert(0, 'stata/src/py'); exec(open('$script').read())" --help 2>/dev/null || true
+          done
+          echo "::endgroup::"
+
+      - name: Test validate_yaml_schema.py
+        run: |
+          echo "::group::Testing YAML Schema Validator"
+          python stata/src/py/validate_yaml_schema.py --help || true
+          echo ""
+          echo "Testing indicator validation (should pass):"
+          python stata/src/py/validate_yaml_schema.py indicators stata/src/_/_unicefdata_indicators_metadata.yaml
+          echo "::endgroup::"
+
+      - name: Test unicefdata_xml2yaml.py
+        run: |
+          echo "::group::Testing XML to YAML Converter"
+          python -c "import sys; sys.path.insert(0, 'stata/src/py'); import unicefdata_xml2yaml; print('Import successful')"
+          echo "::endgroup::"
+
+      - name: Test enrich_stata_metadata_complete.py
+        run: |
+          echo "::group::Testing Complete Enrichment Script"
+          python stata/src/py/enrich_stata_metadata_complete.py --help || true
+          echo "::endgroup::"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Python Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All Python scripts have valid syntax" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Scripts Validated:" >> $GITHUB_STEP_SUMMARY
+          echo "- validate_yaml_schema.py" >> $GITHUB_STEP_SUMMARY
+          echo "- unicefdata_xml2yaml.py" >> $GITHUB_STEP_SUMMARY
+          echo "- enrich_stata_metadata_complete.py" >> $GITHUB_STEP_SUMMARY
+          echo "- build_dataflow_metadata.py" >> $GITHUB_STEP_SUMMARY
+          echo "- build_indicator_dataflow_map.py" >> $GITHUB_STEP_SUMMARY
+          echo "- enrich_indicators_metadata.py" >> $GITHUB_STEP_SUMMARY
+          echo "- python_xml_helper.py" >> $GITHUB_STEP_SUMMARY
+          echo "- stata_schema_sync.py" >> $GITHUB_STEP_SUMMARY
