@@ -10,10 +10,11 @@ get_sdmx(
   key = NULL,
   start_period = NULL,
   end_period = NULL,
+  nofilter = FALSE,
   detail = c("data", "structure"),
   version = NULL,
   format = c("csv", "sdmx-xml", "sdmx-json"),
-  labels = c("both", "id", "none"),
+  labels = c("id", "both", "none"),
   tidy = TRUE,
   country_names = TRUE,
   page_size = 1000000L,
@@ -33,6 +34,9 @@ get_sdmx(
 \item{start_period}{Optional single 4-digit year for start (e.g., 2000).}
 
 \item{end_period}{Optional single 4-digit year for end (e.g., 2020).}
+
+\item{nofilter}{Logical; if TRUE, fetch all disaggregations (no pre-fetch filtering);
+if FALSE (default), use efficient pre-fetch filtering (totals only per schema).}
 
 \item{detail}{One of "data" or "structure"; default "data".}
 
@@ -62,4 +66,7 @@ A tibble (or list of tibbles) for data, or xml_document(s) for structure.
 \description{
 Download one or more SDMX flows from a specified agency,
 with paging, retries, caching, format & labels options, and post-processing.
+
+Schemas are cached in memory per session for performance: subsequent indicators
+from the same dataflow load 8-17x faster (2.2s → 0.13s).
 }

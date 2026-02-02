@@ -1,5 +1,32 @@
 # unicefData Changelog
 
+## 2.0.0 (2026-01-31)
+
+### Major Fixes
+* **SYNC-02 enrichment bug**: Fixed critical path extraction bug preventing Phase 2-3 enrichment
+  - Root cause: Incorrect directory path extraction from YAML file paths
+  - Solution: Implemented forvalues loop to find rightmost slash properly
+  - Impact: All 38 QA tests now passing (100% success rate, was 37/38)
+  - Enrichment now includes tier classification and disaggregation metadata
+
+### Documentation
+* **Version headers aligned**: Updated version to 2.0.0 across all platforms (R, Python, Stata)
+* **Roxygen2 regenerated**: Fixed `.yaml_scalar()` function and regenerated all `man/*.Rd` files
+* **Workspace cleanup**: Consolidated archive folders and removed duplicates
+
+### Testing & Quality Assurance
+* **Full QA test suite**: All 38 tests passing (10m 17s duration)
+  - ENV tests: ✅ (environment validation)
+  - DL tests: ✅ (download functionality)
+  - TRANS tests: ✅ (data transformation)
+  - META tests: ✅ (metadata operations)
+  - SYNC tests: ✅ (synchronization including enrichment)
+  - MULTI tests: ✅ (multi-indicator operations)
+* **Full test suite verified**: R (26 passed), Python (28 passed), Stata QA (38/38 passed)
+
+### Breaking Changes
+* Version bump to 2.0.0 reflects major reliability improvements in metadata pipeline
+
 ## 1.6.0 (2026-01-12)
 
 ### Stata Dataflow Enhancements

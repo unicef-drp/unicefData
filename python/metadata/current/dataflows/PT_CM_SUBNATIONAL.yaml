@@ -1,0 +1,228 @@
+id: PT_CM_SUBNATIONAL
+name: Child Marriage - Subnational
+version: '1.0'
+agency: UNICEF
+synced_at: '2026-01-25T14:46:24.307878+00:00'
+dimensions:
+- id: REF_AREA
+  position: 1
+  codelist: CL_AREAS_SUBNATIONAL_PT_CM
+  values:
+  - '903760'
+  - '903761'
+  - '903762'
+  - '903763'
+  - '903764'
+  - '903765'
+  - '903766'
+  - '903767'
+  - '903768'
+  - '903769'
+  is_exhaustive: false
+  total_values_count: 631
+- id: INDICATOR
+  position: 2
+  codelist: CL_UNICEF_INDICATOR
+  values:
+  - PT_F_20-24_MRD_U15
+  - PT_F_20-24_MRD_U18
+  is_exhaustive: true
+  total_values_count: 2
+- id: AGE
+  position: 3
+  codelist: CL_AGE
+  values:
+  - Y20T24
+  is_exhaustive: true
+  total_values_count: 1
+- id: SUBNATIONAL_LEVEL
+  position: 4
+  codelist: CL_ADMIN_LEVEL
+  values_min: 1.0
+  values_max: 1.0
+  total_values_count: 1
+- id: REF_AREA_PARENT
+  position: 5
+  codelist: CL_COUNTRY
+  values:
+  - KEN
+  - NGA
+  - IND
+  - AFG
+  - MEX
+  - TZA
+  - KHM
+  - PER
+  - MDG
+  - YEM
+  is_exhaustive: false
+  total_values_count: 48
+time_dimension: TIME_PERIOD
+primary_measure: null
+attributes:
+- id: LEVELRNK
+  codelist: null
+  values_min: 1.0
+  values_max: 3.0
+  total_values_count: 3
+- id: LEVELCO
+  codelist: null
+  values:
+  - Admin1
+  - Admin 1
+  - Admin1 and the Capital City
+  - Groups of Admin1
+  - Group of Admin 1
+  - Admin 2
+  - Admin 3
+  is_exhaustive: true
+  total_values_count: 7
+- id: BOUNDARIES
+  codelist: null
+  values_min: 1.0
+  values_max: 6.0
+  total_values_count: 6
+- id: BDRY_FOOTNOTE
+  codelist: null
+  values:
+  - 'Survey is representative at one level: 47 regions as 47 admin1 (county) areas'
+  - 'Survey is representative at two levels: 31 regions as the 31 admin1 areas, and
+    9 zones as groups of admin1 areas'
+  - 25 provinces as Admin1 areas
+  - 22 regions and the capital, Antananarivo, as the new 23 admin1 areas.
+  - 17 regions as the 17 admin1 areas
+  - 16 regions as the 16 admin1 areas
+  - 12 districts and 2 autonomous cities as the 14 admin1 areas
+  - 14 regions as the 14 admin 1 areas, including 3 regions of the capital Nouakchott
+    (North, West, and South) and 1 region of Tiris Zemour and Inciri combined
+  - 14 regions as the 14 admin1 areas
+  - 'Survey is representative at two levels: 12 governorates as 12 admin1 areas and
+    3 regions as groups of admin1 areas'
+  is_exhaustive: false
+  total_values_count: 24
+- id: BDRY_SOURCE
+  codelist: null
+  values:
+  - Spatial Data Repository, The Demographic and Health Surveys Program. ICF International.
+    Available from spatialdata.dhsprogram.com [Accessed 06/18/2025].
+  - SALB
+  - OCHA (OSGOF, UNCS)
+  - OCHA (AGCHO)
+  - GIS Data Repository, The Multiple Indicator Cluster Surveys Program. UNICEF. Available
+    from https://mics.unicef.org/mics-gis [Accessed 06/18/2025].
+  - OCHA (IGN)
+  - OCHA Yemen (CSO)
+  - CDE
+  - GAUL revised by WFP
+  - Local Government revised by WFP
+  is_exhaustive: false
+  total_values_count: 11
+- id: BDRY_STATUS
+  codelist: null
+  values:
+  - Boundaries align with WFP
+  - 'Boundaries partially align with WFP: WFP and survey maps are partially available'
+  - 'Boundaries do not align with WFP: No map is available'
+  - 'Boundaries do not align with WFP: survey boundaries are available'
+  - 'Boundaries partially align with WFP: Only WFP map is partially available'
+  is_exhaustive: true
+  total_values_count: 5
+- id: UNWGTD_SAMPL_SIZE
+  codelist: null
+  values_min: 26.0
+  values_max: 17328.0
+  total_values_count: 340
+- id: WGTD_SAMPL_SIZE
+  codelist: null
+  values_min: 6.0
+  values_max: 2226.0
+  total_values_count: 285
+- id: REF_AREA_PARENT_UCODE
+  codelist: null
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: TIME_PERIOD_METHOD
+  codelist: CL_TIME_PERIOD_METHOD
+  values:
+  - EOF
+  is_exhaustive: true
+  total_values_count: 1
+- id: COVERAGE_TIME
+  codelist: null
+  values:
+  - '2022'
+  - '2023'
+  - '2021'
+  - 2022-23
+  - 2019-20
+  - 2019-21
+  - 2021-22
+  - 2023-24
+  - 2020-21
+  is_exhaustive: true
+  total_values_count: 9
+- id: FREQ_COLL
+  codelist: CL_FREQ_COLL
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: UNIT_MULTIPLIER
+  codelist: CL_UNIT_MULT
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: UNIT_MEASURE
+  codelist: CL_UNIT_MEASURE
+  values:
+  - PCNT
+  is_exhaustive: true
+  total_values_count: 1
+- id: SERIES_FOOTNOTE
+  codelist: null
+  values: []
+  is_exhaustive: true
+  total_values_count: 0
+- id: OBS_FOOTNOTE
+  codelist: null
+  values:
+  - Capital divided into 3 admin 1 areas due to large population size
+  - Libreville and Port-Gentil were combined in the previous survey
+  - Oti was split from the previous Volta Region
+  - These boundaries do not align with SSIB, but do align with the location of the
+    islands
+  - Jammu & Kashmir was split into two union territories, Jammu & Kashmir and Ladakh
+  - The border between Mombasa and Kwale slightly changed
+  - Analamanga and Antananarivo are considered separate admin1 areas in this survey.
+  - Border between Maputo City and Maputo slightly changed
+  - The border between Region XII - SOCCSKSARGEN and Region XI - Davao slightly changed.
+  - Expanded to include a larger area
+  is_exhaustive: false
+  total_values_count: 38
+- id: OBS_STATUS
+  codelist: CL_OBS_STATUS
+  values:
+  - RA
+  - U
+  is_exhaustive: true
+  total_values_count: 2
+- id: DATA_SOURCE
+  codelist: null
+  values:
+  - DHS 2022
+  - DHS 2019-21
+  - MICS 2022-23
+  - MICS 2023
+  - MICS 2019-20
+  - MICS 2021
+  - DHS 2021
+  - ENADID 2023
+  - MICS 2021-22
+  - DHS 2023
+  is_exhaustive: false
+  total_values_count: 19
+time_dimension_summary:
+  type: numerical
+  min: 2020.0
+  max: 2024.0
+  total_count: 5

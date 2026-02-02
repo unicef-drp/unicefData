@@ -2,7 +2,7 @@ id: CCRI
 name: Children’s Climate and Environment Risk Index
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:12:01.769843+00:00'
+synced_at: '2026-01-25T14:41:39.473949+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

@@ -1,4 +1,16 @@
-*! v 1.8.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.0.4  01Feb2026               by Joao Pedro Azevedo (UNICEF)
+* v 2.0.4   01Feb2026  - FEATURE: NUTRITION dataflow now defaults age to Y0T4 (0-4 years) instead of _T
+*                        because the AGE dimension in NUTRITION has no _T total
+*                      - FEATURE: Added wealth_quintile() as alias for wealth() option
+*                      - WARNING message displayed when Y0T4 default is used
+*                      - ALIGNMENT: Same fix applied to R and Python implementations
+* v 2.0.3   01Feb2026  - BUGFIX: latest and mrv options now include disaggregation dimensions in grouping
+*                        so that sex(ALL)/wealth(ALL)/residence(ALL) work correctly with latest/mrv
+*                      - BUGFIX: Use SHORT variable names (wealth, matedu) in latest/mrv filters
+*                        as they exist at that point (renamed to long names later)
+* v 2.0.2   01Feb2026  - Deprecate _unicefdata_indicators.yaml; use _unicefdata_indicators_metadata.yaml exclusively
+* v 2.0.1   30Jan2026  - Patch: Fixed false warning about unsupported disaggregations
+*                        (metadata_path was being reset at line 707, breaking dimension check)
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
@@ -6,23 +18,41 @@ version 11
 * Aligned with R get_unicef() and Python unicef_api
 * Uses YAML metadata for dataflow detection and validation
 *
-* NEW in v1.8.0:
-* - Added SUBNATIONAL option to enable access to subnational dataflows
-* - Without subnational option, WASH_HOUSEHOLD_SUBNAT and other *_SUBNAT dataflows are blocked
+* NEW in v2.0.0:
+* - FEATURE: Metadata-driven filtering using disaggregations_with_totals from YAML
+* - FEATURE: Dimensions not in disaggregations_with_totals are not defaulted to _T
+* - FEATURE: DISABILITY_STATUS special handling - filters to PD (baseline) when no _T exists
+* - ALIGNMENT: Now matches Python/R filtering behavior for cross-platform consistency
+* - FIX: SYNC-02 enrichment path extraction bug resolved (all QA tests passing)
+* - ENHANCEMENT: Improved metadata enrichment pipeline reliability
+* - FIX: Multi-indicator wide format now includes geo_type in output
+* - FIX: alias_id no longer appears in final wide format output
 *
-* NEW in v1.7.0:
-* - Removed hardcoded prefix-to-dataflow mappings (fixes WS_HCF_* incorrect dataflow)
-* - Primary dataflow detection now uses _get_dataflow_direct (metadata-driven)
-* - Fallback chain: _get_dataflow_direct → _get_dataflow_for_indicator → GLOBAL_DATAFLOW
-* - Deprecated _unicef_detect_dataflow_prefix (kept for backward compatibility only)
-*
-* NEW in v1.5.2: 
-* - Enhanced wide_indicators: now creates empty columns for all requested indicators
-*   (prevents reshape failures when some indicators have zero observations)
-* - Network robustness: curl with User-Agent header (better SSL/proxy/retry support)
-* - Cross-platform consistency improvements
-*
-* NEW in v1.5.1: CI test improvements (offline YAML-based tests)
+
+    * =========================================================================
+    * Auto-setup: Check if YAML metadata files exist, install if missing
+    * =========================================================================
+    local plusdir : sysdir PLUS
+    cap confirm file "`plusdir'_/_unicefdata_indicators_metadata.yaml"
+    if _rc != 0 {
+        * Metadata files not found - run setup
+        di as text ""
+        di as text "{hline 70}"
+        di as text "{bf:First-time setup}: Metadata files not found."
+        di as text "Running {cmd:unicefdata_setup} to install required YAML files..."
+        di as text "{hline 70}"
+        
+        cap noi unicefdata_setup, replace
+        if _rc != 0 {
+            di as error ""
+            di as error "Setup failed. Please run {cmd:unicefdata_setup} manually."
+            di as error "Or download metadata files from GitHub:"
+            di as error "  https://github.com/jpazvd/unicefData"
+            error 601
+        }
+    }
+    * =========================================================================
+
     
     * Check for FLOWS/DATAFLOWS subcommand (list available dataflows with counts)
     * Accept both "flows" and "dataflows" for user convenience
@@ -32,10 +62,17 @@ version 11
             local has_detail = (strpos("`0'", "detail") > 0)
             local has_verbose = (strpos("`0'", "verbose") > 0)
             local has_dups = (strpos("`0'", "dups") > 0)
+            local has_showtier2 = (strpos(lower("`0'"), "showtier2") > 0)
+            local has_showtier3 = (strpos(lower("`0'"), "showtier3") > 0)
+            local has_showall = (strpos(lower("`0'"), "showall") > 0)
+            local has_showlegacy = (strpos(lower("`0'"), "showlegacy") > 0)
             local opts ""
             if (`has_detail') local opts "`opts' detail"
             if (`has_verbose') local opts "`opts' verbose"
             if (`has_dups') local opts "`opts' dups"
+            if (`has_showtier2') local opts "`opts' showtier2"
+            if (`has_showtier3' | `has_showlegacy') local opts "`opts' showtier3"
+            if (`has_showall') local opts "`opts' showall"
             local opts = strtrim("`opts'")
             if ("`opts'" != "") {
                 _unicef_list_dataflows, `opts'
@@ -77,6 +114,14 @@ version 11
         * Check for category option (search by category instead of dataflow)
         local has_category = (strpos("`remaining'", "category") > 0)
         
+        * Check for tier filter options
+        local has_showtier2 = (strpos(lower("`remaining'"), "showtier2") > 0)
+        local has_showtier3 = (strpos(lower("`remaining'"), "showtier3") > 0)
+        local has_showall = (strpos(lower("`remaining'"), "showall") > 0)
+        local has_showorphans = (strpos(lower("`remaining'"), "showorphan") > 0)
+        local has_showlegacy = (strpos(lower("`remaining'"), "showlegacy") > 0)
+        local has_byflow = (strpos(lower("`remaining'"), "byflow") > 0)
+        
         * Build options string
         local search_opts = ""
         if ("`dataflow_filter'" != "") {
@@ -84,6 +129,21 @@ version 11
         }
         if (`has_category') {
             local search_opts "`search_opts' category"
+        }
+        if (`has_showtier2') {
+            local search_opts "`search_opts' showtier2"
+        }
+        if (`has_showtier3' | `has_showlegacy') {
+            local search_opts "`search_opts' showtier3"
+        }
+        if (`has_showall') {
+            local search_opts "`search_opts' showall"
+        }
+        if (`has_showorphans') {
+            local search_opts "`search_opts' showorphans"
+        }
+        if (`has_byflow') {
+            local search_opts "`search_opts' byflow"
         }
         local search_opts = strtrim("`search_opts'")
         
@@ -93,6 +153,9 @@ version 11
         else {
             _unicef_search_indicators, keyword("`search_keyword'") limit(`limit_val')
         }
+        
+        * Preserve return values from helper
+        return add
         exit
     }
     
@@ -106,7 +169,31 @@ version 11
         * Check for verbose option
         local has_verbose = (strpos("`0'", "verbose") > 0)
         
-        _unicef_list_indicators, dataflow("`ind_dataflow'") `=cond(`has_verbose', "verbose", "")'
+        * Check for tier filter options
+        local has_showtier2 = (strpos(lower("`0'"), "showtier2") > 0)
+        local has_showtier3 = (strpos(lower("`0'"), "showtier3") > 0)
+        local has_showall = (strpos(lower("`0'"), "showall") > 0)
+        local has_showorphans = (strpos(lower("`0'"), "showorphan") > 0)
+        local has_showlegacy = (strpos(lower("`0'"), "showlegacy") > 0)
+        
+        * Build options string
+        local ind_opts = ""
+        if (`has_verbose') local ind_opts "`ind_opts' verbose"
+        if (`has_showtier2') local ind_opts "`ind_opts' showtier2"
+        if (`has_showtier3' | `has_showlegacy') local ind_opts "`ind_opts' showtier3"
+        if (`has_showall') local ind_opts "`ind_opts' showall"
+        if (`has_showorphans') local ind_opts "`ind_opts' showorphans"
+        local ind_opts = strtrim("`ind_opts'")
+        
+        if ("`ind_opts'" == "") {
+            _unicef_list_indicators, dataflow("`ind_dataflow'")
+        }
+        else {
+            _unicef_list_indicators, dataflow("`ind_dataflow'") `ind_opts'
+        }
+        
+        * Preserve return values from helper
+        return add
         exit
     }
     
@@ -210,20 +297,23 @@ version 11
 
     syntax                                          ///
                  [,                                 ///
+                        SEARCH(string)              /// Search indicators by keyword (discovery)
                         INDICATOR(string)           /// Indicator code(s)
                         DATAFLOW(string)            /// SDMX dataflow ID
                         COUNTries(string)           /// ISO3 country codes
                         YEAR(string)                /// Year(s): single, range (2015:2023), or list (2015,2018,2020)
                         CIRCA                       /// Find closest available year
+                        FILTERvector(string)        /// Pre-constructed SDMX filter key (alternative to individual filters)
                         SEX(string)                 /// Sex: _T, F, M, ALL
                         AGE(string)                 /// Age group filter
                         WEALTH(string)              /// Wealth quintile filter
+                        WEALTH_QUINTILE(string)     /// Alias for wealth() - for user convenience
                         RESIDENCE(string)           /// Residence: URBAN, RURAL
                         MATERNAL_edu(string)        /// Maternal education filter
                         LONG                        /// Long format (default)
-                        WIDE                        /// Wide format
+                        WIDE                        /// Wide format (uses csv-ts API format) - years as columns
                         WIDE_indicators             /// Wide format with indicators as columns
-                        WIDE_attributes             /// Wide format with attributes as suffixes
+                        WIDE_attributes(string)     /// Wide format pivoting on dimension(s): sex, age, wealth, residence, maternal_edu
                         ATTRIBUTES(string)          /// Attributes to keep for wide_indicators (_T _M _F _Q1 etc., or ALL)
                         LATEST                      /// Most recent value only
                         MRV(integer 0)              /// N most recent values
@@ -233,6 +323,8 @@ version 11
                         RAW                         /// Raw SDMX output
                         ADDmeta(string)             /// Add metadata columns (region, income_group)
                         VERSION(string)             /// SDMX version
+                        LABELS(string)              /// Column labels: id (default), both, none
+                        METAdata(string)            /// Column selection: light (critical columns, default), full (all columns)
                         PAGE_size(integer 100000)   /// Rows per request
                         MAX_retries(integer 3)      /// Retry attempts
                         CLEAR                       /// Replace data in memory
@@ -244,6 +336,15 @@ version 11
                         NOMETAdata                  /// Show brief summary instead of full metadata
                         NOERROR                     /// Undocumented: suppress printed error messages
                         SUBNATIONAL                 /// Enable access to subnational dataflows
+                        DEBUG                       /// Enable maximum debugging output
+                        TRACE                       /// Enable Stata trace on network calls
+                        FROMFILE(string)            /// Load from CSV file (skip API) for CI testing
+                        TOFILE(string)              /// Save API response to CSV for test fixtures
+                        SHOWTIER2                   /// Include Tier 2 indicators (officially defined, no data)
+                        SHOWTIER3                   /// Include Tier 3 indicators (legacy/undocumented)
+                        SHOWALL                     /// Include all tiers (1-3)
+                        SHOWORphans                 /// Include orphan indicators (not mapped to dataflows)
+                        SHOWLEGacy                  /// Alias for showtier3
                         *                           /// Legacy options
                  ]
 
@@ -253,17 +354,77 @@ version 11
                  local noerror_flag 0
                  if ("`noerror'" != "") local noerror_flag 1
         *-----------------------------------------------------------------------
+        * Validate filter options: cannot specify both filtervector() AND individual filters
+        *-----------------------------------------------------------------------
+        if ("`filtervector'" != "") {
+            if ("`sex'" != "" | "`age'" != "" | "`wealth'" != "" | "`residence'" != "" | "`maternal_edu'" != "") {
+                if (`noerror_flag' == 0) {
+                    noi di as error "Cannot specify both {bf:filtervector()} and individual filters (sex, age, wealth, residence, maternal_edu)"
+                    noi di as text ""
+                    noi di as text "{bf:Choose one approach:}"
+                    noi di as text "  {bf:Option 1:} Use individual filters (default, flexible for common cases)"
+                    noi di as text "    {stata unicefdata, indicator(CME_MRY0T4) sex(M) age(ALL) clear}"
+                    noi di as text ""
+                    noi di as text "  {bf:Option 2:} Use pre-constructed SDMX filter key (advanced, for custom dataflows)"
+                    noi di as text "    {stata unicefdata, indicator(CME_MRY0T4) filtervector(\".INDICATOR..M\") clear}"
+                    noi di as text ""
+                }
+                error 198
+            }
+        }
+        *-----------------------------------------------------------------------
         * Validate inputs
         *-----------------------------------------------------------------------
         * Preserve the requested indicator list for later formatting steps
         local indicator_requested `indicator'
+        
+        * Check for bulk download request (indicator(all) OR dataflow without indicator)
+        local bulk_download = 0
+        
+        * Case 1: Explicit indicator(all)
+        if (lower("`indicator'") == "all") {
+            local bulk_download = 1
+            if ("`dataflow'" == "") {
+                if (`noerror_flag' == 0) {
+                    noi di as err "indicator(all) requires dataflow() to be specified."
+                    noi di as text ""
+                    noi di as text "{bf:Bulk download examples:}"
+                    noi di as text "  {stata unicefdata, dataflow(CME) indicator(all) clear}                  " as text "- Download all CME indicators"
+                    noi di as text "  {stata unicefdata, dataflow(NUTRITION) indicator(all) countries(ETH) clear} " as text "- All nutrition data for Ethiopia"
+                    noi di as text "  {stata unicefdata, dataflow(EDUCATION) indicator(all) sex(M) clear}      " as text "- All education data for males"
+                    noi di as text ""
+                    noi di as text "{bf:Performance tip:} Bulk downloads are faster when fetching multiple indicators from same dataflow."
+                }
+                return scalar success = 0
+                return scalar successcode = 198
+                error 198
+            }
+            if ("`verbose'" != "") {
+                noi di as text "{bf:Bulk download mode:} Fetching all indicators from dataflow `dataflow'"
+            }
+        }
+        
+        * Case 2: Dataflow specified without indicator (implicit bulk download)
+        else if ("`indicator'" == "" & "`dataflow'" != "") {
+            local bulk_download = 1
+            local indicator "all"
+            * Warn user about bulk download
+            if (`noerror_flag' == 0) {
+                noi di as text "{bf:Note:} No indicator specified - bulk download mode activated."
+                noi di as text "         Fetching {bf:all} indicators from dataflow `dataflow'."
+                noi di as text "         This may take longer than a single indicator request."
+                if ("`verbose'" == "") {
+                    noi di as text "         Use {bf:verbose} option to see download progress."
+                }
+                noi di as text ""
+            }
+        }
         
         if ("`indicator'" == "" ) & ("`dataflow'" == "") {
             if (`noerror_flag' == 0) {
                 noi di as err "You must specify either indicator() or dataflow()."
                 noi di as text ""
                 noi di as text "{bf:Discovery commands:}"
-                noi di as text "  {stata unicefdata, categories}                " as text "- List categories with indicator counts"
                 noi di as text "  {stata unicefdata, flows}                     " as text "- List available dataflows"
                 noi di as text "  {stata unicefdata, search(mortality)}         " as text "- Search indicators by keyword"
                 noi di as text "  {stata unicefdata, search(edu) dataflow(EDUCATION)} " as text "- Search within a dataflow"
@@ -297,23 +458,253 @@ version 11
         }
         
         *-----------------------------------------------------------------------
-        * Set defaults
+        * Auto-detect dataflow from indicator (needed for schema-aware filters)
         *-----------------------------------------------------------------------
         
-        if ("`sex'" == "") {
-            local sex "_T"
+        * First try to find metadata location
+        local metadata_path ""
+        
+        * Check if metadata helper is available
+        capture which _unicef_list_dataflows
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            * Extract directory containing the helper ado file
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local metadata_path "`ado_dir'"
         }
-        if ("`age'" == "") {
-            local age "_T"
+        
+        * Fallback to PLUS directory _/
+        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'_unicefdata_indicators_metadata.yaml")) {
+            local metadata_path "`c(sysdir_plus)'_/"
         }
-        if ("`wealth'" == "") {
-            local wealth "_T"
+        
+        * Detect the primary dataflow for this indicator
+        _unicef_detect_dataflow_yaml "`indicator'" "`metadata_path'"
+        local primary_dataflow "`s(dataflow)'"
+
+        if ("`verbose'" != "") {
+            noi di as text "Auto-detected dataflow '" as result "`primary_dataflow'" as text "' for indicator `indicator'"
         }
-        if ("`residence'" == "") {
-            local residence "_T"
+
+        *-----------------------------------------------------------------------
+        * Get disaggregations_with_totals from metadata (for smart filtering)
+        *-----------------------------------------------------------------------
+        * This tells us which dimensions have _T totals and which don't
+        * Dimensions NOT in this list (e.g., DISABILITY_STATUS) need special handling
+        local disagg_totals ""
+        capture {
+            _unicef_get_disagg_totals, indicator("`indicator'") metadatapath("`metadata_path'") `verbose'
+            local disagg_totals = r(disagg_totals)
         }
-        if ("`maternal_edu'" == "") {
-            local maternal_edu "_T"
+        if ("`verbose'" != "" & "`disagg_totals'" != "") {
+            noi di as text "  disaggregations_with_totals: " as result "`disagg_totals'"
+        }
+
+        *-----------------------------------------------------------------------
+        * Handle option aliases (user-friendly alternative names)
+        *-----------------------------------------------------------------------
+        * wealth_quintile() is an alias for wealth() - merge if user used long form
+        if ("`wealth_quintile'" != "" & "`wealth'" == "") {
+            local wealth "`wealth_quintile'"
+        }
+        else if ("`wealth_quintile'" != "" & "`wealth'" != "") {
+            noi di as error "Cannot specify both wealth() and wealth_quintile() options"
+            exit 198
+        }
+
+        * Track whether user explicitly provided each filter (before normalization)
+        local user_spec_sex = ("`sex'" != "")
+        local user_spec_age = ("`age'" != "")
+        local user_spec_wealth = ("`wealth'" != "")
+        local user_spec_residence = ("`residence'" != "")
+        local user_spec_matedu = ("`maternal_edu'" != "")
+
+        *-----------------------------------------------------------------------
+        * Normalize filter values early (ALL -> empty, _T/T -> _T, etc.)
+        *-----------------------------------------------------------------------
+        * This ensures consistent filter handling throughout
+
+        foreach filt in sex age wealth residence maternal_edu {
+            local filt_val = "``filt''"
+            if ("`filt_val'" != "") {
+                local filt_lower = lower("`filt_val'")
+                if (strpos(" `filt_lower' ", " all ") > 0 | "`filt_lower'" == "all") {
+                    local `filt' ""
+                }
+                else if ("`filt_lower'" == "_t" | "`filt_lower'" == "t") {
+                    local `filt' "_T"
+                }
+                else {
+                    * Convert spaces to plus for multiple values
+                    local `filt' = subinstr("``filt''", " ", "+", .)
+                }
+            }
+        }
+
+        *-----------------------------------------------------------------------
+        * Schema-aware filter construction (Stage 1 of 3)
+        *-----------------------------------------------------------------------
+        * THREE-STAGE DEPENDENCY:
+        *   Stage 1: Query schema → get filter_dim_names (available dimensions)
+        *   Stage 2: Apply default totals → uses filter_dim_names to check existence
+        *   Stage 3: Build filter_option → uses normalized filter values from Stage 2
+        *
+        * Query dataflow schema to extract actual dimensions
+        * Skip: REF_AREA, INDICATOR, TIME_PERIOD (handled separately)
+        * Include: SEX, AGE, WEALTH_QUINTILE, RESIDENCE, MATERNAL_EDU_LVL, etc.
+
+        local filter_vector ""
+        local filter_dimensions_detected = 0
+        local filter_dim_names ""
+        capture {
+            __unicef_get_indicator_filters, dataflow("`primary_dataflow'") verbose
+            if _rc == 0 {
+                local filter_dimensions_detected = r(filter_dimensions)
+                local filter_dim_names = lower(r(filter_eligible_dimensions))
+            }
+        }
+
+        *-----------------------------------------------------------------------
+        * Determine nofilter state early (needed for default totals logic)
+        *-----------------------------------------------------------------------
+        local nofilter_option ""
+        if ("`nofilter'" != "") {
+            local nofilter_option "nofilter"
+        }
+
+        *-----------------------------------------------------------------------
+        * Apply default totals when user did not supply a filter
+        *-----------------------------------------------------------------------
+        * Only set defaults when not using nofilter() and no custom filtervector()
+        * NOTE: This must come BEFORE building filter_option, so that default
+        *       values like sex="_T" are included in the API request.
+        * Uses disaggregations_with_totals from metadata to determine which
+        * dimensions have _T totals. Only default to _T for those dimensions.
+        if ("`nofilter_option'" == "" & "`filtervector'" == "") {
+            foreach dim in sex age wealth residence maternal_edu {
+                local dimflag 0
+                if ("`dim'" == "sex") local dimflag = `user_spec_sex'
+                else if ("`dim'" == "age") local dimflag = `user_spec_age'
+                else if ("`dim'" == "wealth") local dimflag = `user_spec_wealth'
+                else if ("`dim'" == "residence") local dimflag = `user_spec_residence'
+                else local dimflag = `user_spec_matedu'
+                * Map filter name to YAML dimension name for disagg_totals lookup
+                * NOTE: yaml_dim_name uses uppercase SDMX names (for disagg_totals matching)
+                *       yaml_dim_lower uses lowercase (for filter_dim_names matching)
+                local yaml_dim_name ""
+                if ("`dim'" == "sex") local yaml_dim_name "SEX"
+                else if ("`dim'" == "age") local yaml_dim_name "AGE"
+                else if ("`dim'" == "wealth") local yaml_dim_name "WEALTH_QUINTILE"
+                else if ("`dim'" == "residence") local yaml_dim_name "RESIDENCE"
+                else if ("`dim'" == "maternal_edu") local yaml_dim_name "MATERNAL_EDU_LVL"
+                local yaml_dim_lower = lower("`yaml_dim_name'")
+
+                if (`dimflag' == 0) {
+                    * Only default to totals if dimension exists in schema
+                    * Use full SDMX dimension name (lowercased) for matching
+                    * e.g., "wealth_quintile" not "wealth" to match filter_dim_names
+                    if (strpos(" `filter_dim_names' ", " `yaml_dim_lower' ") > 0) {
+                        * Check if dimension is in disaggregations_with_totals
+                        * If yes: default to _T (dimension has totals)
+                        * If no: leave empty (dimension doesn't have _T, e.g., DISABILITY_STATUS)
+                        local has_total = 0
+                        if ("`disagg_totals'" == "") {
+                            * No metadata available - use legacy behavior (default to _T)
+                            local has_total = 1
+                        }
+                        else if (strpos(" `disagg_totals' ", " `yaml_dim_name' ") > 0) {
+                            * Dimension is in disaggregations_with_totals
+                            local has_total = 1
+                        }
+
+                        if (`has_total' == 1) {
+                            * Special case: NUTRITION dataflow uses Y0T4 for age, not _T
+                            * The AGE dimension in NUTRITION has specific age groups (Y0T4, M0T59, etc.)
+                            * but no _T total. Y0T4 (0-4 years) is the standard for under-5 data.
+                            local use_special_default = 0
+                            if ("`dim'" == "age") {
+                                local df_upper = upper("`primary_dataflow'")
+                                if ("`df_upper'" == "NUTRITION") {
+                                    local use_special_default = 1
+                                    local `dim' "Y0T4"
+                                    noi di as text "{bf:Note:} NUTRITION dataflow uses age=Y0T4 (0-4 years) as default instead of _T"
+                                }
+                            }
+                            if (`use_special_default' == 0) {
+                                local `dim' "_T"
+                            }
+                        }
+                        else if ("`verbose'" != "") {
+                            noi di as text "  Note: `dim' not in disaggregations_with_totals, not defaulting to _T"
+                        }
+                    }
+                }
+            }
+        }
+
+        if ("`verbose'" != "") {
+            noi di as text "  Normalized filters: sex='" as result "`sex'" as text "', age='" as result "`age'" as text "', wealth='" as result "`wealth'" as text "'"
+        }
+
+        *-----------------------------------------------------------------------
+        * Build reusable options for get_sdmx
+        *-----------------------------------------------------------------------
+        * nofilter: pass through directly
+        * filter_option: prefer user-supplied filtervector(); otherwise, build a
+        * schema-aware filtervector using normalized filters and detected dataflow
+        * NOTE: Default totals have already been applied above, so filter values
+        *       like sex="_T" are now set correctly.
+        *-----------------------------------------------------------------------
+
+        local filter_option ""
+        if ("`nofilter_option'" == "") {
+            if ("`filtervector'" != "") {
+                local filter_option `"filtervector("`filtervector'")"'
+            }
+            else {
+                * Use explicit dataflow if provided; otherwise fall back to detected
+                local schema_dataflow "`dataflow'"
+                if ("`schema_dataflow'" == "") {
+                    local schema_dataflow "`primary_dataflow'"
+                }
+                if ("`schema_dataflow'" != "") {
+                    local schema_opts ""
+                    if (`bulk_download' == 1) local schema_opts "`schema_opts' bulk"
+                    _unicef_build_schema_key "`indicator'" "`schema_dataflow'" "`metadata_path'" ///
+                        sex("`sex'") age("`age'") wealth("`wealth'") residence("`residence'") maternal_edu("`maternal_edu'") ///
+                        `schema_opts' `verbose'
+                    local schema_key = r(key)
+                    local filter_option `"filtervector("`schema_key'")"'
+                }
+            }
+        }
+
+        * Countries option reused across get_sdmx calls (normalize spaces to plus)
+        local countries_option ""
+        if ("`countries'" != "") {
+            local countries_sdmx = subinstr("`countries'", " ", "+", .)
+            local countries_option "countries(`countries_sdmx')"
+        }
+
+        * Labels option: default to "id" for cross-platform consistency
+        local labels_option ""
+        if ("`labels'" != "") {
+            local labels_option "labels(`labels')"
+        }
+
+        *-----------------------------------------------------------------------
+        * Note: The SDMX key with proper filter construction is now built in
+        * _unicef_build_schema_key, which receives the normalized filter values.
+        * Filter values are already normalized at this point:
+        *   - ALL → empty string (fetch all from API)
+        *   - _T/T → _T (fetch totals only)
+        *   - space-separated codes → plus-separated ("M+F")
+        *-----------------------------------------------------------------------
+        
+        if ("`verbose'" != "") {
+            noi di as text "  Filter option for get_sdmx: " as result `"`filter_option'"'
+            noi di as text "  Nofilter option: " as result "`nofilter_option'"
         }
         
         *-----------------------------------------------------------------------
@@ -385,36 +776,32 @@ version 11
         
         *-----------------------------------------------------------------------
         * Locate metadata directory (YAML files in src/_/ alongside helper ado)
+        * NOTE: metadata_path should already be set from lines 429-443
+        * Do NOT reset it here - that was causing dimension check bugs
         *-----------------------------------------------------------------------
         
-        * Find the helper programs location (src/_/)
-        local metadata_path ""
-        
-        * Try to find metadata relative to helper ado files in src/_/
-        capture findfile _unicef_list_dataflows.ado
-        if (_rc == 0) {
-            local ado_path "`r(fn)'"
-            * Extract directory containing the helper ado file
-            local ado_dir = subinstr("`ado_path'", "\", "/", .)
-            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
-            local metadata_path "`ado_dir'"
+        * Fallback: if metadata_path wasn't set earlier, try to find it now
+        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'_unicefdata_indicators_metadata.yaml")) {
+            capture which _unicef_list_dataflows
+            if (_rc == 0) {
+                local ado_path "`r(fn)'"
+                local ado_dir = subinstr("`ado_path'", "\", "/", .)
+                local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+                local metadata_path "`ado_dir'"
+            }
+            * Ultimate fallback to PLUS directory _/
+            if ("`metadata_path'" == "") | (!fileexists("`metadata_path'_unicefdata_indicators_metadata.yaml")) {
+                local metadata_path "`c(sysdir_plus)'_/"
+            }
         }
-        
-        * Fallback to PLUS directory _/
-        if ("`metadata_path'" == "") | (!fileexists("`metadata_path'_unicefdata_indicators.yaml")) {
-            local metadata_path "`c(sysdir_plus)'_/"
-        }
-        
-        if ("`verbose'" != "") {
-            noi di as text "Metadata path: " as result "`metadata_path'"
-        }
-        
-        *-----------------------------------------------------------------------
-        * Auto-detect dataflow from indicator using YAML metadata
-        *-----------------------------------------------------------------------
         
         * Check for multiple indicators (space-separated)
         local n_indicators : word count `indicator'
+        
+        * Skip multi-indicator processing if bulk download
+        if (`bulk_download' == 1) {
+            local n_indicators = 1
+        }
         
         if (`n_indicators' > 1) {
             * Multiple indicators: fetch each separately and append
@@ -431,10 +818,19 @@ version 11
                 if ("`verbose'" != "") {
                     noi di as text "  Fetching indicator: " as result "`ind'"
                 }
-                
+
                 * Detect dataflow for this indicator
                 _unicef_detect_dataflow_yaml "`ind'" "`metadata_path'"
                 local ind_dataflow "`s(dataflow)'"
+
+                * Get disaggregations_with_totals for this indicator
+                local ind_disagg_totals ""
+                capture {
+                    _unicef_get_disagg_totals, indicator("`ind'") metadatapath("`metadata_path'")
+                    local ind_disagg_totals = r(disagg_totals)
+                }
+                * Update disagg_totals for post-fetch filtering
+                local disagg_totals "`ind_disagg_totals'"
                 
                 * Check for subnational dataflows and warn/block accordingly
                 * Patterns: *_SUBNAT, *_SUB, *_SUBNATIONAL, *_SUBNAT_* (country-specific)
@@ -455,13 +851,16 @@ version 11
                     }
                 }
                 
-                * Build URL key using schema-aware dimension construction
+                * Build URL key using schema-aware dimension construction with user filters
                 * Extract dataflow schema and build key with explicit dimension filters
-                _unicef_build_schema_key "`ind'" "`ind_dataflow'" "`metadata_path'" `nofilter'
+                * Pass normalized filter values (empty string for ALL, _T for total, etc.)
+                _unicef_build_schema_key "`ind'" "`ind_dataflow'" "`metadata_path'" ///
+                    sex("`sex'") age("`age'") wealth("`wealth'") residence("`residence'") maternal_edu("`maternal_edu'") ///
+                    `nofilter' `verbose'
                 local ind_key = r(key)
                 local ind_rel_path "data/UNICEF,`ind_dataflow',`version'/`ind_key'"
                 
-                local ind_query "format=csv&labels=both"
+                local ind_query "format=csv&labels=id"
                 if (`start_year' > 0) {
                     local ind_query "`ind_query'&startPeriod=`start_year'"
                 }
@@ -475,13 +874,29 @@ version 11
                 * Try to fetch this indicator
                 tempfile ind_tempdata
                 local ind_success 0
+                local last_rc 0
                 forvalues attempt = 1/`max_retries' {
                     capture copy "`ind_url'" "`ind_tempdata'", replace public
+                    local last_rc = _rc
                     if (_rc == 0) {
                         local ind_success 1
                         continue, break
                     }
+                    if ("`verbose'" != "" & `attempt' < `max_retries') {
+                        noi di as text "  Network attempt `attempt'/`max_retries' failed (r=" _rc "), retrying..."
+                    }
                     sleep 1000
+                }
+                
+                * Report final network failure with details
+                if (`ind_success' == 0 & "`verbose'" != "") {
+                    noi di as error "  ✗ Network error after `max_retries' attempts (r=`last_rc')"
+                    if (`last_rc' == 677) {
+                        noi di as text "    Error 677 = 'could not connect to server'"
+                        noi di as text "    Possible causes: Firewall, SSL/TLS, proxy, or network timeout"
+                        noi di as text "    Run: do test_stata_network.do for diagnostics"
+                    }
+                    noi di as text "    URL: `ind_url'"
                 }
                 
                 * Try fallback if primary failed - use direct get_sdmx loop
@@ -503,14 +918,36 @@ version 11
                             noi di as text "  Fallback attempt `fallback_attempt' for `ind': trying dataflow `ind_fallback_df'..."
                         }
                         
-                        * Call get_sdmx directly with filter vector
+                        * Build dataflow-specific filtervector for this indicator (unless user supplied one)
+                        local ind_filter_option ""
+                        if ("`nofilter_option'" == "") {
+                            if ("`filtervector'" != "") {
+                                local ind_filter_option `"filtervector("`filtervector'")"'
+                            }
+                            else {
+                                _unicef_build_schema_key "`ind'" "`ind_fallback_df'" "`metadata_path'" ///
+                                    sex("`sex'") age("`age'") wealth("`wealth'") residence("`residence'") maternal_edu("`maternal_edu'") ///
+                                    `verbose'
+                                local ind_schema_key = r(key)
+                                local ind_filter_option `"filtervector("`ind_schema_key'")"'
+                            }
+                        }
+
+                        * Call get_sdmx directly (filter is now built into the schema key)
                         capture noisily get_sdmx, ///
                             indicator("`ind'") ///
                             dataflow("`ind_fallback_df'") ///
-                            filter("`filter_vector'") ///
+                            `countries_option' ///
+                            `ind_filter_option' ///
                             start_period("`start_year'") ///
                             end_period("`end_year'") ///
-                            `verbose'
+                            `nofilter_option' ///
+                            `labels_option' ///
+                            `wide' ///
+                            `verbose' ///
+                            `debug' ///
+                            `trace' ///
+                            `clear'
                         
                         if (_rc == 0 & _N > 0) {
                             local ind_success = 1
@@ -616,9 +1053,14 @@ version 11
             local skip_single_fetch 0
             
             if ("`dataflow'" == "") & ("`indicator'" != "") {
-                * Detect dataflow from enriched metadata using indicator info
+                * Detect primary dataflow from indicator metadata
                 _unicef_indicator_info, indicator("`indicator'") brief
-                local dataflow "`r(primary_dataflow)'"
+                local detected_primary = upper("`r(dataflow)'")
+                * Extract first dataflow (primary) from comma-separated list
+                local first_dataflow = word("`detected_primary'", 1)
+                * Remove trailing comma if present (word() keeps it)
+                local first_dataflow = subinstr("`first_dataflow'", ",", "", .)
+                local dataflow "`first_dataflow'"
                 local all_dataflows "`r(dataflow)'"
                 local indicator_name "`r(name)'"
                 * Always show auto-detected dataflow (matches R/Python behavior)
@@ -686,6 +1128,7 @@ version 11
                 capture confirm file "`schema_file'"
                 if (_rc == 0) {
                     * Read dataflow schema and extract dimensions (fast - small file)
+                    * Use simple string matching for robustness
                     tempname fh
                     local in_dimensions = 0
                     file open `fh' using "`schema_file'", read text
@@ -696,18 +1139,18 @@ version 11
                             local in_dimensions = 1
                         }
                         else if (`in_dimensions' == 1) {
-                            * Check if we've left dimensions section
+                            * Check if we've left dimensions section (next top-level key)
                             local first_char = substr(`"`line'"', 1, 1)
                             if ("`first_char'" != " " & "`first_char'" != "-" & "`first_char'" != "" & regexm(`"`line'"', "^[a-z_]+:")) {
                                 local in_dimensions = 0
                             }
-                            else if (regexm("`trimmed_line'", "^- id: *([A-Z_0-9]+)")) {
-                                local dim_id = regexs(1)
-                                if ("`dim_id'" == "SEX") local has_sex = 1
-                                if ("`dim_id'" == "AGE") local has_age = 1
-                                if ("`dim_id'" == "WEALTH_QUINTILE") local has_wealth = 1
-                                if ("`dim_id'" == "RESIDENCE") local has_residence = 1
-                                if ("`dim_id'" == "MATERNAL_EDU_LVL" | "`dim_id'" == "MOTHER_EDUCATION") local has_maternal_edu = 1
+                            else {
+                                * Simple string matching for dimension IDs (more robust than regex)
+                                if (strpos("`trimmed_line'", "id: SEX") > 0) local has_sex = 1
+                                if (strpos("`trimmed_line'", "id: AGE") > 0) local has_age = 1
+                                if (strpos("`trimmed_line'", "id: WEALTH_QUINTILE") > 0) local has_wealth = 1
+                                if (strpos("`trimmed_line'", "id: RESIDENCE") > 0) local has_residence = 1
+                                if (strpos("`trimmed_line'", "id: MATERNAL_EDU_LVL") > 0 | strpos("`trimmed_line'", "id: MOTHER_EDUCATION") > 0) local has_maternal_edu = 1
                             }
                         }
                         file read `fh' line
@@ -768,6 +1211,45 @@ version 11
         if (`skip_single_fetch' == 0) {
         
         *-----------------------------------------------------------------------
+        * FROMFILE: Load from CSV file instead of API (for CI/offline testing)
+        *-----------------------------------------------------------------------
+        
+        if ("`fromfile'" != "") {
+            * Validate file exists
+            capture confirm file "`fromfile'"
+            if (_rc != 0) {
+                noi di as err "fromfile() error: File not found: `fromfile'"
+                return scalar success = 0
+                return scalar successcode = 601
+                return local fail_message "File not found: `fromfile'"
+                exit 601
+            }
+            
+            noi di as text "Loading from file: " as result "`fromfile'" as text " (skipping API)"
+            clear
+            capture import delimited "`fromfile'", clear varnames(1) stringcols(_all) encoding("utf-8")
+            if _rc != 0 {
+                * Fallback: Try without encoding (for older Stata versions or non-UTF-8 files)
+                capture import delimited "`fromfile'", clear varnames(1) stringcols(_all)
+            }
+            
+            if (_N == 0) {
+                noi di as text "No data in file."
+                return scalar success = 0
+                return scalar successcode = 0
+                return local fail_message "No data in file"
+                return
+            }
+            
+            local obs_count = _N
+            noi di as text "Loaded " as result `obs_count' as text " observations from file."
+            
+            * Skip all API fetch logic - data is already in memory
+            local success 1
+        }
+        else {
+        
+        *-----------------------------------------------------------------------
         * Primary fetch using get_sdmx (with filter vector)
         *-----------------------------------------------------------------------
         
@@ -785,23 +1267,61 @@ version 11
         
         * Try primary dataflow with get_sdmx (includes filter vector in URL)
         local success 0
+        local full_url ""
         
         * Build get_sdmx call with conditional year parameters
         local year_opts ""
         if (`start_year' > 0) local year_opts "`year_opts' start_period(`start_year')"
         if (`end_year' > 0) local year_opts "`year_opts' end_period(`end_year')"
+
+        * Ensure we always have a dataflow for primary fetch
+        local dataflow_for_fetch "`dataflow'"
+        if ("`dataflow_for_fetch'" == "") local dataflow_for_fetch "`primary_dataflow'"
+
+        * Recompute filter option for the primary dataflow if needed
+        local filter_option_primary "`filter_option'"
+        local schema_key_primary ""
+        if ("`nofilter_option'" == "" & "`filtervector'" == "") {
+            if ("`dataflow_for_fetch'" != "") {
+                * When using a specific indicator with a filtered dataflow,
+                * only filter disaggregation dimensions (sex, age, wealth, etc)
+                * NOT the indicator dimension - it's already in the URL
+                _unicef_build_schema_key "`indicator'" "`dataflow_for_fetch'" "`metadata_path'" ///
+                    sex("`sex'") age("`age'") wealth("`wealth'") residence("`residence'") maternal_edu("`maternal_edu'") ///
+                    filterdisagg ///
+                    `verbose'
+                local schema_key_primary = r(key)
+                local filter_option_primary filtervector("`schema_key_primary'")
+            }
+        }
         
+        * Construct URL for documentation (what will be executed)
+        if ("`dataflow_for_fetch'" != "") {
+            local version_str = cond("`version'" == "", "1.0", "`version'")
+            local key_str = cond("`schema_key_primary'" != "", "`schema_key_primary'", "...")
+            local full_url "`base_url'/data/UNICEF,`dataflow_for_fetch',`version_str'/`key_str'?..."
+        }
+        
+        * Do NOT pass wide option to get_sdmx - unicefdata will do its own reshape
+        * This avoids issues with csv-ts format creating wrong column names
         capture noisily get_sdmx, ///
             indicator("`indicator'") ///
-            dataflow("`dataflow'") ///
-            filter("`filter_vector'") ///
+            dataflow("`dataflow_for_fetch'") ///
+            `countries_option' ///
+            `filter_option_primary' ///
             `year_opts' ///
-            `verbose'
+            `nofilter_option' ///
+            `labels_option' ///
+            `clear' ///
+            `verbose' ///
+            `debug' ///
+            `trace'
         
         if (_rc == 0 & _N > 0) {
             local success 1
+            local dataflow "`dataflow_for_fetch'"
             if ("`verbose'" != "") {
-                noi di as text "✓ Successfully fetched from primary dataflow: " as result "`dataflow'"
+                noi di as text "✓ Successfully fetched from primary dataflow: " as result "`dataflow_for_fetch'"
             }
         }
         else {
@@ -818,6 +1338,8 @@ version 11
             
             * Use all detected dataflows, skip the primary (already tried above)
             local fallback_dataflows "`all_dataflows'"
+            * Normalize delimiters so foreach gets clean tokens
+            local fallback_dataflows : subinstr local fallback_dataflows "," " " , all
             
             * If no dataflows detected, add defaults
             if ("`fallback_dataflows'" == "") {
@@ -826,9 +1348,10 @@ version 11
             
             * Try each dataflow directly with get_sdmx
             local fallback_attempt 0
+            local fallback_year_opts "`year_opts'"
             foreach fallback_df of local fallback_dataflows {
                 * Skip the primary dataflow (already tried)
-                if ("`fallback_df'" == "`dataflow'") continue
+                if ("`fallback_df'" == "`dataflow_for_fetch'") continue
                 
                 local fallback_attempt = `fallback_attempt' + 1
                 
@@ -836,14 +1359,35 @@ version 11
                     noi di as text "  Fallback attempt `fallback_attempt': trying dataflow `fallback_df'..."
                 }
                 
+                * Build filter option for the fallback dataflow (unless user supplied one)
+                local filter_option_fb ""
+                if ("`nofilter_option'" == "") {
+                    if ("`filtervector'" != "") {
+                        local filter_option_fb filtervector("`filtervector'")
+                    }
+                    else {
+                        _unicef_build_schema_key "`indicator'" "`fallback_df'" "`metadata_path'" ///
+                            sex("`sex'") age("`age'") wealth("`wealth'") residence("`residence'") maternal_edu("`maternal_edu'") ///
+                            `verbose'
+                        local schema_key_fb = r(key)
+                        local filter_option_fb filtervector("`schema_key_fb'")
+                    }
+                }
+
                 * Call get_sdmx directly with filter vector
                 capture noisily get_sdmx, ///
                     indicator("`indicator'") ///
                     dataflow("`fallback_df'") ///
-                    filter("`filter_vector'") ///
-                    start_period("`start_year'") ///
-                    end_period("`end_year'") ///
-                    `verbose'
+                    `countries_option' ///
+                    `filter_option_fb' ///
+                    `fallback_year_opts' ///
+                    `nofilter_option' ///
+                    `labels_option' ///
+                    `wide' ///
+                    `verbose' ///
+                    `clear' ///
+                    `debug' ///
+                    `trace'
                 
                 if (_rc == 0 & _N > 0) {
                     local success 1
@@ -884,21 +1428,22 @@ version 11
         }
         
         *-----------------------------------------------------------------------
-        * Import the CSV data
+        * TOFILE: Save raw API response to CSV for test fixtures
         *-----------------------------------------------------------------------
-
-        * Import the downloaded CSV into memory.
-        * Only import when there is no data currently loaded, or when the
-        * user explicitly requested `clear'. This avoids overwriting a
-        * non-empty dataset unless the user allowed it.
-        *
-        * If fallback was used, data is already in memory from the fallback helper.
-
-        if ("`fallback_used'" != "1") {
-            if (_N == 0) | ("`clear'" != "") {
-                import delimited using "`tempdata'", `clear' varnames(1) encoding("utf-8")
-            }
+        
+        if ("`tofile'" != "") {
+            noi di as text "Saving to file: " as result "`tofile'"
+            export delimited "`tofile'", replace encoding("utf-8")
+            noi di as text "Saved " as result _N as text " observations to " as result "`tofile'"
         }
+        
+        *-----------------------------------------------------------------------
+        * Note: Data is already in memory from get_sdmx (which uses insheet)
+        * The previous import delimited block using `tempdata' was removed
+        * because get_sdmx loads data directly into memory.
+        *-----------------------------------------------------------------------
+        
+        } // end else (API fetch path)
         
         } // end skip_single_fetch
         
@@ -933,10 +1478,10 @@ version 11
                 * --- Batch rename: lowercase API columns to standard names ---
                 * Check and rename in single pass (avoids 30+ separate rename calls)
                 local renames ""
+                local renames "`renames' INDICATOR:indicator"
                 local renames "`renames' ref_area:iso3 REF_AREA:iso3"
                 local renames "`renames' time_period:period TIME_PERIOD:period"
                 local renames "`renames' obs_value:value OBS_VALUE:value"
-                local renames "`renames' geographicarea:country GEOGRAPHICAREA:country geographic_area:country"
                 local renames "`renames' unit_measure:unit UNIT_MEASURE:unit"
                 local renames "`renames' wealth_quintile:wealth WEALTH_QUINTILE:wealth"
                 local renames "`renames' lower_bound:lb LOWER_BOUND:lb"
@@ -1012,6 +1557,47 @@ version 11
                     capture confirm variable `varname'
                     if (_rc == 0) {
                         label variable `varname' `"`varlbl'"'
+                    }
+                }
+            }
+            
+            * --- Add country names from dataset (efficient, no API overhead) ---
+            quietly {
+                capture confirm variable iso3
+                if (_rc == 0) {
+                    * Determine metadata path
+                    local meta_path "`c(sysdir_plus)'_"
+                    
+                    * Check if country dataset exists
+                    capture confirm file "`meta_path'/_unicefdata_countries.dta"
+                    if (_rc == 0) {
+                        * Use frames for efficient merge (Stata 16+) or traditional merge
+                        local stata_version = c(stata_version)
+                        if (`stata_version' >= 16) {
+                            * Frame-based merge (Stata 16+)
+                            frame create countries
+                            frame countries: use "`meta_path'/_unicefdata_countries.dta", clear
+                            frlink m:1 iso3, frame(countries)
+                            frget country, from(countries)
+                            frame drop countries
+                            drop countries
+                        }
+                        else {
+                            * Traditional merge for Stata 11-15
+                            tempfile original_data
+                            save `original_data', replace
+                            use "`meta_path'/_unicefdata_countries.dta", clear
+                            tempfile country_lookup
+                            save `country_lookup', replace
+                            use `original_data', clear
+                            merge m:1 iso3 using `country_lookup', keep(master match) nogen
+                        }
+                        * Move country to appear after iso3 and add label
+                        capture confirm variable country
+                        if (_rc == 0) {
+                            order iso3 country
+                            label variable country "Country name"
+                        }
                     }
                 }
             }
@@ -1223,7 +1809,58 @@ version 11
                     }
                 }
             }
-            
+
+            *-------------------------------------------------------------------
+            * DISABILITY_STATUS handling (metadata-driven filtering)
+            *-------------------------------------------------------------------
+            * If DISABILITY_STATUS exists but is NOT in disaggregations_with_totals,
+            * it means this dimension has no _T total. Filter to PD (baseline:
+            * persons without disabilities) to match Python/R behavior.
+            capture confirm variable disability_status
+            if (_rc == 0) {
+                * Check if DISABILITY_STATUS is in disaggregations_with_totals
+                local dis_has_total = 0
+                if ("`disagg_totals'" != "") {
+                    if (strpos(" `disagg_totals' ", " DISABILITY_STATUS ") > 0) {
+                        local dis_has_total = 1
+                    }
+                }
+
+                if (`dis_has_total' == 0) {
+                    * DISABILITY_STATUS doesn't have _T total
+                    * Check if PD (persons without disabilities) exists
+                    quietly count if disability_status == "PD"
+                    local pd_count = r(N)
+                    quietly count if disability_status == "_T"
+                    local t_count = r(N)
+
+                    if (`pd_count' > 0 & `t_count' == 0) {
+                        * Filter to PD (baseline population)
+                        keep if disability_status == "PD"
+                        if ("`verbose'" != "") {
+                            noi di as text "  disability_status: filtered to PD (no _T total available)"
+                        }
+                    }
+                    else if (`t_count' > 0) {
+                        * _T exists - filter to it
+                        keep if disability_status == "_T"
+                        if ("`verbose'" != "") {
+                            noi di as text "  disability_status: filtered to _T"
+                        }
+                    }
+                }
+                else {
+                    * DISABILITY_STATUS has _T total - filter to it if available
+                    quietly count if disability_status == "_T"
+                    if (r(N) > 0) {
+                        keep if disability_status == "_T"
+                        if ("`verbose'" != "") {
+                            noi di as text "  disability_status: filtered to _T (in disaggregations_with_totals)"
+                        }
+                    }
+                }
+            }
+
         }
         
         *-----------------------------------------------------------------------
@@ -1403,8 +2040,11 @@ version 11
         
         *-----------------------------------------------------------------------
         * Apply latest value filter
+        * FIXED in v1.7.2: Include disaggregation dimensions in grouping so that
+        * latest keeps one observation per country-indicator-disaggregation combo,
+        * not just per country-indicator (which would drop all but one disagg value)
         *-----------------------------------------------------------------------
-        
+
         if ("`latest'" != "") {
             capture confirm variable iso3
             capture confirm variable period
@@ -1412,41 +2052,77 @@ version 11
             if (_rc == 0) {
                 * Keep only non-missing values
                 drop if missing(value)
-                
-                * Get latest period for each country-indicator
+
+                * Build grouping variables: start with iso3
+                local group_vars "iso3"
+
+                * Add indicator if present
                 capture confirm variable indicator
-                if (_rc == 0) {
-                    bysort iso3 indicator (period): keep if _n == _N
-                }
-                else {
-                    bysort iso3 (period): keep if _n == _N
-                }
+                if (_rc == 0) local group_vars "`group_vars' indicator"
+
+                * Add disaggregation dimensions if present
+                * This ensures latest keeps one obs per unique disaggregation combo
+                * NOTE: Use SHORT variable names (wealth, matedu) as they exist at this point
+                * They get renamed to long names (wealth_quintile, maternal_edu) later
+                capture confirm variable sex
+                if (_rc == 0) local group_vars "`group_vars' sex"
+
+                capture confirm variable wealth
+                if (_rc == 0) local group_vars "`group_vars' wealth"
+
+                capture confirm variable age
+                if (_rc == 0) local group_vars "`group_vars' age"
+
+                capture confirm variable residence
+                if (_rc == 0) local group_vars "`group_vars' residence"
+
+                capture confirm variable matedu
+                if (_rc == 0) local group_vars "`group_vars' matedu"
+
+                * Get latest period for each group
+                bysort `group_vars' (period): keep if _n == _N
             }
         }
         
         *-----------------------------------------------------------------------
         * Apply MRV (Most Recent Values) filter
+        * FIXED in v2.0.3: Include disaggregation dimensions in grouping
         *-----------------------------------------------------------------------
-        
+
         if (`mrv' > 0) {
             capture confirm variable iso3
             capture confirm variable period
             if (_rc == 0) {
+                * Build grouping variables: start with iso3
+                local mrv_group_vars "iso3"
+
+                * Add indicator if present
                 capture confirm variable indicator
-                if (_rc == 0) {
-                    gsort iso3 indicator -period
-                    by iso3 indicator: gen _rank = _n
-                    keep if _rank <= `mrv'
-                    drop _rank
-                    sort iso3 indicator period
-                }
-                else {
-                    gsort iso3 -period
-                    by iso3: gen _rank = _n
-                    keep if _rank <= `mrv'
-                    drop _rank
-                    sort iso3 period
-                }
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' indicator"
+
+                * Add disaggregation dimensions if present
+                * NOTE: Use SHORT variable names (wealth, matedu) as they exist at this point
+                capture confirm variable sex
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' sex"
+
+                capture confirm variable wealth
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' wealth"
+
+                capture confirm variable age
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' age"
+
+                capture confirm variable residence
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' residence"
+
+                capture confirm variable matedu
+                if (_rc == 0) local mrv_group_vars "`mrv_group_vars' matedu"
+
+                * Sort by group and descending period, then rank within group
+                gsort `mrv_group_vars' -period
+                by `mrv_group_vars': gen _rank = _n
+                keep if _rank <= `mrv'
+                drop _rank
+                sort `mrv_group_vars' period
             }
         }
         
@@ -1494,25 +2170,102 @@ version 11
         
         capture confirm variable iso3
         if (_rc == 0) {
+            local regions_file ""
+            capture noisily findfile "_unicefdata_regions.yaml"
+            if (_rc == 0) local regions_file "`r(fn)'"
+
+            if ("`regions_file'" == "") {
+                foreach candidate in ///
+                    "`c(pwd)'/metadata/current/_unicefdata_regions.yaml" ///
+                    "`c(pwd)'/stata/src/_/_unicefdata_regions.yaml" ///
+                    "`:sysdir PLUS'_/_unicefdata_regions.yaml" {
+                    if (fileexists("`candidate'")) {
+                        local regions_file "`candidate'"
+                        continue, break
+                    }
+                }
+            }
+
+            local aggregates ""
+            if ("`regions_file'" != "") {
+                tempname fh
+                file open `fh' using "`regions_file'", read text
+                file read `fh' line
+                local in_regions 0
+                while (r(eof)==0) {
+                    local trimmed = strtrim("`line'")
+                    * Check if we're entering the regions section
+                    if (regexm("`trimmed'", "^regions:")) {
+                        local in_regions 1
+                    }
+                    * If we're in regions section, extract region codes
+                    else if (`in_regions' == 1) {
+                        * Check for end of regions section (unindented key or blank line)
+                        if ("`trimmed'" == "" | (substr("`line'", 1, 1) != " " & regexm("`trimmed'", "^[a-z_]+:"))) {
+                            local in_regions 0
+                        }
+                        * Extract region code (e.g., "  CODE: 'Region Name'" -> CODE)
+                        else if (regexm("`trimmed'", "^([A-Za-z0-9_]+):")) {
+                            local code = regexs(1)
+                            local aggregates "`aggregates' `code'"
+                        }
+                    }
+                    file read `fh' line
+                }
+                file close `fh'
+            }
+
             capture drop geo_type
-            gen geo_type = ""
-            * Mark known aggregates (regional and global)
-            replace geo_type = "aggregate" if inlist(iso3, "WLD", "WORLD", "UNICEF", "WB")
-            replace geo_type = "aggregate" if length(iso3) > 3
-            replace geo_type = "aggregate" if strpos(iso3, "_") > 0
-            replace geo_type = "country" if geo_type == ""
-            label variable geo_type "Geographic type (country/aggregate)"
+            gen byte geo_type = 0
+            if ("`aggregates'" != "") {
+                foreach code of local aggregates {
+                    replace geo_type = 1 if iso3 == "`code'"
+                }
+            }
+            capture label drop geo_type_lbl
+            label define geo_type_lbl 0 "country" 1 "aggregate"
+            label values geo_type geo_type_lbl
+            label variable geo_type "Geographic type (1=aggregate, 0=country)"
+            
+            * Reorder geo_type before year columns (for wide format)
+            * Find all yr#### variables and move geo_type before them
+            capture {
+                quietly ds yr*
+                if "`r(varlist)'" != "" {
+                    local first_yr : word 1 of `r(varlist)'
+                    order geo_type, before(`first_yr')
+                }
+            }
         }
         
         *-----------------------------------------------------------------------
         * Format output (long/wide/wide_indicators) - aligned with R/Python
         *-----------------------------------------------------------------------
         
+        * Check for conflicting wide format options
+        * Note: wide option uses API csv-ts format (years as columns: yr2015, yr2016, etc.)
+        * wide_indicators and wide_attributes use Stata reshape (traditional unicefdata behavior)
+        if ("`wide'" != "" & ("`wide_indicators'" != "" | "`wide_attributes'" != "")) {
+            noi di as error "Error: wide cannot be combined with wide_indicators or wide_attributes."
+            noi di as error "Choose: wide (API csv-ts format) OR wide_indicators/wide_attributes (Stata reshape)"
+            error 198
+        }
+
         * Check for conflicting options: cannot use wide_attributes and wide_indicators together
         if ("`wide_attributes'" != "" & "`wide_indicators'" != "") {
             noi di as error "Error: wide_attributes and wide_indicators cannot be used together."
             noi di as error "Choose one: wide_attributes (pivots disaggregation suffixes) OR wide_indicators (pivots indicators as columns)"
             error 198
+        }
+
+        * Display informational message when wide format is used
+        if ("`wide'" != "") {
+            noi di as text ""
+            noi di as text "Note: {bf:wide} returns years as columns (time-series format)."
+            noi di as text "      Other options: {bf:wide_indicators} (indicators as columns),"
+            noi di as text "                     {bf:wide_attributes(var)} (disaggregation dimension as columns)"
+            noi di as text "      Valid dimensions for wide_attributes(): sex, age, wealth, residence, maternal_edu"
+            noi di as text ""
         }
         
         * Apply attribute filtering FIRST (if specified with wide_attributes or wide_indicators)
@@ -1617,6 +2370,7 @@ version 11
             capture confirm variable indicator
             capture confirm variable value
             if (_rc == 0) {
+                local drop_disag = 0
                 if ("`verbose'" != "") {
                     noi di as text "wide_indicators: Starting with `pre_filter_n' observations"
                 }
@@ -1659,8 +2413,30 @@ version 11
                     if (_rc == 0) {
                         replace `all_tot' = `all_tot' & (upper(matedu) == "_T")
                     }
-                    
-                    * Keep only rows where all present disaggregations equal _T
+
+                    * Handle DISABILITY_STATUS specially (may not have _T total)
+                    capture confirm variable disability_status
+                    if (_rc == 0) {
+                        * Check if _T exists for this column
+                        quietly count if upper(disability_status) == "_T"
+                        local dis_has_t = r(N)
+                        if (`dis_has_t' > 0) {
+                            * _T exists - require it
+                            replace `all_tot' = `all_tot' & (upper(disability_status) == "_T")
+                        }
+                        else {
+                            * No _T total - use PD (persons without disabilities) as baseline
+                            quietly count if upper(disability_status) == "PD"
+                            if (r(N) > 0) {
+                                replace `all_tot' = `all_tot' & (upper(disability_status) == "PD")
+                                if ("`verbose'" != "") {
+                                    noi di as text "  disability_status: using PD (no _T total available)"
+                                }
+                            }
+                        }
+                    }
+
+                    * Keep only rows where all present disaggregations equal _T (or PD for disability_status)
                     count if `all_tot'
                     local attr_match_n = r(N)
                     if (`attr_match_n' > 0) {
@@ -1669,15 +2445,18 @@ version 11
                             noi di as text "  default attributes filter (_T across all present dims): kept `attr_match_n' of `pre_filter_n' obs"
                         }
                     }
+                    else {
+                        * No totals available across disaggregations; drop disaggregation columns to allow wide reshape
+                        local drop_disag = 1
+                        if ("`verbose'" != "") {
+                            noi di as text "  default attributes filter: no _T totals found; dropping disaggregation columns for wide_indicators"
+                        }
+                    }
                     drop `all_tot'
                 }
                 
                 * Keep columns needed for reshape
                 local keep_vars "iso3 country period indicator value"
-                foreach var in sex age wealth residence matedu sex_name age_name wealth_name residence_name maternal_edu_name unit unit_name lb ub status status_name source refper notes {
-                    capture confirm variable `var'
-                    if (_rc == 0) local keep_vars "`keep_vars' `var'"
-                }
                 if ("`addmeta'" != "") {
                     foreach v in region income_group continent geo_type {
                         capture confirm variable `v'
@@ -1685,6 +2464,18 @@ version 11
                     }
                 }
                 keep `keep_vars'
+
+                if (`drop_disag') {
+                    foreach v in sex age wealth wealth_quintile residence matedu maternal_edu_level sex_name age_name wealth_name residence_name maternal_edu_name {
+                        capture drop `v'
+                    }
+                    if ("`debug'" != "") {
+                        noi di as text "wide_indicators drop_disag applied: removed disaggregation columns"
+                    }
+                }
+                else if ("`debug'" != "") {
+                    noi di as text "wide_indicators drop_disag=0; keeping disaggregation columns"
+                }
                 
                 * Drop duplicates to ensure unique combinations
                 duplicates drop iso3 country period indicator, force
@@ -1693,6 +2484,9 @@ version 11
                     * Reshape: indicators become columns
                     capture reshape wide value, i(iso3 country period) j(indicator) string
                     if (_rc == 0) {
+                        if ("`debug'" != "") {
+                            noi di as text "wide_indicators reshape rc=0, obs=" as result `=_N'
+                        }
                         * Clean up column names (remove "value" prefix)
                         foreach v of varlist value* {
                             local newname = subinstr("`v'", "value", "", 1)
@@ -1701,9 +2495,17 @@ version 11
 
                         * Ensure columns exist for all requested indicators
                         * (create empty numeric columns when an indicator has no data)
-                        local n_req : word count `indicator_requested'
+                        local req_list "`indicator_requested'"
+                        if ("`req_list'" == "") local req_list "`indicator'"
+                        if ("`debug'" != "") {
+                            noi di as text "wide_indicators req_list: " as result "`req_list'"
+                        }
+                        local n_req : word count `req_list'
                         if (`n_req' > 0) {
-                            foreach ind of local indicator_requested {
+                            foreach ind of local req_list {
+                                if ("`debug'" != "") {
+                                    noi di as text "wide_indicators ensure column: " as result "`ind'"
+                                }
                                 capture confirm variable `ind'
                                 if (_rc != 0) {
                                     gen double `ind' = .
@@ -1729,69 +2531,122 @@ version 11
         }
         if ("`wide_attributes'" != "") {
             * Reshape to wide format (disaggregation attributes as suffixes)
-            * Result: iso3, country, period, and columns like CME_MRY0T4_T, CME_MRY0T4_M, etc.
+            * Syntax: wide_attributes(var) where var = sex, age, wealth, residence, maternal_edu
+            * If no var specified (empty string), uses all available disaggregation dimensions (backward compatible)
+            * Result: iso3, country, period, and columns like value_T, value_M, value_F, etc.
+
+            * Display informational message about wide_attributes
+            if ("`wide_attributes'" != "") {
+                noi di as text ""
+                noi di as text "Note: {bf:wide_attributes(`wide_attributes')} pivots the specified dimension(s) into columns."
+                noi di as text "      Valid dimensions: sex, age, wealth, residence, maternal_edu"
+                noi di as text ""
+            }
+
             capture confirm variable iso3
             capture confirm variable period
             capture confirm variable indicator
             capture confirm variable value
             if (_rc == 0) {
-                * Build composite suffix from available disaggregation variables
-                tempvar disag_suffix
-                gen `disag_suffix' = ""
-                
-                * Add sex suffix if present
-                capture confirm variable sex
-                if (_rc == 0) {
-                    replace `disag_suffix' = `disag_suffix' + "_" + sex
-                }
-                
-                * Add wealth suffix if present
-                capture confirm variable wealth
-                if (_rc == 0) {
-                    replace `disag_suffix' = `disag_suffix' + "_" + wealth
-                }
-                
-                * Add age suffix if present
-                capture confirm variable age
-                if (_rc == 0) {
-                    replace `disag_suffix' = `disag_suffix' + "_" + age
-                }
-                
-                * Add residence suffix if present
-                capture confirm variable residence
-                if (_rc == 0) {
-                    replace `disag_suffix' = `disag_suffix' + "_" + residence
-                }
-                
-                * Add maternal education suffix if present
-                capture confirm variable matedu
-                if (_rc == 0) {
-                    replace `disag_suffix' = `disag_suffix' + "_" + matedu
-                }
-                
-                * If no disaggregation variables, use empty suffix
-                replace `disag_suffix' = "" if `disag_suffix' == ""
-                
-                * Create composite variable name: indicator + suffix
-                tempvar ind_disag
-                gen `ind_disag' = indicator + `disag_suffix'
-                
-                * Keep only essential columns for reshape
-                keep iso3 country period `ind_disag' value
-                
-                * Reshape: each indicator+disaggregation combination becomes a column
-                capture reshape wide value, i(iso3 country period) j(`ind_disag') string
-                if (_rc == 0) {
-                    * Rename value* variables to remove the "value" prefix
-                    quietly ds value*
-                    foreach var in `r(varlist)' {
-                        local newname = subinstr("`var'", "value", "", 1)
-                        rename `var' `newname'
+                * Determine which dimensions to pivot
+                local pivot_dims "`wide_attributes'"
+
+                * Map dimension names to variable names
+                * sex -> sex, age -> age, wealth -> wealth, residence -> residence, maternal_edu -> matedu
+                local pivot_vars ""
+                foreach dim of local pivot_dims {
+                    local dim = lower("`dim'")
+                    if ("`dim'" == "sex") {
+                        capture confirm variable sex
+                        if (_rc == 0) local pivot_vars "`pivot_vars' sex"
                     }
-                    sort iso3 period
+                    else if ("`dim'" == "age") {
+                        capture confirm variable age
+                        if (_rc == 0) local pivot_vars "`pivot_vars' age"
+                    }
+                    else if ("`dim'" == "wealth") {
+                        capture confirm variable wealth
+                        if (_rc == 0) local pivot_vars "`pivot_vars' wealth"
+                    }
+                    else if ("`dim'" == "residence") {
+                        capture confirm variable residence
+                        if (_rc == 0) local pivot_vars "`pivot_vars' residence"
+                    }
+                    else if ("`dim'" == "maternal_edu") {
+                        capture confirm variable matedu
+                        if (_rc == 0) local pivot_vars "`pivot_vars' matedu"
+                    }
+                    else {
+                        noi di as error "Warning: Unknown dimension '`dim''. Valid: sex, age, wealth, residence, maternal_edu"
+                    }
+                }
+                local pivot_vars = strtrim("`pivot_vars'")
+
+                * If no valid pivot dimensions, check if we should use all (backward compatible)
+                if ("`pivot_vars'" == "") {
+                    * No specific dimensions requested - use all available (backward compatible behavior)
+                    noi di as text "  Using all available disaggregation dimensions..."
+                    capture confirm variable sex
+                    if (_rc == 0) local pivot_vars "`pivot_vars' sex"
+                    capture confirm variable wealth
+                    if (_rc == 0) local pivot_vars "`pivot_vars' wealth"
+                    capture confirm variable age
+                    if (_rc == 0) local pivot_vars "`pivot_vars' age"
+                    capture confirm variable residence
+                    if (_rc == 0) local pivot_vars "`pivot_vars' residence"
+                    capture confirm variable matedu
+                    if (_rc == 0) local pivot_vars "`pivot_vars' matedu"
+                    local pivot_vars = strtrim("`pivot_vars'")
+                }
+
+                if ("`pivot_vars'" != "") {
+                    * Build composite suffix from specified pivot variables
+                    tempvar disag_suffix
+                    gen `disag_suffix' = ""
+
+                    foreach pvar of local pivot_vars {
+                        replace `disag_suffix' = `disag_suffix' + "_" + `pvar'
+                    }
+
+                    * Create composite variable name: indicator + suffix (or just suffix if single indicator)
+                    tempvar ind_disag
+                    gen `ind_disag' = indicator + `disag_suffix'
+
+                    * Determine which columns to keep as identifiers (non-pivot dimensions)
+                    local keep_cols "iso3 country period indicator"
+                    local all_disag "sex wealth age residence matedu"
+                    foreach dim of local all_disag {
+                        capture confirm variable `dim'
+                        if (_rc == 0) {
+                            local is_pivot 0
+                            foreach pvar of local pivot_vars {
+                                if ("`dim'" == "`pvar'") local is_pivot 1
+                            }
+                            if (!`is_pivot') local keep_cols "`keep_cols' `dim'"
+                        }
+                    }
+
+                    * Keep only essential columns for reshape
+                    keep `keep_cols' `ind_disag' value
+
+                    * Reshape: each indicator+disaggregation combination becomes a column
+                    capture reshape wide value, i(`keep_cols') j(`ind_disag') string
+                    if (_rc == 0) {
+                        * Rename value* variables to remove the "value" prefix
+                        quietly ds value*
+                        foreach var in `r(varlist)' {
+                            local newname = subinstr("`var'", "value", "", 1)
+                            rename `var' `newname'
+                        }
+                        sort iso3 period
+                        noi di as text "Reshaped to wide_attributes format (pivot: `pivot_vars')."
+                    }
+                    else {
+                        noi di as text "Note: Could not reshape to wide_attributes format (may have duplicate observations)."
+                    }
                 }
                 else {
-                    noi di as text "Note: Could not reshape to wide_attributes format."
+                    noi di as error "Warning: No disaggregation variables found for wide_attributes."
                 }
             }
         }
@@ -1799,10 +2654,14 @@ version 11
             * Reshape to wide format (years as columns with yr prefix)
             * Result: iso3, country, indicator, sex, wealth, age, residence, etc., and columns like yr2019, yr2020, yr2021
             capture confirm variable iso3
+            local rc_iso3 = _rc
             capture confirm variable period
+            local rc_period = _rc
             capture confirm variable indicator
+            local rc_indicator = _rc
             capture confirm variable value
-            if (_rc == 0) {
+            local rc_value = _rc
+            if (`rc_iso3' == 0 & `rc_period' == 0 & `rc_indicator' == 0 & `rc_value' == 0) {
                 * Build alias_id from iso3, indicator, and any non-missing disaggregations
                 capture confirm variable alias_id
                 if (_rc != 0) {
@@ -1818,7 +2677,7 @@ version 11
                 * Preserve identifier metadata to merge back after reshape
                 preserve
                 local meta_vars "alias_id iso3 country indicator"
-                foreach v in sex age wealth residence matedu {
+                foreach v in sex age wealth residence matedu geo_type {
                     capture confirm variable `v'
                     if (_rc == 0) local meta_vars "`meta_vars' `v'"
                 }
@@ -1865,6 +2724,33 @@ version 11
                         capture merge 1:1 alias_id using `alias_meta'
                         if (_rc == 0) {
                             drop _merge
+                            * Drop alias_id - it was only needed for reshape
+                            capture drop alias_id
+                            
+                            * Reorder variables: context/dimension columns before year columns
+                            * Build list of non-year columns to place first
+                            quietly ds yr*
+                            local yr_vars `r(varlist)'
+                            quietly ds
+                            local all_vars `r(varlist)'
+                            local context_vars ""
+                            foreach v of local all_vars {
+                                local is_yr = 0
+                                foreach yr of local yr_vars {
+                                    if ("`v'" == "`yr'") local is_yr = 1
+                                }
+                                if (`is_yr' == 0) local context_vars "`context_vars' `v'"
+                            }
+                            * Reorder: context variables first, then year columns
+                            if ("`context_vars'" != "" & "`yr_vars'" != "") {
+                                order `context_vars'
+                                * Now move geo_type before year columns if it exists
+                                capture confirm variable geo_type
+                                if (_rc == 0) {
+                                    local first_yr : word 1 of `yr_vars'
+                                    order geo_type, before(`first_yr')
+                                }
+                            }
                             sort iso3 indicator
                         }
                         else {
@@ -1941,6 +2827,105 @@ version 11
         }
         
         *-----------------------------------------------------------------------
+        * Normalize known country name encoding issues (UTF-8 accent loss)
+        *-----------------------------------------------------------------------
+        
+        capture confirm variable country
+        if (_rc == 0) {
+            // Fix common UTF-8 mojibake patterns from API responses
+            // API may return UTF-8 characters mis-interpreted as latin1 by insheet
+            // Replace mojibake patterns with correct accented characters
+            
+            // Côte d'Ivoire: mojibake "C├┤te" or "Cô‰Ût" → proper "Côte"
+            replace country = "Côte d'Ivoire" if strpos(country, "Cô") > 0 | strpos(country, "C├") > 0 | iso3 == "CIV"
+            
+            // Curaçao: mojibake "Curaçao" variations
+            replace country = "Curaçao" if strpos(country, "Cura") > 0 | iso3 == "CUW"
+            
+            // Réunion: mojibake "Réunion" variations  
+            replace country = "Réunion" if strpos(country, "Réunion") > 0 | iso3 == "REU"
+            
+            // São Tomé and Príncipe: mojibake variations
+            replace country = "São Tomé and Príncipe" if strpos(country, "S") > 0 & strpos(country, "Tom") > 0 | iso3 == "STP"
+        }
+
+        *-----------------------------------------------------------------------
+        * Apply metadata column filtering (light vs full)
+        * metadata=light (default): Keep only critical ~23 columns
+        * metadata=full: Keep all API columns
+        *-----------------------------------------------------------------------
+
+        * Default to "light" if not specified
+        if ("`metadata'" == "") local metadata "light"
+
+        * Validate metadata parameter
+        if ("`metadata'" != "light" & "`metadata'" != "full") {
+            if (`noerror_flag' == 0) {
+                noi di as error "metadata() must be 'light' or 'full', got '`metadata''"
+            }
+            exit 198
+        }
+
+        * Apply light filtering: keep only critical columns
+        * Skip this filtering for wide_indicators (indicator columns must be preserved)
+        if ("`metadata'" == "light" & "`wide_indicators'" == "" & "`wide'" == "" & "`wide_attributes'" == "") {
+            * Critical columns for cross-platform consistency (~23 columns)
+            local critical_cols "iso3 country period geo_type indicator indicator_name value unit unit_name sex age wealth_quintile residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes time_detail current_age"
+
+            * Get list of existing columns
+            quietly ds
+            local all_cols `r(varlist)'
+
+            * Keep only critical columns that exist
+            local cols_to_keep ""
+            foreach col of local critical_cols {
+                local found = 0
+                foreach existing of local all_cols {
+                    if ("`col'" == "`existing'") {
+                        local found = 1
+                    }
+                }
+                if (`found' == 1) {
+                    local cols_to_keep "`cols_to_keep' `col'"
+                }
+            }
+
+            * Also keep any indicator-specific dimension columns (lowercase, no spaces)
+            * These include: vaccine, ecd_domain, sub_sector, education_level, disability_status, etc.
+            * But EXCLUDE label columns (controlled by labels parameter) and metadata annotation columns
+
+            * Exclusion list: label columns and metadata annotation columns (not critical)
+            local exclude_cols "sex_name age_name wealth_quintile_name residence_name maternal_edu_lvl_name unit_multiplier series_footnote rank coverage_time source_link obs_conf obs_footnote time_period_method data_source_priority custodian wgtd_sampl_size cause_group ethnic_group_name disability_status_name education_level_name admin_level_name ref_area_parent sowc_flag_a sowc_flag_b sowc_flag_c"
+
+            foreach col of local all_cols {
+                * Check if column is lowercase with underscores only (dimension pattern)
+                if (regexm("`col'", "^[a-z][a-z0-9_]*$")) {
+                    * Check if not already in critical list
+                    local in_critical = 0
+                    foreach crit of local critical_cols {
+                        if ("`col'" == "`crit'") local in_critical = 1
+                    }
+
+                    * Check if in exclusion list
+                    local in_exclude = 0
+                    foreach excl of local exclude_cols {
+                        if ("`col'" == "`excl'") local in_exclude = 1
+                    }
+
+                    * Keep if not in critical and not in exclude list (indicator-specific dimension)
+                    if (`in_critical' == 0 & `in_exclude' == 0) {
+                        local cols_to_keep "`cols_to_keep' `col'"
+                    }
+                }
+            }
+
+            * Keep only selected columns
+            if ("`cols_to_keep'" != "") {
+                keep `cols_to_keep'
+            }
+        }
+
+        *-----------------------------------------------------------------------
         * Output format: Sparse (only columns with data) vs Full Schema
         * sparse (default): Drop columns that are entirely empty
         * nosparse: Keep all standard columns for cross-platform consistency
@@ -1949,18 +2934,31 @@ version 11
         * Default is sparse behavior (drop empty columns)
         * nosparse keeps all standard columns even if empty
         local do_sparse = 1
+        if ("`wide_indicators'" != "") local do_sparse = 0
         if ("`sparse'" == "nosparse") local do_sparse = 0
-        
-        * Standard column schema (matches R/Python)
-        local standard_cols "indicator indicator_name iso3 country geo_type period value unit unit_name sex sex_name age wealth_quintile wealth_quintile_name residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes"
+
+        * Standard column schema - adjust based on metadata parameter
+        * metadata=light: exclude label columns (sex_name, wealth_quintile_name, etc.)
+        * metadata=full: include all columns
+        if ("`metadata'" == "light") {
+            * Standard columns without label columns (for metadata=light mode)
+            local standard_cols "indicator indicator_name iso3 country geo_type period value unit unit_name sex age wealth_quintile residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes time_detail current_age"
+        }
+        else {
+            * Full standard columns (for metadata=full mode)
+            local standard_cols "indicator indicator_name iso3 country geo_type period value unit unit_name sex sex_name age wealth_quintile wealth_quintile_name residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes"
+        }
         
         if (`do_sparse' == 0) {
             * nosparse: Add missing standard columns as empty
-            foreach col of local standard_cols {
-                capture confirm variable `col'
-                if (_rc != 0) {
-                    * Column doesn't exist - add it as empty string
-                    gen str1 `col' = ""
+            * BUT: when metadata=light, only keep existing columns (match Python behavior)
+            if ("`metadata'" != "light") {
+                foreach col of local standard_cols {
+                    capture confirm variable `col'
+                    if (_rc != 0) {
+                        * Column doesn't exist - add it as empty string
+                        gen str1 `col' = ""
+                    }
                 }
             }
         }
@@ -2031,56 +3029,34 @@ version 11
             * Get indicator info (now fast - direct file search, no full YAML parse)
             capture _unicef_indicator_info, indicator("`indicator'") metapath("`metadata_path'") brief
             if (_rc == 0) {
-                * Store metadata return values
-                return local indicator_name "`r(name)'"
-                return local indicator_category "`r(category)'"
-                return local indicator_dataflow "`r(dataflow)'"
-                return local indicator_description "`r(description)'"
-                return local indicator_urn "`r(urn)'"
+                * Store metadata return values (use compound quotes for text that may contain quotes)
+                return local indicator_name `"`r(name)'"'
+                return local indicator_category `"`r(category)'"'
+                return local indicator_dataflow `"`r(dataflow)'"'
+                return local indicator_description `"`r(description)'"'
+                return local indicator_urn `"`r(urn)'"'
                 return local has_sex "`r(has_sex)'"
                 return local has_age "`r(has_age)'"
                 return local has_wealth "`r(has_wealth)'"
                 return local has_residence "`r(has_residence)'"
                 return local has_maternal_edu "`r(has_maternal_edu)'"
-                return local supported_dims "`r(supported_dims)'"
+                return local supported_dims `"`r(supported_dims)'"'
                 
                 if ("`nometadata'" == "") {
                     *-----------------------------------------------------------
-                    * FULL METADATA DISPLAY (default)
+                    * STREAMLINED DISPLAY (detailed info via info() option)
                     *-----------------------------------------------------------
                     noi di ""
                     noi di as text "{hline 70}"
-                    noi di as text "Indicator Information: " as result "`indicator'"
+                    noi di as text " Indicator: " as result "`indicator'" as text "  |  Dataflow: " as result "`dataflow'"
                     noi di as text "{hline 70}"
-                    noi di ""
-                    noi di as text _col(2) "Code:        " as result "`indicator'"
-                    noi di as text _col(2) "Name:        " as result "`r(name)'"
-                    noi di as text _col(2) "Category:    " as result "`r(category)'"
-                    if ("`r(dataflow)'" != "" & "`r(dataflow)'" != "`r(category)'") {
-                        noi di as text _col(2) "Dataflow:    " as result "`r(dataflow)'"
+                    noi di as text _col(2) "Name:         " as result `"`r(name)'"'
+                    if (`"`r(description)'"' != "" & `"`r(description)'"' != ".") {
+                        noi di as text _col(2) "Description:  " as result `"`r(description)'"'
                     }
-                    
-                    if ("`r(description)'" != "" & "`r(description)'" != ".") {
-                        noi di ""
-                        noi di as text _col(2) "Description:"
-                        noi di as result _col(4) "`r(description)'"
-                    }
-                    
-                    if ("`r(urn)'" != "" & "`r(urn)'" != ".") {
-                        noi di ""
-                        noi di as text _col(2) "URN:         " as result "`r(urn)'"
-                    }
-                    
-                    noi di ""
-                    noi di as text _col(2) "Supported Disaggregations:"
-                    noi di as text _col(4) "sex:          " as result cond("`r(has_sex)'" == "1", "Yes (SEX)", "No")
-                    noi di as text _col(4) "age:          " as result cond("`r(has_age)'" == "1", "Yes (AGE)", "No")
-                    noi di as text _col(4) "wealth:       " as result cond("`r(has_wealth)'" == "1", "Yes (WEALTH_QUINTILE)", "No")
-                    noi di as text _col(4) "residence:    " as result cond("`r(has_residence)'" == "1", "Yes (RESIDENCE)", "No")
-                    noi di as text _col(4) "maternal_edu: " as result cond("`r(has_maternal_edu)'" == "1", "Yes (MATERNAL_EDU_LVL)", "No")
-                    
-                    noi di ""
                     noi di as text _col(2) "Observations: " as result _N
+                    noi di as text "{hline 70}"
+                    noi di as text _col(2) "{p 0 2 2}{bf:Tip:} Use {stata unicefdata, info(`indicator')} for full metadata, API query, and disaggregation codes{p_end}"
                     noi di as text "{hline 70}"
                 }
                 else {
@@ -2130,7 +3106,33 @@ version 11
             noi di as text "Indicator: " as result "`indicator'"
             noi di as text "Dataflow:  " as result "`dataflow'"
         }
-        
+
+        * Standardize column order for cross-platform consistency (match Python/R)
+        * Standard order: iso3, country, period, geo_type, indicator, indicator_name, value, ...
+        quietly {
+            local standard_vars "iso3 country period geo_type indicator indicator_name value unit unit_name sex sex_name age wealth_quintile wealth_quintile_name residence maternal_edu_lvl lower_bound upper_bound obs_status obs_status_name data_source ref_period country_notes"
+            local present_standard ""
+            foreach v of local standard_vars {
+                capture confirm variable `v'
+                if (_rc == 0) local present_standard "`present_standard' `v'"
+            }
+            * Get all variables not in standard list (indicator-specific dimensions)
+            local all_vars ""
+            foreach v of varlist * {
+                local all_vars "`all_vars' `v'"
+            }
+            local remaining ""
+            foreach v of local all_vars {
+                local in_standard = 0
+                foreach s of local standard_vars {
+                    if ("`v'" == "`s'") local in_standard = 1
+                }
+                if (!`in_standard') local remaining "`remaining' `v'"
+            }
+            * Reorder: standard columns first, then remaining
+            order `present_standard' `remaining'
+        }
+
     }
 
 end
@@ -2328,13 +3330,33 @@ end
 
 program define _unicef_detect_dataflow_yaml, sclass
     args indicator metadata_path
-    
+
     local dataflow ""
     local indicator_name ""
-    
-    * Try to load from YAML metadata first (files have _unicefdata_ prefix)
-    local yaml_file "`metadata_path'_unicefdata_indicators.yaml"
-    
+
+    *-----------------------------------------------------------------------
+    * TIER 1: Direct lookup in comprehensive indicators metadata (PRIORITY)
+    *-----------------------------------------------------------------------
+    * This matches Python's 3-tier approach: check _unicefdata_indicators_metadata.yaml
+    * first for the indicator's 'dataflows' field, which provides accurate mapping
+    * for indicators like CME_COVID_CASES -> COVID_CASES dataflow
+
+    capture _get_dataflow_direct "`indicator'"
+    if (_rc == 0 & "`r(dataflows)'" != "") {
+        * Extract FIRST dataflow from space-separated list (may contain fallbacks)
+        local dataflows_list "`r(dataflows)'"
+        local primary_only : word 1 of `dataflows_list'
+        sreturn local dataflow "`primary_only'"
+        sreturn local indicator_name ""
+        exit
+    }
+
+    *-----------------------------------------------------------------------
+    * TIER 2: YAML lookup fallback (if _get_dataflow_direct failed)
+    *-----------------------------------------------------------------------
+    * Try to load from comprehensive indicators metadata YAML
+    local yaml_file "`metadata_path'_unicefdata_indicators_metadata.yaml"
+
     capture confirm file "`yaml_file'"
     if (_rc == 0) {
         * YAML file exists - try to read it using yaml command
@@ -2344,16 +3366,19 @@ program define _unicef_detect_dataflow_yaml, sclass
             preserve
             capture {
                 yaml read "`yaml_file'", into(indicators_meta) clear
-                
+
                 * Look for indicator in the indicators mapping
                 local indicator_clean = subinstr("`indicator'", "-", "_", .)
-                
-                * Try to get dataflow from YAML
-                capture local dataflow = indicators_meta["indicators"]["`indicator'"]["dataflow"]
+
+                * Try to get dataflow from YAML (check both 'dataflows' and 'dataflow')
+                capture local dataflow = indicators_meta["indicators"]["`indicator'"]["dataflows"]
+                if ("`dataflow'" == "") {
+                    capture local dataflow = indicators_meta["indicators"]["`indicator'"]["dataflow"]
+                }
                 capture local indicator_name = indicators_meta["indicators"]["`indicator'"]["name"]
             }
             restore
-            
+
             if ("`dataflow'" != "") {
                 sreturn local dataflow "`dataflow'"
                 sreturn local indicator_name "`indicator_name'"
@@ -2361,20 +3386,11 @@ program define _unicef_detect_dataflow_yaml, sclass
             }
         }
     }
-    
-    * Fallback to direct YAML metadata lookup (replaces hardcoded prefix mapping)
-    * _get_dataflow_direct uses comprehensive metadata with fallback to _get_dataflow_for_indicator
-    capture _get_dataflow_direct "`indicator'"
-    if (_rc == 0 & "`r(dataflows)'" != "") {
-        sreturn local dataflow "`r(dataflows)'"
-        sreturn local indicator_name ""
-        exit
-    }
-    
+
     * Final fallback: use GLOBAL_DATAFLOW if all else fails
     sreturn local dataflow "GLOBAL_DATAFLOW"
     sreturn local indicator_name ""
-    
+
 end
 
 
@@ -2477,10 +3493,79 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* in v2.0.4:
+* - FEATURE: NUTRITION dataflow now defaults age to Y0T4 (0-4 years) instead of _T
+*   because the AGE dimension in NUTRITION has no _T total value
+* - FEATURE: Added wealth_quintile() as alias for wealth() option
+* - WARNING: Message displayed when Y0T4 default is used for NUTRITION
+* - ALIGNMENT: Same fix applied to R and Python implementations
+*
+* in v2.0.0:
+* - FEATURE: Metadata-driven filtering using disaggregations_with_totals from YAML
+* - FEATURE: New helper _unicef_get_disagg_totals retrieves dims with _T totals
+* - FEATURE: Dimensions NOT in disaggregations_with_totals are not defaulted to _T
+* - FEATURE: DISABILITY_STATUS special handling - filters to PD when no _T exists
+* - ALIGNMENT: Now matches Python/R filtering for cross-platform consistency
+*   (Python: sdmx_client.py, R: unicef_core.R both use disaggregations_with_totals)
+* - FIX: SYNC-02 enrichment path extraction bug resolved
+* - ENHANCEMENT: Improved metadata enrichment pipeline reliability
+*
+* in v1.12.4:
+* - FIX: All variable names now lowercase (INDICATOR → indicator)
+* - FIX: All variables now have descriptive labels (including country)
+* - DOCS: Updated help file with Default Behavior section
+* - NOTE: wide option conflicts with wide_indicators and wide_attributes (different reshape methods)
+*
+*  in v1.12.0:
+* - NEW: Tier filtering for discovery commands (search, indicators)
+* - FIXED: Filter ALL handling—map to empty string to fetch all dimension values (e.g., sex(ALL) returns _T, M, F)
+*   - showtier2: Include Tier 1-2 (verified + officially defined with no data)
+*   - showtier3: Include Tier 1-3 (adds legacy/undocumented indicators)
+*   - showall: Include all tiers (1-3)
+*   - showorphans: Include orphan indicators (not mapped to dataflows)
+*   - showlegacy: Alias for showtier3
+* - NEW: Return values for tier filtering metadata
+*   - r(tier_mode): Numeric tier level (1, 2, 3, or 999 for all)
+*   - r(tier_filter): Descriptive string (tier_1_only, tier_1_and_2, etc.)
+*   - r(show_orphans): Boolean flag for orphan inclusion
+* - ENHANCEMENT: Tier warnings displayed in discovery results
+* - Default behavior: Show Tier 1 only (verified and downloadable indicators)
+* - BUGFIX: Normalize ALL/T/_T in disaggregation filters to SDMX total (_T)
+*
+*  in v1.10.0:
+* - NEW: fromfile() option for offline/CI testing (skip API, load from CSV)
+* - NEW: tofile() option to save API response for test fixtures
+* - Enables deterministic, fast CI testing without network dependency
+*
+*  in v1.9.3:
+* - BUGFIX: nofilter option now correctly skips filter_option (fetches all disaggregations)
+*
+*  in v1.9.2:
+* - BUGFIX: filter_option and nofilter_option now properly passed to get_sdmx
+* - BUGFIX: countries() option now passed to get_sdmx for API-level filtering
+* - BUGFIX: Multi-value filters (e.g., sex(M F)) now converted to SDMX OR syntax (M+F)
+*
+*  in v1.9.1:
+* - Integrated intelligent SDMX query filter engine (__unicef_get_indicator_filters)
+* - Three query modes: auto-detect, bypass, validation
+* - Automatic dimension extraction from dataflow schemas
+* - Enhanced get_sdmx.ado with query mode detection
+* - Indicator-to-dataflow mapping (748 indicators across 69 dataflows)
+*
+*  in v1.8.0:
+* - Added SUBNATIONAL option to enable access to subnational dataflows
+* - Without subnational option, WASH_HOUSEHOLD_SUBNAT and other *_SUBNAT dataflows are blocked
+*
+*  in v1.5.2: 
+* - Enhanced wide_indicators: now creates empty columns for all requested indicators
+*   (prevents reshape failures when some indicators have zero observations)
+* - Network robustness: curl with User-Agent header (better SSL/proxy/retry support)
+* - Cross-platform consistency improvements
+*
+*  in v1.5.1: CI test improvements (offline YAML-based tests)
+*
 * v 1.3.1   17Dec2025   by Joao Pedro Azevedo
-*   Feature parity improvements (aligned with Python/R list_categories)
-*   - NEW: categories subcommand: unicefdata, categories
-*         Lists all indicator categories (dataflows) with indicator counts
+*   Feature parity improvements
 *   - NEW: dataflow() filter in search: unicefdata, search(edu) dataflow(EDUCATION)
 *         Filter search results by dataflow/category
 *   - Improved search results display with tips

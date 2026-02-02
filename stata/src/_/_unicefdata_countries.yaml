@@ -1,7 +1,7 @@
 _metadata:
   platform: Stata
   version: '2.0.0'
-  synced_at: '2026-01-16T23:14:07Z'
+  synced_at: '2026-01-31T22:23:23Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
   agency: UNICEF
   content_type: countries

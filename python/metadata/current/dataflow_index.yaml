@@ -1,8 +1,8 @@
 metadata_version: '1.0'
-synced_at: '2025-12-09T01:17:02.956307+00:00'
+synced_at: '2026-01-25T14:47:12.357428+00:00'
 source: SDMX API Data Structure Definitions
 agency: UNICEF
-total_dataflows: 69
+total_dataflows: 70
 dataflows:
 - id: CAUSE_OF_DEATH
   name: Cause of death
@@ -299,6 +299,11 @@ dataflows:
   version: '1.0'
   dimensions_count: 12
   attributes_count: 20
+- id: PT_CM_SUBNATIONAL
+  name: Child Marriage - Subnational
+  version: '1.0'
+  dimensions_count: 5
+  attributes_count: 18
 - id: PT_CONFLICT
   name: Children Exposed to Conflict
   version: '1.0'

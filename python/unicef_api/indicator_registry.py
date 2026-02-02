@@ -117,24 +117,33 @@ def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
         # Extract URN if available
         urn = code_elem.get('urn', '')
         
-        # Infer category (dataflow) from indicator code prefix
-        # Most UNICEF indicators follow the pattern: CATEGORY_SUFFIX
-        # e.g., CME_MRY0T4 -> CME, NT_ANT_HAZ_NE2 -> NT (which maps to NUTRITION)
-        category = _infer_category(code_id)
+        # Extract parent from <structure:Parent><Ref id="..."/></structure:Parent>
+        parent_elem = code_elem.find('structure:Parent/Ref', namespaces)
+        parent_id = parent_elem.get('id', '') if parent_elem is not None else ""
         
-        indicators[code_id] = {
+        indicator_data = {
             'code': code_id,
             'name': name,
             'description': description,
             'urn': urn,
-            'category': category,
         }
+        
+        # Add parent only if present
+        if parent_id:
+            indicator_data['parent'] = parent_id
+        
+        indicators[code_id] = indicator_data
     
     return indicators
 
 
 def _infer_category(indicator_code: str) -> str:
-    """Infer the dataflow category from an indicator code.
+    """Infer the organizational CATEGORY from an indicator code prefix.
+    
+    DEPRECATED FOR DATAFLOW DETECTION: This function infers category for
+    organizational grouping only. For actual API dataflow detection, use
+    get_dataflow_for_indicator() which implements the canonical fallback
+    sequence from _dataflow_fallback_sequences.yaml.
     
     UNICEF indicator codes typically follow patterns like:
     - CME_MRY0T4 -> CME (Child Mortality Estimates)
@@ -142,90 +151,58 @@ def _infer_category(indicator_code: str) -> str:
     - IM_DTP3 -> IM -> IMMUNISATION
     - ED_ANAR_L1 -> ED -> EDUCATION
     
+    Note: Category != Dataflow. For example, WS_HCF_* indicators have
+    category='WASH' but dataflow='WASH_HEALTHCARE_FACILITY'.
+    
     Args:
         indicator_code: The indicator code
         
     Returns:
-        Inferred category/dataflow name
+        Inferred organizational category name
     """
     # =========================================================================
-    # KNOWN DATAFLOW OVERRIDES
+    # YAML FALLBACK SEQUENCES (Single Source of Truth)
     # =========================================================================
-    # Some indicators exist in dataflows that don't match their prefix or the
-    # metadata reports the wrong dataflow. These are known exceptions that 
-    # require explicit mapping.
+    # Uses the centralized YAML fallback sequences to determine which dataflow
+    # to try first for indicators with known variants or mismatches.
+    # This approach is maintained in core.py's _load_fallback_sequences()
+    # =========================================================================
+    
+    from . import core
+    
+    # Load fallback sequences (cached after first use)
+    fallback_sequences = getattr(core, 'FALLBACK_SEQUENCES', {})
+    if not fallback_sequences:
+        fallback_sequences = core._load_fallback_sequences()
+    
+    # Extract indicator prefix (e.g., "COD" from "COD_DENGUE")
+    parts = indicator_code.split('_')
+    prefix = parts[0] if parts else ''
+    
+    # Check if this prefix has a known fallback sequence
+    if prefix in fallback_sequences:
+        dataflows_to_try = fallback_sequences[prefix]
+        # Return the first (preferred) dataflow for this prefix
+        if dataflows_to_try:
+            return dataflows_to_try[0]
+    
+    # =========================================================================
+    # DEPRECATED: PREFIX_TO_CATEGORY
+    # =========================================================================
+    # These mappings are for ORGANIZATIONAL CATEGORY ONLY, not dataflow detection.
+    # For dataflow detection, use get_dataflow_for_indicator() which implements
+    # the canonical fallback sequences from _dataflow_fallback_sequences.yaml.
     #
-    # Issue: The UNICEF SDMX API metadata sometimes reports indicators in a
-    # generic dataflow (e.g., "PT", "EDUCATION") but the data only exists in
-    # a more specific dataflow (e.g., "PT_CM", "EDUCATION_UIS_SDG").
-    #
-    # These mappings were discovered by testing against the production script:
-    # PROD-SDG-REP-2025/01_data_prep/012_codes/0121_get_data_api.R
+    # WARNING: Category != Dataflow. For example:
+    #   - WS_HCF_* -> category=WASH, but dataflow=WASH_HEALTHCARE_FACILITY
+    #   - WS_SCH_* -> category=WASH, but dataflow=WASH_SCHOOLS
     # =========================================================================
-    
-    INDICATOR_DATAFLOW_OVERRIDES = {
-        # Child Marriage - metadata says PT but data is in PT_CM
-        'PT_F_20-24_MRD_U18_TND': 'PT_CM',
-        'PT_F_20-24_MRD_U15': 'PT_CM',
-        
-        # FGM - metadata says PT but data is in PT_FGM
-        'PT_F_15-49_FGM': 'PT_FGM',
-        'PT_F_0-14_FGM': 'PT_FGM',
-        'PT_F_15-19_FGM_TND': 'PT_FGM',
-        'PT_F_15-49_FGM_TND': 'PT_FGM',
-        'PT_F_15-49_FGM_ELIM': 'PT_FGM',
-        'PT_M_15-49_FGM_ELIM': 'PT_FGM',
-        
-        # Education UIS SDG indicators - metadata says EDUCATION but data is in EDUCATION_UIS_SDG
-        'ED_CR_L1_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_CR_L2_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_CR_L3_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_ROFST_L1_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_ROFST_L2_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_ROFST_L3_UIS_MOD': 'EDUCATION_UIS_SDG',
-        'ED_ANAR_L02': 'EDUCATION_UIS_SDG',
-        'ED_MAT_G23': 'EDUCATION_UIS_SDG',
-        'ED_MAT_L1': 'EDUCATION_UIS_SDG',
-        'ED_MAT_L2': 'EDUCATION_UIS_SDG',
-        'ED_READ_G23': 'EDUCATION_UIS_SDG',
-        'ED_READ_L1': 'EDUCATION_UIS_SDG',
-        'ED_READ_L2': 'EDUCATION_UIS_SDG',
-        
-        # Child Poverty - confirm correct dataflow
-        'PV_CHLD_DPRV-S-L1-HS': 'CHLD_PVTY',
-    }
-    
-    # Check if indicator has a known override
-    if indicator_code in INDICATOR_DATAFLOW_OVERRIDES:
-        return INDICATOR_DATAFLOW_OVERRIDES[indicator_code]
-    
-    # =========================================================================
-    # DYNAMIC PATTERN-BASED OVERRIDES
-    # =========================================================================
-    # These patterns catch indicators that belong to specific sub-dataflows
-    # based on content in their code, not just the prefix.
-    # More maintainable than hardcoding each indicator.
-    # =========================================================================
-    
-    # FGM indicators: PT_*_FGM* -> PT_FGM
-    if indicator_code.startswith('PT_') and '_FGM' in indicator_code:
-        return 'PT_FGM'
-    
-    # Child Marriage indicators: PT_*_MRD_* -> PT_CM
-    if indicator_code.startswith('PT_') and '_MRD_' in indicator_code:
-        return 'PT_CM'
-    
-    # UIS SDG Education indicators: ED_*_UIS* -> EDUCATION_UIS_SDG
-    if indicator_code.startswith('ED_') and '_UIS' in indicator_code:
-        return 'EDUCATION_UIS_SDG'
-    
-    # Mapping of prefixes to dataflows
-    PREFIX_TO_DATAFLOW = {
+    PREFIX_TO_CATEGORY = {
         'CME': 'CME',
         'NT': 'NUTRITION',
         'IM': 'IMMUNISATION',
         'ED': 'EDUCATION',
-        'WS': 'WASH_HOUSEHOLDS',
+        'WS': 'WASH',  # Category only - NOT dataflow (could be WASH_HOUSEHOLDS, WASH_SCHOOLS, WASH_HEALTHCARE_FACILITY)
         'HVA': 'HIV_AIDS',
         'MNCH': 'MNCH',
         'PT': 'PT',
@@ -240,22 +217,15 @@ def _infer_category(indicator_code: str) -> str:
         'EDUN': 'EDUCATION',
         'SDG4': 'EDUCATION_UIS_SDG',
         'PV': 'CHLD_PVTY',
-        # Added mappings to reduce GLOBAL_DATAFLOW catch-all
-        'COD': 'CAUSE_OF_DEATH',      # Cause of death indicators (83)
-        'TRGT': 'CHILD_RELATED_SDG',  # SDG/National targets (77)
-        'SPP': 'SOC_PROTECTION',      # Social protection programs (10)
-        'WT': 'PT',                   # Child labour/adolescent indicators (7)
     }
     
-    # Try to match prefix
-    parts = indicator_code.split('_')
-    if parts:
-        prefix = parts[0]
-        if prefix in PREFIX_TO_DATAFLOW:
-            return PREFIX_TO_DATAFLOW[prefix]
+    # Try to match prefix from category mapping
+    if prefix in PREFIX_TO_CATEGORY:
+        return PREFIX_TO_CATEGORY[prefix]
     
     # Default to GLOBAL_DATAFLOW for unrecognized patterns
     return 'GLOBAL_DATAFLOW'
+
 
 
 def _fetch_codelist() -> Dict[str, dict]:

@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata.R, R/metadata_sync.R
 \name{.get_fallback_indicators}
 \alias{.get_fallback_indicators}
-\title{Get fallback indicator definitions (hardcoded)}
+\title{Get fallback indicator definitions}
 \usage{
 .get_fallback_indicators()
 
@@ -12,8 +12,26 @@
 List of common indicators
 }
 \description{
-Get fallback indicator definitions (hardcoded)
+Get fallback indicator definitions
 
 Get fallback indicators if shared config not available
 }
+\keyword{(733}
+\keyword{-}
+\keyword{.INDICATORS_METADATA_YAML}
+\keyword{Access}
+\keyword{All}
+\keyword{Hardcoded}
+\keyword{REMOVED:}
+\keyword{_unicefdata_indicators_metadata.yaml}
+\keyword{fallback}
+\keyword{from:}
+\keyword{indicator}
+\keyword{indicators}
+\keyword{indicators)}
 \keyword{internal}
+\keyword{loaded}
+\keyword{metadata}
+\keyword{now}
+\keyword{unicef_core.R:}
+\keyword{via}

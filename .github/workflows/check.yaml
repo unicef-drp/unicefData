@@ -2,9 +2,9 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [main, develop]
   pull_request:
-    branches: [main, master]
+    branches: [main, develop]
 
 name: R-CMD-check
 
@@ -39,10 +39,19 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Clean pak and R caches (post-setup)
+        run: |
+          rm -rf /home/runner/work/_temp/Library/_cache || true
+          rm -rf ~/.cache/R/pak || true
+          rm -rf /tmp/RtmpXXXXXX || true
+        if: runner.os == 'Linux'
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          cache-version: 3
+          lockfile-create-lib: never
 
       - uses: r-lib/actions/check-r-package@v2
         with:

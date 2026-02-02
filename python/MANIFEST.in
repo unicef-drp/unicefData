@@ -1,0 +1,10 @@
+# Include metadata files for cross-platform dataflow resolution
+recursive-include metadata *.yaml
+
+# Include README (exists in python/)
+include README.md
+
+# Note: LICENSE is managed at the repository root level.
+# If needed for pypi distribution, copy LICENSE from repo root before building:
+#   cp ../LICENSE . && python -m build && rm LICENSE
+# Or create a symlink during development.

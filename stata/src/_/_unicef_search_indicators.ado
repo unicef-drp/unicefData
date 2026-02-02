@@ -1,9 +1,22 @@
 *******************************************************************************
 * _unicef_search_indicators.ado
-*! v 1.6.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.8.0   01Feb2026               by Joao Pedro Azevedo (UNICEF)
 * Search UNICEF indicators by keyword using YAML metadata
 * Uses direct file parsing for robust, yaml.ado-independent operation
 *
+* v1.8.0: ENHANCEMENT - Grouped search results by dataflow
+*         - Added byflow option to organize results by dataflow
+*         - Default: flat table display (original behavior)
+*         - With byflow: nested groups by dataflow for easier scanning
+*         - Improves usability for large result sets
+* v1.7.0: ENHANCEMENT - Tier filtering and return value metadata
+*         - Added showtier2, showtier3, showall, showorphans options
+*         - Default: Show Tier 1 only (verified and downloadable)
+*         - Tier 2: Officially defined indicators with no data available
+*         - Tier 3: Legacy/undocumented indicators
+*         - Orphans: Indicators not mapped to current dataflows
+*         - Return values: r(tier_mode), r(tier_filter), r(show_orphans)
+*         - Tier warnings displayed in results
 * v1.6.0: ENHANCEMENT - Search by dataflow by default, with category option
 *         - Default: search keyword in code, name, OR dataflow list
 *         - With category option: search keyword in code, name, OR category
@@ -36,7 +49,7 @@
 program define _unicef_search_indicators, rclass
     version 11.0
     
-    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) CATEGORY VERBOSE METApath(string)]
+    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) CATEGORY VERBOSE METApath(string) SHOWTIER2 SHOWTIER3 SHOWALL SHOWORphans BYFLOW]
     
     quietly {
     
@@ -91,8 +104,19 @@ program define _unicef_search_indicators, rclass
         * match_name1, match_name2, ... will be set during processing
         local match_dataflows ""
         local n_matches = 0
-        local n_collected = 0
-        
+        local n_collected = 0        
+        * Determine tier filtering mode
+        local tier_mode = 1  // Default: Tier 1 only
+        if ("`showall'" != "") {
+            local tier_mode = 999  // Show all tiers
+        }
+        else if ("`showtier3'" != "") {
+            local tier_mode = 3  // Show tiers 1-3
+        }
+        else if ("`showtier2'" != "") {
+            local tier_mode = 2  // Show tiers 1-2
+        }
+        local show_orphans = ("`showorphans'" != "" | `tier_mode' >= 999)        
         *-----------------------------------------------------------------------
         * Parse YAML file directly
         *-----------------------------------------------------------------------
@@ -106,6 +130,8 @@ program define _unicef_search_indicators, rclass
         local current_name = ""
         local current_parent = ""
         local current_dataflows = ""
+        local current_tier = 1
+        local current_tier_reason = ""
         local in_dataflows_list = 0
         
         file read `fh' line
@@ -147,10 +173,10 @@ program define _unicef_search_indicators, rclass
                                 if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
                             }
                             
-                            * Apply dataflow filter if specified (check parent field)
+                            * Apply dataflow filter if specified (check dataflows list)
                             if (`is_match' == 1 & "`df_filter_upper'" != "") {
-                                local parent_upper = upper("`current_parent'")
-                                if ("`parent_upper'" != "`df_filter_upper'") {
+                                local df_upper = upper("`current_dataflows'")
+                                if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
                                     local is_match = 0
                                 }
                             }
@@ -159,9 +185,10 @@ program define _unicef_search_indicators, rclass
                                 local n_matches = `n_matches' + 1
                                 local n_collected = `n_collected' + 1
                                 local matches "`matches' `current_ind'"
-                                local match_name`n_collected' `"`current_name'"'
-                                * Use parent as the display "dataflow"
-                                local match_dataflows "`match_dataflows' `current_parent'"
+                                local match_name`n_collected' "`current_name'"
+                                local df_display = strtrim("`current_dataflows'")
+                                if ("`df_display'" == "") local df_display = "N/A"
+                                local match_dataflows "`match_dataflows' `df_display'"
                             }
                         }
                         local in_indicators = 0
@@ -194,20 +221,41 @@ program define _unicef_search_indicators, rclass
                             if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
                         }
                         
-                        * Apply dataflow filter if specified (check parent field)
+                        * Apply dataflow filter if specified (check dataflows list)
                         if (`is_match' == 1 & "`df_filter_upper'" != "") {
-                            local parent_upper = upper("`current_parent'")
-                            if ("`parent_upper'" != "`df_filter_upper'") {
+                            local df_upper = upper("`current_dataflows'")
+                            if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
                                 local is_match = 0
                             }
                         }
                         
                         if (`is_match' == 1) {
                             local n_matches = `n_matches' + 1
-                            local n_collected = `n_collected' + 1
-                            local matches "`matches' `current_ind'"
-                            local match_name`n_collected' `"`current_name'"'
-                            local match_dataflows "`match_dataflows' `current_parent'"
+                            
+                            * Check tier filter
+                            local tier_ok = 0
+                            if (`tier_mode' >= 999) {
+                                local tier_ok = 1
+                            }
+                            else if (`current_tier' <= `tier_mode') {
+                                local tier_ok = 1
+                            }
+                            
+                            * Check orphan status
+                            local is_orphan = 0
+                            if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
+                                local is_orphan = 1
+                                if (!`show_orphans') local tier_ok = 0
+                            }
+                            
+                            if (`tier_ok' == 1) {
+                                local n_collected = `n_collected' + 1
+                                local matches "`matches' `current_ind'"
+                                local match_name`n_collected' `"`current_name'"'
+                                local df_display = strtrim("`current_dataflows'")
+                                if ("`df_display'" == "") local df_display = "N/A"
+                                local match_dataflows "`match_dataflows' `df_display'"
+                            }
                         }
                     }
                     
@@ -216,6 +264,8 @@ program define _unicef_search_indicators, rclass
                     local current_name = ""
                     local current_parent = ""
                     local current_dataflows = ""
+                    local current_tier = 1
+                    local current_tier_reason = ""
                     local in_dataflows_list = 0
                     
                     file read `fh' line
@@ -240,6 +290,22 @@ program define _unicef_search_indicators, rclass
                 * Parse parent field (this is the category)
                 if (regexm("`trimmed'", "^parent:[ ]*(.+)$")) {
                     local current_parent = regexs(1)
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse tier field
+                if (regexm("`trimmed'", "^tier:[ ]*([0-9]+)$")) {
+                    local current_tier = regexs(1)
+                    local in_dataflows_list = 0
+                    file read `fh' line
+                    continue
+                }
+                
+                * Parse tier_reason field
+                if (regexm("`trimmed'", "^tier_reason:[ ]*(.+)$")) {
+                    local current_tier_reason = regexs(1)
                     local in_dataflows_list = 0
                     file read `fh' line
                     continue
@@ -305,20 +371,41 @@ program define _unicef_search_indicators, rclass
                 if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
             }
             
-            * Apply dataflow filter if specified (check parent field)
+            * Apply dataflow filter if specified (check dataflows list)
             if (`is_match' == 1 & "`df_filter_upper'" != "") {
-                local parent_upper = upper("`current_parent'")
-                if ("`parent_upper'" != "`df_filter_upper'") {
+                local df_upper = upper("`current_dataflows'")
+                if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
                     local is_match = 0
                 }
             }
             
             if (`is_match' == 1) {
                 local n_matches = `n_matches' + 1
-                local n_collected = `n_collected' + 1
-                local matches "`matches' `current_ind'"
-                local match_name`n_collected' `"`current_name'"'
-                local match_dataflows "`match_dataflows' `current_parent'"
+                
+                * Check tier filter
+                local tier_ok = 0
+                if (`tier_mode' >= 999) {
+                    local tier_ok = 1
+                }
+                else if (`current_tier' <= `tier_mode') {
+                    local tier_ok = 1
+                }
+                
+                * Check orphan status
+                local is_orphan = 0
+                if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
+                    local is_orphan = 1
+                    if (!`show_orphans') local tier_ok = 0
+                }
+                
+                if (`tier_ok' == 1) {
+                    local n_collected = `n_collected' + 1
+                    local matches "`matches' `current_ind'"
+                    local match_name`n_collected' `"`current_name'"'
+                    local df_display = strtrim("`current_dataflows'")
+                    if ("`df_display'" == "") local df_display = "N/A"
+                    local match_dataflows "`match_dataflows' `df_display'"
+                }
             }
         }
         
@@ -368,8 +455,58 @@ program define _unicef_search_indicators, rclass
         noi di as text "  - Use {bf:unicefdata, categories} to see available categories"
         noi di as text "  - Use {bf:unicefdata, search(keyword)} without dataflow filter"
     }
+    else if ("`byflow'" != "") {
+        * GROUPED DISPLAY - Organize by dataflow
+        noi di as text "Results grouped by dataflow:"
+        noi di ""
+        
+        * Build unique dataflows list
+        local unique_dfs ""
+        forvalues i = 1/`n_collected' {
+            local df : word `i' of `match_dataflows'
+            local already_found = 0
+            foreach existing_df in `unique_dfs' {
+                if ("`df'" == "`existing_df'") {
+                    local already_found = 1
+                }
+            }
+            if (!`already_found') {
+                local unique_dfs "`unique_dfs' `df'"
+            }
+        }
+        
+        * Display by dataflow group
+        foreach df in `unique_dfs' {
+            noi di as result _col(2) "`df'"
+            noi di as text _col(4) "{ul:Indicator}" _col(20) "{ul:Name}"
+            
+            forvalues i = 1/`n_collected' {
+                local cat : word `i' of `match_dataflows'
+                if ("`cat'" == "`df'") {
+                    local ind : word `i' of `matches'
+                    local nm `"`match_name`i''"'
+                    
+                    * Truncate name for grouped view (narrower)
+                    local display_width = `linesize' - 24
+                    if (`display_width' < 20) local display_width = 20
+                    if (length(`"`nm'"') > `display_width') {
+                        local nm = substr(`"`nm'"', 1, `display_width' - 3) + "..."
+                    }
+                    
+                    * Display with hyperlinks
+                    noi di as text _col(4) `"{stata unicefdata, indicator(`ind') countries(AFG BGD) clear:`ind'}"' _col(20) `"{stata unicefdata, info(`ind'):`nm'}"'
+                }
+            }
+            noi di ""
+        }
+        
+        if (`n_collected' >= `limit') {
+            noi di as text "  (Showing first `limit' matches. Use limit() option for more.)"
+        }
+    }
     else {
-        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_cat') "{ul:Category}" _col(`col_name') "{ul:Name (click for metadata)}"
+        * FLAT DISPLAY (default) - Original table format
+        noi di as text _col(`col_ind') "{ul:Indicator}" _col(`col_cat') "{ul:Dataflow}" _col(`col_name') "{ul:Name (click for metadata)}"
         noi di ""
         
         forvalues i = 1/`n_collected' {
@@ -415,6 +552,9 @@ program define _unicef_search_indicators, rclass
     else {
         noi di as text "{it:Note: Search matches keyword in code, name, or dataflow.}"
     }
+    if ("`byflow'" != "") {
+        noi di as text "{it:Results organized by dataflow. Use 'unicefdata, info(indicator)' for details.}"
+    }
     
     *---------------------------------------------------------------------------
     * Return values
@@ -426,6 +566,22 @@ program define _unicef_search_indicators, rclass
     if ("`dataflow'" != "") {
         return local dataflow "`dataflow'"
     }
+    
+    * Return tier filtering metadata
+    return scalar tier_mode = `tier_mode'
+    if (`tier_mode' == 1) {
+        return local tier_filter "tier_1_only"
+    }
+    else if (`tier_mode' == 2) {
+        return local tier_filter "tier_1_and_2"
+    }
+    else if (`tier_mode' == 3) {
+        return local tier_filter "tier_1_2_3"
+    }
+    else if (`tier_mode' >= 999) {
+        return local tier_filter "all_tiers"
+    }
+    return scalar show_orphans = `show_orphans'
     
 end
 

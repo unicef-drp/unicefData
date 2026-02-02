@@ -2,7 +2,7 @@ id: CME_SUBNAT_TZA
 name: CME Tanzania
 version: '1.0'
 agency: UNICEF
-synced_at: '2025-12-09T01:14:21.289734+00:00'
+synced_at: '2026-01-25T14:44:00.717269+00:00'
 dimensions:
 - id: REF_AREA
   position: 1

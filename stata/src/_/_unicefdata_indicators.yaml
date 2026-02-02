@@ -2,9 +2,9 @@ metadata:
   version: '2.0.0'
   source: UNICEF SDMX Codelist CL_UNICEF_INDICATOR
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0
-  last_updated: 2026-01-17T08:19:56
+  last_updated: 2026-01-31T22:23:25
   description: Comprehensive UNICEF indicators codelist with metadata (auto-generated)
-  indicator_count: 733
+  indicator_count: 738
 indicators:
   CME:
     code: CME
@@ -870,14 +870,14 @@ indicators:
     parent: DM
   DM_POP_URBN:
     code: DM_POP_URBN
-    name: 'Share of urban population'
-    description: 'Urban population as a percentage of the total population'
+    name: 'حصة سكان الحضر'
+    description: 'سكان الحضر كنسبة مئوية من مجموع السكان'
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_URBN
     parent: DM
   DM_POP_U_GRT:
     code: DM_POP_U_GRT
-    name: 'Annual growth rate of urban population'
-    description: 'Average exponential rate of growth of the urban population over a given period'
+    name: 'معدل النمو السنوي لسكان الحضر'
+    description: 'متوسط ​​معدل النمو الأسي لسكان الحضر خلال فترة معينة'
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_U_GRT
     parent: DM
   ECD_CHLD_24-59M_ADLT_SRC:
@@ -4387,3 +4387,33 @@ indicators:
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).PT_F_15-19_FGM_TND
     parent: PT
+  DM_POP_PS_URBN:
+    code: DM_POP_PS_URBN
+    name: 'Population by urban-rural national definitions'
+    description: ''
+    urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_PS_URBN
+    parent: DM
+  DM_POP_DOU:
+    code: DM_POP_DOU
+    name: 'Percentage of population by degree of urbanization at mid-year'
+    description: ''
+    urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_DOU
+    parent: DM
+  DM_POP_PS_DOU:
+    code: DM_POP_PS_DOU
+    name: 'Population by degree of urbanization at mid-year'
+    description: ''
+    urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_PS_DOU
+    parent: DM
+  DM_POP_DOU_GRT:
+    code: DM_POP_DOU_GRT
+    name: 'Annual rate of change of the population by degree of urbanization'
+    description: ''
+    urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_DOU_GRT
+    parent: DM
+  DM_BU_PC_DOU:
+    code: DM_BU_PC_DOU
+    name: 'Built-up area per capita by degree of urbanization (m2)'
+    description: ''
+    urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_BU_PC_DOU
+    parent: DM

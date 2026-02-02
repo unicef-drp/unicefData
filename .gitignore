@@ -64,6 +64,7 @@ Thumbs.db
 # Misc
 *.csv
 !python/examples/*.csv
+!tests/fixtures/api_responses/*.csv
 
 # Test and Example Outputs
 python/tests/output/
@@ -99,6 +100,26 @@ validation/validation_results.csv
 stata/ssc/temp_unzip/
 stata/ssc/*.zip
 
+# ============================================
+# Stata datasets (.dta files)
+# ============================================
+# Exclude all .dta files by default (test outputs, cached data)
+*.dta
+
+# EXCEPT: Allow specific datasets that are part of source code
+# wbopendata country reference datasets
+!wbopendata/src/w/world-c.dta
+!wbopendata/src/w/world-d.dta
+!wbopendata-dev/src/w/world-c.dta
+!wbopendata-dev/src/w/world-d.dta
+
+# stataci test output datasets (example outputs)
+!unicefData/stata/tests/stataci/output/*.dta
+!unicefData-dev/stata/tests/stataci/output/*.dta
+
+# pvp project datasets (if needed - currently in separate repo)
+# !pvp/01_data/*.dta
+
 # Stata test artifacts
 stata/src/test_*.do
 stata/src/test_*.log
@@ -127,5 +148,27 @@ stata/qa/check_*.log
 
 # Generated package files
 *.tar.gz
-/doc/
-/Meta/
+# ========================================
+# PRIVATE CONTENT - Per FILE-ORGANIZATION-GUIDELINES
+# Note: internal/ and paper/ ARE TRACKED in -dev repo
+# They are excluded from sync to public repo by workflow removal rules
+# ========================================
+
+# Test execution logs (private - artifacts only)
+tests/logs/
+
+# Validation results (execution artifacts - not tracked)
+# All validation results are now generated and not tracked in Git
+validation/results/
+validation/xval/results/
+validation/xval/metadata/
+
+# Test metadata caches (generated at runtime)
+python/tests/metadata/
+python/tests/*.csv
+
+# Additional temporary/personal folders
+drafts/
+benchmarks/
+eb1a/
+_drafts/

@@ -1,0 +1,151 @@
+v 2.0.0
+d unicefData. Download indicators from UNICEF Data Warehouse
+d
+d Author: Joao Pedro Azevedo
+d Support: jazevedo@unicef.org
+d
+d unicefData downloads indicator data from the UNICEF Data Warehouse
+d using the SDMX REST API. It provides access to 748+ indicators
+d covering child health, nutrition, education, protection, HIV/AIDS, 
+d WASH, and more.
+d
+d Features:
+d   - Download data by indicator, geography, and time period
+d   - Discovery: flows, search, indicators, info
+d   - Multiple output formats: long, wide, wide_indicators
+d   - Automatic dataflow detection from indicator codes
+d   - PT subdataflow support (PT_CM, PT_FGM)
+d   - Enriched indicator metadata with dataflow mappings
+d   - Indicator tier classification (1-5 tiers)
+d   - Geographic type classification (country vs aggregate)
+d   - YAML-based metadata with sync capabilities
+d   - Comprehensive dataflow dimension metadata (69+ dataflows)
+d   - Intelligent SDMX query engine with three modes
+d     * Auto-detect: System infers dataflow from indicator
+d     * Bypass: User specifies dataflow explicitly
+d     * Validation: Dimension extraction for filter validation
+d   - Metadata-driven filtering using disaggregations_with_totals (NEW)
+d     * Matches Python/R filtering for cross-platform consistency
+d     * DISABILITY_STATUS special handling (PD baseline when no _T)
+d   - Stata 16+ frames support for better isolation
+d
+d Requires: Stata 14.0+ (Stata 16+ recommended)
+d
+d Distribution-Date: 20260125
+d
+d Quality Assurance:
+d   - 30 comprehensive tests (100% passing)
+d   - 7 test families: ENV, DL, DIS, FILT, META, EDGE, REGR
+d   - Regression baselines for API stability monitoring
+d
+
+* Low-level SDMX fetching (get_sdmx.ado starts with 'g')
+f g/get_sdmx.ado
+f g/get_sdmx.sthlp
+
+* Main command and help (unicefdata.ado starts with 'u')
+f u/unicefdata.ado
+f u/unicefdata.sthlp
+f u/unicefdata_examples.ado
+f u/unicefdata_examples.sthlp
+f u/unicefdata_whatsnew.sthlp
+
+* Sync command and help
+f u/unicefdata_sync.ado
+f u/unicefdata_sync.sthlp
+
+* Setup command for metadata installation (post net install)
+f u/unicefdata_setup.ado
+f u/unicefdata_setup.sthlp
+
+* XML to YAML conversion
+f u/unicefdata_xmltoyaml.ado
+f u/unicefdata_xmltoyaml.sthlp
+f u/unicefdata_xmltoyaml_py.ado
+f u/unicefdata_xmltoyaml_py.sthlp
+
+* YAML command and help
+f y/yaml.ado
+f y/yaml.sthlp
+
+* Query helper programs
+f _/_query_metadata.ado
+f _/_query_indicators.ado
+
+* Discovery helper programs
+f _/_unicef_build_schema_key.ado
+f _/_unicef_list_dataflows.ado
+f _/_unicef_list_indicators.ado
+f _/_unicef_search_indicators.ado
+f _/_unicef_indicator_info.ado
+f _/_unicef_dataflow_info.ado
+
+* Dataflow resolution helper programs
+f _/_unicef_fetch_with_fallback.ado
+f _/_set_default_dataflows.ado
+f _/_get_dataflow_direct.ado
+f _/_get_sdmx_rename_year_columns.ado
+f _/__unicef_fetch_paged.ado
+
+* Metadata-driven filtering helper (NEW in 2.1.0)
+f _/_unicef_get_disagg_totals.ado
+
+* SDMX query filter engine (NEW in 1.9.1)
+f _/__unicef_get_indicator_filters.ado
+
+* Sync helper programs
+f _/_unicefdata_sync_dataflow_index.ado
+f _/_unicefdata_sync_df_schema.ado
+f _/_unicefdata_sync_ind_meta.ado
+f _/_unicefdata_update_sync_history.ado
+
+* XML parsing helper programs
+f _/_xmltoyaml_get_schema.ado
+f _/_xmltoyaml_parse.ado
+f _/_xmltoyaml_parse_lines.ado
+f _/_xmltoyaml_parse_python.ado
+f _/_xmltoyaml_parse_stata.ado
+
+* YAML indicator parser
+f _/__unicef_parse_indicator_yaml.ado
+f _/__unicef_get_indicator_dataflow.ado
+
+* Metadata display helper
+f _/_metadata_linewrap.ado
+f _/_linewrap.ado
+
+* Additional sync helper
+f u/unicefdata_refresh_all.ado
+
+* YAML metadata files (Core API metadata)
+f _/_unicefdata_dataflows.yaml
+f _/_unicefdata_indicators.yaml
+f _/_unicefdata_codelists.yaml
+f _/_unicefdata_countries.yaml
+f _/_unicefdata_regions.yaml
+f _/_unicefdata_sync_history.yaml
+f _/_dataflow_index.yaml
+
+* Dataflow indicators list and fallback sequences
+f _/_dataflow_indicators_list.txt
+f _/_dataflow_fallback_sequences.yaml
+
+* Comprehensive indicators metadata (748+ indicators with tier and dataflow mappings)
+f _/_unicefdata_indicators_metadata.yaml
+
+* Indicator to dataflow mapping (NEW in 1.9.1 - 748 indicators across 69 dataflows)
+f _/_indicator_dataflow_map.yaml
+
+* Dataflow metadata (dimensions and attributes for all dataflows - used in enrichment)
+f _/_unicefdata_dataflow_metadata.yaml
+
+
+* Python enrichment and validation scripts
+f py/unicefdata_xml2yaml.py
+f py/build_dataflow_metadata.py
+f py/build_indicator_dataflow_map.py
+f py/enrich_indicators_metadata.py
+f py/enrich_stata_metadata_complete.py
+f py/validate_yaml_schema.py
+f py/python_xml_helper.py
+f py/stata_schema_sync.py

@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.5.2  06Jan2026}{...}
+{* *! version 2.0.3  01Feb2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -13,7 +13,7 @@
 {viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {hline}
-{cmd:help unicefdata}{right:{bf:version 1.5.2}}
+{cmd:help unicefdata}{right:{bf:version 2.0.0}}
 {hline}
 
 {title:Title}
@@ -43,10 +43,10 @@
 {synopt :{opt countries(codes)}}filter by ISO3 country codes{p_end}
 {synopt :{opt year(range)}}time period (single year, range, or list){p_end}
 {synopt :{opt long}} keep data in long format (default){p_end}
-{synopt :{opt wide}} reshape with years as columns{p_end}
+{synopt :{opt wide}} reshape with years as columns (yr2018, yr2019, etc.){p_end}
 {synopt :{opt wide_indicators}} reshape with indicators as columns{p_end}
 {synopt :{opt wide_attributes}} reshape with disaggregations as columns{p_end}
-{synopt :{opt latest}} keep only the most recent value per country{p_end}
+{synopt :{opt latest}} keep only the most recent value per country-disaggregation{p_end}
 {synopt :{opt circa}} find closest available year{p_end}
 {synopt :{opt clear}} replace data in memory{p_end}
 {synopt :{opt sex(value)}}filter by sex (_T, M, F, or ALL){p_end}
@@ -54,7 +54,9 @@
 {synopt :{opt residence(value)}}filter by urban/rural{p_end}
 {synopt :{opt addmeta(fields)}}add country metadata columns{p_end}
 {synopt :{opt simplify}} keep only essential columns{p_end}
+{synopt :{opt nosparse}} keep all standard columns (default: drop empty){p_end}
 {synopt :{opt dropna}} drop missing values{p_end}
+{synopt :{opt subnational}} enable access to subnational dataflows{p_end}
 {synopt :{opt verbose}} display progress messages{p_end}
 {synoptline}
 {p 4 6 2}
@@ -66,6 +68,7 @@
 
 {pstd}
 {help unicefdata##syntax:Syntax} | 
+{help unicefdata##defaults:Defaults} | 
 {help unicefdata##options:Options} | 
 {help unicefdata##examples:Examples} | 
 {help unicefdata##results:Stored results} | 
@@ -73,6 +76,56 @@
 {help unicefdata##consistency:Cross-Platform} | 
 {help unicefdata##author:Author}
 {p_end}
+
+
+{marker defaults}{...}
+{title:Default Behavior}
+{p 40 20 2}(Go up to {it:{help unicefdata##sections:Sections Menu}}){p_end}
+
+{pstd}
+{bf:Summary of defaults when options are omitted:}
+{p_end}
+
+{p2colset 5 30 32 2}{...}
+{p2col:{bf:Option}}{bf:Default Value}{p_end}
+{p2line}
+{p2col:{opt countries()}}All countries{p_end}
+{p2col:{opt year()}}All available years{p_end}
+{p2col:{opt sex()}}Total only ({cmd:_T}){p_end}
+{p2col:{opt wealth()}}Total only ({cmd:_T}){p_end}
+{p2col:{opt residence()}}Total only ({cmd:_T}){p_end}
+{p2col:{opt age()}}Total only ({cmd:_T}){p_end}
+{p2col:{opt maternal_edu()}}Total only ({cmd:_T}){p_end}
+{p2col:{it:Output format}}{cmd:long} (one row per observation){p_end}
+{p2col:{it:Empty columns}}{cmd:sparse} (drop empty columns){p_end}
+{p2col:{it:Missing values}}Keep missing values{p_end}
+{p2col:{it:Variable names}}All lowercase{p_end}
+{p2col:{it:Variable labels}}Descriptive labels on all variables{p_end}
+{p2line}
+{p2colreset}{...}
+
+{pstd}
+{bf:Key behavioral notes:}
+{p_end}
+
+{phang2}• {bf:Disaggregation defaults:} All filter options ({opt sex}, {opt wealth}, {opt residence}, 
+{opt age}, {opt maternal_edu}) default to totals ({cmd:_T}) when omitted. Use {cmd:ALL} to 
+retrieve all available disaggregation values.{p_end}
+
+{phang2}• {bf:Variable naming:} All variable names are lowercase (e.g., {cmd:indicator}, not 
+{cmd:INDICATOR}). All variables have descriptive labels.{p_end}
+
+{phang2}• {bf:Codes-only columns (default):} API requests use {cmd:labels=id} to return
+code values and avoid duplicate human-readable label columns. Output columns are
+codes by default; map to labels via metadata as needed. This matches the default
+behavior in the R and Python implementations.{p_end}
+
+{phang2}• {bf:Wide format:} When using {opt wide}, year columns are prefixed with {cmd:yr} 
+(e.g., {cmd:yr2018}, {cmd:yr2019}). Context variables (iso3, country, indicator, sex, 
+wealth_quintile, data_source, unit, geo_type) appear before year columns.{p_end}
+
+{phang2}• {bf:Sparse mode:} By default, columns with no data are dropped. Use {opt nosparse} 
+to keep all 22 standard columns for cross-platform consistency.{p_end}
 
 
 {marker options}{...}
@@ -83,16 +136,22 @@
 
 {phang}
 {opt indicator(string)} specifies the indicator code(s) to download. 
-Multiple indicators can be separated by spaces. Example indicators include:
+Multiple indicators can be separated by spaces. Use {cmd:indicator(all)} to 
+download {bf:all} indicators from a dataflow in {bf:bulk download mode}, which is 
+significantly faster than fetching indicators individually. Example indicators include:
 {p_end}
 {phang2}{cmd:CME_MRY0T4} - Under-5 mortality rate{p_end}
 {phang2}{cmd:CME_MRY0} - Infant mortality rate{p_end}
 {phang2}{cmd:NT_ANT_HAZ_NE2} - Stunting prevalence{p_end}
 {phang2}{cmd:IM_DTP3} - DTP3 immunization coverage{p_end}
 {phang2}{cmd:WS_PPL_W-B} - Basic drinking water services{p_end}
+{phang2}{cmd:all} - Download all indicators from specified dataflow (bulk mode){p_end}
 
 {phang}
-{opt dataflow(string)} specifies the dataflow ID. Common dataflows include:
+{opt dataflow(string)} specifies the dataflow ID. When specified without {cmd:indicator()}, 
+automatically activates {bf:bulk download mode} and downloads all indicators from the dataflow. 
+A warning message will be displayed. Use the {cmd:verbose} option to see progress. 
+Common dataflows include:
 {p_end}
 {phang2}{cmd:CME} - Child mortality estimates{p_end}
 {phang2}{cmd:NUTRITION} - Nutrition indicators{p_end}
@@ -172,6 +231,42 @@ indicator codes and names (case-insensitive). Use {opt limit(#)} to control
 maximum results.
 {p_end}
 
+{dlgtab:Tier Filters (v1.8.x)}
+
+{pstd}
+{bf:Default behavior:} Discovery commands (such as {opt search} and {opt indicators})
+only include {bf:Tier 1} indicators by default — those verified and downloadable.
+Higher tiers require explicit opt-in.
+{p_end}
+
+{phang}
+{opt showtier2} includes {bf:Tier 2} indicators (officially defined with no data).
+These may list {cmd:dataflows: ["nodata"]} and will display a warning.
+{p_end}
+
+{phang}
+{opt showtier3} includes {bf:Tier 3} indicators (legacy/undocumented). These return
+metadata for discovery but are not recommended for production use; a warning is displayed.
+{p_end}
+
+{phang}
+{opt showall} includes Tiers 1–3 in results. Use with care.
+{p_end}
+
+{phang}
+{opt showorphans} displays orphan indicators (present in catalogs but not mapped
+to current dataflows). Useful for taxonomy maintenance; not recommended for analysis.
+{p_end}
+
+{phang}
+{opt showlegacy} is an alias for {opt showtier3}.
+{p_end}
+
+{pstd}
+{it:Warnings:} When non-default tiers are shown, {cmd:unicefdata} emits a note
+indicating the tier and subcategory (if available) to highlight provenance and risk.
+{p_end}
+
 {phang}
 {opt indicators(string)} lists all indicators available in a specific dataflow.
 For example, {cmd:unicefdata, indicators(CME)} shows all child mortality indicators.
@@ -179,47 +274,101 @@ For example, {cmd:unicefdata, indicators(CME)} shows all child mortality indicat
 
 {phang}
 {opt info(string)} displays detailed metadata for a specific indicator, including
-its name, category (dataflow), description, and supported disaggregations (sex, age,
-wealth, residence, maternal education). This uses the dataflow schema files in
+its name, category (dataflow), description, URN, API query URL, and supported 
+disaggregations with their SDMX codes. This uses the dataflow schema files in
 {cmd:_dataflows/} to determine which filter options are valid for each indicator.
 {p_end}
+
+{pstd}
+The {opt info()} output includes:
+{p_end}
+{phang2}• Indicator code, name, and description{p_end}
+{phang2}• Category and dataflow mappings{p_end}
+{phang2}• URN (Uniform Resource Name) for SDMX identification{p_end}
+{phang2}• API Query URL (clickable link to test in browser){p_end}
+{phang2}• Supported disaggregations with human-readable values AND SDMX codes{p_end}
+
+{pstd}
+Example output:
+{p_end}
+{phang2}{cmd:SEX  (with totals)}{p_end}
+{phang2}  Values: Male, Female{p_end}
+{phang2}  Codes:  M, F, _T (total){p_end}
 
 {dlgtab:Output Options}
 
 {pstd}
-{bf:Output Format - Sparse Columns by Default}
+{bf:Output Format - Sparse vs Full Schema}
+{p_end}
+
+{phang}
+By default, {cmd:unicefdata} drops columns that are entirely empty or missing (sparse mode). 
+This reduces clutter and returns only columns with actual data. The number of columns 
+varies by indicator based on available disaggregations.
+{p_end}
+
+{phang}
+{opt nosparse} keeps all 22 standard columns even if they are empty. This is useful for:
+{p_end}
+{phang2}• Cross-platform consistency: Ensures identical column structure across Python, R, Stata{p_end}
+{phang2}• Appending datasets: All indicators have the same columns for {cmd:append}{p_end}
+{phang2}• Programmatic access: Predictable column names without checking existence{p_end}
 
 {pstd}
-{cmd:unicefdata} uses {bf:sparse output format} by default: only columns with data 
-are included in the result. This means the number of columns varies by indicator based 
-on available disaggregations. For example:
+Standard column schema (22 columns, always present with {opt nosparse}):
+{p_end}
 
-{phang2}• CME_MRY0T4 (under-5 mortality): 20 columns (no wealth/maternal education data){p_end}
-{phang2}• NT_ANT_HAZ_NE2 (stunting): 23 columns (includes wealth quintile data){p_end}
-{phang2}• Indicator with all dimensions: 22-60+ columns depending on available data{p_end}
-
-{pstd}
-Standard column names (always present when data exists):
-
-{phang2}indicator, indicator_name, iso3, country, geo_type, period, value, unit, unit_name,{p_end}
-{phang2}sex, sex_name, age, wealth_quintile, wealth_quintile_name, residence,{p_end}
-{phang2}maternal_edu_lvl, lower_bound, upper_bound, obs_status, obs_status_name, 
-data_source, ref_period, country_notes{p_end}
+{phang2}{cmd:indicator}, {cmd:indicator_name}, {cmd:iso3}, {cmd:country}, {cmd:geo_type}, {cmd:period}, {cmd:value}, {cmd:unit}, {cmd:unit_name},{p_end}
+{phang2}{cmd:sex}, {cmd:sex_name}, {cmd:age}, {cmd:wealth_quintile}, {cmd:wealth_quintile_name}, {cmd:residence},{p_end}
+{phang2}{cmd:maternal_edu_lvl}, {cmd:lower_bound}, {cmd:upper_bound}, {cmd:obs_status}, {cmd:obs_status_name}, {cmd:data_source}, {cmd:ref_period}, {cmd:country_notes}{p_end}
 
 {pstd}
-Note: This sparse format is consistent across all three platforms (Python, R, Stata).
-Use {cmd:simplify} to keep only essential columns (iso3, country, indicator, period, 
-value, lower_bound, upper_bound).
+Use {opt simplify} to keep only essential columns ({cmd:iso3}, {cmd:country}, {cmd:indicator}, 
+{cmd:period}, {cmd:value}, {cmd:lower_bound}, {cmd:upper_bound}).
+{p_end}
 
 {pstd}
 {bf:Understanding Output Formats:}
+{p_end}
 
 {pstd}
 {cmd:unicefdata} offers four output formats for different analytical needs. The default 
 is {cmd:long}, which is the most flexible. The three {cmd:wide_*} options reshape data 
 for specific cross-tabulation or pivot scenarios.
+{p_end}
 
-{phang}
+{dlgtab:Output Formats}
+
+{marker consistency}{...}
+{title:Cross-Platform}
+{p 40 20 2}(Go up to {it:{help unicefdata##sections:Sections Menu}}){p_end}
+
+{pstd}
+{bf:Default parity across Stata, R, and Python:}
+{p_end}
+
+{phang2}• {bf:Codes-only schema:} All implementations default to returning codes-only
+columns (no duplicate label-expansion columns). Stata uses {cmd:labels=id}
+in API requests; R and Python align with the same default.
+{p_end}
+
+{phang2}• {bf:Lowercase naming:} Standardized lowercase variable names are used in all
+clients (e.g., {cmd:indicator}, {cmd:period}, {cmd:value}). Indicator-specific
+dimension code columns are preserved as codes.
+{p_end}
+
+{phang2}• {bf:Sparse vs. full schema:} For consistent column counts across platforms,
+use Stata's default sparse mode or {opt nosparse} to keep the full standard schema.
+R/Python defaults similarly avoid empty columns.
+{p_end}
+
+{pstd}
+This cross-platform behavior improves reproducibility and validation consistency.
+The number of columns varies by indicator based on available disaggregations:
+{p_end}
+
+{phang2}• CME_MRY0T4 (under-5 mortality): ~18-20 columns (no age/residence/maternal education data){p_end}
+{phang2}• NT_ANT_HAZ_NE2 (stunting): ~23 columns (includes wealth quintile data){p_end}
 {opt long} keeps data in long format (one observation per country-year-indicator).
 This is the default format from the SDMX API and the most flexible for data analysis.
 All disaggregation variables (sex, age, wealth, residence, matedu) are present as 
@@ -228,11 +377,13 @@ separate columns. Use this format when you need maximum flexibility.
 
 {phang}
 {opt wide} reshapes data to wide format with years as columns, using {cmd:yr} prefix.
+Uses SDMX API csv-ts format (years as columns in the API response).
 Result structure:
 {p_end}
 {phang2}Rows: iso3 x indicator x all disaggregation values (sex, wealth, age, residence, matedu){p_end}
 {phang2}Columns: yr2018, yr2019, yr2020, yr2021, etc. (years with "yr" prefix){p_end}
 {phang2}Use case: Time-series analysis, trend visualization{p_end}
+{phang2}{bf:Note:} Cannot combine with {cmd:wide_indicators} or {cmd:wide_attributes} (different reshape methods){p_end}
 
 {phang}
 {opt wide_attributes} {it:(v1.5.1)} reshapes data to wide format with disaggregation 
@@ -380,11 +531,14 @@ Available metadata includes:
 {cmd:period}, {cmd:value}, {cmd:lb}, {cmd:ub}. Aligned with R/Python {cmd:simplify} parameter.
 
 {phang}
-{opt latest} keeps only the most recent non-missing value for each country.
+{opt latest} keeps only the most recent non-missing value for each unique combination of
+country, indicator, and disaggregation dimensions (sex, wealth, residence, age, maternal_edu).
+This means {cmd:sex(ALL) latest} correctly returns the latest value for each sex category.
 Useful for cross-sectional analysis.
 
 {phang}
-{opt mrv(#)} keeps the N most recent values for each country.
+{opt mrv(#)} keeps the N most recent values for each unique combination of
+country, indicator, and disaggregation dimensions.
 
 {phang}
 {opt raw} returns raw SDMX data without variable renaming or standardization.
@@ -401,7 +555,7 @@ Useful for cross-sectional analysis.
 {phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
 {phang2}• Automatic proxy detection and handling{p_end}
 {phang2}• Automatic retry logic for temporary network failures{p_end}
-{phang2}• User-Agent header: "unicefdata/1.5.2 (Stata)"{p_end}
+{phang2}• User-Agent header: "unicefdata/2.0.0 (Stata)"{p_end}
 {phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
 
 {pstd}
@@ -423,6 +577,15 @@ default when specifying an indicator.
 {phang}
 {opt nofallback} {it:(v1.3.0)} disables the automatic dataflow fallback mechanism.
 {p_end}
+
+{phang}
+{opt subnational} {it:(v1.8.0)} enables access to subnational dataflows such as
+{cmd:WASH_HOUSEHOLD_SUBNAT}. By default, subnational dataflows are blocked because
+they contain very large datasets that may take considerable time to download.
+Use this option to explicitly enable access to these dataflows.
+{p_end}
+
+{phang2}Example: {cmd:unicefdata, indicator(WS_PPL_W-B) subnational clear}{p_end}
 
 {phang}
 {opt nometadata} suppresses the automatic display of indicator metadata when
@@ -462,10 +625,6 @@ Show dataflow schema (dimensions and attributes):{p_end}
 {pstd}
 Show CME dataflow schema:{p_end}
 {p 8 12}{stata "unicefdata, dataflow(CME)" :. unicefdata, dataflow(CME)}{p_end}
-
-{pstd}
-List all indicator categories with counts:{p_end}
-{p 8 12}{stata "unicefdata, categories" :. unicefdata, categories}{p_end}
 
 {pstd}
 Search for mortality-related indicators:{p_end}
@@ -511,8 +670,30 @@ Get female-only data:{p_end}
 {p 8 12}{stata "unicefdata, indicator(CME_MRY0T4) sex(F) clear" :. unicefdata, indicator(CME_MRY0T4) sex(F) clear}{p_end}
 
 {pstd}
-Download all indicators from a dataflow:{p_end}
+{ul:Bulk Download (All Indicators from Dataflow)}
+
+{pstd}
+{bf:Explicit syntax} - Use indicator(all) with dataflow():{p_end}
+{p 8 12}{stata "unicefdata, indicator(all) dataflow(CME) clear verbose" :. unicefdata, indicator(all) dataflow(CME) clear verbose}{p_end}
+
+{pstd}
+{bf:Implicit syntax} - Specify dataflow() without indicator() (displays warning):{p_end}
 {p 8 12}{stata "unicefdata, dataflow(CME) countries(ETH) clear verbose" :. unicefdata, dataflow(CME) countries(ETH) clear verbose}{p_end}
+
+{pstd}
+Bulk download with year filter:{p_end}
+{p 8 12}{stata "unicefdata, indicator(all) dataflow(NUTRITION) year(2020) clear" :. unicefdata, indicator(all) dataflow(NUTRITION) year(2020) clear}{p_end}
+
+{pstd}
+Bulk download with dimension filters (sex=female):{p_end}
+{p 8 12}{stata "unicefdata, indicator(all) dataflow(CME) sex(F) clear" :. unicefdata, indicator(all) dataflow(CME) sex(F) clear}{p_end}
+
+{pstd}
+{bf:Performance note:} Bulk download is 5-10x faster than fetching indicators individually. 
+Use {cmd:verbose} option to monitor progress for large downloads.{p_end}
+
+{pstd}
+{ul:Additional Data Retrieval Options}
 
 {pstd}
 Get 5 most recent values per country:{p_end}
@@ -614,8 +795,8 @@ Quick single-command examples:{p_end}
 {phang2}{bf:wide_indicators} - Indicators as columns:{p_end}
 {p 8 12}{stata "unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA CHN) year(2020) wide_indicators clear" :. unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA CHN) year(2020) wide_indicators clear}{p_end}
 
-{phang2}{bf:attributes()} - Filter specific disaggregations:{p_end}
-{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) countries(ETH KEN) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) countries(ETH KEN) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear}{p_end}
+{phang2}{bf:attributes()} - Filter specific disaggregations (requires NUTRITION dataflow):{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) countries(ETH KEN) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) countries(ETH KEN) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear}{p_end}
 
 {pstd}
 {bf:Note:} {cmd:wide_attributes} and {cmd:wide_indicators} cannot be used together.{p_end}
@@ -639,12 +820,12 @@ Stunting prevalence:{p_end}
 {p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) clear}{p_end}
 
 {pstd}
-Stunting by wealth quintile (Q1=poorest):{p_end}
-{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1) clear}{p_end}
+Stunting by wealth quintile (Q1=poorest) - requires NUTRITION dataflow:{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) wealth(Q1) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) wealth(Q1) clear}{p_end}
 
 {pstd}
-Stunting by residence (rural only):{p_end}
-{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) residence(RURAL) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) residence(RURAL) clear}{p_end}
+Stunting by residence (rural only) - requires NUTRITION dataflow:{p_end}
+{p 8 12}{stata "unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) residence(R) clear" :. unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) residence(R) clear}{p_end}
 
 {pstd}
 {ul:Immunization Indicators}
@@ -673,7 +854,7 @@ Basic sanitation services:{p_end}
 
 {pstd}
 Out-of-school rate, primary:{p_end}
-{p 8 12}{stata "unicefdata, indicator(EDUNF_OFST_L1) clear" :. unicefdata, indicator(EDUNF_OFST_L1) clear}{p_end}
+{p 8 12}{stata "unicefdata, indicator(ED_ROFST_L1) clear" :. unicefdata, indicator(ED_ROFST_L1) clear}{p_end}
 
 {pstd}
 Net attendance rate, primary:{p_end}
@@ -713,10 +894,10 @@ Under-5 mortality trend analysis for South Asian countries:{p_end}
 Stunting prevalence by wealth quintile:{p_end}
 {cmd}
         . unicefdata, indicator(NT_ANT_HAZ_NE2) sex(ALL) latest clear
-        . keep if inlist(wealth, "Q1", "Q2", "Q3", "Q4", "Q5")
-        . gen wealth_num = real(substr(wealth, 2, 1))
-        . collapse (mean) mean_stunting = value, by(wealth wealth_num)
-        . graph bar mean_stunting, over(wealth) ///
+        . keep if inlist(wealth_quintile, "Q1", "Q2", "Q3", "Q4", "Q5")
+        . gen wealth_num = real(substr(wealth_quintile, 2, 1))
+        . collapse (mean) mean_stunting = value, by(wealth_quintile wealth_num)
+        . graph bar mean_stunting, over(wealth_quintile) ///
             ytitle("Stunting prevalence (%)") ///
             title("Child Stunting by Wealth Quintile")
 {txt}      ({stata "unicefdata_examples example02":click to run})
@@ -739,7 +920,7 @@ Multiple mortality indicators comparison for Latin America:{p_end}
 Global immunization coverage trends:{p_end}
 {cmd}
         . unicefdata, indicator(IM_DTP3 IM_MCV1) year(2000:2023) clear
-        . keep if sex == "_T"
+        . * Note: IMMUNISATION dataflow does not have sex disaggregation
         . collapse (mean) coverage = value, by(period indicator)
         . reshape wide coverage, i(period) j(indicator) string
         . graph twoway ///
@@ -753,7 +934,7 @@ Global immunization coverage trends:{p_end}
 Regional comparison with metadata:{p_end}
 {cmd}
         . unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) latest clear
-        . keep if geo_type == "country" & sex == "_T"
+        . keep if geo_type == 0 & sex == "_T"  // geo_type 0 = country
         . collapse (mean) avg_u5mr = value, by(region)
         . gsort -avg_u5mr
         . graph hbar avg_u5mr, over(region, sort(1) descending) ///
@@ -766,17 +947,17 @@ Export comprehensive data to Excel:{p_end}
 {cmd}
         . unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA IND CHN NGA) ///
             year(2015:2023) addmeta(region income_group) clear
-        . keep iso3 country region income_group period value lb ub
+        . keep iso3 country region income_group period value lower_bound upper_bound
         . export excel using "unicef_mortality_data.xlsx", firstrow(variables) replace
 {txt}      ({stata "unicefdata_examples example06":click to run})
 
 {pstd}
 WASH urban-rural gap analysis:{p_end}
 {cmd}
-        . unicefdata, indicator(WS_PPL_W-B) sex(ALL) latest clear
-        . keep if inlist(residence, "U", "R", "URBAN", "RURAL")
-        . replace residence = "Urban" if inlist(residence, "U", "URBAN")
-        . replace residence = "Rural" if inlist(residence, "R", "RURAL")
+        . unicefdata, indicator(WS_PPL_W-B) residence(ALL) latest clear
+        . keep if inlist(residence, "U", "R")
+        . replace residence = "Urban" if residence == "U"
+        . replace residence = "Rural" if residence == "R"
         . bysort iso3 : egen n_res = nvals(residence)
         . keep if n_res == 2
         . reshape wide value, i(iso3 country) j(residence) string
@@ -817,9 +998,9 @@ Using {opt wide_attributes} - Disaggregations as columns (v1.5.1):{p_end}
 {txt}      ({stata "unicefdata_examples example10":click to run})
 
 {pstd}
-Using {opt attributes()} filter - Targeted disaggregation:{p_end}
+Using {opt attributes()} filter - Targeted disaggregation (requires NUTRITION dataflow):{p_end}
 {cmd}
-        . unicefdata, indicator(NT_ANT_HAZ_NE2) countries(IND PAK BGD ETH) ///
+        . unicefdata, indicator(NT_ANT_HAZ_NE2) dataflow(NUTRITION) countries(IND PAK BGD ETH) ///
             latest attributes(_T _Q1 _Q5) wide_attributes clear
         . list iso3 country NT_ANT_HAZ_NE2_T NT_ANT_HAZ_NE2_Q1 NT_ANT_HAZ_NE2_Q5, ///
             sep(0) noobs
@@ -929,7 +1110,7 @@ Dataflow-level metadata provides information about each of the 69 dataflows:
 {p_end}
 
 {phang2}{cmd:_unicefdata_dataflows.yaml} - Dataflow summary (name, agency, version){p_end}
-{phang3}Use case: {cmd:categories} listing, dataflow descriptions{p_end}
+{phang3}Use case: {cmd:flows} listing, dataflow descriptions{p_end}
 
 {phang2}{cmd:_dataflows/*.yaml} - Per-dataflow schema files (69 files){p_end}
 {phang3}Contains: dimensions (SEX, AGE, WEALTH_QUINTILE, RESIDENCE, etc.){p_end}
@@ -999,5 +1180,5 @@ Online: {browse "https://data.unicef.org/":UNICEF Data Warehouse},
 {browse "https://sdmx.data.unicef.org/":UNICEF SDMX API}
 
 {psee}
-Help: {helpb unicefdata_sync}, {helpb wbopendata} (similar command for World Bank data)
+Help: {helpb unicefdata_sync}, {helpb get_sdmx}, and {help unicefdata_examples}. Also see {helpb wbopendata} for a similar command for World Bank data.
 {p_end}

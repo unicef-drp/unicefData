@@ -1,7 +1,7 @@
 _metadata:
   platform: Stata
   version: '2.0.0'
-  synced_at: '2026-01-16T23:14:06Z'
+  synced_at: '2026-01-31T22:23:23Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF
   agency: UNICEF
   content_type: codelists
@@ -9,7 +9,7 @@ _metadata:
   codes_per_list:
     CL_AGE: 446
     CL_WEALTH_QUINTILE: 16
-    CL_RESIDENCE: 3
+    CL_RESIDENCE: 11
     CL_UNIT_MEASURE: 80
     CL_OBS_STATUS: 38
 codelists:
@@ -491,8 +491,16 @@ codelists:
     version: latest
     codes:
       _T: 'Total'
-      U: 'Urban'
-      R: 'Rural'
+      U: 'Urban area'
+      R: 'Rural area'
+      CITY: 'City'
+      TSUB: 'Town and semi-dense area'
+      DTOW: 'Dense town'
+      STOW: 'Semi-dense town'
+      SUBU: 'Suburban or peri-urban area'
+      VILL: 'Village'
+      DISP: 'Dispersed rural area'
+      UNIN: 'Mostly uninhabited area'
   CL_UNIT_MEASURE:
     id: CL_UNIT_MEASURE
     agency: UNICEF

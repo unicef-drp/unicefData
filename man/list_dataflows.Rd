@@ -18,7 +18,7 @@ list_dataflows(
 
 \item{cache_dir}{Directory for memoised cache.}
 
-\item{max_retries}{Integer. Maximum number of retry attempts (default 3). Deprecated; use \code{retry} instead.}
+\item{max_retries}{Integer. Number of retry attempts (default: 3). Alternative name for 'retry' parameter.}
 }
 \value{
 A tibble with columns \code{id}, \code{agency}, \code{version}, \code{name}.

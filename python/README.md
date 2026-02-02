@@ -15,7 +15,7 @@ The **unicefData** repository provides consistent APIs in R, Python, and Stata:
 
 | Feature | R | Python | Stata |
 |---------|---|--------|-------|
-| Unified API | `get_unicef()` | `get_unicef()` | `unicefdata` |
+| Unified API | `unicefData()` | `unicefData()` | `unicefdata` |
 | **Search indicators** | `search_indicators()` | `search_indicators()` | `unicefdata, search()` |
 | **List categories** | `list_categories()` | `list_categories()` | `unicefdata, categories` |
 | **Auto dataflow detection** | ✅ | ✅ | ✅ |
@@ -133,15 +133,14 @@ schema['attributes']  # ['DATA_SOURCE', 'COUNTRY_NOTES', 'REF_PERIOD', ...]
 ### Basic Usage
 
 ```python
-from unicef_api import get_unicef
+from unicef_api import unicefData
 
 # Fetch under-5 mortality for specific countries
 # Dataflow is auto-detected from indicator code!
-df = get_unicef(
+df = unicefData(
     indicator='CME_MRY0T4',
     countries=['ALB', 'USA', 'BRA'],
-    start_year=2015,
-    end_year=2023
+    year='2015:2023'  # Range, or single year, or list [2015, 2018, 2020]
 )
 
 print(df.head())
@@ -151,36 +150,36 @@ print(df.head())
 
 ```python
 # Get latest value per country (cross-sectional analysis)
-df = get_unicef(
+df = unicefData(
     indicator='CME_MRY0T4',
     latest=True  # Each country has one row with most recent value
 )
 
 # Wide format - years as columns
-df = get_unicef(
+df = unicefData(
     indicator='CME_MRY0T4',
     format='wide'  # Result: iso3 | country | y2015 | y2016 | ...
 )
 
 # Multiple indicators with automatic merge
-df = get_unicef(
+df = unicefData(
     indicator=['CME_MRY0T4', 'NT_ANT_HAZ_NE2_MOD'],
     format='wide_indicators',  # Result: iso3 | period | CME_MRY0T4 | NT_ANT_HAZ_NE2_MOD
     latest=True
 )
 
 # Add country metadata (region, income group)
-df = get_unicef(
+df = unicefData(
     indicator='CME_MRY0T4',
     add_metadata=['region', 'income_group', 'continent'],
     latest=True
 )
 
 # Keep only last 3 years per country
-df = get_unicef(indicator='CME_MRY0T4', mrv=3)
+df = unicefData(indicator='CME_MRY0T4', mrv=3)
 
 # Drop missing values and simplify columns
-df = get_unicef(
+df = unicefData(
     indicator='CME_MRY0T4',
     dropna=True,
     simplify=True

@@ -29,12 +29,15 @@ NULL
 
 CODELIST_URL <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
 CACHE_FILENAME <- "unicef_indicators_metadata.yaml"
+FALLBACK_SEQUENCES_FILENAME <- "_dataflow_fallback_sequences.yaml"
 CACHE_MAX_AGE_DAYS <- 30
 
 # Module-level cache (environment for mutable state)
 .indicator_cache <- new.env(parent = emptyenv())
 .indicator_cache$data <- NULL
 .indicator_cache$loaded <- FALSE
+.indicator_cache$fallback_sequences <- NULL
+.indicator_cache$fallback_loaded <- FALSE
 
 
 # ==============================================================================
@@ -91,9 +94,149 @@ CACHE_MAX_AGE_DAYS <- 30
   return(file.path(home_dir, CACHE_FILENAME))
 }
 
-#' Infer dataflow category from indicator code prefix
+#' Get path to fallback sequences file
+#' 
+#' Looks for canonical _dataflow_fallback_sequences.yaml
+#' Uses multiple fallback strategies for development and installed package scenarios
+#' 
+#' @keywords internal
+.get_fallback_sequences_path <- function() {
+  fallback_file <- FALLBACK_SEQUENCES_FILENAME  # "_dataflow_fallback_sequences.yaml"
+  
+  # FIRST: Try hardcoded paths for COMMON development setups
+  common_paths <- c(
+    "C:/GitHub/myados/unicefData-dev/metadata/current/_dataflow_fallback_sequences.yaml",
+    "C:/GitHub/myados/unicefData-dev/inst/metadata/current/_dataflow_fallback_sequences.yaml",
+    "C:/GitHub/myados/unicefdata-dev/metadata/current/_dataflow_fallback_sequences.yaml",
+    "C:/GitHub/myados/unicefdata-dev/inst/metadata/current/_dataflow_fallback_sequences.yaml"
+  )
+  for (path in common_paths) {
+    if (file.exists(path)) {
+      return(normalizePath(path))
+    }
+  }
+  
+  # SECOND: Try system.file for installed packages (this is the standard location)
+  sys_file <- system.file("metadata", "current", fallback_file, package = "unicefData")
+  if (nzchar(sys_file) && file.exists(sys_file)) {
+    return(normalizePath(sys_file))
+  }
+  
+  # THIRD: Look in development folders (relative to cwd)
+  candidates <- c(
+    file.path(getwd(), "metadata", "current", fallback_file),
+    file.path(getwd(), "inst", "metadata", "current", fallback_file),
+    file.path(getwd(), "stata", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "inst", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "stata", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "..", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "..", "inst", "metadata", "current", fallback_file),
+    file.path(getwd(), "..", "..", "stata", "metadata", "current", fallback_file)
+  )
+  
+  # Check candidates
+  for (candidate in candidates) {
+    if (file.exists(candidate)) {
+      return(normalizePath(candidate))
+    }
+  }
+  
+  return(NULL)
+}
+
+#' Load fallback sequences from canonical YAML
+#' 
+#' Loads dataflow fallback sequences used by all platforms for consistent
+#' indicator-to-dataflow resolution. Returns a named list where names are
+#' indicator prefixes and values are character vectors of dataflows to try.
+#' 
+#' @return Named list of fallback sequences by indicator prefix
+#' @keywords internal
+.load_fallback_sequences <- function() {
+  # Check if already loaded in this session
+  if (.indicator_cache$fallback_loaded && !is.null(.indicator_cache$fallback_sequences)) {
+    return(.indicator_cache$fallback_sequences)
+  }
+  
+  fallback_file <- .get_fallback_sequences_path()
+
+  # DEBUG: Show what was found (only if unicefData.debug option is TRUE)
+  if (isTRUE(getOption("unicefData.debug", FALSE))) {
+    message("[DEBUG] .get_fallback_sequences_path() returned: ",
+            if (is.null(fallback_file)) "NULL" else fallback_file)
+  }
+
+  # If file not found, return default sequences
+  if (is.null(fallback_file)) {
+    if (isTRUE(getOption("unicefData.debug", FALSE))) {
+      message("[DEBUG] Using hardcoded defaults (file not found)")
+    }
+    default_sequences <- list(
+      ED = c("EDUCATION_UIS_SDG", "EDUCATION", "GLOBAL_DATAFLOW"),
+      PT = c("PT", "PT_CM", "PT_FGM", "CHILD_PROTECTION", "GLOBAL_DATAFLOW"),
+      COD = c("CAUSE_OF_DEATH", "CME", "MORTALITY", "GLOBAL_DATAFLOW"),
+      PV = c("CHLD_PVTY", "GLOBAL_DATAFLOW"),
+      NT = c("NUTRITION", "GLOBAL_DATAFLOW"),
+      CME = c("CME", "GLOBAL_DATAFLOW"),
+      FD = c("FUNCTIONAL_DIFF", "DISABILITY", "HEALTH", "GLOBAL_DATAFLOW"),
+      HVA = c("HIV_AIDS", "HEALTH", "GLOBAL_DATAFLOW"),
+      IM = c("IMMUNISATION", "HEALTH", "GLOBAL_DATAFLOW"),
+      MNCH = c("MNCH", "HEALTH", "GLOBAL_DATAFLOW"),
+      ECD = c("ECD", "EDUCATION", "GLOBAL_DATAFLOW"),
+      WS = c("WASH_HOUSEHOLDS", "WASH_SCHOOLS", "GLOBAL_DATAFLOW"),
+      DM = c("DM", "DEMOGRAPHICS", "GLOBAL_DATAFLOW"),
+      MG = c("MG", "MIGRATION", "GLOBAL_DATAFLOW"),
+      GN = c("GENDER", "GLOBAL_DATAFLOW"),
+      SPP = c("SOC_PROTECTION", "GLOBAL_DATAFLOW"),
+      WT = c("WASH_HOUSEHOLDS", "WASH_SCHOOLS", "PT", "EDUCATION", "GLOBAL_DATAFLOW"),
+      DEFAULT = c("GLOBAL_DATAFLOW")
+    )
+    .indicator_cache$fallback_sequences <- default_sequences
+    .indicator_cache$fallback_loaded <- TRUE
+    return(default_sequences)
+  }
+  
+  # Try to load YAML file
+  tryCatch({
+    if (!requireNamespace("yaml", quietly = TRUE)) {
+      warning("yaml package required to load fallback sequences. Using defaults.")
+      return(.indicator_cache$fallback_sequences %||% list(DEFAULT = "GLOBAL_DATAFLOW"))
+    }
+    
+    if (isTRUE(getOption("unicefData.debug", FALSE))) {
+      message("[DEBUG] Loading YAML from: ", fallback_file)
+    }
+
+    data <- yaml::yaml.load_file(fallback_file)
+    
+    if (!is.null(data$fallback_sequences)) {
+      sequences <- data$fallback_sequences
+      .indicator_cache$fallback_sequences <- sequences
+      .indicator_cache$fallback_loaded <- TRUE
+      return(sequences)
+    } else {
+      warning("No 'fallback_sequences' key found in ", fallback_file)
+      return(list(DEFAULT = "GLOBAL_DATAFLOW"))
+    }
+  }, error = function(e) {
+    warning("Error loading fallback sequences from ", fallback_file, ": ", e$message)
+    return(list(DEFAULT = "GLOBAL_DATAFLOW"))
+  })
+}
+
+#' Infer organizational CATEGORY from indicator code prefix
+#'
+#' DEPRECATED FOR DATAFLOW DETECTION: This function infers category for
+#' organizational grouping only. For actual API dataflow detection, use
+#' get_dataflow_for_indicator() which implements the canonical fallback
+#' sequence from _dataflow_fallback_sequences.yaml.
+#'
+#' Note: Category != Dataflow. For example, WS_HCF_* indicators have
+#' category='WASH' but dataflow='WASH_HEALTHCARE_FACILITY'.
+#'
 #' @param indicator_code Character. The indicator code
-#' @return Character. The inferred dataflow name
+#' @return Character. The inferred organizational category name
 #' @keywords internal
 .infer_category <- function(indicator_code) {
   # ===========================================================================
@@ -112,57 +255,20 @@ CACHE_MAX_AGE_DAYS <- 30
   # PROD-SDG-REP-2025/01_data_prep/012_codes/0121_get_data_api.R
   # ===========================================================================
   
-  indicator_overrides <- list(
-    # Child Marriage - metadata says PT but data is in PT_CM
-    "PT_F_20-24_MRD_U18_TND" = "PT_CM",
-    "PT_F_20-24_MRD_U15" = "PT_CM",
-    
-    # FGM - metadata says PT but data is in PT_FGM
-    "PT_F_15-49_FGM" = "PT_FGM",
-    "PT_F_0-14_FGM" = "PT_FGM",
-    "PT_F_15-19_FGM_TND" = "PT_FGM",
-    "PT_F_15-49_FGM_TND" = "PT_FGM",
-    "PT_F_15-49_FGM_ELIM" = "PT_FGM",
-    "PT_M_15-49_FGM_ELIM" = "PT_FGM",
-    
-    # Education UIS SDG indicators - metadata says EDUCATION but data is in EDUCATION_UIS_SDG
-    "ED_CR_L1_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_CR_L2_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_CR_L3_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L1_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L2_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L3_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ANAR_L02" = "EDUCATION_UIS_SDG",
-    "ED_MAT_G23" = "EDUCATION_UIS_SDG",
-    "ED_MAT_L1" = "EDUCATION_UIS_SDG",
-    "ED_MAT_L2" = "EDUCATION_UIS_SDG",
-    "ED_READ_G23" = "EDUCATION_UIS_SDG",
-    "ED_READ_L1" = "EDUCATION_UIS_SDG",
-    "ED_READ_L2" = "EDUCATION_UIS_SDG",
-    
-    # Child Poverty - confirm correct dataflow
-    "PV_CHLD_DPRV-S-L1-HS" = "CHLD_PVTY"
-  )
-  
-  # Check if indicator has a known override
-  if (indicator_code %in% names(indicator_overrides)) {
-    return(indicator_overrides[[indicator_code]])
-  }
+  # DEPRECATED: Hardcoded overrides removed in favor of canonical YAML-based fallback sequences
+  # See: metadata/current/_dataflow_fallback_sequences.yaml
+  # All indicators now use fallback sequence approach via get_dataflow_for_indicator()
   
 
   # ===========================================================================
   # DYNAMIC PATTERN-BASED OVERRIDES
   # ===========================================================================
-  # These patterns catch indicators that belong to specific sub-dataflows
-
-  # based on content in their code, not just the prefix.
-  # More maintainable than hardcoding each indicator.
-  # ===========================================================================
-  
-  # FGM indicators: PT_*_FGM* -> PT_FGM
-  if (startsWith(indicator_code, "PT_") && grepl("_FGM", indicator_code)) {
-    return("PT_FGM")
-  }
+  # REMOVED: All pattern-based overrides (FGM, etc.)
+  # All dataflow mappings now loaded from comprehensive indicators metadata:
+  # - _unicefdata_indicators_metadata.yaml (733 indicators)
+  # - _dataflow_fallback_sequences.yaml (prefix-based fallback)
+  #
+  # Direct O(1) lookup replaces pattern matching.
   
   # Child Marriage indicators: PT_*_MRD_* -> PT_CM
   if (startsWith(indicator_code, "PT_") && grepl("_MRD_", indicator_code)) {
@@ -174,13 +280,23 @@ CACHE_MAX_AGE_DAYS <- 30
     return("EDUCATION_UIS_SDG")
   }
   
-  # Mapping of prefixes to dataflows
-  prefix_map <- list(
+  # ===========================================================================
+  # DEPRECATED: PREFIX_TO_CATEGORY
+  # ===========================================================================
+  # These mappings are for ORGANIZATIONAL CATEGORY ONLY, not dataflow detection.
+  # For dataflow detection, use get_dataflow_for_indicator() which implements
+  # the canonical fallback sequences from _dataflow_fallback_sequences.yaml.
+  #
+  # WARNING: Category != Dataflow. For example:
+  #   - WS_HCF_* -> category=WASH, but dataflow=WASH_HEALTHCARE_FACILITY
+  #   - WS_SCH_* -> category=WASH, but dataflow=WASH_SCHOOLS
+  # ===========================================================================
+  PREFIX_TO_CATEGORY <- list(
     CME = "CME",
     NT = "NUTRITION",
     IM = "IMMUNISATION",
     ED = "EDUCATION",
-    WS = "WASH_HOUSEHOLDS",
+    WS = "WASH",  # Category only - NOT dataflow (could be WASH_HOUSEHOLDS, WASH_SCHOOLS, WASH_HEALTHCARE_FACILITY)
     HVA = "HIV_AIDS",
     MNCH = "MNCH",
     PT = "PT",
@@ -195,19 +311,19 @@ CACHE_MAX_AGE_DAYS <- 30
     EDUN = "EDUCATION",
     SDG4 = "EDUCATION_UIS_SDG",
     PV = "CHLD_PVTY",
-    # Added mappings to reduce GLOBAL_DATAFLOW catch-all
-    COD = "CAUSE_OF_DEATH",      # Cause of death indicators (83)
-    TRGT = "CHILD_RELATED_SDG",  # SDG/National targets (77)
-    SPP = "SOC_PROTECTION",      # Social protection programs (10)
-    WT = "PT"                    # Child labour/adolescent indicators (7)
+    # Additional category mappings
+    COD = "CAUSE_OF_DEATH",      # Cause of death indicators
+    TRGT = "CHILD_RELATED_SDG",  # SDG/National targets
+    SPP = "SOC_PROTECTION",      # Social protection programs
+    WT = "PT"                    # Child labour/adolescent indicators
   )
   
   # Extract prefix (first part before underscore)
   parts <- strsplit(indicator_code, "_")[[1]]
   if (length(parts) > 0) {
     prefix <- parts[1]
-    if (prefix %in% names(prefix_map)) {
-      return(prefix_map[[prefix]])
+    if (prefix %in% names(PREFIX_TO_CATEGORY)) {
+      return(PREFIX_TO_CATEGORY[[prefix]])
     }
   }
   
@@ -254,16 +370,24 @@ CACHE_MAX_AGE_DAYS <- 30
     urn <- xml2::xml_attr(code_elem, "urn")
     if (is.na(urn)) urn <- ""
     
-    # Infer category from code
-    category <- .infer_category(code_id)
+    # Extract parent from <structure:Parent><Ref id="..."/></structure:Parent>
+    parent_elem <- xml2::xml_find_first(code_elem, "structure:Parent/Ref", ns)
+    parent_id <- if (!is.na(parent_elem)) xml2::xml_attr(parent_elem, "id") else ""
+    if (is.na(parent_id)) parent_id <- ""
     
-    indicators[[code_id]] <- list(
+    indicator_data <- list(
       code = code_id,
       name = name,
       description = description,
-      urn = urn,
-      category = category
+      urn = urn
     )
+    
+    # Add parent only if present
+    if (nchar(parent_id) > 0) {
+      indicator_data$parent <- parent_id
+    }
+    
+    indicators[[code_id]] <- indicator_data
   }
   
   return(indicators)
@@ -552,57 +676,84 @@ CACHE_MAX_AGE_DAYS <- 30
 #'
 #' @export
 get_dataflow_for_indicator <- function(indicator_code, default = "GLOBAL_DATAFLOW") {
-  # FIRST: Check known overrides (these take priority over cache)
-  # These are indicators where the API metadata reports the wrong dataflow
-  indicator_overrides <- list(
-    # Child Marriage - metadata says PT but data is in PT_CM
-    "PT_F_20-24_MRD_U18_TND" = "PT_CM",
-    "PT_F_20-24_MRD_U15" = "PT_CM",
-    # FGM - metadata says PT but data is in PT_FGM
-    "PT_F_15-49_FGM" = "PT_FGM",
-    "PT_F_0-14_FGM" = "PT_FGM",
-    "PT_F_15-19_FGM_TND" = "PT_FGM",
-    "PT_F_15-49_FGM_TND" = "PT_FGM",
-    "PT_F_15-49_FGM_ELIM" = "PT_FGM",
-    "PT_M_15-49_FGM_ELIM" = "PT_FGM",
-    # Education UIS SDG indicators - metadata says EDUCATION but data is in EDUCATION_UIS_SDG
-    "ED_CR_L1_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_CR_L2_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_CR_L3_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L1_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L2_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L3_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ANAR_L02" = "EDUCATION_UIS_SDG",
-    "ED_MAT_G23" = "EDUCATION_UIS_SDG",
-    "ED_MAT_L1" = "EDUCATION_UIS_SDG",
-    "ED_MAT_L2" = "EDUCATION_UIS_SDG",
-    "ED_READ_G23" = "EDUCATION_UIS_SDG",
-    "ED_READ_L1" = "EDUCATION_UIS_SDG",
-    "ED_READ_L2" = "EDUCATION_UIS_SDG",
-    # Child Poverty
-    "PV_CHLD_DPRV-S-L1-HS" = "CHLD_PVTY"
-  )
-  
-  if (indicator_code %in% names(indicator_overrides)) {
-    return(indicator_overrides[[indicator_code]])
+  # 3-TIER DATAFLOW RESOLUTION (matching Python's approach)
+  # TIER 1: Direct indicator metadata lookup (O(1) - fastest and most accurate)
+  # TIER 2: Prefix-based fallback sequences
+  # TIER 3: Default fallback
+
+  # ============================================================================
+  # TIER 1: Direct lookup in comprehensive indicators metadata
+  # ============================================================================
+  # Check _unicefdata_indicators_metadata.yaml for indicator's 'dataflows' field
+  # This is the same approach Python uses for accurate dataflow detection
+
+  # Try to access indicators metadata from package-private cache first
+  indicators_meta <- .indicator_cache$indicators_metadata
+
+  # If not cached, try to load from installed package metadata file
+  if (is.null(indicators_meta)) {
+    indicators_meta <- tryCatch({
+      meta_file <- system.file("metadata/current/_unicefdata_indicators_metadata.yaml",
+                               package = "unicefData", mustWork = FALSE)
+      if (nzchar(meta_file) && file.exists(meta_file) && requireNamespace("yaml", quietly = TRUE)) {
+        loaded <- yaml::yaml.load_file(meta_file)
+        .indicator_cache$indicators_metadata <- loaded$indicators  # Cache for reuse
+        loaded$indicators
+      } else {
+        NULL
+      }
+    }, error = function(e) NULL)
   }
-  
-  # SECOND: Check cache
-  indicators <- .ensure_cache_loaded()
-  
-  if (indicator_code %in% names(indicators)) {
-    category <- indicators[[indicator_code]]$category
-    if (!is.null(category) && nzchar(category)) {
-      return(category)
+
+  # Check if indicator exists in comprehensive metadata
+  if (!is.null(indicators_meta) && indicator_code %in% names(indicators_meta)) {
+    meta <- indicators_meta[[indicator_code]]
+    # Check 'dataflows' (plural) first, then 'dataflow' (singular)
+    dataflow_value <- meta$dataflows %||% meta$dataflow
+    if (!is.null(dataflow_value)) {
+      # Handle both list and scalar values
+      if (is.list(dataflow_value)) {
+        dataflows_list <- unlist(dataflow_value)
+      } else {
+        dataflows_list <- dataflow_value
+      }
+      if (length(dataflows_list) > 0) {
+        if (isTRUE(getOption("unicefData.debug", FALSE))) {
+          message("[TIER 1] Found ", indicator_code, " in metadata: dataflows=", paste(dataflows_list, collapse = ", "))
+        }
+        return(dataflows_list[1])  # Return first (primary) dataflow
+      }
     }
   }
-  
-  # THIRD: Fallback to prefix-based inference
-  inferred <- .infer_category(indicator_code)
-  if (inferred != "GLOBAL_DATAFLOW") {
-    return(inferred)
+
+  # ============================================================================
+  # TIER 2: Prefix-based fallback sequences
+  # ============================================================================
+  # Load fallback sequences from canonical YAML
+  fallback_sequences <- .load_fallback_sequences()
+
+  # Extract prefix
+  prefix <- strsplit(indicator_code, "_")[[1]][1]
+
+  # Get fallback sequence for this prefix
+  if (prefix %in% names(fallback_sequences)) {
+    dataflows_to_try <- fallback_sequences[[prefix]]
+    if (isTRUE(getOption("unicefData.debug", FALSE))) {
+      message("[TIER 2] Using prefix '", prefix, "' fallback: ", paste(dataflows_to_try, collapse = ", "))
+    }
+  } else {
+    # Default sequence if prefix not found
+    dataflows_to_try <- fallback_sequences$DEFAULT %||% c("GLOBAL_DATAFLOW")
+    if (isTRUE(getOption("unicefData.debug", FALSE))) {
+      message("[TIER 2] Prefix '", prefix, "' not found, using DEFAULT: ", paste(dataflows_to_try, collapse = ", "))
+    }
   }
-  
+
+  # Return first dataflow in sequence (will be tried with fallback logic in get_sdmx)
+  if (length(dataflows_to_try) > 0) {
+    return(dataflows_to_try[1])
+  }
+
   return(default)
 }
 

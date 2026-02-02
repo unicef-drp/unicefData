@@ -1,8 +1,14 @@
 *******************************************************************************
 * _unicef_indicator_info.ado
-*! v 1.7.0   17Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.10.0  18Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Display detailed info about a specific UNICEF indicator using YAML metadata
 *
+* v1.10.0: Show SDMX codes for each disaggregation dimension
+* v1.9.1: Fixed "(with totals)" display when using dataflow schema subroutine
+* v1.9.0: Refactored to use __unicef_get_indicator_filters subroutine
+*         Added API query URL display to show what query would be used
+* v1.8.0: Read disaggregations from dataflow schema when not in indicator metadata
+* v1.7.0: ENHANCED - Uses enriched indicators metadata with disaggregations
 * v1.6.0: MAJOR PERF FIX - Direct file reading with early termination
 *         - Searches for specific indicator, stops when found
 *         - No longer loads entire 5000+ key YAML into memory
@@ -101,7 +107,66 @@ program define _unicef_indicator_info, rclass
         local found `r(found)'
         
         *-----------------------------------------------------------------------
-        * Process disaggregations from the combined read above
+        * If no disaggregations in indicator metadata, use subroutine to get from dataflow schema
+        *-----------------------------------------------------------------------
+        
+        local primary_df ""
+        if ("`ind_dataflow'" != "") {
+            * Extract primary dataflow (first one before comma)
+            local comma_pos = strpos("`ind_dataflow'", ",")
+            if (`comma_pos' > 0) {
+                local primary_df = strtrim(substr("`ind_dataflow'", 1, `comma_pos' - 1))
+            }
+            else {
+                local primary_df = strtrim("`ind_dataflow'")
+            }
+        }
+        
+        if ("`disagg_raw'" == "" & "`primary_df'" != "") {
+            if ("`verbose'" != "") {
+                noi di as text "Using __unicef_get_indicator_filters for dataflow: `primary_df'"
+            }
+            
+            * Call subroutine to get filter-eligible dimensions from dataflow schema
+            capture __unicef_get_indicator_filters, dataflow(`primary_df') `verbose'
+            if (_rc == 0) {
+                local disagg_raw `r(filter_eligible_dimensions)'
+                local disagg_raw = strtrim("`disagg_raw'")
+                
+                * UNICEF standard: all filter-eligible dimensions support totals (_T)
+                * Set disagg_totals to match disagg_raw since schema doesn't track this
+                local disagg_totals "`disagg_raw'"
+                
+                if ("`verbose'" != "") {
+                    noi di as text "Extracted filter-eligible dimensions: `disagg_raw'"
+                }
+            }
+            else {
+                if ("`verbose'" != "") {
+                    noi di as text "Could not read dataflow schema for: `primary_df'"
+                }
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Build API query URL for display
+        *-----------------------------------------------------------------------
+        
+        local api_query_url ""
+        if ("`primary_df'" != "") {
+            * Build SDMX REST query URL
+            * Format: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,DATAFLOW,1.0/FILTER
+            * Default filter: all countries (.), indicator, default disagg values (_T)
+            local api_query_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,`primary_df',1.0/..`indicator_upper'._T"
+            
+            * Note: This is a simplified example query - actual filters depend on dataflow structure
+            if ("`verbose'" != "") {
+                noi di as text "Built API query URL: `api_query_url'"
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Process disaggregations
         *-----------------------------------------------------------------------
         
         local supported_dims ""
@@ -201,6 +266,13 @@ program define _unicef_indicator_info, rclass
             noi di as text _col(2) "URN:         " as result "`ind_urn'"
         }
         
+        * Display API Query URL (shows what query would be used)
+        if ("`api_query_url'" != "") {
+            noi di ""
+            noi di as text _col(2) "API Query:"
+            noi di as result _col(4) `"{browse "`api_query_url'"}"'
+        }
+        
         * Display supported disaggregations with allowed values
         noi di ""
         noi di as text _col(2) "Supported Disaggregations:"
@@ -218,43 +290,63 @@ program define _unicef_indicator_info, rclass
                     }
                 }
                 else {
-                    * Map dimension codes to their allowed values
+                    * Map dimension codes to their allowed values with SDMX codes
                     local dim_values ""
+                    local dim_codes ""
                     if ("`d'" == "SEX") {
                         local dim_values "Male, Female"
+                        local dim_codes "M, F"
                     }
                     else if ("`d'" == "RESIDENCE") {
                         local dim_values "Urban, Rural"
+                        local dim_codes "U, R"
                     }
                     else if ("`d'" == "WEALTH_QUINTILE") {
-                        local dim_values "Quintile 1, Quintile 2, Quintile 3, Quintile 4, Quintile 5"
+                        local dim_values "Quintile 1-5"
+                        local dim_codes "Q1, Q2, Q3, Q4, Q5"
                     }
                     else if ("`d'" == "AGE") {
-                        local dim_values "Age groups (0-4, 5-9, 10-17, 18+, etc.)"
+                        local dim_values "Age groups"
+                        local dim_codes "Y0T4, Y5T9, Y10T14, Y15T17, Y18T24, etc."
                     }
                     else if ("`d'" == "MATERNAL_EDU_LVL") {
-                        local dim_values "No education, Primary, Secondary, Higher"
+                        local dim_values "Education level"
+                        local dim_codes "ED0 (None), ED1 (Primary), ED2_3 (Secondary), ED4_8 (Higher)"
                     }
                     else if ("`d'" == "EDUCATION_LEVEL") {
-                        local dim_values "ISCED levels 0-8"
+                        local dim_values "ISCED levels"
+                        local dim_codes "L0_2 (Pre-primary), L1 (Primary), L2 (Lower sec), L3 (Upper sec)"
                     }
                     else if ("`d'" == "DISABILITY_STATUS") {
-                        local dim_values "With disability, Without disability"
-                    }
-                    else if ("`d'" == "ETHNIC_GROUP") {
-                        local dim_values "Country-specific ethnic classifications"
+                        local dim_values "Disability status"
+                        local dim_codes "D (Disabled), ND (Not disabled)"
                     }
                     else {
-                        local dim_values "(values vary by dataflow)"
+                        local dim_values "(varies by dataflow)"
+                        local dim_codes ""
                     }
                     
                     if (regexm("`disagg_totals'", "`d'")) {
-                        noi di as text _col(4) "`d'  " as result "(with totals)"
-                        noi di as text _col(6) as text "Options: `dim_values'"
+                        if ("`dim_codes'" != "") {
+                            noi di as text _col(4) "`d'  " as result "(with totals)"
+                            noi di as text _col(6) "Values: `dim_values'"
+                            noi di as text _col(6) "Codes:  " as result "`dim_codes'" as text ", _T (total)"
+                        }
+                        else {
+                            noi di as text _col(4) "`d'  " as result "(with totals)"
+                            noi di as text _col(6) "Values: `dim_values'"
+                        }
                     }
                     else {
-                        noi di as text _col(4) "`d'"
-                        noi di as text _col(6) as text "Options: `dim_values'"
+                        if ("`dim_codes'" != "") {
+                            noi di as text _col(4) "`d'"
+                            noi di as text _col(6) "Values: `dim_values'"
+                            noi di as text _col(6) "Codes:  " as result "`dim_codes'"
+                        }
+                        else {
+                            noi di as text _col(4) "`d'"
+                            noi di as text _col(6) "Values: `dim_values'"
+                        }
                     }
                 }
             }
@@ -296,6 +388,7 @@ program define _unicef_indicator_info, rclass
     return local primary_dataflow "`primary_dataflow'"
     return local description "`ind_desc'"
     return local urn "`ind_urn'"
+    return local api_query_url "`api_query_url'"
     return local has_sex "`has_sex'"
     return local has_age "`has_age'"
     return local has_wealth "`has_wealth'"

@@ -84,17 +84,46 @@ Use the `validation/` directory for scripts to validate dataset metadata.
 
 ### Regenerating Metadata
 
-Use the PowerShell script `tests/regenerate_metadata.ps1` to regenerate metadata across platforms:
+**Recommended (Stata - Full Refresh):**
+```stata
+* Full metadata refresh (all files, all languages)
+unicefdata_refresh_all, verbose
+```
+
+This runs the 4-step workflow:
+1. Base metadata (dataflows, codelists, countries, regions)
+2. Dataflow dimension values (queries SDMX `/data/` endpoint)
+3. Indicator enrichment (fetches full indicator codelist)
+4. Dimension enrichment (adds dimension values to indicators)
+
+**Advanced (Platform-Specific):**
+
+Use the PowerShell script `scripts/sync_metadata_cross_language.ps1` to sync Stata metadata to Python/R:
 
 ```powershell
-# Interactive mode (prompts if files exist)
-.\tests\regenerate_metadata.ps1 -All          # All platforms
-.\tests\regenerate_metadata.ps1 -Python       # Python only
-.\tests\regenerate_metadata.ps1 -R            # R only
-.\tests\regenerate_metadata.ps1 -Stata        # Stata only
+# Sync canonical Stata metadata to Python/R
+.\scripts\sync_metadata_cross_language.ps1
 
-# Force overwrite without prompts
-.\tests\regenerate_metadata.ps1 -All -Force
+# Dry run (preview changes)
+.\scripts\sync_metadata_cross_language.ps1 -DryRun
+```
+
+Or use platform-specific scripts:
+
+```powershell
+# Python only
+python python/unicef_api/run_sync.py --verbose
+
+# R only
+Rscript -e "source('R/metadata_sync.R'); sync_all_metadata(verbose=TRUE)"
+
+# Stata only
+& "C:\Program Files\Stata17\StataMP-64.exe" /e do "stata/src/u/unicefdata_sync.ado"
+```
+
+**Force overwrite without staleness check:**
+```stata
+unicefdata_sync, force verbose
 ```
 
 ### Comparing Metadata Across Platforms

@@ -1,6 +1,40 @@
 vintages:
 - codelists: 5
   countries: 453
+  dataflows: 70
+  errors: []
+  indicators: 738
+  regions: 111
+  synced_at: '2026-01-25T14:41:27.690742Z'
+  vintage_date: '2026-01-25'
+- codelists: 0
+  countries: 0
+  dataflows: 0
+  errors:
+  - 'Dataflows: ''charmap'' codec can''t encode character ''\U0001f4c1'' in position
+    2: character maps to <undefined>'
+  - 'Codelists: ''charmap'' codec can''t encode character ''\U0001f4c1'' in position
+    2: character maps to <undefined>'
+  - 'Countries: ''charmap'' codec can''t encode character ''\U0001f4c1'' in position
+    2: character maps to <undefined>'
+  - 'Regions: ''charmap'' codec can''t encode character ''\U0001f4c1'' in position
+    2: character maps to <undefined>'
+  - 'Indicators: ''charmap'' codec can''t encode character ''\U0001f4c1'' in position
+    2: character maps to <undefined>'
+  indicators: 0
+  regions: 0
+  synced_at: '2026-01-25T13:35:25.857442Z'
+  vintage_date: '2026-01-25'
+- codelists: 5
+  countries: 453
+  dataflows: 70
+  errors: []
+  indicators: 1005
+  regions: 111
+  synced_at: '2026-01-21T03:22:27.386674Z'
+  vintage_date: '2026-01-21'
+- codelists: 5
+  countries: 453
   dataflows: 69
   errors: []
   indicators: 25

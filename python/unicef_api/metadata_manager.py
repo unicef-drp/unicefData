@@ -14,7 +14,7 @@ class MetadataManager:
     
     def __init__(self, metadata_dir: str = None):
         """
-        Initialize MetadataManager.
+        Initialize MetadataManager with session-level schema caching.
         
         Args:
             metadata_dir: Path to metadata directory. If None, attempts to locate
@@ -29,6 +29,10 @@ class MetadataManager:
         else:
             self.metadata_dir = metadata_dir
             
+        # Session-level in-memory cache for dataflow schemas
+        # Key: dataflow_id (e.g., 'CME', 'GLOBAL_DATAFLOW')
+        # Value: schema dictionary
+        # Avoids redundant YAML file reads for same dataflow
         self.schemas = {}
         self.codelists = None
         
@@ -66,7 +70,12 @@ class MetadataManager:
         
     def get_schema(self, dataflow_id: str) -> Optional[Dict[str, Any]]:
         """
-        Load schema for a dataflow.
+        Load schema for a dataflow with session-level caching.
+        
+        Uses in-memory cache: First call loads from disk/API, subsequent
+        calls for the same dataflow return the cached copy. This means
+        fetching multiple indicators from the same dataflow (e.g.,
+        CME_MRY0T4, CME_TMY0T4) only reads the CME schema once per session.
         
         Args:
             dataflow_id: ID of the dataflow (e.g., 'CME', 'GLOBAL_DATAFLOW')
@@ -74,6 +83,7 @@ class MetadataManager:
         Returns:
             Dictionary containing the schema, or None if not found.
         """
+        # Check session-level cache first (avoids redundant disk I/O)
         if dataflow_id in self.schemas:
             return self.schemas[dataflow_id]
             

@@ -1,5 +1,12 @@
+# Lazy-load fallback sequences at first use (not at module init) to respect working directory
+.FALLBACK_ENV <- new.env(parent = emptyenv())
+
 # =============================================================================
-# unicef_core.R - Core composable functions for UNICEF API
+# unicef_core.R - Core data fetching with intelligent fallback logic
+# =============================================================================
+# Version: 1.6.1 (2026-01-12) - Unified fallback architecture
+# Author: João Pedro Azevedo (UNICEF)
+# License: MIT
 # =============================================================================
 
 #' @import dplyr
@@ -13,10 +20,15 @@ if (!requireNamespace("magrittr", quietly = TRUE)) stop("Package 'magrittr' requ
 if (!requireNamespace("dplyr", quietly = TRUE)) stop("Package 'dplyr' required")
 if (!requireNamespace("httr", quietly = TRUE)) stop("Package 'httr' required")
 if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
+if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 
 `%>%` <- magrittr::`%>%`
 
-# 404 detector before anything else
+#' Check if an error is an HTTP 404 response
+#'
+#' @param e An error condition object
+#' @return TRUE if the error represents a 404 Not Found, FALSE otherwise
+#' @keywords internal
 .is_http_404 <- function(e) {
   if (inherits(e, "sdmx_404")) return(TRUE)
   if (inherits(e, "http_404")) return(TRUE)
@@ -28,6 +40,152 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 
   FALSE
 }
+
+# --- Helper: Load Indicators Metadata from Canonical YAML ---
+
+#' Load comprehensive indicators metadata from canonical YAML file
+#'
+#' Enables direct dataflow lookup by indicator code instead of using prefix-based 
+#' fallback sequences. Much faster (O(1) vs trying multiple dataflows).
+#'
+#' @return List with indicators metadata (indicator code -> dataflow mapping, etc.)
+#' @keywords internal
+.load_indicators_metadata_yaml <- function() {
+  candidates <- c(
+    # Workspace root (where user is editing) - use getwd() directly (it's the package root)
+    file.path(getwd(), 'metadata/current/_unicefdata_indicators_metadata.yaml'),
+    # Stata src folder (canonical source in private -dev repo)
+    file.path(getwd(), 'stata/src/__unicefdata_indicators_metadata.yaml'),
+    # Package bundled location
+    system.file('metadata/_unicefdata_indicators_metadata.yaml', package = 'unicefData', mustWork = FALSE)
+  )
+  
+  for (candidate in candidates) {
+    if (file.exists(candidate)) {
+      tryCatch({
+        yaml_data <- yaml::read_yaml(candidate)
+        if (!is.null(yaml_data$indicators)) {
+          if (grepl('workspace|stata', candidate)) {
+            message(sprintf("Loaded comprehensive indicators metadata from: %s", candidate))
+          }
+          return(yaml_data$indicators)
+        }
+      }, error = function(e) {
+        warning(sprintf("Error loading YAML from %s: %s. Trying next location...", candidate, e$message))
+      })
+    }
+  }
+  
+  # No metadata file found - will fall back to prefix-based logic
+  message("No comprehensive indicators metadata found. Will use prefix-based fallback sequences.")
+  return(NULL)
+}
+
+# --- Helper: Load Fallback Sequences from Canonical YAML ---
+
+#' Load fallback dataflow sequences from canonical YAML (shared with Python/Stata)
+#'
+#' Reads _dataflow_fallback_sequences.yaml from the workspace root or package metadata.
+#' This ensures all languages (Stata, Python, R) use identical dataflow resolution logic.
+#'
+#' @return List with fallback sequences by indicator prefix
+#' @keywords internal
+.load_fallback_sequences_yaml <- function() {
+  # Priority 1: Check workspace root (where user has latest YAML)
+  candidates <- c(
+    # Workspace root (where user is editing) - use getwd() directly (it's the package root)
+    file.path(getwd(), 'metadata/current/_dataflow_fallback_sequences.yaml'),
+   # Python metadata folder (cross-platform metadata source)
+   file.path(getwd(), 'python/metadata/current/_dataflow_fallback_sequences.yaml'),
+    # Stata src folder (canonical source in private -dev repo)
+   file.path(getwd(), 'stata/src/_/_dataflow_fallback_sequences.yaml'),
+    # Package bundled location
+    system.file('metadata/_dataflow_fallback_sequences.yaml', package = 'unicefData', mustWork = FALSE)
+  )
+  
+  for (candidate in candidates) {
+    if (file.exists(candidate)) {
+      tryCatch({
+        yaml_data <- yaml::read_yaml(candidate)
+        if (!is.null(yaml_data$fallback_sequences)) {
+          if (grepl('workspace|stata', candidate)) {
+            message(sprintf("Loaded canonical dataflow fallback sequences from: %s", candidate))
+          }
+          return(yaml_data$fallback_sequences)
+        }
+      }, error = function(e) {
+        warning(sprintf("Error loading YAML from %s: %s. Trying next location...", candidate, e$message))
+      })
+    }
+  }
+  
+  # No YAML found - return NULL (will fall back to GLOBAL_DATAFLOW)
+  warning("Could not load canonical _dataflow_fallback_sequences.yaml from workspace or package. Will use GLOBAL_DATAFLOW as fallback.")
+  NULL
+}
+
+#' Get fallback dataflow sequences (lazy loading)
+#'
+#' Returns cached fallback sequences, loading from YAML on first access.
+#' Used for dataflow discovery when indicator is not in primary dataflow.
+#'
+#' @return Named list of fallback sequences by prefix, or NULL if not available
+#' @keywords internal
+.get_fallback_sequences <- function() {
+  if (!exists("sequences", envir = .FALLBACK_ENV, inherits = FALSE)) {
+    assign("sequences", .load_fallback_sequences_yaml(), envir = .FALLBACK_ENV)
+  }
+  get("sequences", envir = .FALLBACK_ENV, inherits = FALSE)
+}
+# Load comprehensive indicators metadata at module initialization
+.INDICATORS_METADATA_YAML <- .load_indicators_metadata_yaml()
+
+# --- Helper: Load aggregate/region codes from YAML ---
+
+#' Load aggregate/region ISO3 codes for geo_type classification
+#'
+#' Reads _unicefdata_regions.yaml to get codes for regions, income groups, and 
+#' other aggregates. Returns a set of ISO3 codes for use in geo_type derivation.
+#' This ensures parity with Stata and Python implementations.
+#'
+#' @return Character vector of ISO3 codes that are aggregates
+#' @keywords internal
+.load_region_codes_yaml <- function() {
+  candidates <- c(
+    # Workspace root (where user is editing)
+    file.path(getwd(), 'metadata/current/_unicefdata_regions.yaml'),
+    # Stata src folder (canonical source in private -dev repo)
+    file.path(getwd(), 'stata/src/_/_unicefdata_regions.yaml'),
+    # Package bundled location
+    system.file('metadata/_unicefdata_regions.yaml', package = 'unicefData', mustWork = FALSE)
+  )
+  
+  for (candidate in candidates) {
+    if (file.exists(candidate)) {
+      tryCatch({
+        yaml_data <- yaml::read_yaml(candidate)
+        if (!is.null(yaml_data$regions) && is.list(yaml_data$regions)) {
+          codes <- names(yaml_data$regions)
+          if (grepl('workspace|stata', candidate)) {
+            message(sprintf("Loaded aggregate/region codes from: %s (%d codes)", candidate, length(codes)))
+          }
+          return(codes)
+        }
+      }, error = function(e) {
+        warning(sprintf("Error loading YAML from %s: %s. Trying next location...", candidate, e$message))
+      })
+    }
+  }
+  
+  warning(
+    "Could not load _unicefdata_regions.yaml. geo_type will default to country (0). ",
+    "Ensure metadata/current/_unicefdata_regions.yaml is available for parity with Stata/Python."
+  )
+  return(character(0))  # Return empty vector if no file found
+}
+
+# Load region codes at module initialization
+.REGION_CODES_YAML <- .load_region_codes_yaml()
 
 # --- Helper: Fetch SDMX ---
 
@@ -63,59 +221,106 @@ fetch_sdmx_text <- function(url, ua = .unicefData_ua, retry) {
 detect_dataflow <- function(indicator) {
   if (is.null(indicator)) return(NULL)
 
-  # 1. Try registry if available
-  if (exists("get_dataflow_for_indicator", mode = "function")) {
-    return(get_dataflow_for_indicator(indicator))
-  }
-
-  # 2. Check known overrides
-  indicator_overrides <- list(
-    "PT_F_20-24_MRD_U18_TND" = "PT_CM", "PT_F_20-24_MRD_U15" = "PT_CM",
-    "PT_F_15-49_FGM" = "PT_FGM", "PT_F_0-14_FGM" = "PT_FGM",
-    "PT_F_15-19_FGM_TND" = "PT_FGM", "PT_F_15-49_FGM_TND" = "PT_FGM",
-    "PT_F_15-49_FGM_ELIM" = "PT_FGM",
-    "ED_CR_L1_UIS_MOD" = "EDUCATION_UIS_SDG", "ED_CR_L2_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_CR_L3_UIS_MOD" = "EDUCATION_UIS_SDG", "ED_ROFST_L1_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ROFST_L2_UIS_MOD" = "EDUCATION_UIS_SDG", "ED_ROFST_L3_UIS_MOD" = "EDUCATION_UIS_SDG",
-    "ED_ANAR_L02" = "EDUCATION_UIS_SDG", "ED_MAT_G23" = "EDUCATION_UIS_SDG",
-    "ED_MAT_L1" = "EDUCATION_UIS_SDG", "ED_MAT_L2" = "EDUCATION_UIS_SDG",
-    "ED_READ_G23" = "EDUCATION_UIS_SDG", "ED_READ_L1" = "EDUCATION_UIS_SDG",
-    "ED_READ_L2" = "EDUCATION_UIS_SDG",
-    "PV_CHLD_DPRV-S-L1-HS" = "CHLD_PVTY"
-  )
-
-  if (indicator %in% names(indicator_overrides)) {
-    return(indicator_overrides[[indicator]])
-  }
-
-  # 3. Infer from prefix
+  # Infer from prefix (fallback if not in metadata)
   parts <- strsplit(indicator, "_")[[1]]
   prefix <- parts[1]
 
-  prefix_map <- list(
-    CME = "CME", NT = "NUTRITION", IM = "IMMUNISATION", ED = "EDUCATION",
-    WS = "WASH_HOUSEHOLDS", HVA = "HIV_AIDS", MNCH = "MNCH", PT = "PT",
-    ECD = "ECD", PV = "CHLD_PVTY"
-  )
-
-  if (prefix %in% names(prefix_map)) {
-    return(prefix_map[[prefix]])
+  # Note: Hardcoded prefix_map removed - use fallback sequences from YAML
+  # Get fallback dataflows for this prefix
+    # Use lazy-loading helper to get fallback sequences (loads at runtime when getwd is set)
+    fallback_sequences <- .get_fallback_sequences()
+    if (!is.null(fallback_sequences) && prefix %in% names(fallback_sequences)) {
+      sequence <- fallback_sequences[[prefix]]
+    if (length(sequence) > 0) {
+      return(sequence[1])  # Return first dataflow in sequence
+    }
   }
 
   return("GLOBAL_DATAFLOW")
 }
 
-# in Python the failing indicator is succeeded by GLOBAL_DATAFLOW, we need the
-# same in R. Let's try detected flow first and if 404, GLOBAL_DATAFLOW. We need
-# a helper function for that:
-get_fallback_dataflows <- function(original_flow) {
-  if (!is.null(original_flow) && !identical(original_flow, "GLOBAL_DATAFLOW")) {
-    return("GLOBAL_DATAFLOW")
+#' Get fallback dataflows for an indicator
+#'
+#' Returns alternative dataflows to try when the primary dataflow fails.
+#' Uses comprehensive indicators metadata for direct lookup, falling back
+#' to prefix-based sequences from canonical YAML.
+#'
+#' @param original_flow Character string of the original dataflow that failed
+#' @param indicator_code Optional indicator code for direct metadata lookup
+#' @return Character vector of fallback dataflow IDs to try
+#' @keywords internal
+get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
+  # Build prefix-specific fallback chains from canonical YAML or comprehensive metadata
+  fallbacks <- c()
+  
+  # If we have an indicator code, first try direct metadata lookup
+  if (!is.null(indicator_code)) {
+    # Priority 1: Direct lookup in comprehensive indicators metadata
+    # Check both 'dataflow' (singular) and 'dataflows' (plural) fields
+    if (!is.null(.INDICATORS_METADATA_YAML) && indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
+      meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+      # Check 'dataflows' (plural) first, then 'dataflow' (singular)
+      dataflow_value <- meta$dataflows %||% meta$dataflow
+      if (!is.null(dataflow_value)) {
+        # Handle both list and scalar values
+        if (is.list(dataflow_value)) {
+          dataflows_list <- unlist(dataflow_value)
+        } else {
+          dataflows_list <- dataflow_value
+        }
+        # Return dataflows that are different from original_flow
+        fallbacks <- setdiff(dataflows_list, original_flow)
+        if (length(fallbacks) > 0) {
+          return(fallbacks)
+        }
+        # If all dataflows match original_flow, return empty (no fallback needed)
+        return(c())
+      }
+    }
+    
+    # Priority 2: Prefix-based fallback sequences (fallback for indicators not in metadata)
+    prefix <- strsplit(indicator_code, "_")[[1]][1]
+    fallback_sequences <- .get_fallback_sequences()
+    if (!is.null(fallback_sequences) && prefix %in% names(fallback_sequences)) {
+      fallbacks <- fallback_sequences[[prefix]]
+    } else if (!is.null(fallback_sequences) && "DEFAULT" %in% names(fallback_sequences)) {
+      # Use default fallback for unknown prefixes
+      fallbacks <- fallback_sequences$DEFAULT %||% c("GLOBAL_DATAFLOW")
+    } else {
+      fallbacks <- c("GLOBAL_DATAFLOW")
+    }
+    
+    # Remove the original_flow from fallbacks to avoid duplicate attempts
+    fallbacks <- setdiff(fallbacks, original_flow)
+  } else {
+    # No indicator code provided, use generic fallback
+    if (!is.null(original_flow) && !identical(original_flow, "GLOBAL_DATAFLOW")) {
+      fallbacks <- c("GLOBAL_DATAFLOW")
+    }
   }
-  character(0)
+  
+  return(fallbacks)
 }
 
-# helper function to fetch and signals 404
+#' Fetch data from a single dataflow with 404 detection
+#'
+#' Low-level helper that fetches indicator data from a specific dataflow.
+#' Returns status "not_found" for 404 errors (allowing fallback to other dataflows)
+#' or throws for other errors.
+#'
+#' @param indicator Character vector of indicator codes
+#' @param dataflow Character string of dataflow ID
+#' @param countries Character vector of ISO3 country codes (optional)
+#' @param start_year_str Character string of start year (optional)
+#' @param end_year_str Character string of end year (optional)
+#' @param max_retries Integer number of retry attempts
+#' @param version SDMX version string (default "1.0")
+#' @param page_size Integer number of rows per page
+#' @param verbose Logical for progress messages
+#' @param totals Logical for including totals
+#' @param labels Label format ("id" or "name")
+#' @return List with status ("ok" or "not_found") and df (data.frame or NULL)
+#' @keywords internal
 .fetch_one_flow <- function(
     indicator,
     dataflow,
@@ -124,21 +329,72 @@ get_fallback_dataflows <- function(original_flow) {
     end_year_str = NULL,
     max_retries = 3,
     version = "1.0",
-    page_size = 1000000,
-    verbose = TRUE
+    page_size = 100000,
+  verbose = TRUE,
+  totals = FALSE,
+  labels = "id"
 ) {
   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-  
-  # Build indicator key: NULL means all indicators, otherwise .IND1+IND2.
-  if (is.null(indicator) || length(indicator) == 0) {
-    indicator_str <- ""  # Empty key = all indicators in dataflow
-  } else {
-    indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  # Override and expand dimensions for WS_HCF_* to expose service/hcf/residence breakdowns
+  if (length(indicator) == 1 && grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+    dataflow <- "WASH_HEALTHCARE_FACILITY"
+    code <- toupper(indicator[[1]])
+    tail <- sub("^WS_HCF_", "", code)
+    service_type <- ""
+    if (grepl("^W-", tail)) {
+      service_type <- "WAT"
+    } else if (grepl("^S-", tail)) {
+      service_type <- "SAN"
+    } else if (grepl("^H-", tail)) {
+      service_type <- "HYG"
+    } else if (grepl("^WM-", tail)) {
+      service_type <- "HCW"
+    } else if (grepl("^C-", tail)) {
+      service_type <- "CLEAN"
+    }
+    hcf_vals <- c("_T","NON_HOS","HOS","GOV","NON_GOV")
+    res_vals <- c("_T","U","R")
+    hcf_part <- paste(hcf_vals, collapse = "+")
+    res_part <- paste(res_vals, collapse = "+")
+    if (nzchar(service_type)) {
+      indicator_str <- paste0(".", code, ".", service_type, ".", hcf_part, ".", res_part)
+    } else {
+      indicator_str <- paste0(".", code, "..", hcf_part, ".", res_part)
+    }
   }
-  
+  # Explicit totals across known dimensions when requested
+  if (totals && !grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+    # Attempt to load schema to determine dimension count
+    if (!exists("load_dataflow_schema", mode = "function")) {
+      script_dir <- dirname(sys.frame(1)$ofile %||% ".")
+      schema_script <- file.path(script_dir, "schema_sync.R")
+      if (file.exists(schema_script)) source(schema_script)
+    }
+    dim_suffix <- "._T"
+    if (exists("load_dataflow_schema", mode = "function")) {
+      schema <- tryCatch(load_dataflow_schema(dataflow), error = function(e) NULL)
+      if (!is.null(schema) && !is.null(schema$dimensions)) {
+        ids <- vapply(schema$dimensions, function(d) d$id, character(1))
+        ids <- ids[!(ids %in% c("REF_AREA", "INDICATOR"))]
+        if (length(ids) > 0) {
+          dim_suffix <- paste0(".", paste(rep("_T", length(ids)), collapse = "."))
+        }
+      }
+    }
+    indicator_str <- paste0(indicator_str, sub("^\\.", "", dim_suffix))
+  }
   rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
 
-  full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
+  # Validate labels parameter
+  if (!labels %in% c("id", "both", "none")) {
+    stop(sprintf("labels must be 'id', 'both', or 'none', got '%s'", labels))
+  }
+
+  # Default: request codes only to prevent duplicate label columns (cross-platform consistency)
+  # labels parameter can be "id", "both", or "none"
+  # Value labels can be applied client-side if needed
+  full_url <- paste0(base, "/", rel_path, "?format=csv&labels=", labels)
   if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
   if (!is.null(end_year_str))   full_url <- paste0(full_url, "&endPeriod=", end_year_str)
 
@@ -156,7 +412,7 @@ get_fallback_dataflows <- function(original_flow) {
     # IMPORTANT: catch 404 as a signal, not a fatal error
     out <- tryCatch(
       {
-        txt <- fetch_sdmx_text(page_url, ua = ua, max_retries)     # may throw http_404
+        txt <- fetch_sdmx_text(page_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
         readr::read_csv(txt, show_col_types = FALSE)
       },
       error = function(e) e
@@ -226,10 +482,9 @@ get_fallback_dataflows <- function(original_flow) {
 #' @param version Character string of SDMX version (e.g. "1.0").
 #' @param page_size Integer, number of rows per page.
 #' @param verbose Logical, print progress messages.
+#' @param totals Logical, include total aggregations.
+#' @param labels Character, label format ("id" or "name").
 #' @export
-
-# changes in this function to replace the internal URL block
-
 unicefData_raw <- function(
     indicator = NULL,
     dataflow = NULL,
@@ -238,8 +493,10 @@ unicefData_raw <- function(
     end_year = NULL,
     max_retries = 3,
     version = NULL,
-    page_size = 1000000,
-    verbose = TRUE
+    page_size = 100000,
+    verbose = TRUE,
+    totals = FALSE,
+    labels = "id"
 ) {
   # Validate inputs - at least one must be specified
   if (is.null(dataflow) && is.null(indicator)) {
@@ -273,7 +530,7 @@ unicefData_raw <- function(
   # Candidate flows: primary + fallbacks (only if indicator specified)
   flows <- dataflow
   if (!is.null(indicator)) {
-    fb <- get_fallback_dataflows(original_flow = dataflow)
+    fb <- get_fallback_dataflows(original_flow = dataflow, indicator_code = indicator[1])
     if (length(fb) > 0) flows <- unique(c(dataflow, fb))
   }
 
@@ -292,7 +549,9 @@ unicefData_raw <- function(
       max_retries = max_retries,
       version = ver,
       page_size = page_size,
-      verbose = verbose
+      verbose = verbose,
+      totals = totals,
+      labels = labels
     )
 
     if (identical(res$status, "ok")) {
@@ -449,12 +708,14 @@ clean_unicef_data <- function(df) {
       dplyr::select(iso3, country, dplyr::everything())
   }
 
-  # Add geo_type (country vs aggregate)
+  # Add geo_type: 1 for aggregates (ISO3 in YAML regions list), 0 otherwise (numeric)
   if ("iso3" %in% names(df_clean)) {
-    valid_iso3 <- countrycode::codelist$iso3c
+    if (length(.REGION_CODES_YAML) == 0) {
+      warning("geo_type classification: region codes not loaded; treating all as country (0).")
+    }
     df_clean <- df_clean %>%
       dplyr::mutate(
-        geo_type = dplyr::if_else(iso3 %in% valid_iso3, "country", "aggregate")
+        geo_type = dplyr::if_else(iso3 %in% .REGION_CODES_YAML, 1L, 0L)
       )
   }
 
@@ -462,6 +723,8 @@ clean_unicef_data <- function(df) {
 }
 #' @title Filter UNICEF Data (Sex, Age, Wealth, etc.)
 #' @description Filters data to specific disaggregations or defaults to totals.
+#'   Uses indicator metadata (disaggregations_with_totals) to determine which
+#'   dimensions have _T totals and should be filtered by default.
 #' @param df Data frame to filter.
 #' @param sex Character string for sex filter (e.g. "F", "M", "_T").
 #' @param age Character string for age filter.
@@ -469,14 +732,34 @@ clean_unicef_data <- function(df) {
 #' @param residence Character string for residence filter.
 #' @param maternal_edu Character string for maternal education filter.
 #' @param verbose Logical, print progress messages.
+#' @param indicator_code Optional indicator code to enable metadata-driven filtering.
+#'   Placed at end to preserve backward compatibility with existing positional calls.
+#' @param dataflow Optional dataflow name for dataflow-specific filtering logic.
+#'   For NUTRITION dataflow, age defaults to Y0T4 instead of _T.
 #' @export
-filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, residence = NULL, maternal_edu = NULL, verbose = TRUE) {
+filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, residence = NULL, maternal_edu = NULL, verbose = TRUE, indicator_code = NULL, dataflow = NULL) {
   if (nrow(df) == 0) return(df)
 
   available_disaggregations <- c()
   applied_filters <- c()
+  skipped_filters <- c()
+
+  # Get indicator metadata for smart filtering (disaggregations_with_totals)
+  dims_with_totals <- c()
+  if (!is.null(indicator_code) && !is.null(.INDICATORS_METADATA_YAML) &&
+      indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
+    meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+    if (!is.null(meta$disaggregations_with_totals)) {
+      dims_with_totals <- meta$disaggregations_with_totals
+      if (verbose) {
+        message(sprintf("Using metadata for %s: dimensions with totals = %s",
+                        indicator_code, paste(dims_with_totals, collapse = ", ")))
+      }
+    }
+  }
 
   # Filter by sex (default is "_T" for total)
+  # STATA-STYLE: Only filter if value exists; otherwise keep all data
   if ("SEX" %in% names(df)) {
     sex_values <- unique(na.omit(df$SEX))
     if (length(sex_values) > 1 || (length(sex_values) == 1 && sex_values[1] != "_T")) {
@@ -484,77 +767,183 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
                                      paste0("sex: ", paste(sex_values, collapse = ", ")))
     }
     if (!is.null(sex) && !identical(sex, "ALL")) {
-      df <- df %>% dplyr::filter(SEX %in% sex)
-      applied_filters <- c(applied_filters, paste0("sex: ", paste(sex, collapse = ", ")))
+      # Check if requested value exists before filtering (Stata behavior)
+      if (any(sex %in% sex_values)) {
+        df <- df %>% dplyr::filter(SEX %in% sex)
+        applied_filters <- c(applied_filters, paste0("sex: ", paste(sex, collapse = ", ")))
+      } else {
+        # Value not found - keep all data (Stata behavior)
+        skipped_filters <- c(skipped_filters, paste0("sex: ", paste(sex, collapse = ", "), " not found; keeping all"))
+      }
     }
   }
 
   # Filter by age (default: keep only total age groups)
+  # STATA-STYLE: Only filter if value exists
+  # NUTRITION dataflow special case: use Y0T4 (0-4 years) as default since _T doesn't exist
   if ("AGE" %in% names(df)) {
     age_values <- unique(na.omit(df$AGE))
     if (length(age_values) > 1) {
       available_disaggregations <- c(available_disaggregations,
                                      paste0("age: ", paste(age_values, collapse = ", ")))
       if (is.null(age)) {
-        # Keep only total age groups
-        total_ages <- c("_T", "Y0T4", "Y0T14", "Y0T17", "Y15T49", "ALLAGE")
-        age_totals <- intersect(total_ages, age_values)
-        if (length(age_totals) > 0) {
-          df <- df %>% dplyr::filter(AGE %in% age_totals)
-          applied_filters <- c(applied_filters, paste0("age: ", paste(age_totals, collapse = ", "), " (Default)"))
+        # Special case: NUTRITION dataflow uses Y0T4 (0-4 years) instead of _T
+        # The AGE dimension in NUTRITION has specific age groups but no _T total
+        df_upper <- if (!is.null(dataflow)) toupper(dataflow) else ""
+        if (df_upper == "NUTRITION" && "Y0T4" %in% age_values && !("_T" %in% age_values)) {
+          df <- df %>% dplyr::filter(AGE == "Y0T4")
+          applied_filters <- c(applied_filters, "age: Y0T4 (Default for NUTRITION)")
+          message("Note: NUTRITION dataflow uses age=Y0T4 (0-4 years) as default instead of _T")
+        } else {
+          # Keep only total age groups if any exist
+          total_ages <- c("_T", "Y0T4", "Y0T14", "Y0T17", "Y15T49", "ALLAGE")
+          age_totals <- intersect(total_ages, age_values)
+          if (length(age_totals) > 0) {
+            # Prefer _T if available, otherwise use first available total
+            if ("_T" %in% age_totals) {
+              df <- df %>% dplyr::filter(AGE == "_T")
+              applied_filters <- c(applied_filters, "age: _T (Default)")
+            } else {
+              preferred_age <- age_totals[1]
+              df <- df %>% dplyr::filter(AGE == preferred_age)
+              applied_filters <- c(applied_filters, paste0("age: ", preferred_age, " (Default - _T not available)"))
+            }
+          }
+          # If no totals exist, keep all (Stata behavior)
         }
       } else if (age != "ALL") {
-        df <- df %>% dplyr::filter(AGE == age)
-        applied_filters <- c(applied_filters, paste0("age: ", age))
+        if (age %in% age_values) {
+          df <- df %>% dplyr::filter(AGE == age)
+          applied_filters <- c(applied_filters, paste0("age: ", age))
+        } else {
+          skipped_filters <- c(skipped_filters, paste0("age: ", age, " not found; keeping all"))
+        }
       }
     }
   }
 
-  # Filter by wealth quintile (default: total)
+  # Filter by wealth quintile (default: total if in metadata)
+  # METADATA-DRIVEN: Only filter to _T if WEALTH_QUINTILE is in dims_with_totals
+  # OR if no metadata available (safe default). This matches Python behavior.
   if ("WEALTH_QUINTILE" %in% names(df)) {
     wq_values <- unique(na.omit(df$WEALTH_QUINTILE))
     if (length(wq_values) > 1 || (length(wq_values) == 1 && wq_values[1] != "_T")) {
       available_disaggregations <- c(available_disaggregations,
                                      paste0("wealth_quintile: ", paste(wq_values, collapse = ", ")))
     }
-    if (is.null(wealth) && "_T" %in% wq_values) {
+    # Only apply default filter if dimension is in metadata OR no metadata available
+    if (is.null(wealth) && "_T" %in% wq_values &&
+        ("WEALTH_QUINTILE" %in% dims_with_totals || length(dims_with_totals) == 0)) {
       df <- df %>% dplyr::filter(WEALTH_QUINTILE == "_T")
       applied_filters <- c(applied_filters, "wealth_quintile: _T (Default)")
     } else if (!is.null(wealth) && wealth != "ALL") {
-      df <- df %>% dplyr::filter(WEALTH_QUINTILE == wealth)
-      applied_filters <- c(applied_filters, paste0("wealth_quintile: ", wealth))
+      if (wealth %in% wq_values) {
+        df <- df %>% dplyr::filter(WEALTH_QUINTILE == wealth)
+        applied_filters <- c(applied_filters, paste0("wealth_quintile: ", wealth))
+      } else {
+        skipped_filters <- c(skipped_filters, paste0("wealth_quintile: ", wealth, " not found; keeping all"))
+      }
     }
   }
 
-  # Filter by residence (default: total)
+  # Filter by residence (default: total if in metadata)
+  # METADATA-DRIVEN: Only filter to _T if RESIDENCE is in dims_with_totals
+  # OR if no metadata available (safe default). This matches Python behavior.
   if ("RESIDENCE" %in% names(df)) {
     res_values <- unique(na.omit(df$RESIDENCE))
     if (length(res_values) > 1 || (length(res_values) == 1 && res_values[1] != "_T")) {
       available_disaggregations <- c(available_disaggregations,
                                      paste0("residence: ", paste(res_values, collapse = ", ")))
     }
-    if (is.null(residence) && "_T" %in% res_values) {
+    # Only apply default filter if dimension is in metadata OR no metadata available
+    if (is.null(residence) && "_T" %in% res_values &&
+        ("RESIDENCE" %in% dims_with_totals || length(dims_with_totals) == 0)) {
       df <- df %>% dplyr::filter(RESIDENCE == "_T")
       applied_filters <- c(applied_filters, "residence: _T (Default)")
     } else if (!is.null(residence) && residence != "ALL") {
-      df <- df %>% dplyr::filter(RESIDENCE == residence)
-      applied_filters <- c(applied_filters, paste0("residence: ", residence))
+      if (residence %in% res_values) {
+        df <- df %>% dplyr::filter(RESIDENCE == residence)
+        applied_filters <- c(applied_filters, paste0("residence: ", residence))
+      } else {
+        skipped_filters <- c(skipped_filters, paste0("residence: ", residence, " not found; keeping all"))
+      }
     }
   }
 
-  # Filter by maternal education level (default: total)
+  # Filter by maternal education level (default: total if in metadata)
+  # METADATA-DRIVEN: Only filter to _T if MATERNAL_EDU_LVL is in dims_with_totals
+  # OR if no metadata available (safe default). This matches Python behavior.
   if ("MATERNAL_EDU_LVL" %in% names(df)) {
     edu_values <- unique(na.omit(df$MATERNAL_EDU_LVL))
     if (length(edu_values) > 1 || (length(edu_values) == 1 && edu_values[1] != "_T")) {
       available_disaggregations <- c(available_disaggregations,
                                      paste0("maternal_edu_lvl: ", paste(edu_values, collapse = ", ")))
     }
-    if (is.null(maternal_edu) && "_T" %in% edu_values) {
+    # Only apply default filter if dimension is in metadata OR no metadata available
+    if (is.null(maternal_edu) && "_T" %in% edu_values &&
+        ("MATERNAL_EDU_LVL" %in% dims_with_totals || length(dims_with_totals) == 0)) {
       df <- df %>% dplyr::filter(MATERNAL_EDU_LVL == "_T")
       applied_filters <- c(applied_filters, "maternal_edu_lvl: _T (Default)")
     } else if (!is.null(maternal_edu) && maternal_edu != "ALL") {
-      df <- df %>% dplyr::filter(MATERNAL_EDU_LVL == maternal_edu)
-      applied_filters <- c(applied_filters, paste0("maternal_edu_lvl: ", maternal_edu))
+      if (maternal_edu %in% edu_values) {
+        df <- df %>% dplyr::filter(MATERNAL_EDU_LVL == maternal_edu)
+        applied_filters <- c(applied_filters, paste0("maternal_edu_lvl: ", maternal_edu))
+      } else {
+        skipped_filters <- c(skipped_filters, paste0("maternal_edu_lvl: ", maternal_edu, " not found; keeping all"))
+      }
+    }
+  }
+
+  # Filter by disability status using metadata-driven logic
+  # DISABILITY_STATUS dimension: _T=total, PD=without disabilities, PWD=with disabilities
+  # Only filter to _T if DISABILITY_STATUS is in dims_with_totals
+  if ("DISABILITY_STATUS" %in% names(df)) {
+    dis_values <- unique(na.omit(df$DISABILITY_STATUS))
+    if (length(dis_values) > 1 || (length(dis_values) == 1 && !dis_values[1] %in% c("_T", "PD"))) {
+      available_disaggregations <- c(available_disaggregations,
+                                     paste0("disability_status: ", paste(dis_values, collapse = ", ")))
+    }
+
+    # Check if metadata says this dimension has totals
+    has_totals <- "DISABILITY_STATUS" %in% dims_with_totals
+
+    if (has_totals && "_T" %in% dis_values) {
+      df <- df %>% dplyr::filter(.data$DISABILITY_STATUS == "_T")
+      applied_filters <- c(applied_filters, "disability_status: _T (Default)")
+    } else if (!has_totals && "PD" %in% dis_values && length(dis_values) > 1) {
+      # PD = "People without Disabilities" - baseline when no total exists
+      df <- df %>% dplyr::filter(.data$DISABILITY_STATUS == "PD")
+      applied_filters <- c(applied_filters, "disability_status: PD (no _T in metadata)")
+    }
+  }
+
+  # Filter by education level (use metadata to check if totals exist)
+  if ("EDUCATION_LEVEL" %in% names(df)) {
+    edu_lvl_values <- unique(na.omit(df$EDUCATION_LEVEL))
+    if (length(edu_lvl_values) > 1 || (length(edu_lvl_values) == 1 && edu_lvl_values[1] != "_T")) {
+      available_disaggregations <- c(available_disaggregations,
+                                     paste0("education_level: ", paste(edu_lvl_values, collapse = ", ")))
+    }
+    # Only filter if in metadata OR no metadata available (safe default)
+    if (("EDUCATION_LEVEL" %in% dims_with_totals || length(dims_with_totals) == 0) &&
+        "_T" %in% edu_lvl_values) {
+      df <- df %>% dplyr::filter(.data$EDUCATION_LEVEL == "_T")
+      applied_filters <- c(applied_filters, "education_level: _T (Default)")
+    }
+  }
+
+  # Filter by ethnic group (use metadata to check if totals exist)
+  if ("ETHNIC_GROUP" %in% names(df)) {
+    eth_values <- unique(na.omit(df$ETHNIC_GROUP))
+    if (length(eth_values) > 1 || (length(eth_values) == 1 && eth_values[1] != "_T")) {
+      available_disaggregations <- c(available_disaggregations,
+                                     paste0("ethnic_group: ", paste(eth_values, collapse = ", ")))
+    }
+    # Only filter if in metadata OR no metadata available (safe default)
+    if (("ETHNIC_GROUP" %in% dims_with_totals || length(dims_with_totals) == 0) &&
+        "_T" %in% eth_values) {
+      df <- df %>% dplyr::filter(.data$ETHNIC_GROUP == "_T")
+      applied_filters <- c(applied_filters, "ethnic_group: _T (Default)")
     }
   }
 
@@ -566,6 +955,9 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
     }
     if (length(applied_filters) > 0) {
       message(sprintf("Applied filters: %s.", paste(applied_filters, collapse = "; ")))
+    }
+    if (length(skipped_filters) > 0) {
+      message(sprintf("Skipped filters: %s.", paste(skipped_filters, collapse = "; ")))
     }
   }
 

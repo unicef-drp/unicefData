@@ -1,19 +1,21 @@
-*! version 1.0.0  15Jan2026
+*! version 2.0.0  18Jan2026
 program define _unicef_build_schema_key, rclass
 * Build SDMX data key using schema-aware dimension construction
 * 
-* Syntax: _unicef_build_schema_key indicator_code dataflow metadata_path [, nofilter]
+* Syntax: _unicef_build_schema_key indicator_code dataflow metadata_path [, nofilter verbose]
 *
 * This program dynamically extracts dimension structure from dataflow schema
-* and constructs an efficient pre-fetch filter key with explicit dimension values.
+* and constructs an efficient pre-fetch filter key respecting actual dimension order.
+*
+* Key insight: Dimension order varies by dataflow:
+*   - CME: INDICATOR.SEX.AGE.WEALTH.RESIDENCE
+*   - WASH_HOUSEHOLDS: REF_AREA.INDICATOR.SERVICE_TYPE.WEALTH.RESIDENCE
 *
 * When nofilter=0 (default):
-*     Constructs: .{INDICATOR}._T._T._T... (one _T per dimension)
-*     Server filters to totals only (efficient)
+*     Uses _T for all filterable dimensions (efficient)
 *
 * When nofilter=1:
-*     Constructs: .{INDICATOR}.... (all values for all dimensions)
-*     Server returns ALL disaggregations (50-100x more data)
+*     Constructs: .{INDICATOR}.... (all disaggregations, with trailing dots for known dimension count)
 *
 * Returns:
 *   r(key) - SDMX data key string for URL construction
@@ -25,114 +27,154 @@ program define _unicef_build_schema_key, rclass
 *   _unicef_build_schema_key "CME_MRY0T4" "CME" "/path/to/metadata", nofilter
 *   local mykey_all = r(key)
 
-* Parse options
-    syntax anything, [NOFilter]
-    local indicator_code : word 1 of `anything'
-    local dataflow : word 2 of `anything'
-    local metadata_path : word 3 of `anything'
-    
-    * nofilter option: if present, set nofilter=1
-    local nofilter = 0
-    if (!missing("`nofilter'")) {
-        local nofilter = 1
+  version 11
+  syntax anything, [NOFilter VERbose BULK SEX(string) AGE(string) WEALTH(string) RESIDENCE(string) MATERNAL_EDU(string) FILTERDISAGG]
+  
+  local indicator_code : word 1 of `anything'
+  local dataflow : word 2 of `anything'
+  local metadata_path : word 3 of `anything'
+  
+  local nofilter = cond(!missing("`nofilter'"), 1, 0)
+  local bulk = cond(!missing("`bulk'"), 1, 0)
+  local filter_disagg = cond(!missing("`filterdisagg'"), 1, 0)  // Skip indicator dimension if true
+  
+  * Handle bulk download: use 'all' as indicator code
+  if (`bulk' == 1 | lower("`indicator_code'") == "all") {
+    local indicator_code "all"
+    if "`verbose'" != "" {
+      display "  (schema_key) Bulk download mode: using 'all' for indicator dimension"
     }
-    
-    * Special case: WS_HCF_* indicators in WASH_HEALTHCARE_FACILITY
-    if substr(upper("`indicator_code'"), 1, 6) == "WS_HCF" & "`dataflow'" == "WASH_HEALTHCARE_FACILITY" {
-        * Map indicator prefix to service type
-        local suffix = substr("`indicator_code'", 7, .)
-        
-        local service_type ""
-        if substr("`suffix'", 1, 2) == "W-" {
-            local service_type "WAT"
+  }
+  
+  if "`verbose'" != "" {
+    display "  (schema_key) Building key for `indicator_code' in `dataflow'"
+  }
+  
+  // Extract dimension structure using helper
+  capture {
+    __unicef_get_indicator_filters, dataflow("`dataflow'") `verbose'
+    if _rc == 0 {
+      local num_dimensions = r(num_dimensions)
+      local ref_area_pos = r(ref_area_position)
+      local indicator_pos = r(indicator_position)
+      
+      // CRITICAL: Capture individual dimension names (dimension_1, dimension_2, etc)
+      // This is needed in the loop below to identify which dimensions to include in the key
+      forvalues i = 1/`num_dimensions' {
+        local dimension_`i' = r(dimension_`i')
+      }
+      
+      if "`verbose'" != "" {
+        display "    Dimensions: `num_dimensions' (REF_AREA at `ref_area_pos', INDICATOR at `indicator_pos')"
+        forvalues i = 1/`num_dimensions' {
+          display "      Position `i': `dimension_`i''"
         }
-        else if substr("`suffix'", 1, 2) == "S-" {
-            local service_type "SAN"
-        }
-        else if substr("`suffix'", 1, 2) == "H-" {
-            local service_type "HYG"
-        }
-        else if substr("`suffix'", 1, 3) == "WM-" {
-            local service_type "HCW"
-        }
-        else if substr("`suffix'", 1, 2) == "C-" {
-            local service_type "CLEAN"
-        }
-        
-        * Load dataflow schema to get dimension values
-        local schema_file = "`metadata_path'/dataflows/`dataflow'.yaml"
-        
-        if !fileexists("`schema_file'") {
-            * Fallback if schema not found
-            if (`nofilter' == 1) {
-                * Fetch all HCF and RESIDENCE values
-                local hcf_vals ""
-                local res_vals ""
-            }
-            else {
-                * Pre-fetch filtering: use totals
-                local hcf_vals "_T,NON_HOS,HOS,GOV,NON_GOV"
-                local res_vals "_T,U,R"
-            }
-        }
-        else {
-            * Parse YAML schema to extract dimension values
-            * For now, use default values (schema parsing in Stata is complex)
-            if (`nofilter' == 1) {
-                * Fetch all values
-                local hcf_vals ""
-                local res_vals ""
-            }
-            else {
-                * Pre-fetch filtering: use known defaults
-                local hcf_vals "_T,NON_HOS,HOS,GOV,NON_GOV"
-                local res_vals "_T,U,R"
-            }
-        }
-        
-        * Build HCF and RESIDENCE parts
-        local hcf_part = subinstr("`hcf_vals'", ",", "+", .)
-        local res_part = subinstr("`res_vals'", ",", "+", .)
-        
-        * REF_AREA left empty for all countries
-        * Key order per schema: REF_AREA.INDICATOR.SERVICE_TYPE.HCF_TYPE.RESIDENCE
-        if !missing("`service_type'") {
-            return local key ".`indicator_code'.`service_type'.`hcf_part'.`res_part'"
-        }
-        else {
-            * Fallback: no service_type mapping found
-            return local key ".`indicator_code'..`hcf_part'.`res_part'"
-        }
+      }
     }
-    
-    * Standard case: construct key based on schema dimensions
-    * Load dataflow schema to get dimension structure
-    local schema_file = "`metadata_path'/dataflows/`dataflow'.yaml"
-    
-    if !fileexists("`schema_file'") {
-        * Fallback if schema not found
-        if (`nofilter' == 1) {
-            * Fetch all disaggregations: use empty strings for all dimensions
-            return local key ".`indicator_code'....."
-        }
-        else {
-            * Pre-fetch filtering: use _T for all dimensions
-            return local key ".`indicator_code'._T._T._T._T._T"
-        }
+  }
+  
+  if _rc != 0 {
+    if "`verbose'" != "" {
+      display "    Schema lookup failed; using fallback"
     }
-    
-    * For now, use conservative default that applies to most dataflows
-    * This builds: .{INDICATOR}._T for most dimensions (SEX set to _T for totals)
-    * Or: .{INDICATOR}.. if nofilter (all disaggregations)
-    * More sophisticated parsing of YAML schema can be added later if needed
-    
+    // Fallback: conservative assumption
     if (`nofilter' == 1) {
-        * Fetch all disaggregations
-        return local key ".`indicator_code'.."
+      return local key ".`indicator_code'"
     }
     else {
-        * Pre-fetch filtering (totals only)
-        return local key ".`indicator_code'._T"
+      return local key ".`indicator_code'._T._T._T._T._T"
     }
+    exit
+  }
+  
+  // Build key respecting dimension order
+  // Strategy: Create position-aware filter vector
+  
+  if (`nofilter' == 1) {
+    // No filter: pad with dots based on dimension count
+    // Output: .INDICATOR. . . . . (one dot per non-fixed dimension)
+    local key ".`indicator_code'"
+    
+    // Count non-fixed dimensions to pad appropriately
+    local non_fixed_count = `num_dimensions' - 3  // Subtract REF_AREA, INDICATOR, TIME_PERIOD
+    if `non_fixed_count' > 0 {
+      local dotpad ""
+      forvalues i = 1/`non_fixed_count' {
+        local dotpad "`dotpad'."
+      }
+      local key "`key'`dotpad'"
+    }
+    
+    if "`verbose'" != "" {
+      display "    NoFilter mode: `key'"
+    }
+    return local key "`key'"
+  }
+  else {
+    // User filters mode: build the key following actual schema dimension order
+    // Map known disaggregation dimensions to the provided filter values
+    
+    // Build key starting with indicator position
+    if (`filter_disagg' == 0) {
+      // Include indicator in the key
+      local key ".`indicator_code'"
+    }
+    else {
+      // Filter only disaggregation dimensions (skip indicator)
+      // Start with empty to only add disagg filters
+      local key ""
+    }
+    
+    // Loop over schema dimensions in order and append filter values
+    // Skip fixed dimensions: REF_AREA, INDICATOR, TIME_PERIOD, UNIT_MEASURE
+    forvalues i = 1/`num_dimensions' {
+      local dim_id = upper("`dimension_`i''")
+      
+      // When filter_disagg=1, skip INDICATOR dimension entirely
+      if (`filter_disagg' == 1 & "`dim_id'" == "INDICATOR") {
+        continue
+      }
+      
+      if inlist("`dim_id'", "REF_AREA", "INDICATOR", "TIME_PERIOD", "UNIT_MEASURE") {
+        continue
+      }
+      
+      // Select the appropriate filter value based on the dimension id
+      local f_val ""
+      if ("`dim_id'" == "SEX") {
+        local f_val "`sex'"
+      }
+      else if ("`dim_id'" == "AGE") {
+        local f_val "`age'"
+      }
+      else if ("`dim_id'" == "WEALTH_QUINTILE") {
+        local f_val "`wealth'"
+      }
+      else if ("`dim_id'" == "RESIDENCE") {
+        local f_val "`residence'"
+      }
+      else if (substr("`dim_id'",1,7) == "MATERNAL") {
+        local f_val "`maternal_edu'"
+      }
+      else {
+        // Unknown dimension: leave empty to request all
+        local f_val ""
+      }
+      
+      // Append to key, preserving positional structure
+      if ("`f_val'" == "") {
+        local key "`key'."
+      }
+      else {
+        local key "`key'.`f_val'"
+      }
+    }
+    
+    if "`verbose'" != "" {
+      display "    User filters mode: `key'"
+      display "      sex=`sex', age=`age', wealth=`wealth', residence=`residence', maternal_edu=`maternal_edu'"
+    }
+    return local key "`key'"
+  }
 
 end

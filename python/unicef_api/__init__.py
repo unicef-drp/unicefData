@@ -5,7 +5,7 @@ This library provides a simplified interface for fetching child welfare and deve
 indicators from UNICEF's SDMX data repository.
 """
 
-__version__ = "1.5.2"
+__version__ = "2.0.0"
 
 def build_user_agent() -> str:
     """Build a User-Agent string including package version and Python runtime."""
@@ -38,10 +38,8 @@ from unicef_api.sdmx_client import (
     SDMXNotFoundError,
     SDMXServerError,
 )
-from unicef_api.config import (
-    COMMON_INDICATORS,
-    UNICEF_DATAFLOWS,
-)
+# Note: COMMON_INDICATORS and UNICEF_DATAFLOWS removed
+# Use UNICEFSDMXClient._indicators_metadata instead
 from unicef_api.metadata import (
     list_vintages,
     compare_vintages,
@@ -74,9 +72,8 @@ __all__ = [
     "SDMXBadRequestError",
     "SDMXNotFoundError",
     "SDMXServerError",
-    # Config
-    "COMMON_INDICATORS",
-    "UNICEF_DATAFLOWS",
+    # Note: COMMON_INDICATORS and UNICEF_DATAFLOWS removed
+    # Use UNICEFSDMXClient._indicators_metadata instead
     # Metadata
     "list_vintages",
     "compare_vintages",

@@ -1,6 +1,6 @@
 *******************************************************************************
 * _unicef_list_dataflows.ado
-*! v 1.5.3   16Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 1.6.0   20Jan2026               by Joao Pedro Azevedo (UNICEF)
 * List available UNICEF SDMX dataflows with indicator counts
 * Uses direct file parsing for robust, yaml.ado-independent operation
 *
@@ -23,7 +23,7 @@
 program define _unicef_list_dataflows, rclass
     version 11.0
     
-    syntax [, DETail DUPS VERBOSE METApath(string)]
+    syntax [, DETail DUPS VERBOSE METApath(string) SHOWALL SHOWTIER2 SHOWTIER3]
     
     quietly {
     
@@ -62,6 +62,24 @@ program define _unicef_list_dataflows, rclass
             exit 601
         }
         
+        *-----------------------------------------------------------------------
+        * Tier filter setup (default = Tier 1 only)
+        *-----------------------------------------------------------------------
+        local tier_mode = 1
+        local tier_filter "tier_1_only"
+        if ("`showtier2'" != "") {
+            local tier_mode = 2
+            local tier_filter "tier_1_and_2"
+        }
+        if ("`showtier3'" != "") {
+            local tier_mode = 3
+            local tier_filter "tier_1_to_3"
+        }
+        if ("`showall'" != "") {
+            local tier_mode = 999
+            local tier_filter "all_tiers"
+        }
+        
         if ("`verbose'" != "") {
             noi di as text "Reading dataflows from: " as result "`yaml_file'"
             if ("`dups'" != "") {
@@ -70,6 +88,7 @@ program define _unicef_list_dataflows, rclass
             else {
                 noi di as text "Mode: count indicators in FIRST dataflow only"
             }
+            noi di as text "Tier filter: " as result "`tier_filter'"
         }
         
         *-----------------------------------------------------------------------
@@ -89,6 +108,7 @@ program define _unicef_list_dataflows, rclass
         local current_ind = ""
         local current_dataflows = ""
         local in_dataflows_list = 0
+        local current_tier = ""
         
         file read `fh' line
         
@@ -110,37 +130,54 @@ program define _unicef_list_dataflows, rclass
                 if (substr("`orig_line'", 1, 1) != " " & "`trimmed'" != "" & !regexm("`trimmed'", "^#")) {
                     * Process final indicator if pending
                     if ("`current_ind'" != "" & "`current_dataflows'" != "") {
-                        local total_indicators = `total_indicators' + 1
-                        local total_with_dataflows = `total_with_dataflows' + 1
-                        local current_dataflows = strtrim("`current_dataflows'")
+                        * Determine if current indicator is included by tier filter
+                        local itier = "`current_tier'"
+                        if ("`itier'" == "") local itier = "3"
+                        local include = 0
+                        if (`tier_mode' == 999) local include = 1
+                        else if (`tier_mode' == 3 & inlist(real("`itier'"),1,2,3)) local include = 1
+                        else if (`tier_mode' == 2 & inlist(real("`itier'"),1,2)) local include = 1
+                        else if (`tier_mode' == 1 & real("`itier'") == 1) local include = 1
                         
-                        if ("`dups'" != "") {
-                            * Count in ALL dataflows
-                            foreach df of local current_dataflows {
-                                * Add to dataflow count
-                                if (strpos(" `all_dataflows' ", " `df' ") == 0) {
-                                    local all_dataflows "`all_dataflows' `df'"
-                                    local count_`df' = 1
+                        if (`include') {
+                            local total_indicators = `total_indicators' + 1
+                            local total_with_dataflows = `total_with_dataflows' + 1
+                            local current_dataflows = strtrim("`current_dataflows'")
+                            
+                            if ("`dups'" != "") {
+                                * Count in ALL dataflows
+                                foreach df of local current_dataflows {
+                                    if (strpos(" `all_dataflows' ", " `df' ") == 0) {
+                                        local all_dataflows "`all_dataflows' `df'"
+                                        local count_`df' = 1
+                                    }
+                                    else {
+                                        local count_`df' = `count_`df'' + 1
+                                    }
                                 }
-                                else {
-                                    local count_`df' = `count_`df'' + 1
-                                }
-                            }
-                        }
-                        else {
-                            * Count in FIRST dataflow only
-                            local first_df : word 1 of `current_dataflows'
-                            if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
-                                local all_dataflows "`all_dataflows' `first_df'"
-                                local count_`first_df' = 1
                             }
                             else {
-                                local count_`first_df' = `count_`first_df'' + 1
+                                * Count in FIRST dataflow only
+                                local first_df : word 1 of `current_dataflows'
+                                if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
+                                    local all_dataflows "`all_dataflows' `first_df'"
+                                    local count_`first_df' = 1
+                                }
+                                else {
+                                    local count_`first_df' = `count_`first_df'' + 1
+                                }
                             }
                         }
                     }
                     else if ("`current_ind'" != "") {
-                        local total_indicators = `total_indicators' + 1
+                        * Indicator without dataflows; still count it if included
+                        local itier = "`current_tier'"
+                        if ("`itier'" == "") local itier = "3"
+                        if (`tier_mode' == 999 | (`tier_mode' == 3 & inlist(real("`itier'"),1,2,3)) | ///
+                            (`tier_mode' == 2 & inlist(real("`itier'"),1,2)) | ///
+                            (`tier_mode' == 1 & real("`itier'") == 1)) {
+                            local total_indicators = `total_indicators' + 1
+                        }
                     }
                     local in_indicators = 0
                     file read `fh' line
@@ -201,33 +238,43 @@ program define _unicef_list_dataflows, rclass
                     
                     * Process previous indicator if exists
                     if ("`current_ind'" != "") {
-                        local total_indicators = `total_indicators' + 1
+                        local itier = "`current_tier'"
+                        if ("`itier'" == "") local itier = "3"
+                        local include = 0
+                        if (`tier_mode' == 999) local include = 1
+                        else if (`tier_mode' == 3 & inlist(real("`itier'"),1,2,3)) local include = 1
+                        else if (`tier_mode' == 2 & inlist(real("`itier'"),1,2)) local include = 1
+                        else if (`tier_mode' == 1 & real("`itier'") == 1) local include = 1
                         
-                        if ("`current_dataflows'" != "") {
-                            local total_with_dataflows = `total_with_dataflows' + 1
-                            local current_dataflows = strtrim("`current_dataflows'")
+                        if (`include') {
+                            local total_indicators = `total_indicators' + 1
                             
-                            if ("`dups'" != "") {
-                                * Count in ALL dataflows
-                                foreach df of local current_dataflows {
-                                    if (strpos(" `all_dataflows' ", " `df' ") == 0) {
-                                        local all_dataflows "`all_dataflows' `df'"
-                                        local count_`df' = 1
+                            if ("`current_dataflows'" != "") {
+                                local total_with_dataflows = `total_with_dataflows' + 1
+                                local current_dataflows = strtrim("`current_dataflows'")
+                                
+                                if ("`dups'" != "") {
+                                    * Count in ALL dataflows
+                                    foreach df of local current_dataflows {
+                                        if (strpos(" `all_dataflows' ", " `df' ") == 0) {
+                                            local all_dataflows "`all_dataflows' `df'"
+                                            local count_`df' = 1
+                                        }
+                                        else {
+                                            local count_`df' = `count_`df'' + 1
+                                        }
                                     }
-                                    else {
-                                        local count_`df' = `count_`df'' + 1
-                                    }
-                                }
-                            }
-                            else {
-                                * Count in FIRST dataflow only
-                                local first_df : word 1 of `current_dataflows'
-                                if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
-                                    local all_dataflows "`all_dataflows' `first_df'"
-                                    local count_`first_df' = 1
                                 }
                                 else {
-                                    local count_`first_df' = `count_`first_df'' + 1
+                                    * Count in FIRST dataflow only
+                                    local first_df : word 1 of `current_dataflows'
+                                    if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
+                                        local all_dataflows "`all_dataflows' `first_df'"
+                                        local count_`first_df' = 1
+                                    }
+                                    else {
+                                        local count_`first_df' = `count_`first_df'' + 1
+                                    }
                                 }
                             }
                         }
@@ -237,7 +284,17 @@ program define _unicef_list_dataflows, rclass
                     local current_ind = subinstr("`trimmed'", ":", "", .)
                     local current_dataflows = ""
                     local in_dataflows_list = 0
+                    local current_tier = ""
                     
+                    file read `fh' line
+                    continue
+                }
+            }
+            
+            * Parse tier value for current indicator
+            if (`in_indicators' == 1) {
+                if (regexm("`trimmed'", "^tier:[ ]*([0-9]+)$")) {
+                    local current_tier = regexs(1)
                     file read `fh' line
                     continue
                 }
@@ -248,31 +305,41 @@ program define _unicef_list_dataflows, rclass
         
         * Process final indicator if exists
         if ("`current_ind'" != "" & `in_indicators' == 1) {
-            local total_indicators = `total_indicators' + 1
+            local itier = "`current_tier'"
+            if ("`itier'" == "") local itier = "3"
+            local include = 0
+            if (`tier_mode' == 999) local include = 1
+            else if (`tier_mode' == 3 & inlist(real("`itier'"),1,2,3)) local include = 1
+            else if (`tier_mode' == 2 & inlist(real("`itier'"),1,2)) local include = 1
+            else if (`tier_mode' == 1 & real("`itier'") == 1) local include = 1
             
-            if ("`current_dataflows'" != "") {
-                local total_with_dataflows = `total_with_dataflows' + 1
-                local current_dataflows = strtrim("`current_dataflows'")
+            if (`include') {
+                local total_indicators = `total_indicators' + 1
                 
-                if ("`dups'" != "") {
-                    foreach df of local current_dataflows {
-                        if (strpos(" `all_dataflows' ", " `df' ") == 0) {
-                            local all_dataflows "`all_dataflows' `df'"
-                            local count_`df' = 1
+                if ("`current_dataflows'" != "") {
+                    local total_with_dataflows = `total_with_dataflows' + 1
+                    local current_dataflows = strtrim("`current_dataflows'")
+                    
+                    if ("`dups'" != "") {
+                        foreach df of local current_dataflows {
+                            if (strpos(" `all_dataflows' ", " `df' ") == 0) {
+                                local all_dataflows "`all_dataflows' `df'"
+                                local count_`df' = 1
+                            }
+                            else {
+                                local count_`df' = `count_`df'' + 1
+                            }
                         }
-                        else {
-                            local count_`df' = `count_`df'' + 1
-                        }
-                    }
-                }
-                else {
-                    local first_df : word 1 of `current_dataflows'
-                    if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
-                        local all_dataflows "`all_dataflows' `first_df'"
-                        local count_`first_df' = 1
                     }
                     else {
-                        local count_`first_df' = `count_`first_df'' + 1
+                        local first_df : word 1 of `current_dataflows'
+                        if (strpos(" `all_dataflows' ", " `first_df' ") == 0) {
+                            local all_dataflows "`all_dataflows' `first_df'"
+                            local count_`first_df' = 1
+                        }
+                        else {
+                            local count_`first_df' = `count_`first_df'' + 1
+                        }
                     }
                 }
             }
@@ -333,6 +400,8 @@ program define _unicef_list_dataflows, rclass
     }
     noi di as text "{hline `linesize'}"
     noi di ""
+    noi di as text "Tier filter: " as result "`tier_filter'"
+    noi di ""
     
     if (`n_dataflows' == 0) {
         noi di as text "  No dataflows found with indicators."
@@ -380,12 +449,19 @@ program define _unicef_list_dataflows, rclass
     return local dataflow_ids "`sorted_dataflows'"
     return local counts "`sorted_counts'"
     return local yaml_file "`yaml_file'"
+    return scalar tier_mode = `tier_mode'
+    return local tier_filter "`tier_filter'"
     
 end
 
 *******************************************************************************
 * Version history
 *******************************************************************************
+* v 1.6.0   20Jan2026   by Joao Pedro Azevedo
+*   - NEW: Tier-aware filtering (default Tier 1; showtier2/showtier3/showall)
+*   - Display and return tier filter metadata (r(tier_mode), r(tier_filter))
+*   - Parity with _unicef_list_categories tier behavior
+*
 * v 1.5.0   16Jan2026   by Joao Pedro Azevedo
 *   - MAJOR REWRITE: Count indicators per dataflow from metadata
 *   - Direct file parsing (no yaml.ado dependency)

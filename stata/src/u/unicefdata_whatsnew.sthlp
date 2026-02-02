@@ -1,8 +1,10 @@
 {smcl}
-{* *! version 1.6.0  12Jan2026}{...}
+{* *! version 2.0.0  24Jan2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v2.0.0" "unicefdata_whatsnew##v200"}{...}
+{viewerjumpto "v1.10.0" "unicefdata_whatsnew##v1100"}{...}
 {viewerjumpto "v1.6.0" "unicefdata_whatsnew##v160"}{...}
 {viewerjumpto "v1.5.2" "unicefdata_whatsnew##v152"}{...}
 {viewerjumpto "v1.5.1" "unicefdata_whatsnew##v151"}{...}
@@ -18,6 +20,72 @@
 {pstd}
 {it:Return to {help unicefdata:main help file}}
 {p_end}
+
+
+{marker v200}{...}
+{title:What's New in v2.0.0 (24Jan2026)}
+
+{pstd}
+{bf:Major Quality Milestone:} All QA tests passing (38/38, 100% success rate)
+{p_end}
+
+{pstd}
+{bf:SYNC-02 Enrichment Fix:}
+{p_end}
+{phang2}• Fixed critical path extraction bug in metadata enrichment pipeline{p_end}
+{phang2}• Phase 2-3 enrichment now working: tier classification + disaggregations{p_end}
+{phang2}• Previously: 37/38 tests passing (SYNC-02 failed with "enrichment incomplete"){p_end}
+{phang2}• Now: 38/38 tests passing in 10m 17s{p_end}
+
+{pstd}
+{bf:Technical Details:}
+{p_end}
+{phang2}• Root cause: Incorrect directory path extraction from YAML file paths{p_end}
+{phang2}• Solution: Implemented forvalues loop to find rightmost slash properly{p_end}
+{phang2}• Impact: Metadata synchronization pipeline fully operational{p_end}
+
+{pstd}
+{bf:Enhanced Reliability:}
+{p_end}
+{phang2}• All enrichment phases complete successfully{p_end}
+{phang2}• Improved YAML file path resolution{p_end}
+{phang2}• Better error handling and diagnostics{p_end}
+
+
+{marker v1100}{...}
+{title:What's New in v1.10.0 (18Jan2026)}
+
+{pstd}
+{bf:Enhanced info() display:} The {opt info()} option now shows SDMX dimension codes
+alongside human-readable values, enabling direct use in API queries.
+{p_end}
+
+{pstd}
+{bf:New info() features:}
+{p_end}
+{phang2}• Shows both values and SDMX codes (e.g., "M, F, _T (total)" for SEX){p_end}
+{phang2}• Displays clickable API Query URL for testing in browser{p_end}
+{phang2}• Shows full URN for SDMX identification{p_end}
+{phang2}• Excludes technical dimensions (UNIT_MEASURE) from disaggregations{p_end}
+
+{pstd}
+{bf:Streamlined post-fetch display:} After data retrieval, the indicator summary
+is now concise with a clickable tip directing users to {cmd:info()} for full metadata.
+{p_end}
+
+{pstd}
+{bf:SDMX dimension code reference:}
+{p_end}
+{phang2}{cmd:SEX}: M (Male), F (Female), _T (Total){p_end}
+{phang2}{cmd:RESIDENCE}: U (Urban), R (Rural), _T (Total){p_end}
+{phang2}{cmd:WEALTH_QUINTILE}: Q1, Q2, Q3, Q4, Q5, _T (Total){p_end}
+{phang2}{cmd:AGE}: Y0T4, Y5T9, Y10T14, Y15T17, etc.{p_end}
+{phang2}{cmd:EDUCATION_LEVEL}: L0_2, L1, L2, L3 (ISCED levels){p_end}
+
+{pstd}
+{bf:Example:} View full metadata with SDMX codes:
+{p_end}
+{phang2}{cmd:. unicefdata, info(ED_ANAR_L2)}{p_end}
 
 
 {marker v160}{...}

@@ -512,205 +512,15 @@ build_indicator_catalog <- function(verbose = TRUE, use_shared_config = TRUE) {
   invisible(result)
 }
 
-#' Get fallback indicator definitions (hardcoded)
+#' Get fallback indicator definitions
 #' @keywords internal
+#' REMOVED: Hardcoded fallback indicators
+#' All indicator metadata now loaded from:
+#' - _unicefdata_indicators_metadata.yaml (733 indicators)
+#' Access via unicef_core.R: .INDICATORS_METADATA_YAML
 .get_fallback_indicators <- function() {
-  list(
-    # Child Mortality (SDG 3.2)
-    CME_MRM0 = list(
-      code = "CME_MRM0",
-      name = "Neonatal mortality rate",
-      dataflow = "CME",
-      sdg_target = "3.2.2",
-      unit = "Deaths per 1,000 live births"
-    ),
-    CME_MRY0T4 = list(
-      code = "CME_MRY0T4",
-      name = "Under-5 mortality rate",
-      dataflow = "CME",
-      sdg_target = "3.2.1",
-      unit = "Deaths per 1,000 live births"
-    ),
-    
-    # Nutrition (SDG 2.2)
-    NT_ANT_HAZ_NE2_MOD = list(
-      code = "NT_ANT_HAZ_NE2_MOD",
-      name = "Stunting prevalence (moderate + severe)",
-      dataflow = "NUTRITION",
-      sdg_target = "2.2.1",
-      unit = "Percentage"
-    ),
-    NT_ANT_WHZ_NE2 = list(
-      code = "NT_ANT_WHZ_NE2",
-      name = "Wasting prevalence",
-      dataflow = "NUTRITION",
-      sdg_target = "2.2.2",
-      unit = "Percentage"
-    ),
-    NT_ANT_WHZ_PO2_MOD = list(
-      code = "NT_ANT_WHZ_PO2_MOD",
-      name = "Overweight prevalence (moderate + severe)",
-      dataflow = "NUTRITION",
-      sdg_target = "2.2.2",
-      unit = "Percentage"
-    ),
-    
-    # Education (SDG 4.1)
-    ED_ANAR_L02 = list(
-      code = "ED_ANAR_L02",
-      name = "Adjusted net attendance rate, primary education",
-      dataflow = "EDUCATION_UIS_SDG",
-      sdg_target = "4.1.1",
-      unit = "Percentage"
-    ),
-    ED_CR_L1_UIS_MOD = list(
-      code = "ED_CR_L1_UIS_MOD",
-      name = "Completion rate, primary education",
-      dataflow = "EDUCATION_UIS_SDG",
-      sdg_target = "4.1.1",
-      unit = "Percentage"
-    ),
-    ED_CR_L2_UIS_MOD = list(
-      code = "ED_CR_L2_UIS_MOD",
-      name = "Completion rate, lower secondary education",
-      dataflow = "EDUCATION_UIS_SDG",
-      sdg_target = "4.1.1",
-      unit = "Percentage"
-    ),
-    ED_READ_L2 = list(
-      code = "ED_READ_L2",
-      name = "Reading proficiency, end of lower secondary",
-      dataflow = "EDUCATION_UIS_SDG",
-      sdg_target = "4.1.1",
-      unit = "Percentage"
-    ),
-    ED_MAT_L2 = list(
-      code = "ED_MAT_L2",
-      name = "Mathematics proficiency, end of lower secondary",
-      dataflow = "EDUCATION_UIS_SDG",
-      sdg_target = "4.1.1",
-      unit = "Percentage"
-    ),
-    
-    # Immunization (SDG 3.b)
-    IM_DTP3 = list(
-      code = "IM_DTP3",
-      name = "DTP3 immunization coverage",
-      dataflow = "IMMUNISATION",
-      sdg_target = "3.b.1",
-      unit = "Percentage"
-    ),
-    IM_MCV1 = list(
-      code = "IM_MCV1",
-      name = "Measles immunization coverage (MCV1)",
-      dataflow = "IMMUNISATION",
-      sdg_target = "3.b.1",
-      unit = "Percentage"
-    ),
-    
-    # HIV/AIDS (SDG 3.3)
-    HVA_EPI_INF_RT = list(
-      code = "HVA_EPI_INF_RT",
-      name = "HIV incidence rate",
-      dataflow = "HIV_AIDS",
-      sdg_target = "3.3.1",
-      unit = "Per 1,000 uninfected population"
-    ),
-    
-    # WASH (SDG 6.1, 6.2)
-    `WS_PPL_W-SM` = list(
-      code = "WS_PPL_W-SM",
-      name = "Population using safely managed drinking water services",
-      dataflow = "WASH_HOUSEHOLDS",
-      sdg_target = "6.1.1",
-      unit = "Percentage"
-    ),
-    `WS_PPL_S-SM` = list(
-      code = "WS_PPL_S-SM",
-      name = "Population using safely managed sanitation services",
-      dataflow = "WASH_HOUSEHOLDS",
-      sdg_target = "6.2.1",
-      unit = "Percentage"
-    ),
-    `WS_PPL_H-B` = list(
-      code = "WS_PPL_H-B",
-      name = "Population with basic handwashing facilities",
-      dataflow = "WASH_HOUSEHOLDS",
-      sdg_target = "6.2.1",
-      unit = "Percentage"
-    ),
-    
-    # Maternal and Child Health (SDG 3.1, 3.7)
-    MNCH_MMR = list(
-      code = "MNCH_MMR",
-      name = "Maternal mortality ratio",
-      dataflow = "MNCH",
-      sdg_target = "3.1.1",
-      unit = "Deaths per 100,000 live births"
-    ),
-    MNCH_SAB = list(
-      code = "MNCH_SAB",
-      name = "Skilled attendance at birth",
-      dataflow = "MNCH",
-      sdg_target = "3.1.2",
-      unit = "Percentage"
-    ),
-    MNCH_ABR = list(
-      code = "MNCH_ABR",
-      name = "Adolescent birth rate",
-      dataflow = "MNCH",
-      sdg_target = "3.7.2",
-      unit = "Births per 1,000 women aged 15-19"
-    ),
-    
-    # Child Protection (SDG 5.3, 16.2, 16.9)
-    PT_CHLD_Y0T4_REG = list(
-      code = "PT_CHLD_Y0T4_REG",
-      name = "Birth registration (children under 5)",
-      dataflow = "PT",
-      sdg_target = "16.9.1",
-      unit = "Percentage"
-    ),
-    `PT_CHLD_1-14_PS-PSY-V_CGVR` = list(
-      code = "PT_CHLD_1-14_PS-PSY-V_CGVR",
-      name = "Violent discipline (children 1-14)",
-      dataflow = "PT",
-      sdg_target = "16.2.1",
-      unit = "Percentage"
-    ),
-    `PT_F_20-24_MRD_U18_TND` = list(
-      code = "PT_F_20-24_MRD_U18_TND",
-      name = "Child marriage before age 18 (women 20-24)",
-      dataflow = "PT_CM",
-      sdg_target = "5.3.1",
-      unit = "Percentage"
-    ),
-    `PT_F_15-49_FGM` = list(
-      code = "PT_F_15-49_FGM",
-      name = "Female genital mutilation prevalence (women 15-49)",
-      dataflow = "PT_FGM",
-      sdg_target = "5.3.2",
-      unit = "Percentage"
-    ),
-    
-    # Early Childhood Development (SDG 4.2)
-    ECD_CHLD_LMPSL = list(
-      code = "ECD_CHLD_LMPSL",
-      name = "Children developmentally on track (literacy-numeracy, physical, social-emotional)",
-      dataflow = "ECD",
-      sdg_target = "4.2.1",
-      unit = "Percentage"
-    ),
-    
-    # Child Poverty (SDG 1.2)
-    `PV_CHLD_DPRV-S-L1-HS` = list(
-      code = "PV_CHLD_DPRV-S-L1-HS",
-      name = "Child multidimensional poverty (severe deprivation in at least 1 dimension)",
-      dataflow = "CHLD_PVTY",
-      sdg_target = "1.2.1",
-      unit = "Percentage"
-    )
-  )
+  # Return empty list - all metadata loaded from YAML
+  list()
 }
 
 # ============================================================================
@@ -1130,6 +940,12 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
 # Private Helpers
 # ============================================================================
 
+#' Fetch XML content from URL with retry logic
+#'
+#' @param url Character string of URL to fetch
+#' @param retries Integer number of retry attempts (default 3)
+#' @return Character string of XML content
+#' @keywords internal
 .fetch_xml <- function(url, retries = 3L) {
   ua <- httr::user_agent("unicefData/0.2.0 (+https://github.com/unicef-drp/unicefData)")
   
@@ -1145,6 +961,13 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   }
 }
 
+#' Fetch codelist from SDMX API
+#'
+#' Retrieves a codelist by ID and returns structured code information.
+#'
+#' @param codelist_id Character string of codelist identifier
+#' @return List with codelist name and codes, or NULL on error
+#' @keywords internal
 .fetch_codelist <- function(codelist_id) {
   url <- sprintf("%s/codelist/%s/%s/latest",
                  .metadata_config$BASE_URL, .metadata_config$AGENCY, codelist_id)
@@ -1210,6 +1033,14 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   c(watermark, content)
 }
 
+#' Save data to YAML file in current metadata directory
+#'
+#' Writes data to a YAML file without line wrapping for cross-platform consistency.
+#'
+#' @param filename Character string of filename (without path)
+#' @param data List or vector to save as YAML
+#' @return Invisible filepath of saved file
+#' @keywords internal
 .save_yaml <- function(filename, data) {
   current_dir <- get_current_dir()
   if (!dir.exists(current_dir)) {
@@ -1305,6 +1136,11 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   return(x)
 }
 
+#' Load YAML file from current metadata directory
+#'
+#' @param filename Character string of filename (without path)
+#' @return List from parsed YAML, or empty list if file not found
+#' @keywords internal
 .load_yaml <- function(filename) {
   current_dir <- get_current_dir()
   filepath <- file.path(current_dir, filename)
@@ -1314,6 +1150,11 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   yaml::read_yaml(filepath)
 }
 
+#' Load YAML file from absolute path
+#'
+#' @param filepath Character string of absolute file path
+#' @return List from parsed YAML, or empty list if file not found
+#' @keywords internal
 .load_yaml_from_path <- function(filepath) {
   if (!file.exists(filepath)) {
     return(list())
@@ -1321,6 +1162,16 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   yaml::read_yaml(filepath)
 }
 
+#' Create a vintage snapshot of current metadata
+#'
+#' Copies current metadata files to a dated vintage directory for historical
+#' reference and rollback capability.
+#'
+#' @param vintage_date Character string of vintage date (YYYY-MM-DD format)
+#' @param results List of sync results with counts
+#' @param verbose Logical for progress messages
+#' @return Invisible path to vintage directory
+#' @keywords internal
 .create_vintage <- function(vintage_date, results, verbose = TRUE) {
   cache_dir <- get_metadata_cache()
   current_dir <- get_current_dir()
@@ -1366,6 +1217,14 @@ ensure_metadata <- function(max_age_days = 30, verbose = FALSE, cache_dir = NULL
   invisible(vintage_dir)
 }
 
+#' Update sync history with new vintage entry
+#'
+#' Adds a new entry to the sync history file tracking metadata synchronizations.
+#'
+#' @param vintage_date Character string of vintage date (YYYY-MM-DD format)
+#' @param results List of sync results with counts and timestamps
+#' @return Invisible NULL
+#' @keywords internal
 .update_sync_history <- function(vintage_date, results) {
   cache_dir <- get_metadata_cache()
   history_file <- file.path(cache_dir, .metadata_config$FILE_SYNC_HISTORY)

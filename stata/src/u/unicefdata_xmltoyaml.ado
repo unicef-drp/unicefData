@@ -1,10 +1,10 @@
 *******************************************************************************
 * unicefdata_xmltoyaml
-*! v 2.2.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.0.0   30Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Generic XML to YAML parser for SDMX data structures
 * Supports both Python (preferred) and pure Stata (fallback) parsers
-* v2.2.0: Added FALLBACKSEQUENCESOUT option for generating fallback sequences
-* v2.1.0: Added ENRICHDATAFLOWS option for indicator metadata
+* Added FALLBACKSEQUENCESOUT option for generating fallback sequences
+* Added ENRICHDATAFLOWS option for indicator metadata
 *******************************************************************************
 
 /*

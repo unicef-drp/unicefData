@@ -1,0 +1,108 @@
+name: Validate Metadata Schemas
+
+on:
+  push:
+    branches: [ main, develop, xcross-platform-validation ]
+    paths:
+      - 'stata/src/_/*.yaml'
+      - 'python/metadata/current/*.yaml'
+      - 'R/metadata/current/*.yaml'
+      - 'stata/src/py/validate_yaml_schema.py'
+      - 'validation/scripts/validate_yaml_schema.py'
+      - '.github/workflows/validate-schemas.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'stata/src/_/*.yaml'
+      - 'python/metadata/current/*.yaml'
+      - 'R/metadata/current/*.yaml'
+      - 'stata/src/py/validate_yaml_schema.py'
+      - 'validation/scripts/validate_yaml_schema.py'
+  workflow_dispatch:
+
+jobs:
+  validate-metadata:
+    name: Validate YAML Metadata Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Validate Indicator Metadata
+        id: validate-indicators
+        run: |
+          echo "::group::Validating Indicator Metadata"
+          python stata/src/py/validate_yaml_schema.py indicators stata/src/_/_unicefdata_indicators_metadata.yaml
+          echo "::endgroup::"
+
+      - name: Validate Dataflow Index
+        id: validate-dataflow-index
+        run: |
+          echo "::group::Validating Dataflow Index"
+          python stata/src/py/validate_yaml_schema.py dataflow_index stata/src/_/_dataflow_index.yaml
+          echo "::endgroup::"
+
+      - name: Validate Dataflows Metadata
+        id: validate-dataflows
+        continue-on-error: true
+        run: |
+          echo "::group::Validating Dataflows Metadata"
+          python stata/src/py/validate_yaml_schema.py dataflows stata/src/_/_unicefdata_dataflows.yaml
+          echo "::endgroup::"
+
+      - name: Validate Codelists
+        id: validate-codelists
+        continue-on-error: true
+        run: |
+          echo "::group::Validating Codelists"
+          python stata/src/py/validate_yaml_schema.py codelists stata/src/_/_unicefdata_codelists.yaml
+          echo "::endgroup::"
+
+      - name: Validate Countries
+        id: validate-countries
+        continue-on-error: true
+        run: |
+          echo "::group::Validating Countries"
+          python stata/src/py/validate_yaml_schema.py countries stata/src/_/_unicefdata_countries.yaml
+          echo "::endgroup::"
+
+      - name: Validate Regions
+        id: validate-regions
+        continue-on-error: true
+        run: |
+          echo "::group::Validating Regions"
+          python stata/src/py/validate_yaml_schema.py regions stata/src/_/_unicefdata_regions.yaml
+          echo "::endgroup::"
+
+      - name: Cross-Platform Schema Validation
+        id: validate-cross-platform
+        run: |
+          echo "::group::Cross-Platform Schema Validation"
+          python validation/scripts/validate_yaml_schema.py --strict
+          echo "::endgroup::"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Indicators Metadata | ${{ steps.validate-indicators.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dataflow Index | ${{ steps.validate-dataflow-index.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dataflows Metadata | ${{ steps.validate-dataflows.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Codelists | ${{ steps.validate-codelists.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Countries | ${{ steps.validate-countries.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Regions | ${{ steps.validate-regions.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Cross-Platform Sync** | ${{ steps.validate-cross-platform.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY

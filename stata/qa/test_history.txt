@@ -252,3 +252,767 @@ Result:   FAILED
 Failed:   DL-05, DISC-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run: 18 Jan 2026
+Started:  22:11:11
+Ended:    22:11:43
+Duration: 0m 32s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    28 run, 15 passed, 10 failed
+Result:   FAILED
+Failed:   DL-04, DL-05, DL-07, TRANS-01, MULTI-01, PERF-01, XPLAT-01, XPLAT-02, XPLAT-04, XPLAT-05
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 18 Jan 2026
+Started:  23:09:55
+Ended:    23:10:26
+Duration: 0m 31s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    28 run, 19 passed, 7 failed
+Result:   FAILED
+Failed:   DL-05, DL-07, MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 18 Jan 2026
+Started:  23:16:35
+Ended:    23:17:03
+Duration: 0m 28s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    28 run, 21 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 18 Jan 2026
+Started:  23:29:15
+Ended:    23:29:51
+Duration: 0m 36s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 18 Jan 2026
+Started:  23:37:00
+Ended:    23:37:34
+Duration: 0m 34s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  08:37:03
+Ended:    08:37:37
+Duration: 0m 34s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:15:30
+Ended:    09:16:02
+Duration: 0m 32s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:17:33
+Ended:    09:18:08
+Duration: 0m 35s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:18:33
+Ended:    09:19:04
+Duration: 0m 31s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:19:23
+Ended:    09:19:57
+Duration: 0m 34s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 23 passed, 5 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01, XPLAT-01, XPLAT-04
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:40:41
+Ended:    09:41:16
+Duration: 0m 35s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 25 passed, 3 failed
+Result:   FAILED
+Failed:   MULTI-01, EDGE-03, PERF-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  09:54:28
+Ended:    09:55:13
+Duration: 0m 45s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 26 passed, 2 failed
+Result:   FAILED
+Failed:   EDGE-03, PERF-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  10:02:14
+Ended:    10:02:52
+Duration: 0m 38s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 26 passed, 2 failed
+Result:   FAILED
+Failed:   EDGE-03, PERF-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  10:04:46
+Ended:    10:05:24
+Duration: 0m 38s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 27 passed, 1 failed
+Result:   FAILED
+Failed:   EDGE-03
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  10:07:04
+Ended:    10:07:46
+Duration: 0m 42s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  10:28:46
+Ended:    10:29:22
+Duration: 0m 36s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  11:42:04
+Ended:    11:43:18
+Duration: 1m 14s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  12:29:22
+Ended:    12:30:07
+Duration: 0m 45s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Skipped:  2 (see run_tests.log for reasons)
+Skip detail: META-02: Metadata YAML not found at C:/GitHub/myados/unicefData/stata/src/_/_dataflow_index.yaml | REGR-01: Snapshot baseline not yet defined; add fixture to enable
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  12:55:34
+Ended:    12:56:19
+Duration: 0m 45s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Skipped:  2 (see run_tests.log for reasons)
+Skip detail: META-02: Metadata YAML not found at C:\GitHub\myados\unicefData-dev\stata\qa/src/_/_unicefdata_dataflows.yaml | REGR-01: Snapshot baseline not yet defined; add fixture to enable
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  12:56:50
+Ended:    12:57:34
+Duration: 0m 44s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 28 passed, 0 failed
+Skipped:  2 (see run_tests.log for reasons)
+Skip detail: META-02: Metadata YAML not found at C:\GitHub\myados\unicefData-dev\stata\qa/src/_/_unicefdata_dataflows.yaml | REGR-01: Snapshot baseline not yet defined; add fixture to enable
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  13:21:13
+Ended:    13:21:47
+Duration: 0m 34s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 29 passed, 0 failed
+Skipped:  1 (see run_tests.log for reasons)
+Skip detail: REGR-01: Snapshot baseline not yet defined; add fixture to enable
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  14:10:24
+Ended:    14:11:05
+Duration: 0m 41s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 29 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   REGR-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  14:18:22
+Ended:    14:19:00
+Duration: 0m 38s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.10.0
+Stata:    17
+Tests:    30 run, 30 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  22:13:10
+Ended:    22:13:51
+Duration: 0m 41s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.2
+Stata:    17
+Tests:    33 run, 32 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   MULTI-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 19 Jan 2026
+Started:  22:26:21
+Ended:    22:27:04
+Duration: 0m 43s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.2
+Stata:    17
+Tests:    33 run, 33 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 20 Jan 2026
+Started:  00:50:20
+Ended:    00:51:05
+Duration: 0m 45s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.3
+Stata:    17
+Tests:    34 run, 32 passed, 1 failed
+Skipped:  1 (see run_tests.log for reasons)
+Skip detail: MULTI-02: Network unavailable - cannot test API csv-ts format
+Result:   FAILED
+Failed:   TRANS-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 20 Jan 2026
+Started:  10:46:00
+Ended:    10:47:03
+Duration: 1m 3s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.4
+Stata:    17
+Tests:    34 run, 33 passed, 0 failed
+Skipped:  1 (see run_tests.log for reasons)
+Skip detail: MULTI-02: Network unavailable - cannot test API csv-ts format
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 20 Jan 2026
+Started:  10:54:48
+Ended:    10:55:34
+Duration: 0m 46s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.4
+Stata:    17
+Tests:    34 run, 34 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 20 Jan 2026
+Started:  11:53:00
+Ended:    11:53:48
+Duration: 0m 48s
+Branch:   feat/cross-platform-dataset-schema
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 34 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 20 Jan 2026
+Started:  12:21:57
+Ended:    12:22:58
+Duration: 1m 1s
+Branch:   develop
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 34 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  08:04:53
+Ended:    08:05:52
+Duration: 0m 59s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 33 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   MULTI-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  08:16:21
+Ended:    08:23:53
+Duration: 7m 32s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    37 run, 35 passed, 2 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-01, MULTI-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  09:07:28
+Ended:    09:08:23
+Duration: 0m 55s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 33 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   TRANS-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  11:26:39
+Ended:    11:27:35
+Duration: 0m 56s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 33 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   TRANS-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  11:32:42
+Ended:    11:34:05
+Duration: 1m 23s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    34 run, 34 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  11:39:45
+Ended:    11:49:12
+Duration: 9m 27s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    37 run, 36 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  12:34:56
+Ended:    12:44:30
+Duration: 9m 34s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    37 run, 37 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  16:07:24
+Ended:    16:18:48
+Duration: 11m 24s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    37 run, 37 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  17:27:38
+Ended:    17:38:59
+Duration: 11m 21s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    38 run, 37 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  19:12:27
+Ended:    19:22:59
+Duration: 10m 32s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    38 run, 37 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  19:41:53
+Ended:    19:55:04
+Duration: 13m 11s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    38 run, 37 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 24 Jan 2026
+Started:  21:16:33
+Ended:    21:26:50
+Duration: 10m 17s
+Branch:   xcross-platform-validation
+Version:  1.12.5
+Stata:    17
+Tests:    38 run, 38 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  10:25:19
+Ended:    10:37:04
+Duration: 11m 45s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    38 run, 36 passed, 2 failed
+Skipped:  0
+Result:   FAILED
+Failed:   TRANS-01, MULTI-01
+Log:      run_tests.log
+Notes:    Test failure root cause identified and fixed: MULTI-01 variable naming
+          (IM_DTP3_M12T23 vs expected IM_DTP3). TRANS-01 works correctly.
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  16:54:17
+Ended:    16:54:54
+Duration: 0m 37s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    1 run (TRANS-01 only), 1 passed, 0 failed
+Skipped:  0
+Result:   PASSED
+Notes:    Individual test confirmation - TRANS-01 passes
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  16:54:57
+Ended:    16:55:36
+Duration: 0m 39s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    1 run (MULTI-01 only), 1 passed, 0 failed
+Skipped:  0
+Result:   PASSED
+Notes:    Individual test confirmation - MULTI-01 passes with fixed variable check
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  17:26:17
+Ended:    17:37:17
+Duration: 11m 0s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    38 run, 37 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   SYNC-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  17:45:30
+Ended:    17:57:57
+Duration: 12m 27s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    38 run, 38 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 26 Jan 2026
+Started:  23:19:02
+Ended:    23:29:39
+Duration: 10m 37s
+Branch:   align-multi-language
+Version:  2.1.0
+Stata:    17
+Tests:    38 run, 34 passed, 4 failed
+Skipped:  0
+Result:   FAILED
+Failed:   DL-06, TRANS-01, MULTI-01, REGR-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 30 Jan 2026
+Started:  15:51:58
+Ended:    16:02:44
+Duration: 10m 46s
+Branch:   align-multi-language
+Version:  2.0.0
+Stata:    17
+Tests:    38 run, 35 passed, 3 failed
+Skipped:  0
+Result:   FAILED
+Failed:   TRANS-01, MULTI-01, REGR-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 30 Jan 2026
+Started:  17:42:48
+Ended:    17:52:22
+Duration: 9m 34s
+Branch:   align-multi-language
+Version:  2.0.0
+Stata:    17
+Tests:    38 run, 35 passed, 3 failed
+Skipped:  0
+Result:   FAILED
+Failed:   TRANS-01, MULTI-01, REGR-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 30 Jan 2026
+Started:  17:58:06
+Ended:    18:07:56
+Duration: 9m 50s
+Branch:   align-multi-language
+Version:  2.0.0
+Stata:    17
+Tests:    38 run, 37 passed, 1 failed
+Skipped:  0
+Result:   FAILED
+Failed:   MULTI-01
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 30 Jan 2026
+Started:  18:17:18
+Ended:    18:26:56
+Duration: 9m 38s
+Branch:   align-multi-language
+Version:  2.0.0
+Stata:    17
+Tests:    38 run, 38 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 31 Jan 2026
+Started:  22:15:22
+Ended:    22:26:49
+Duration: 11m 27s
+Branch:   align-multi-language
+Version:  2.0.0
+Stata:    17
+Tests:    38 run, 38 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================

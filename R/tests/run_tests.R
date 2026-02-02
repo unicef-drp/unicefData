@@ -235,10 +235,13 @@ test_schema_files_exist <- function() {
 source_package_code <- function() {
   # Source package code only when needed (for network tests)
   if (file.exists(file.path(R_DIR, "get_unicef.R"))) {
+    # Utilities first so helpers (e.g., .fetch_sdmx) are available to downstream sources
+    source(file.path(R_DIR, "utils.R"))
+    source(file.path(R_DIR, "unicef_core.R"))  # Core functions (unicefData_raw, etc.)
     source(file.path(R_DIR, "get_unicef.R"))
     source(file.path(R_DIR, "metadata.R"))
     source(file.path(R_DIR, "flows.R"))
-    source(file.path(R_DIR, "aliases_devtests.R"))
+    source(file.path(R_DIR, "unicefData.R"))   # Main wrapper function
     return(TRUE)
   }
   return(FALSE)

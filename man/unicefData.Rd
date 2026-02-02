@@ -11,19 +11,24 @@ unicefData(
   countries = NULL,
   year = NULL,
   sex = "_T",
+  totals = FALSE,
   age = NULL,
   wealth = NULL,
   residence = NULL,
   maternal_edu = NULL,
   tidy = TRUE,
+  include_label_columns = FALSE,
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
   page_size = 1e+06,
   detail = c("data", "structure"),
   version = NULL,
-  format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
-    "wide_residence", "wide_maternal_edu"),
+  labels = "id",
+  metadata = "light",
+  format = c("long", "wide", "wide_indicators", "wide_attributes", "wide_sex",
+    "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
+  pivot = NULL,
   latest = FALSE,
   circa = FALSE,
   add_metadata = NULL,
@@ -40,19 +45,24 @@ unicefdata(
   countries = NULL,
   year = NULL,
   sex = "_T",
+  totals = FALSE,
   age = NULL,
   wealth = NULL,
   residence = NULL,
   maternal_edu = NULL,
   tidy = TRUE,
+  include_label_columns = FALSE,
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
   page_size = 1e+06,
   detail = c("data", "structure"),
   version = NULL,
-  format = c("long", "wide", "wide_indicators", "wide_sex", "wide_age", "wide_wealth",
-    "wide_residence", "wide_maternal_edu"),
+  labels = "id",
+  metadata = "light",
+  format = c("long", "wide", "wide_indicators", "wide_attributes", "wide_sex",
+    "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu"),
+  pivot = NULL,
   latest = FALSE,
   circa = FALSE,
   add_metadata = NULL,
@@ -82,6 +92,9 @@ If NULL (default), fetches all countries.}
 
 \item{sex}{Sex disaggregation: "_T" (total, default), "F" (female), "M" (male).}
 
+\item{totals}{Logical; if FALSE (default), excludes observations with _T (total) codes in dimension values,
+matching Python/Stata behavior. Set to TRUE to include totals.}
+
 \item{age}{Filter by age group. Default is NULL (keeps totals).}
 
 \item{wealth}{Filter by wealth quintile. Default is NULL (keeps totals).}
@@ -91,6 +104,8 @@ If NULL (default), fetches all countries.}
 \item{maternal_edu}{Filter by maternal education. Default is NULL (keeps totals).}
 
 \item{tidy}{Logical; if TRUE (default), returns cleaned tibble with standardized column names.}
+
+\item{include_label_columns}{Logical; if FALSE (default), drops human-readable label-expansion columns added by SDMX when labels=both; produces a codes-only schema consistent across R/Python/Stata.}
 
 \item{country_names}{Logical; if TRUE (default), adds country name column.}
 
@@ -105,9 +120,17 @@ Previously called 'retry'. Both parameter names are supported.}
 
 \item{version}{Optional SDMX version; if NULL, auto-detected.}
 
+\item{labels}{Label format for SDMX requests: "id" (codes only, default),
+"name" (labels only), or "both" (codes and labels).}
+
+\item{metadata}{Metadata detail level: "light" (default) or "full".}
+
 \item{format}{Output format: "long" (default), "wide" (years as columns),
 "wide_indicators" (indicators as columns), or wide by dimension:
 "wide_sex", "wide_age", "wide_wealth", "wide_residence", "wide_maternal_edu".}
+
+\item{pivot}{Character vector of column(s) to pivot to wide format.
+Alternative to format parameter for custom pivoting.}
 
 \item{latest}{Logical; if TRUE, keep only the most recent non-missing value per country.
 The year may differ by country. Useful for cross-sectional analysis.}
@@ -155,6 +178,23 @@ decimal years for consistent time-series analysis:
 \item "2020-11" becomes 2020.9167 (2020 + 11/12, November)
 }
 Formula: decimal_year = year + month/12
+}
+
+\section{Cross-Platform Consistency}{
+
+By default, unicefData returns a codes-only schema that matches the Python
+and Stata implementations. Specifically:
+\itemize{
+\item SDMX requests use codes (\code{labels=id}) or client-side filtering removes
+human-readable label-expansion columns.
+\item Output keeps standardized lowercase context columns (e.g., \code{iso3},
+\code{indicator}, \code{period}, \code{value}) plus code columns for dimensions.
+\item Indicator-specific dimension code columns are preserved (often lowercase).
+\item Duplicate label columns are not included unless
+\code{include_label_columns = TRUE} is explicitly set.
+}
+
+This ensures column/row counts align across R, Python, and Stata by default.
 }
 
 \examples{
