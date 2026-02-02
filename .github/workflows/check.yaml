@@ -1,5 +1,9 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+#
+# Fix (2026-02-02): Changed ubuntu-latest to ubuntu-22.04 to avoid
+# pandoc-citeproc unavailability issue on Ubuntu 24.04
+# See: https://github.com/r-lib/actions/issues/994
 on:
   push:
     branches: [main, develop]
@@ -7,6 +11,8 @@ on:
     branches: [main, develop]
 
 name: R-CMD-check
+
+permissions: read-all
 
 jobs:
   R-CMD-check:
@@ -18,11 +24,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
-          - {os: ubuntu-latest,  r: 'oldrel-1'}
+          # Use ubuntu-22.04 instead of ubuntu-latest to avoid
+          # pandoc-citeproc package unavailability on Ubuntu 24.04
+          - {os: ubuntu-22.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-22.04,   r: 'release'}
+          - {os: ubuntu-22.04,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -43,10 +51,11 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-          cache-version: 5
+          pak-version: stable
+          cache-version: 6
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
           error-on: '"warning"'
