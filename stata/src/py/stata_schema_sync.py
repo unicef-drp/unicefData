@@ -4,8 +4,8 @@ stata_schema_sync.py - Generate dataflow schemas for Stata
 ===========================================================
 
 Standalone Python script that generates:
-1. dataflow_index.yaml - Summary of all dataflows with dimension/attribute counts
-2. dataflows/*.yaml - Individual schema files for each dataflow
+1. _dataflow_index.yaml - Summary of all dataflows with dimension/attribute counts
+2. _dataflows/*.yaml - Individual schema files for each dataflow
 
 This script is called from Stata's unicefdata_sync.ado when the XML parsing
 exceeds Stata's macro length limits.
@@ -46,7 +46,7 @@ AGENCY = "UNICEF"
 try:
     from unicef_api import __version__
 except ImportError:
-    __version__ = "1.5.2"  # Fallback if package not installed
+    __version__ = "2.0.0"  # Fallback if package not installed
 
 
 def build_user_agent() -> str:
@@ -221,15 +221,15 @@ def sync_schemas(output_dir: str, suffix: str = '', verbose: bool = False) -> in
     synced_at = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     
     # Create output directories
-    dataflows_dir = os.path.join(output_dir, f'dataflows{suffix}')
+    dataflows_dir = os.path.join(output_dir, f'_dataflows{suffix}')
     os.makedirs(dataflows_dir, exist_ok=True)
-    
+
     # Get dataflow list
     dataflows = get_dataflow_list(verbose=verbose)
     n_dataflows = len(dataflows)
     
     # Open index file
-    index_path = os.path.join(output_dir, f'dataflow_index{suffix}.yaml')
+    index_path = os.path.join(output_dir, f'_dataflow_index{suffix}.yaml')
     
     success_count = 0
     

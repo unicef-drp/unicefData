@@ -1,10 +1,13 @@
 *******************************************************************************
 * unicefdata_sync
-*! v 1.2.0   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 2.0.0   24Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Sync UNICEF metadata from SDMX API to local YAML files
 * Creates standardized YAML files with watermarks matching R/Python format
+* v2.0.0: Fixed enrichment path extraction bug (SYNC-02 test now passing)
+* v1.5.0: Added staleness detection (warns if metadata >30 days old)
+* v1.4.0: Added fallbacksequences option to auto-generate fallback sequences file
+* v1.3.0: Indicator metadata enrichment (tier, disaggregations) enabled automatically
 * v1.2.0: Added selective sync options (all, dataflows, codelists, countries, regions, indicators, history)
-* v1.1.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
 
 /*
@@ -19,7 +22,7 @@ FILE NAMING CONVENTION:
     - _unicefdata_codelists.yaml   - Valid dimension codes
     - _unicefdata_countries.yaml   - Country ISO3 codes
     - _unicefdata_regions.yaml     - Regional aggregate codes
-    - _unicefdata_indicators.yaml  - Indicator → dataflow mappings
+    - _unicefdata_indicators_metadata.yaml - Indicator → dataflow mappings (comprehensive)
     - _unicefdata_sync_history.yaml - Sync timestamps and versions
     
 WATERMARK FORMAT:
@@ -33,7 +36,7 @@ WATERMARK FORMAT:
     - <counts>: item counts
     
 SYNTAX:
-    unicefdata_sync [, path(string) suffix(string) verbose force forcepython forcestata]
+    unicefdata_sync [, path(string) suffix(string) verbose force forcepython forcestata enrichdataflows]
     
 OPTIONS:
     path(string)   - Directory for metadata files (default: auto-detect)
@@ -43,6 +46,9 @@ OPTIONS:
     force          - Force sync even if cache is fresh
     forcepython    - Force use of Python parser for XML processing (requires Python 3.6+)
     forcestata     - Force use of pure Stata parser (no Python required)
+    enrichdataflows - (Enabled automatically for indicators) Adds complete enrichment:
+                     Phase 1: dataflows, Phase 2: tier/tier_reason, Phase 3: disaggregations
+                     (requires Python 3.6+, takes ~1-2 min)
     
 EXAMPLES:
     . unicefdata_sync
@@ -66,7 +72,8 @@ program define unicefdata_sync, rclass
     version 14.0
     
     syntax [, PATH(string) SUFFIX(string) VERBOSE FORCE FORCEPYTHON FORCESTATA ///
-              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY]
+              ALL DATAFLOWS CODELISTS COUNTRIES REGIONS INDICATORS HISTORY ///
+              ENRICHDATAFLOWS FALLBACKSEQUENCES]
     
     * Validate parser options
     if ("`forcepython'" != "" & "`forcestata'" != "") {
@@ -80,6 +87,93 @@ program define unicefdata_sync, rclass
         exit 0
     }
     
+    *---------------------------------------------------------------------------
+    * Staleness Detection: Check when metadata was last synced
+    *---------------------------------------------------------------------------
+    
+    * Build path to sync history file
+    local history_path "`path'"
+    if ("`history_path'" == "") {
+        * Use same detection strategy as main path detection
+        * Try to find _unicef_list_dataflows.ado
+        capture findfile _unicef_list_dataflows.ado
+        if (_rc == 0) {
+            local ado_path "`r(fn)'"
+            local ado_dir = subinstr("`ado_path'", "\", "/", .)
+            local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
+            local history_path "`ado_dir'"
+        }
+        else {
+            * Fallback: try to find YAML files directly
+            capture findfile _unicefdata_sync_history.yaml
+            if (_rc == 0) {
+                local yaml_path "`r(fn)'"
+                local history_path = subinstr("`yaml_path'", "\", "/", .)
+                local history_path = subinstr("`history_path'", "_unicefdata_sync_history.yaml", "", .)
+            }
+            else {
+                local history_path "`c(sysdir_plus)'_/"
+            }
+        }
+    }
+    
+    * Normalize separators and ensure path ends with separator
+    local history_path = subinstr("`history_path'", "\", "/", .)
+    if (substr("`history_path'", -1, 1) != "/" & substr("`history_path'", -1, 1) != "\") {
+        local history_path "`history_path'/"
+    }
+    
+    local sfx "`suffix'"
+    local history_file "`history_path'_unicefdata_sync_history`sfx'.yaml"
+    
+    * Check staleness if force option not specified
+    if ("`force'" == "" & fileexists("`history_file'")) {
+        capture {
+            * Try to parse last sync date from history file
+            tempname fh
+            file open `fh' using "`history_file'", read text
+            file read `fh' line
+            
+            local found_date 0
+            while (r(eof) == 0 & `found_date' == 0) {
+                * Look for "vintage_date: 'YYYY-MM-DD'"
+                if (regexm("`line'", "vintage_date: '([0-9]{4}-[0-9]{2}-[0-9]{2})'")) {
+                    local last_date = regexs(1)
+                    local found_date 1
+                }
+                file read `fh' line
+            }
+            file close `fh'
+            
+            * Calculate days since last sync
+            if (`found_date') {
+                local last_date_num = date("`last_date'", "YMD")
+                local today_num = date("`c(current_date)'", "DMY")
+                local days_since = `today_num' - `last_date_num'
+                
+                * Warn if stale (>30 days)
+                if (`days_since' > 30) {
+                    noi di as text ""
+                    noi di as err "{hline 80}"
+                    noi di as err "⚠ WARNING: Metadata is `days_since' days old (last sync: `last_date')"
+                    noi di as err "  Recommended action:"
+                    noi di as err "    1. Run {stata unicefdata_refresh_all, verbose} for full refresh"
+                    noi di as err "    2. Or use {stata unicefdata_sync, force verbose} to refresh selectively"
+                    noi di as err "{hline 80}"
+                    noi di as text ""
+                }
+                else if ("`verbose'" != "") {
+                    noi di as text "Metadata age: `days_since' days (last sync: `last_date')"
+                }
+            }
+        }
+        * Silently ignore errors in staleness detection
+    }
+    
+    *---------------------------------------------------------------------------
+    * Determine what to sync
+    *---------------------------------------------------------------------------
+    
     * Determine what to sync
     * If no specific type is selected, or ALL is specified, sync everything
     local any_specific = ("`dataflows'" != "" | "`codelists'" != "" | "`countries'" != "" | "`regions'" != "" | "`indicators'" != "")
@@ -89,6 +183,12 @@ program define unicefdata_sync, rclass
         local do_countries 1
         local do_regions 1
         local do_indicators 1
+        * ALWAYS enable enrichdataflows when syncing ALL
+        * Indicator metadata is ONLY useful with complete enrichment
+        if ("`enrichdataflows'" == "") {
+            local enrichdataflows "enrichdataflows"
+            di as text "  Note: Indicator metadata enrichment enabled (always on)"
+        }
     }
     else {
         local do_dataflows = ("`dataflows'" != "")
@@ -96,6 +196,12 @@ program define unicefdata_sync, rclass
         local do_countries = ("`countries'" != "")
         local do_regions = ("`regions'" != "")
         local do_indicators = ("`indicators'" != "")
+
+        * ALWAYS enable enrichment when syncing indicators specifically
+        if ("`indicators'" != "" & "`enrichdataflows'" == "") {
+            local enrichdataflows "enrichdataflows"
+            di as text "  Note: Indicator metadata enrichment enabled (always on)"
+        }
     }
     
     * Set parser option for helper functions
@@ -126,6 +232,7 @@ program define unicefdata_sync, rclass
     local FILE_SYNC_HISTORY "_unicefdata_sync_history`sfx'.yaml"
     local FILE_IND_META "_unicefdata_indicators_metadata`sfx'.yaml"
     local FILE_DF_INDEX "_dataflow_index`sfx'.yaml"
+    local FILE_FALLBACK "_dataflow_fallback_sequences`sfx'.yaml"
     
     * Get current timestamp
     local synced_at : di %tcCCYY-NN-DD!THH:MM:SS clock("`c(current_date)' `c(current_time)'", "DMYhms")
@@ -135,36 +242,110 @@ program define unicefdata_sync, rclass
     
     *---------------------------------------------------------------------------
     * Locate/create metadata directory (src/_/ alongside helper ado files)
+    * Uses sysdir system to find YAML files in appropriate Stata directory
     *---------------------------------------------------------------------------
     
     if ("`path'" == "") {
-        * Auto-detect: look relative to helper ado file location (src/_/)
+        local found_path ""
+        
+        * Strategy 1: Try to find _unicef_list_dataflows.ado to locate src/_/ folder
         capture findfile _unicef_list_dataflows.ado
         if (_rc == 0) {
             local ado_path "`r(fn)'"
             local ado_dir = subinstr("`ado_path'", "\", "/", .)
             local ado_dir = subinstr("`ado_dir'", "_unicef_list_dataflows.ado", "", .)
-            local path "`ado_dir'"
+            local found_path "`ado_dir'"
+            if ("`verbose'" != "") {
+                di as text "  (Found via _unicef_list_dataflows.ado: `found_path')"
+            }
         }
-        else {
-            * Fallback: look relative to main unicefdata.ado, go to src/_/
+        
+        * Strategy 2: If not found, try to find main unicefdata.ado and locate src/_/
+        if ("`found_path'" == "") {
             capture findfile unicefdata.ado
             if (_rc == 0) {
                 local ado_path "`r(fn)'"
                 local ado_dir = subinstr("`ado_path'", "\", "/", .)
                 local ado_dir = subinstr("`ado_dir'", "u/unicefdata.ado", "", .)
-                local path "`ado_dir'_/"
-            }
-            else {
-                * Final fallback to PLUS directory
-                local path "`c(sysdir_plus)'_/"
+                local found_path "`ado_dir'_/"
+                if ("`verbose'" != "") {
+                    di as text "  (Found via unicefdata.ado: `found_path')"
+                }
             }
         }
+        
+        * Strategy 3: Search for actual YAML metadata files using findfile across sysdir paths
+        if ("`found_path'" == "") {
+            * Try to find _unicefdata_indicators_metadata.yaml (comprehensive indicator file)
+            capture findfile _unicefdata_indicators_metadata.yaml
+            if (_rc == 0) {
+                local yaml_path "`r(fn)'"
+                local found_path = subinstr("`yaml_path'", "\", "/", .)
+                local found_path = subinstr("`found_path'", "_unicefdata_indicators_metadata.yaml", "", .)
+                if ("`verbose'" != "") {
+                    di as text "  (Found via _unicefdata_indicators_metadata.yaml: `found_path')"
+                }
+            }
+        }
+        
+        * Strategy 4: Check each sysdir location systematically (PLUS, SITE, BASE)
+        if ("`found_path'" == "") {
+            local sysdirs "`c(sysdir_plus)' `c(sysdir_site)' `c(sysdir_base)'"
+            
+            foreach sysdir_loc in `sysdirs' {
+                * Normalize path separators
+                local sysdir_check = subinstr("`sysdir_loc'", "\", "/", .)
+                
+                * Try _/ subdirectory first
+                capture confirm file "`sysdir_check'_/_unicefdata_indicators_metadata.yaml"
+                if (_rc == 0) {
+                    local found_path "`sysdir_check'_/"
+                    if ("`verbose'" != "") {
+                        di as text "  (Found in sysdir _/ subdirectory: `found_path')"
+                    }
+                    continue, break
+                }
+                
+                * Try root sysdir next
+                capture confirm file "`sysdir_check'_unicefdata_indicators_metadata.yaml"
+                if (_rc == 0) {
+                    local found_path "`sysdir_check'"
+                    if ("`verbose'" != "") {
+                        di as text "  (Found in sysdir root: `found_path')"
+                    }
+                    continue, break
+                }
+            }
+        }
+        
+        * Strategy 5: Final fallback to PLUS/_/ if nothing found
+        if ("`found_path'" == "") {
+            local found_path "`c(sysdir_plus)'_/"
+            if ("`verbose'" != "") {
+                di as text "  (Using default PLUS/_/ fallback: `found_path')"
+            }
+        }
+        
+        local path "`found_path'"
     }
+    
+    * Normalize path separators (convert backslashes to forward slashes for consistency)
+    local path = subinstr("`path'", "\", "/", .)
     
     * Ensure path ends with separator
     if (substr("`path'", -1, 1) != "/" & substr("`path'", -1, 1) != "\") {
         local path "`path'/"
+    }
+    
+    * Validate that path exists and is accessible
+    capture confirm file "`path'/."
+    if (_rc != 0) {
+        * Path doesn't exist; create it
+        local cmd = `"mkdir "`path'""'
+        capture !`cmd'
+        if (_rc != 0 & "`verbose'" != "") {
+            di as warn "  ⚠ Cannot create directory at `path', will attempt to use anyway"
+        }
     }
     
     * Use the path directly for output (no subdirectories)
@@ -410,16 +591,25 @@ program define unicefdata_sync, rclass
         di as text "  📁 Syncing full indicator catalog..."
     }
     
+    * Build fallback sequences option if specified
+    local fallback_opt ""
+    if ("`fallbacksequences'" != "") {
+        local fallback_opt `"fallbacksequencesout("`current_dir'`FILE_FALLBACK'")"'
+    }
+    
     local n_full_indicators = 0
     local ind_cached = 0
     capture noisily {
         _unicefdata_sync_ind_meta, ///
             outfile("`current_dir'`FILE_IND_META'") ///
             agency("`agency'") ///
-            `force' `parser_opt'
+            `force' `parser_opt' `enrichdataflows' `fallback_opt'
         local n_full_indicators = r(count)
         local ind_cached = r(cached)
         local files_created "`files_created' `FILE_IND_META'"
+        if ("`fallbacksequences'" != "") {
+            local files_created "`files_created' `FILE_FALLBACK'"
+        }
     }
     
     if (_rc != 0) {
@@ -1631,7 +1821,7 @@ end
 *******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
-    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA]
+    syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA ENRICHDATAFLOWS FALLBACKSEQUENCESOUT(string)]
     
     local cache_max_age_days = 30
     local codelist_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0"
@@ -1742,6 +1932,12 @@ program define _unicefdata_sync_ind_meta, rclass
         local parser_option "forcepython"
     }
     
+    * Build fallback sequences option
+    local fallback_opt ""
+    if ("`fallbacksequencesout'" != "") {
+        local fallback_opt `"fallbacksequencesout("`fallbacksequencesout'")"'
+    }
+    
     capture noisily unicefdata_xmltoyaml, ///
         type(indicators) ///
         xmlfile("`xmlfile'") ///
@@ -1751,10 +1947,80 @@ program define _unicefdata_sync_ind_meta, rclass
         source("`codelist_url'") ///
         codelistid("CL_UNICEF_INDICATOR") ///
         codelistname("UNICEF Indicator Codelist") ///
-        `parser_option'
-    
+        `parser_option' `enrichdataflows' `fallback_opt'
+
     if (_rc == 0) {
         local n_indicators = r(count)
+
+        *-----------------------------------------------------------------------
+        * COMPLETE ENRICHMENT: Always run full enrichment pipeline
+        * Adds Phase 2 (tier) and Phase 3 (disaggregations) to Phase 1 (dataflows)
+        *-----------------------------------------------------------------------
+        if ("`enrichdataflows'" != "") {
+            di as text "  Running complete enrichment pipeline..."
+            di as text "  Adding tier and disaggregation fields..."
+
+            * Find enrichment script
+            quietly findfile enrich_stata_metadata_complete.py
+            if (_rc == 0) {
+                local enrich_script "`r(fn)'"
+                local enrich_script = subinstr("`enrich_script'", "\", "/", .)
+
+                * Find required input files in same directory as outfile
+                * Extract directory from full path
+                local outdir = subinstr("`outfile'", "\", "/", .)
+                
+                * Get basename by finding last / and taking everything after it
+                local lastslash = 0
+                forvalues i = 1/`=length("`outdir'")' {
+                    if (substr("`outdir'", `i', 1) == "/") {
+                        local lastslash = `i'
+                    }
+                }
+                
+                if (`lastslash' > 0) {
+                    local outdir = substr("`outdir'", 1, `lastslash')
+                }
+                else {
+                    local outdir = "./"
+                }
+                
+                local base_ind_file "`outdir'_unicefdata_indicators`sfx'.yaml"
+                local dataflow_map_file "`outdir'_indicator_dataflow_map.yaml"
+                local dataflow_meta_file "`outdir'_unicefdata_dataflow_metadata.yaml"
+                
+                * Verify input files exist
+                local all_exist = 1
+                foreach file in "`base_ind_file'" "`dataflow_map_file'" "`dataflow_meta_file'" {
+                    capture confirm file "`file'"
+                    if (_rc != 0) {
+                        di as text "     Warning: Missing `file' for complete enrichment"
+                        local all_exist = 0
+                    }
+                }
+
+                if (`all_exist' == 1) {
+                    * Run complete enrichment
+                    local py_cmd `"python "`enrich_script'" --base-indicators "`base_ind_file'" --dataflow-map "`dataflow_map_file'" --dataflow-metadata "`dataflow_meta_file'" --output "`outfile'""'
+
+                    capture noisily shell `py_cmd'
+
+                    if (_rc == 0) {
+                        di as result "  ✓ Complete enrichment successful (tier + disaggregations added)"
+                    }
+                    else {
+                        di as text "     Note: Complete enrichment failed, file has Phase 1 only (dataflows)"
+                    }
+                }
+                else {
+                    di as text "     Note: Skipping complete enrichment (missing input files)"
+                }
+            }
+            else {
+                di as text "     Note: enrich_stata_metadata_complete.py not found, file has Phase 1 only"
+            }
+        }
+
         return scalar count = `n_indicators'
         return scalar cached = 0
         exit

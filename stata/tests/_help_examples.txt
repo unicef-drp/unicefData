@@ -1,0 +1,49 @@
+unicefdata, categories
+unicefdata, dataflow(CME)
+unicefdata, dataflow(CME) countries(ETH) clear verbose
+unicefdata, dataflow(EDUCATION)
+unicefdata, flows
+unicefdata, flows detail
+unicefdata, indicator(all) dataflow(CME) clear verbose
+unicefdata, indicator(all) dataflow(CME) sex(F) clear
+unicefdata, indicator(all) dataflow(NUTRITION) year(2020) clear
+unicefdata, indicator(CME_MRY0T4 IM_DTP3) countries(USA BRA CHN) year(2020) wide_indicators clear
+unicefdata, indicator(CME_MRY0T4) addmeta(region income_group) clear
+unicefdata, indicator(CME_MRY0T4) clear
+unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) clear
+unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2018:2021) wide clear
+unicefdata, indicator(CME_MRY0T4) countries(USA BRA) year(2020) sex(ALL) wide_attributes clear
+unicefdata, indicator(CME_MRY0T4) latest clear
+unicefdata, indicator(CME_MRY0T4) mrv(5) clear
+unicefdata, indicator(CME_MRY0T4) sex(F) clear
+unicefdata, indicator(CME_MRY0T4) simplify dropna clear
+unicefdata, indicator(CME_MRY0T4) year(2010:2023) clear
+unicefdata, indicator(CME_MRY0T4) year(2015,2018,2020) clear
+unicefdata, indicator(CME_MRY0T4) year(2020) circa clear
+unicefdata, indicator(ED_ANAR_L1) clear
+unicefdata, indicator(ED_ROFST_L1) clear
+unicefdata, indicator(IM_DTP3) clear
+unicefdata, indicator(IM_MCV1) clear
+unicefdata, indicator(NT_ANT_HAZ_NE2) clear
+unicefdata, indicator(NT_ANT_HAZ_NE2) countries(ETH KEN) wealth(ALL) wide_attributes attributes(_Q1 _Q5) clear
+unicefdata, indicator(NT_ANT_HAZ_NE2) residence(RURAL) clear
+unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1) clear
+unicefdata, indicator(WS_PPL_S-B) clear
+unicefdata, indicator(WS_PPL_W-B) clear
+unicefdata, indicators(CME)
+unicefdata, info(CME_MRY0T4)
+unicefdata, search(mortality)
+unicefdata, search(rate) dataflow(CME)
+unicefdata_examples example01
+unicefdata_examples example02
+unicefdata_examples example03
+unicefdata_examples example04
+unicefdata_examples example05
+unicefdata_examples example06
+unicefdata_examples example07
+unicefdata_examples example08
+unicefdata_examples example09
+unicefdata_examples example10
+unicefdata_examples example11
+unicefdata_sync, all
+unicefdata_sync, indicators

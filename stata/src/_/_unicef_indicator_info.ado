@@ -1,8 +1,14 @@
 *******************************************************************************
 * _unicef_indicator_info.ado
-*! v 1.6.0   20Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.10.0  18Jan2026               by Joao Pedro Azevedo (UNICEF)
 * Display detailed info about a specific UNICEF indicator using YAML metadata
 *
+* v1.10.0: Show SDMX codes for each disaggregation dimension
+* v1.9.1: Fixed "(with totals)" display when using dataflow schema subroutine
+* v1.9.0: Refactored to use __unicef_get_indicator_filters subroutine
+*         Added API query URL display to show what query would be used
+* v1.8.0: Read disaggregations from dataflow schema when not in indicator metadata
+* v1.7.0: ENHANCED - Uses enriched indicators metadata with disaggregations
 * v1.6.0: MAJOR PERF FIX - Direct file reading with early termination
 *         - Searches for specific indicator, stops when found
 *         - No longer loads entire 5000+ key YAML into memory
@@ -62,231 +68,153 @@ program define _unicef_indicator_info, rclass
         * Searches for "  INDICATOR_CODE:" section, extracts fields, stops early
         *-----------------------------------------------------------------------
         
+        * STATA MACRO ASSIGNMENT BEST PRACTICE
+        * - Use: local varname value              (direct assignment)
+        * - NOT:  local varname = value           (expression evaluation - slower!)
+        * - Use = ONLY for expressions: local x = `y' + 1
+        * WHY? The = operator causes Stata to parse RHS as math/functions,
+        * leading to unexpected string behavior and slower execution.
+        * Keep simple assignments as direct syntax for clarity and speed.
+        
         local indicator_upper = upper("`indicator'")
-        local found = 0
+        local found 0
         local ind_name ""
         local ind_category ""
+        local ind_parent ""
         local ind_dataflow ""
         local ind_desc ""
         local ind_urn ""
         
-        * Search pattern: "  INDICATOR_CODE:" (2 spaces = level 1 under "indicators:")
-        local search_pattern "  `indicator_upper':"
+        * =====================================================================
+        * CALL YAML PARSER: Extract indicator metadata from YAML file
+        * =====================================================================
+        * The __unicef_parse_indicator_yaml program encapsulates all the
+        * complex parsing logic: file handling, state machine, field extraction,
+        * and disaggregation collection. It returns 8 locals via r() macros.
         
-        tempname fh
-        local in_indicator = 0
-        local lines_checked = 0
+        __unicef_parse_indicator_yaml, yamlfile("`yaml_file'") ///
+            indicator("`indicator_upper'") `verbose'
         
-        file open `fh' using "`yaml_file'", read text
-        file read `fh' line
+        * Capture returned values
+        local ind_name `r(ind_name)'
+        local ind_category `r(ind_category)'
+        local ind_parent `r(ind_parent)'
+        local ind_dataflow `r(ind_dataflow)'
+        local ind_desc `r(ind_desc)'
+        local ind_urn `r(ind_urn)'
+        local disagg_raw `r(disagg_raw)'
+        local disagg_totals `r(disagg_totals)'
+        local found `r(found)'
         
-        while r(eof) == 0 {
-            local lines_checked = `lines_checked' + 1
+        *-----------------------------------------------------------------------
+        * If no disaggregations in indicator metadata, use subroutine to get from dataflow schema
+        *-----------------------------------------------------------------------
+        
+        local primary_df ""
+        if ("`ind_dataflow'" != "") {
+            * Extract primary dataflow (first one before comma)
+            local comma_pos = strpos("`ind_dataflow'", ",")
+            if (`comma_pos' > 0) {
+                local primary_df = strtrim(substr("`ind_dataflow'", 1, `comma_pos' - 1))
+            }
+            else {
+                local primary_df = strtrim("`ind_dataflow'")
+            }
+        }
+        
+        if ("`disagg_raw'" == "" & "`primary_df'" != "") {
+            if ("`verbose'" != "") {
+                noi di as text "Using __unicef_get_indicator_filters for dataflow: `primary_df'"
+            }
             
-            * Check if we've found our indicator's section
-            if (`in_indicator' == 0) {
-                * Looking for "  INDICATOR_CODE:" at start of line
-                if (substr(`"`line'"', 1, length("`search_pattern'")) == "`search_pattern'") {
-                    local in_indicator = 1
-                    local found = 1
-                    if ("`verbose'" != "") {
-                        noi di as text "Found indicator at line " as result "`lines_checked'"
-                    }
+            * Call subroutine to get filter-eligible dimensions from dataflow schema
+            capture __unicef_get_indicator_filters, dataflow(`primary_df') `verbose'
+            if (_rc == 0) {
+                local disagg_raw `r(filter_eligible_dimensions)'
+                local disagg_raw = strtrim("`disagg_raw'")
+                
+                * UNICEF standard: all filter-eligible dimensions support totals (_T)
+                * Set disagg_totals to match disagg_raw since schema doesn't track this
+                local disagg_totals "`disagg_raw'"
+                
+                if ("`verbose'" != "") {
+                    noi di as text "Extracted filter-eligible dimensions: `disagg_raw'"
                 }
             }
             else {
-                * We're inside the indicator's section
-                * Check if we've left (line doesn't start with 4+ spaces = new indicator)
-                local trimmed = strtrim(`"`line'"')
-                if ("`trimmed'" != "") {
-                    * Check indentation - indicator fields have 4 spaces
-                    local first_char = substr(`"`line'"', 1, 1)
-                    local second_char = substr(`"`line'"', 2, 1)
-                    
-                    * If line starts with "  X" where X is not a space, we've hit next indicator
-                    if ("`first_char'" == " " & "`second_char'" == " ") {
-                        local third_char = substr(`"`line'"', 3, 1)
-                        if ("`third_char'" != " ") {
-                            * New top-level key under indicators - we're done
-                            continue, break
-                        }
-                    }
-                    else if ("`first_char'" != " ") {
-                        * No leading space - we've left indicators section entirely
-                        continue, break
-                    }
-                    
-                    * Parse field: "    fieldname: value"
-                    local colon_pos = strpos("`trimmed'", ":")
-                    if (`colon_pos' > 0) {
-                        local field_name = strtrim(substr("`trimmed'", 1, `colon_pos' - 1))
-                        local field_value = strtrim(substr("`trimmed'", `colon_pos' + 1, .))
-                        
-                        * Remove quotes if present
-                        if (substr("`field_value'", 1, 1) == "'" | substr("`field_value'", 1, 1) == `"""') {
-                            local field_value = substr("`field_value'", 2, length("`field_value'") - 2)
-                        }
-                        
-                        * Store by field name
-                        if ("`field_name'" == "name") {
-                            local ind_name "`field_value'"
-                        }
-                        else if ("`field_name'" == "category") {
-                            local ind_category "`field_value'"
-                        }
-                        else if ("`field_name'" == "dataflow") {
-                            local ind_dataflow "`field_value'"
-                        }
-                        else if ("`field_name'" == "description") {
-                            local ind_desc "`field_value'"
-                        }
-                        else if ("`field_name'" == "urn") {
-                            local ind_urn "`field_value'"
-                        }
-                    }
+                if ("`verbose'" != "") {
+                    noi di as text "Could not read dataflow schema for: `primary_df'"
                 }
             }
-            
-            file read `fh' line
-        }
-        
-        file close `fh'
-        
-        if ("`verbose'" != "") {
-            noi di as text "Scanned " as result "`lines_checked'" as text " lines"
-            noi di as text "  Name: " as result "`ind_name'"
-            noi di as text "  Category: " as result "`ind_category'"
-            noi di as text "  Dataflow: " as result "`ind_dataflow'"
         }
         
         *-----------------------------------------------------------------------
-        * Get supported disaggregations from dataflow schema
+        * Build API query URL for display
+        *-----------------------------------------------------------------------
+        
+        local api_query_url ""
+        if ("`primary_df'" != "") {
+            * Build SDMX REST query URL
+            * Format: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,DATAFLOW,1.0/FILTER
+            * Default filter: all countries (.), indicator, default disagg values (_T)
+            local api_query_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,`primary_df',1.0/..`indicator_upper'._T"
+            
+            * Note: This is a simplified example query - actual filters depend on dataflow structure
+            if ("`verbose'" != "") {
+                noi di as text "Built API query URL: `api_query_url'"
+            }
+        }
+        
+        *-----------------------------------------------------------------------
+        * Process disaggregations
         *-----------------------------------------------------------------------
         
         local supported_dims ""
-        local has_sex = 0
-        local has_age = 0
-        local has_wealth = 0
-        local has_residence = 0
-        local has_maternal_edu = 0
+        local has_sex 0
+        local has_age 0
+        local has_wealth 0
+        local has_residence 0
+        local has_maternal_edu 0
         
-        local dataflow_name ""
-        if ("`ind_dataflow'" != "" & "`ind_dataflow'" != ".") {
-            local dataflow_name "`ind_dataflow'"
-        }
-        else if ("`ind_category'" != "" & "`ind_category'" != ".") {
-            local dataflow_name "`ind_category'"
+        if ("`verbose'" != "") {
+            noi di as text "Extracting disaggregations from enriched metadata"
+            noi di as text "  Raw disaggregations: `disagg_raw'"
+            noi di as text "  With totals: `disagg_totals'"
         }
         
-        if ("`dataflow_name'" != "") {
-            * Try to find dataflow schema file (sysdir: _dataflows/{DATAFLOW}.yaml)
-            * The schema defines dimensions available for ALL indicators in this dataflow
-            local schema_file "`metapath'_dataflows/`dataflow_name'.yaml"
-            if ("`verbose'" != "") {
-                noi di as text "Looking for dataflow schema: " as result "`dataflow_name'.yaml"
-                noi di as text "  Path: " as result "`schema_file'"
-            }
-            capture confirm file "`schema_file'"
-            if (_rc != 0) {
-                if ("`verbose'" != "") {
-                    noi di as text "  Not found, trying repo path..."
-                }
-                * Try repo path (development)
-                local schema_file "`metapath'../metadata/current/dataflows/`dataflow_name'.yaml"
-                capture confirm file "`schema_file'"
-            }
-            if (_rc != 0) {
-                if ("`verbose'" != "") {
-                    noi di as text "  Not found, trying alternative repo path..."
-                }
-                * Try alternative repo path
-                local schema_file "`metapath'../../metadata/current/dataflows/`dataflow_name'.yaml"
-                capture confirm file "`schema_file'"
-            }
-            if (_rc != 0) {
-                if ("`verbose'" != "") {
-                    noi di as text "  Schema file not found for dataflow: " as result "`dataflow_name'"
-                }
-            }
+        * Parse the disaggregations and map to display names
+        if ("`disagg_raw'" != "") {
+            * Clean up array format if needed: [DIM1,DIM2] -> DIM1, DIM2 -> DIM1 DIM2
+            local disagg_raw = subinstr("`disagg_raw'", "[", "", .)
+            local disagg_raw = subinstr("`disagg_raw'", "]", "", .)
+            local disagg_raw = subinstr("`disagg_raw'", ",", " ", .)
+            local disagg_raw = strtrim("`disagg_raw'")
             
-            if (_rc == 0) {
-                * Read schema to get dimensions
-                if ("`verbose'" != "") {
-                    noi di as text "  Found schema at: " as result "`schema_file'"
+            * Do the same for disagg_with_totals
+            local disagg_totals = subinstr("`disagg_totals'", "[", "", .)
+            local disagg_totals = subinstr("`disagg_totals'", "]", "", .)
+            local disagg_totals = subinstr("`disagg_totals'", ",", " ", .)
+            local disagg_totals = strtrim("`disagg_totals'")
+            
+            foreach d of local disagg_raw {
+                if ("`d'" == "SEX") {
+                    local has_sex 1
                 }
-                
-                * Direct file reading approach - more reliable than yaml.ado for nested lists
-                * The YAML files have a simple format: "- id: DIMENSION_NAME" lines under dimensions:
-                tempname fh
-                local dims ""
-                local in_dimensions = 0
-                
-                file open `fh' using "`schema_file'", read text
-                file read `fh' line
-                while r(eof) == 0 {
-                    local trimmed_line = strtrim(`"`line'"')
-                    
-                    * Check if we're entering dimensions section
-                    if ("`trimmed_line'" == "dimensions:") {
-                        local in_dimensions = 1
-                        if ("`verbose'" != "") {
-                            noi di as text "    Entering dimensions section"
-                        }
-                    }
-                    * Check if we're leaving dimensions section (new top-level key without leading dash/space)
-                    else if (`in_dimensions' == 1) {
-                        * Top-level keys start at column 1 and end with colon
-                        local first_char = substr(`"`line'"', 1, 1)
-                        if ("`first_char'" != " " & "`first_char'" != "-" & "`first_char'" != "" & regexm(`"`line'"', "^[a-z_]+:")) {
-                            local in_dimensions = 0
-                            if ("`verbose'" != "") {
-                                noi di as text "    Leaving dimensions section at: `trimmed_line'"
-                            }
-                        }
-                        * Extract dimension id: lines like "- id: REF_AREA"
-                        else if (regexm("`trimmed_line'", "^- id: *([A-Z_0-9]+)")) {
-                            local dim_id = regexs(1)
-                            local dims "`dims' `dim_id'"
-                            if ("`verbose'" != "") {
-                                noi di as text "    Found dimension: " as result "`dim_id'"
-                            }
-                        }
-                    }
-                    file read `fh' line
+                else if ("`d'" == "AGE") {
+                    local has_age 1
                 }
-                file close `fh'
-                local dims = strtrim("`dims'")
-                
-                if ("`verbose'" != "") {
-                    noi di as text "  All dimensions: " as result "`dims'"
+                else if ("`d'" == "WEALTH_QUINTILE") {
+                    local has_wealth 1
                 }
-                
-                * Map dimensions to supported disaggregations
-                foreach d of local dims {
-                    if ("`d'" == "SEX") {
-                        local has_sex = 1
-                        local supported_dims "`supported_dims' sex"
-                    }
-                    else if ("`d'" == "AGE") {
-                        local has_age = 1
-                        local supported_dims "`supported_dims' age"
-                    }
-                    else if ("`d'" == "WEALTH_QUINTILE") {
-                        local has_wealth = 1
-                        local supported_dims "`supported_dims' wealth"
-                    }
-                    else if ("`d'" == "RESIDENCE") {
-                        local has_residence = 1
-                        local supported_dims "`supported_dims' residence"
-                    }
-                    else if ("`d'" == "MATERNAL_EDU_LVL" | "`d'" == "MOTHER_EDUCATION") {
-                        local has_maternal_edu = 1
-                        local supported_dims "`supported_dims' maternal_edu"
-                    }
+                else if ("`d'" == "RESIDENCE") {
+                    local has_residence 1
+                }
+                else if ("`d'" == "MATERNAL_EDU_LVL" | "`d'" == "MOTHER_EDUCATION") {
+                    local has_maternal_edu 1
                 }
             }
+            local supported_dims = "`disagg_raw'"
         }
-        
     } // end quietly
     
     *---------------------------------------------------------------------------
@@ -310,8 +238,20 @@ program define _unicef_indicator_info, rclass
         
         noi di as text _col(2) "Code:        " as result "`indicator_upper'"
         noi di as text _col(2) "Name:        " as result "`ind_name'"
-        noi di as text _col(2) "Category:    " as result "`ind_category'"
-        if ("`ind_dataflow'" != "" & "`ind_dataflow'" != "`ind_category'") {
+        
+        * Show category (may be empty for some indicators, fallback to parent)
+        if ("`ind_category'" != "") {
+            noi di as text _col(2) "Category:    " as result "`ind_category'"
+        }
+        else if ("`ind_parent'" != "") {
+            noi di as text _col(2) "Category:    " as result "`ind_parent'"
+        }
+        else {
+            noi di as text _col(2) "Category:    " as result "(not classified)"
+        }
+        
+        * Show dataflow(s)
+        if ("`ind_dataflow'" != "") {
             noi di as text _col(2) "Dataflow:    " as result "`ind_dataflow'"
         }
         
@@ -326,20 +266,94 @@ program define _unicef_indicator_info, rclass
             noi di as text _col(2) "URN:         " as result "`ind_urn'"
         }
         
-        * Display supported disaggregations
-        noi di ""
-        noi di as text _col(2) "Supported Disaggregations:"
-        if ("`supported_dims'" != "") {
-            noi di as text _col(4) "sex:          " as result cond(`has_sex', "Yes (SEX)", "No")
-            noi di as text _col(4) "age:          " as result cond(`has_age', "Yes (AGE)", "No")
-            noi di as text _col(4) "wealth:       " as result cond(`has_wealth', "Yes (WEALTH_QUINTILE)", "No")
-            noi di as text _col(4) "residence:    " as result cond(`has_residence', "Yes (RESIDENCE)", "No")
-            noi di as text _col(4) "maternal_edu: " as result cond(`has_maternal_edu', "Yes (MATERNAL_EDU_LVL)", "No")
-        }
-        else {
-            noi di as text _col(4) "(Could not determine - run {stata unicefdata, sync} to update metadata)"
+        * Display API Query URL (shows what query would be used)
+        if ("`api_query_url'" != "") {
+            noi di ""
+            noi di as text _col(2) "API Query:"
+            noi di as result _col(4) `"{browse "`api_query_url'"}"'
         }
         
+        * Display supported disaggregations with allowed values
+        noi di ""
+        noi di as text _col(2) "Supported Disaggregations:"
+        
+        if ("`disagg_raw'" != "") {
+            * Parse each dimension and check if it has totals
+            foreach d of local disagg_raw {
+                * Skip REF_AREA (country codes - too many to display)
+                if ("`d'" == "REF_AREA") {
+                    if (regexm("`disagg_totals'", "`d'")) {
+                        noi di as text _col(4) "`d' (country/region)  " as result "(with totals)"
+                    }
+                    else {
+                        noi di as text _col(4) "`d' (country/region)"
+                    }
+                }
+                else {
+                    * Map dimension codes to their allowed values with SDMX codes
+                    local dim_values ""
+                    local dim_codes ""
+                    if ("`d'" == "SEX") {
+                        local dim_values "Male, Female"
+                        local dim_codes "M, F"
+                    }
+                    else if ("`d'" == "RESIDENCE") {
+                        local dim_values "Urban, Rural"
+                        local dim_codes "U, R"
+                    }
+                    else if ("`d'" == "WEALTH_QUINTILE") {
+                        local dim_values "Quintile 1-5"
+                        local dim_codes "Q1, Q2, Q3, Q4, Q5"
+                    }
+                    else if ("`d'" == "AGE") {
+                        local dim_values "Age groups"
+                        local dim_codes "Y0T4, Y5T9, Y10T14, Y15T17, Y18T24, etc."
+                    }
+                    else if ("`d'" == "MATERNAL_EDU_LVL") {
+                        local dim_values "Education level"
+                        local dim_codes "ED0 (None), ED1 (Primary), ED2_3 (Secondary), ED4_8 (Higher)"
+                    }
+                    else if ("`d'" == "EDUCATION_LEVEL") {
+                        local dim_values "ISCED levels"
+                        local dim_codes "L0_2 (Pre-primary), L1 (Primary), L2 (Lower sec), L3 (Upper sec)"
+                    }
+                    else if ("`d'" == "DISABILITY_STATUS") {
+                        local dim_values "Disability status"
+                        local dim_codes "D (Disabled), ND (Not disabled)"
+                    }
+                    else {
+                        local dim_values "(varies by dataflow)"
+                        local dim_codes ""
+                    }
+                    
+                    if (regexm("`disagg_totals'", "`d'")) {
+                        if ("`dim_codes'" != "") {
+                            noi di as text _col(4) "`d'  " as result "(with totals)"
+                            noi di as text _col(6) "Values: `dim_values'"
+                            noi di as text _col(6) "Codes:  " as result "`dim_codes'" as text ", _T (total)"
+                        }
+                        else {
+                            noi di as text _col(4) "`d'  " as result "(with totals)"
+                            noi di as text _col(6) "Values: `dim_values'"
+                        }
+                    }
+                    else {
+                        if ("`dim_codes'" != "") {
+                            noi di as text _col(4) "`d'"
+                            noi di as text _col(6) "Values: `dim_values'"
+                            noi di as text _col(6) "Codes:  " as result "`dim_codes'"
+                        }
+                        else {
+                            noi di as text _col(4) "`d'"
+                            noi di as text _col(6) "Values: `dim_values'"
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            noi di as text _col(4) "(Not available for this indicator)"
+        }
         noi di ""
         noi di as text "{hline 70}"
         noi di as text "Usage: {stata unicefdata, indicator(`indicator_upper') countries(AFG BGD) clear}"
@@ -356,12 +370,25 @@ program define _unicef_indicator_info, rclass
     * Return values
     *---------------------------------------------------------------------------
     
+    * Extract primary (first) dataflow for API calls
+    * Dataflow is comma-separated: "EDUCATION, GLOBAL_DATAFLOW"
+    * Extract just the first one before the comma
+    local comma_pos = strpos("`ind_dataflow'", ",")
+    if (`comma_pos' > 0) {
+        local primary_dataflow = strtrim(substr("`ind_dataflow'", 1, `comma_pos' - 1))
+    }
+    else {
+        local primary_dataflow = "`ind_dataflow'"
+    }
+    
     return local indicator "`indicator_upper'"
     return local name "`ind_name'"
     return local category "`ind_category'"
     return local dataflow "`ind_dataflow'"
+    return local primary_dataflow "`primary_dataflow'"
     return local description "`ind_desc'"
     return local urn "`ind_urn'"
+    return local api_query_url "`api_query_url'"
     return local has_sex "`has_sex'"
     return local has_age "`has_age'"
     return local has_wealth "`has_wealth'"
@@ -370,3 +397,16 @@ program define _unicef_indicator_info, rclass
     return local supported_dims "`supported_dims'"
     
 end
+*! v 1.7.0   17Jan2026               by Joao Pedro Azevedo (UNICEF)
+* v1.7.0: ENHANCED - Uses enriched indicators metadata with disaggregations
+*         - Disaggregations now read directly from indicator metadata
+*         - Shows which disaggregations support totals (_T suffix)
+*         - No longer depends on dataflow schema files
+*         - More reliable and faster disaggregation lookup
+* v1.6.0: MAJOR PERF FIX - Direct file reading with early termination
+*         - Searches for specific indicator, stops when found
+*         - No longer loads entire 5000+ key YAML into memory
+*         - ~100x faster for single indicator lookups
+* v1.5.0: Added supported disaggregations display from dataflow schema
+* v1.4.0: MAJOR REWRITE - Direct dataset query instead of yaml get calls
+*******************************************************************************

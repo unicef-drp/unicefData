@@ -1,8 +1,8 @@
 vintages:
-- vintage_date: '2025-12-08'
-  synced_at: '2025-12-08T12:36:48Z'
-  dataflows: 69
-  indicators: 25
+- vintage_date: '2026-01-31'
+  synced_at: '2026-01-31T22:23:22Z'
+  dataflows: 70
+  indicators: 738
   codelists: 5
   countries: 453
   regions: 111

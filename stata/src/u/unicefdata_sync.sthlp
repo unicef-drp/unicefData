@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.2.0  17Dec2025}{...}
+{* *! version 1.4.0  16Jan2026}{...}
 {vieweralsosee "[R] unicefdata" "help unicefdata"}{...}
 {vieweralsosee "[R] yaml" "help yaml"}{...}
 {viewerjumpto "Syntax" "unicefdata_sync##syntax"}{...}
@@ -41,6 +41,8 @@
 {synopt:{opt force}}force sync even if cache is fresh{p_end}
 {synopt:{opt forcepython}}force use of Python parser{p_end}
 {synopt:{opt forcestata}}force use of pure Stata parser{p_end}
+{synopt:{opt enrichdataflows}}add dataflow mappings to indicator metadata{p_end}
+{synopt:{opt fallbacksequences}}also generate fallback sequences file{p_end}
 {synoptline}
 
 
@@ -151,6 +153,17 @@ with the {cmd:lxml} package installed.
 {opt forcestata} forces use of the pure Stata parser. No external dependencies 
 required but may be slower for large files.
 
+{phang}
+{opt enrichdataflows} queries the API for all 70 dataflows and adds a {cmd:dataflows}
+field to each indicator in {cmd:_unicefdata_indicators_metadata.yaml}. This shows
+which dataflow(s) contain each indicator. Requires Python with the {cmd:requests}
+package installed. Takes approximately 1-2 minutes to complete.
+
+{phang}
+{opt fallbacksequences} also generates {cmd:_dataflow_fallback_sequences.yaml} which
+maps indicator prefixes to dataflow sequences. Only works with {opt enrichdataflows}.
+This file is used by {cmd:unicefdata} for automatic dataflow detection.
+
 
 {marker examples}{...}
 {title:Examples}
@@ -166,6 +179,12 @@ required but may be slower for large files.
 
 {pstd}Sync indicators only{p_end}
 {p 8 12}{stata "unicefdata_sync, indicators" :. unicefdata_sync, indicators}{p_end}
+
+{pstd}Sync indicators with dataflow enrichment (~1-2 min){p_end}
+{p 8 12}{stata "unicefdata_sync, indicators force enrichdataflows" :. unicefdata_sync, indicators force enrichdataflows}{p_end}
+
+{pstd}Sync indicators with enrichment and fallback sequences{p_end}
+{p 8 12}{stata "unicefdata_sync, indicators force enrichdataflows fallbacksequences" :. unicefdata_sync, indicators force enrichdataflows fallbacksequences}{p_end}
 
 {pstd}Sync dataflows only{p_end}
 {p 8 12}{stata "unicefdata_sync, dataflows" :. unicefdata_sync, dataflows}{p_end}

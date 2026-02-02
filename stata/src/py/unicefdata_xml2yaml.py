@@ -4,7 +4,7 @@ XML to YAML converter for UNICEF SDMX data
 Called from Stata to process large XML files that exceed Stata's line limits
 
 Usage:
-    python python_xml_helper.py <type> <input_xml> <output_yaml> [options]
+    python unicefdata_xml2yaml.py <type> <input_xml> <output_yaml> [options]
 
 Types:
     dataflows, codelists, countries, regions, dimensions, attributes, indicators
@@ -15,6 +15,7 @@ Options:
     --source SOURCE          Source identifier
     --codelist-id ID         Codelist ID for code types
     --codelist-name NAME     Codelist name for code types
+    --enrich-dataflows       For indicators: query API to add dataflows field
 """
 
 import xml.etree.ElementTree as ET
@@ -22,7 +23,14 @@ import argparse
 import sys
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Set
+from collections import defaultdict
+
+try:
+    import requests
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
 
 # SDMX namespaces
 NAMESPACES = {
@@ -114,18 +122,26 @@ def parse_code(element: ET.Element, include_category: bool = False, codelist_id:
     # Add category for indicators - use full code for dynamic pattern matching
     # Aligned with Python/R indicator_registry.py mappings
     if include_category and code_id:
-        result['category'] = _map_prefix_to_dataflow(code_id)
-        
         # Add URN for indicators
         if codelist_id:
             result['urn'] = f"urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:{codelist_id}(1.0).{code_id}"
+        
+        # Extract parent from <str:Parent><Ref id="..."/></str:Parent>
+        parent_elem = element.find('str:Parent/Ref', NAMESPACES)
+        if parent_elem is not None:
+            parent_id = parent_elem.get('id', '')
+            if parent_id:
+                result['parent'] = parent_id
     
     return result
 
 
-# Mapping of indicator code prefixes to SDMX dataflow names
-# This ensures consistency across Python, R, and Stata
-PREFIX_TO_DATAFLOW = {
+# DEPRECATED: Prefix-to-dataflow mapping is now only used for 'category' field
+# (organizational purposes). Actual dataflow detection at runtime uses:
+# - _dataflow_fallback_sequences.yaml (tries multiple dataflows per prefix)
+# - WS_HCF_* -> WASH_HEALTHCARE_FACILITY, WS_SCH_* -> WASH_SCHOOLS, etc.
+# See: _get_dataflow_direct.ado and _get_dataflow_for_indicator.ado
+PREFIX_TO_CATEGORY = {
     'CME': 'CME',
     'NT': 'NUTRITION',
     'IM': 'IMMUNISATION',
@@ -154,9 +170,13 @@ PREFIX_TO_DATAFLOW = {
 
 
 def _map_prefix_to_dataflow(indicator_code: str) -> str:
-    """Map an indicator code to its SDMX dataflow name.
+    """Map an indicator code to a category name (for organizational purposes).
     
-    Uses dynamic pattern matching for sub-dataflows (FGM, CM, UIS)
+    DEPRECATED for dataflow detection. This function now only provides the
+    'category' field value. Actual dataflow detection at runtime uses
+    _dataflow_fallback_sequences.yaml which tries multiple dataflows per prefix.
+    
+    Uses dynamic pattern matching for sub-categories (FGM, CM, UIS)
     before falling back to prefix-based mapping.
     """
     # =========================================================================
@@ -178,9 +198,9 @@ def _map_prefix_to_dataflow(indicator_code: str) -> str:
     if indicator_code.startswith('ED_') and '_UIS' in indicator_code:
         return 'EDUCATION_UIS_SDG'
     
-    # Fall back to prefix-based mapping
+    # Fall back to prefix-based mapping (for category field only, not dataflow)
     prefix = indicator_code.split('_')[0] if '_' in indicator_code else indicator_code
-    return PREFIX_TO_DATAFLOW.get(prefix, 'GLOBAL_DATAFLOW')
+    return PREFIX_TO_CATEGORY.get(prefix, 'GLOBAL_DATAFLOW')
 
 
 def parse_dimension(element: ET.Element) -> Dict[str, Any]:
@@ -198,6 +218,246 @@ def parse_dimension(element: ET.Element) -> Dict[str, Any]:
             result['codelist'] = enum.get('id', '')
     
     return result
+
+
+# ===========================================================================
+# Dataflow Enrichment Functions
+# ===========================================================================
+
+# SDMX API endpoints for dataflow enrichment
+DATAFLOW_URL = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF/all/latest"
+DATA_URL_TEMPLATE = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,{dataflow},1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly"
+
+# Namespaces for data queries
+DATA_NAMESPACES = {
+    'message': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message',
+    'structure': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure',
+    'common': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common',
+    'generic': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic',
+    'compact': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/compact',
+}
+
+
+def fetch_dataflows() -> List[str]:
+    """Fetch all available dataflow IDs from UNICEF SDMX API."""
+    if not HAS_REQUESTS:
+        print("Warning: 'requests' package not available, skipping dataflow enrichment", file=sys.stderr)
+        return []
+    
+    response = requests.get(DATAFLOW_URL, headers={'Accept': 'application/xml'}, timeout=60)
+    response.raise_for_status()
+    
+    root = ET.fromstring(response.content)
+    
+    dataflows = []
+    for df in root.findall('.//structure:Dataflow', DATA_NAMESPACES):
+        df_id = df.get('id')
+        if df_id:
+            dataflows.append(df_id)
+    
+    return sorted(dataflows)
+
+
+def fetch_indicators_for_dataflow(dataflow: str) -> Set[str]:
+    """Fetch all indicator codes from a dataflow using serieskeysonly."""
+    url = DATA_URL_TEMPLATE.format(dataflow=dataflow)
+    
+    try:
+        response = requests.get(url, headers={'Accept': 'application/xml'}, timeout=120)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        return set()
+    except requests.exceptions.Timeout:
+        return set()
+    except Exception:
+        return set()
+    
+    indicators = set()
+    
+    try:
+        root = ET.fromstring(response.content)
+        
+        # Try compact format (most common)
+        for series in root.findall('.//{http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/compact}Series'):
+            indicator = series.get('INDICATOR')
+            if indicator:
+                indicators.add(indicator)
+        
+        # Also try without namespace
+        if not indicators:
+            for series in root.iter():
+                if series.tag.endswith('Series'):
+                    indicator = series.get('INDICATOR')
+                    if indicator:
+                        indicators.add(indicator)
+        
+        # Try generic format if compact didn't work
+        if not indicators:
+            for obs_key in root.findall('.//generic:SeriesKey/generic:Value[@id="INDICATOR"]', DATA_NAMESPACES):
+                indicator = obs_key.get('value')
+                if indicator:
+                    indicators.add(indicator)
+    
+    except ET.ParseError:
+        return set()
+    
+    return indicators
+
+
+def build_indicator_to_dataflow_map(data: List[Dict], verbose: bool = True) -> Dict[str, List[str]]:
+    """Build mapping of indicator code -> list of dataflows containing it.
+    
+    Initializes with ALL indicators from data (including orphans with empty list),
+    then populates dataflows for indicators found in API queries.
+    """
+    if not HAS_REQUESTS:
+        return {}
+    
+    # Initialize mapping with all indicators (orphans get empty list)
+    indicator_to_dataflows = {item['id']: [] for item in data if item.get('id')}
+    total_indicators = len(indicator_to_dataflows)
+    
+    if verbose:
+        print("Enriching indicators with dataflow information...")
+        print(f"  Starting with all {total_indicators} indicators from codelist")
+        print("  Fetching dataflow list...", end=" ", flush=True)
+    
+    dataflows = fetch_dataflows()
+    if verbose:
+        print(f"found {len(dataflows)}")
+    
+    dataflows_with_data = 0
+    indicators_with_dataflows = 0
+    
+    for i, dataflow in enumerate(dataflows, 1):
+        if verbose:
+            print(f"  [{i}/{len(dataflows)}] {dataflow}...", end=" ", flush=True)
+        
+        indicators = fetch_indicators_for_dataflow(dataflow)
+        
+        if indicators:
+            dataflows_with_data += 1
+            for indicator in indicators:
+                if indicator in indicator_to_dataflows:
+                    indicator_to_dataflows[indicator].append(dataflow)
+                    if len(indicator_to_dataflows[indicator]) == 1:
+                        indicators_with_dataflows += 1
+            if verbose:
+                print(f"{len(indicators)} indicators")
+        else:
+            if verbose:
+                print("no data")
+    
+    if verbose:
+        orphans = total_indicators - indicators_with_dataflows
+        print(f"  Dataflows with data: {dataflows_with_data}")
+        print(f"  Total indicators in codelist: {total_indicators}")
+        print(f"  Indicators with dataflows: {indicators_with_dataflows}")
+        print(f"  Orphan indicators (no dataflows): {orphans}")
+    
+    return indicator_to_dataflows
+
+
+def generate_fallback_sequences(indicator_to_dataflows: Dict[str, List[str]], output_path: str, verbose: bool = True):
+    """Generate fallback sequences YAML from indicator-to-dataflow mapping.
+    
+    Analyzes which dataflows contain indicators with each prefix, then creates
+    ordered fallback sequences based on frequency (most common dataflow first).
+    """
+    if verbose:
+        print("Generating fallback sequences...")
+    
+    # Build prefix -> dataflow -> count mapping
+    prefix_dataflow_counts = defaultdict(lambda: defaultdict(int))
+    
+    for indicator, dataflows in indicator_to_dataflows.items():
+        # Extract prefix (first part before underscore)
+        prefix = indicator.split('_')[0] if '_' in indicator else indicator
+        for df in dataflows:
+            prefix_dataflow_counts[prefix][df] += 1
+    
+    # Sort dataflows by frequency for each prefix
+    fallback_sequences = {}
+    for prefix in sorted(prefix_dataflow_counts.keys()):
+        df_counts = prefix_dataflow_counts[prefix]
+        # Sort by count descending, then alphabetically
+        sorted_dfs = sorted(df_counts.keys(), key=lambda x: (-df_counts[x], x))
+        # Always end with GLOBAL_DATAFLOW if not already present
+        if 'GLOBAL_DATAFLOW' not in sorted_dfs:
+            sorted_dfs.append('GLOBAL_DATAFLOW')
+        fallback_sequences[prefix] = sorted_dfs
+    
+    # Build dataflow categories (group related dataflows)
+    dataflow_categories = defaultdict(list)
+    category_keywords = {
+        'MORTALITY': ['CME', 'CAUSE_OF_DEATH', 'MORTALITY'],
+        'HEALTH': ['MNCH', 'IMMUNISATION', 'NUTRITION', 'HIV', 'HEALTH', 'FUNCTIONAL'],
+        'EDUCATION': ['EDUCATION', 'ECD', 'UIS'],
+        'WASH': ['WASH'],
+        'PROTECTION': ['PT', 'PROTECTION', 'FGM', 'CONFLICT'],
+        'SOCIAL_DEVELOPMENT': ['SOC_PROTECTION', 'POVERTY', 'GENDER', 'PVTY'],
+        'DEMOGRAPHICS': ['DM', 'DEMOGRAPHICS', 'POPULATION', 'MIGRATION'],
+        'ECONOMIC': ['ECONOMIC', 'LABOUR', 'EMPLOYMENT'],
+        'EMERGENCY': ['COVID', 'EMERGENCY'],
+    }
+    
+    all_dataflows = set()
+    for dfs in indicator_to_dataflows.values():
+        all_dataflows.update(dfs)
+    
+    for df in sorted(all_dataflows):
+        for category, keywords in category_keywords.items():
+            if any(kw in df.upper() for kw in keywords):
+                dataflow_categories[category].append(df)
+                break
+    
+    # Write YAML
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write('metadata:\n')
+        f.write("  version: '1.1.0'\n")
+        f.write(f"  created: '{datetime.now().strftime('%Y-%m-%d')}'\n")
+        f.write(f"  last_updated: '{datetime.now().strftime('%Y-%m-%d')}'\n")
+        f.write(f'  source: UNICEF SDMX Dataflow Analysis ({len(all_dataflows)} dataflows)\n')
+        f.write('  author: Auto-generated from API data\n')
+        f.write('  description: |\n')
+        f.write('    Canonical fallback sequences for cross-platform indicator dataflow resolution.\n')
+        f.write('    Used by Python, R, and Stata to consistently resolve indicators to SDMX dataflows.\n')
+        f.write('    Each prefix maps to a sequence of dataflows to try in order.\n')
+        f.write('    Generated from actual API data - most common dataflow listed first.\n')
+        f.write('\n')
+        
+        f.write('# Fallback sequences organized by indicator prefix\n')
+        f.write('# Format: prefix -> list of dataflows (try in order until one succeeds)\n')
+        f.write(f'# Based on {len(all_dataflows)} unique SDMX dataflows analyzed {datetime.now().strftime("%Y-%m-%d")}\n')
+        f.write('fallback_sequences:\n')
+        
+        for prefix in sorted(fallback_sequences.keys()):
+            dfs = fallback_sequences[prefix]
+            f.write(f'  {prefix}:\n')
+            for df in dfs:
+                f.write(f'    - {df}\n')
+            f.write('\n')
+        
+        # Add DEFAULT fallback
+        f.write('  # Default fallback for unknown/unmapped prefixes\n')
+        f.write('  DEFAULT:\n')
+        f.write('    - GLOBAL_DATAFLOW\n')
+        f.write('\n')
+        
+        # Write dataflow categories
+        f.write('# Additional metadata: mapping of dataflows to categories\n')
+        f.write('# Useful for diagnostics and understanding indicator routing\n')
+        f.write('dataflow_categories:\n')
+        for category in sorted(dataflow_categories.keys()):
+            dfs = sorted(dataflow_categories[category])
+            f.write(f'  {category}:\n')
+            for df in dfs:
+                f.write(f'    - {df}\n')
+            f.write('\n')
+    
+    if verbose:
+        print(f"  Generated fallback sequences for {len(fallback_sequences)} prefixes")
+        print(f"  Output: {output_path}")
 
 
 def parse_attribute(element: ET.Element) -> Dict[str, Any]:
@@ -225,7 +485,8 @@ def write_yaml(
     agency: str,
     source: Optional[str] = None,
     codelist_id: Optional[str] = None,
-    codelist_name: Optional[str] = None
+    codelist_name: Optional[str] = None,
+    indicator_to_dataflows: Optional[Dict[str, List[str]]] = None
 ):
     """Write parsed data to YAML file in R-compatible dict format."""
     config = TYPE_CONFIG.get(data_type, {})
@@ -244,6 +505,13 @@ def write_yaml(
     else:
         url = f'https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/{agency}/{codelist_id or "ALL"}/latest'
     
+    # Count indicators with dataflow mappings
+    indicators_with_dataflows = 0
+    if indicator_to_dataflows:
+        for item in data:
+            if item.get('id') in indicator_to_dataflows:
+                indicators_with_dataflows += 1
+    
     with open(output_path, 'w', encoding='utf-8') as f:
         # Write metadata header (R-compatible format)
         f.write('metadata:\n')
@@ -258,6 +526,20 @@ def write_yaml(
         f.write(f"  last_updated: {datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}\n")
         f.write(f'  description: Comprehensive {agency} {data_type} {content_type} with metadata (auto-generated)\n')
         f.write(f'  {data_type.rstrip("s")}_count: {len(data)}\n')
+        
+        # Additional metadata for enriched indicators
+        if data_type == 'indicators' and indicator_to_dataflows:
+            # Count indicators with and without dataflows
+            with_dfs = sum(1 for dfs in indicator_to_dataflows.values() if dfs)
+            orphans = len(indicator_to_dataflows) - with_dfs
+            f.write(f'  indicators_with_dataflows: {with_dfs}\n')
+            if orphans > 0:
+                f.write(f'  orphan_indicators: {orphans}\n')
+            # Count unique dataflows
+            all_dataflows = set()
+            for dfs in indicator_to_dataflows.values():
+                all_dataflows.update(dfs)
+            f.write(f'  dataflow_count: {len(all_dataflows)}\n')
         
         # Write dict-based data (R-compatible format)
         f.write(f'{list_name}:\n')
@@ -288,13 +570,23 @@ def write_yaml(
                 urn = item.get('urn', '')
                 if urn:
                     f.write(f'    urn: {urn}\n')
-                # Category field (also serves as dataflow for most indicators)
-                category = item.get('category', '')
-                if category:
-                    f.write(f'    category: {category}\n')
-                    # Also output dataflow field for compatibility with unicefdata.ado
-                    # dataflow is typically the same as category for UNICEF indicators
-                    f.write(f'    dataflow: {category}\n')
+                # Parent field (hierarchical relationship from SDMX)
+                parent = item.get('parent', '')
+                if parent:
+                    f.write(f'    parent: {parent}\n')
+                # Dataflows field (from API enrichment) - ALWAYS write for completeness
+                if indicator_to_dataflows and item_id in indicator_to_dataflows:
+                    dfs = indicator_to_dataflows[item_id]
+                    if dfs:  # Has dataflows
+                        dfs_sorted = sorted(dfs)
+                        if len(dfs_sorted) == 1:
+                            f.write(f'    dataflows: {dfs_sorted[0]}\n')
+                        else:
+                            f.write('    dataflows:\n')
+                            for df in dfs_sorted:
+                                f.write(f'      - {df}\n')
+                    else:  # Orphan indicator (in codelist but not in any dataflow)
+                        f.write('    dataflows: []\n')
             
             elif data_type == 'dataflows':
                 if item.get('version'):
@@ -367,6 +659,10 @@ def main():
     parser.add_argument('--source', help='Source identifier')
     parser.add_argument('--codelist-id', help='Codelist ID')
     parser.add_argument('--codelist-name', help='Codelist name')
+    parser.add_argument('--enrich-dataflows', action='store_true',
+                        help='For indicators: query API to add dataflows field (requires requests package)')
+    parser.add_argument('--fallback-sequences-output', 
+                        help='Also generate fallback sequences YAML to this path (only with --enrich-dataflows)')
     
     args = parser.parse_args()
     
@@ -379,6 +675,18 @@ def main():
         # Parse XML
         data = parse_xml(args.input, args.type)
         
+        # Build indicator-to-dataflow mapping if requested
+        indicator_to_dataflows = None
+        if args.enrich_dataflows and args.type == 'indicators':
+            if not HAS_REQUESTS:
+                print("Warning: --enrich-dataflows requires 'requests' package. Install with: pip install requests", file=sys.stderr)
+            else:
+                indicator_to_dataflows = build_indicator_to_dataflow_map(data, verbose=True)
+                
+                # Generate fallback sequences if requested
+                if args.fallback_sequences_output and indicator_to_dataflows:
+                    generate_fallback_sequences(indicator_to_dataflows, args.fallback_sequences_output, verbose=True)
+        
         # Write YAML
         write_yaml(
             args.output,
@@ -387,11 +695,14 @@ def main():
             args.version,
             args.agency,
             args.source,
-            args.codelist_id,
-            args.codelist_name
+            getattr(args, 'codelist_id', None),
+            getattr(args, 'codelist_name', None),
+            indicator_to_dataflows
         )
         
         print(f"Success: Parsed {len(data)} {args.type}")
+        if indicator_to_dataflows:
+            print(f"  Enriched with dataflow info: {len(indicator_to_dataflows)} indicators have dataflows")
         print(f"Output: {args.output}")
         
     except ET.ParseError as e:

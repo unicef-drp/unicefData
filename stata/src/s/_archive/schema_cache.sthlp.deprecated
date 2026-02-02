@@ -1,0 +1,123 @@
+{smcl}
+{* *! version 1.6.0  16Jan2026}{...}
+{vieweralsosee "[D] unicefdata" "help unicefdata"}{...}
+{vieweralsosee "[D] get_sdmx" "help get_sdmx"}{...}
+{viewerjumpto "Syntax" "schema_cache##syntax"}{...}
+{viewerjumpto "Description" "schema_cache##description"}{...}
+{viewerjumpto "Options" "schema_cache##options"}{...}
+{viewerjumpto "Examples" "schema_cache##examples"}{...}
+{title:schema_cache — Cache and manage SDMX schema definitions}
+
+{marker syntax}{...}
+{title:Syntax}
+
+{p 8 16 2}
+{cmdab:schema_cache}{cmd:,}
+{cmd:agency(}{it:string}{cmd:)}
+{cmd:dataflow(}{it:string}{cmd:)}
+[{opt file(string)}
+{opt clear}
+{opt detailed}
+{opt noisily}
+]
+
+{marker description}{...}
+{title:Description}
+
+{p}
+{cmd:schema_cache} downloads and caches SDMX dataflow schema definitions,
+reducing repeated API calls and improving performance in batch processing.
+{p_end}
+
+{p}
+A "schema" is the structure definition for a particular indicator dataset,
+containing dimension hierarchies, allowable values, and dimension relationships.
+Caching avoids re-fetching this structure on every {cmd:get_sdmx} call.
+{p_end}
+
+{p}
+Cached schemas are stored in YAML format and automatically used by subsequent
+{cmd:get_sdmx} and {cmd:unicefdata} calls for faster processing.
+
+{marker options}{...}
+{title:Options}
+
+{p 4 4 2}{cmd:agency(}{it:string}{cmd:)} is required. Specifies the SDMX agency
+(e.g., {cmd:UNICEF}, {cmd:WB}, {cmd:IMF}).
+
+{p 4 4 2}{cmd:dataflow(}{it:string}{cmd:)} is required. Specifies the dataflow code
+(e.g., {cmd:DF_CME}, {cmd:DF_WBOPENDATA}).
+
+{p 4 4 2}{opt file(string)} specifies the output cache file path.
+Default: current directory with name {cmd:agency_dataflow.yml}.
+
+{p 4 4 2}{opt clear} deletes the cached schema file and clears in-memory cache.
+
+{p 4 4 2}{opt detailed} returns full dimension hierarchies instead of summary.
+
+{p 4 4 2}{opt noisily} displays progress messages during fetch.
+
+{marker examples}{...}
+{title:Examples}
+
+{p 4 4 2}
+Cache UNICEF CME (Child Mortality Estimates) schema:
+{p_end}
+
+{p 8 12 2}
+{cmd:. schema_cache, agency(UNICEF) dataflow(DF_CME)}
+{p_end}
+
+{p 4 4 2}
+Cache World Bank indicators with custom file path:
+{p_end}
+
+{p 8 12 2}
+{cmd:. schema_cache, agency(WB) dataflow(DF_WBOPENDATA) file(~/cache/wb_schema.yml)}
+{p_end}
+
+{p 4 4 2}
+Clear cached schema:
+{p_end}
+
+{p 8 12 2}
+{cmd:. schema_cache, agency(UNICEF) dataflow(DF_CME) clear}
+{p_end}
+
+{p 4 4 2}
+View detailed dimension hierarchy:
+{p_end}
+
+{p 8 12 2}
+{cmd:. schema_cache, agency(UNICEF) dataflow(DF_CME) detailed noisily}
+{p_end}
+
+{title:Technical Details}
+
+{p}
+Cached schemas improve performance significantly:
+{p_end}
+
+{p 8 12 2}
+• First fetch: 2-5 seconds (full SDMX structure query){p_end}
+{p 8 12 2}
+• Cached use: 50-100 ms (local YAML parsing){p_end}
+
+{p}
+Cache files are stored in YAML format for readability and portability.
+They are updated automatically when new dataflows are accessed.
+
+{title:Author}
+
+{p}
+João Pedro Azevedo, UNICEF{break}
+https://jpazvd.github.io{break}
+}
+
+{title:See also}
+
+{p}
+{help unicefdata}{break}
+{help get_sdmx}{break}
+{help unicefdata_sync}
+{p_end}

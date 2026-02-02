@@ -1,8 +1,10 @@
 *******************************************************************************
 * unicefdata_xmltoyaml_py
-*! v 1.0.1   17Dec2025               by Joao Pedro Azevedo (UNICEF)
+*! v 1.2.0   16Jan2026               by Joao Pedro Azevedo (UNICEF)
 * SDMX XML to YAML converter using Python backend
 * Handles large XML files that Stata cannot process natively
+* v1.2.0: Show enrichment progress inline instead of capturing to temp file
+* v1.1.0: Added ENRICHDATAFLOWS option to add dataflow info to indicators
 * v1.0.1: Fixed adopath search to use actual sysdir paths
 *******************************************************************************
 
@@ -14,6 +16,7 @@ DESCRIPTION:
     
 REQUIREMENTS:
     - Python 3.6+ installed and accessible via 'python' command
+    - requests package required for ENRICHDATAFLOWS option (pip install requests)
     - lxml package recommended (pip install lxml) for better performance
     - Falls back to xml.etree.ElementTree if lxml not available
     
@@ -29,7 +32,14 @@ SUPPORTED TYPES:
 SYNTAX:
     unicefdata_xmltoyaml_py, type(string) xmlfile(string) outfile(string)
         [agency(string) version(string) source(string) 
-         codelistid(string) codelistname(string)]
+         codelistid(string) codelistname(string) enrichdataflows
+         fallbacksequencesout(string)]
+    
+OPTIONS:
+    enrichdataflows  - For indicators: query all dataflows to add 'dataflows'
+                       field to each indicator (takes ~1-2 minutes)
+    fallbacksequencesout(string) - Also generate fallback sequences YAML
+                       to this path (only with enrichdataflows)
     
 RETURNS:
     r(count)    - Number of items parsed
@@ -41,7 +51,8 @@ program define unicefdata_xmltoyaml_py, rclass
     
     syntax, TYPE(string) XMLFILE(string) OUTFILE(string) ///
         [AGENCY(string) VERSION(string) SOURCE(string) ///
-         CODELISTID(string) CODELISTNAME(string) PYTHON(string)]
+         CODELISTID(string) CODELISTNAME(string) PYTHON(string) ///
+         ENRICHDATAFLOWS FALLBACKSEQUENCESOUT(string)]
     
     * Set defaults
     if ("`agency'" == "") local agency "UNICEF"
@@ -131,6 +142,12 @@ program define unicefdata_xmltoyaml_py, rclass
     if ("`codelistname'" != "") {
         local meta_args `"`meta_args' --codelist-name "`codelistname'""'
     }
+    if ("`enrichdataflows'" != "") {
+        local meta_args `"`meta_args' --enrich-dataflows"'
+    }
+    if ("`fallbacksequencesout'" != "") {
+        local meta_args `"`meta_args' --fallback-sequences-output "`fallbacksequencesout'""'
+    }
     local meta_args `"`meta_args' --agency "`agency'" --version "`version'""'
     
     * Create temporary file for Python output
@@ -143,13 +160,31 @@ program define unicefdata_xmltoyaml_py, rclass
     di as text "  Script: `script_path'"
     di as text "  Running Python XML parser..."
     
-    if ("`c(os)'" == "Windows") {
-        * Windows: use shell
-        shell `cmd' > "`pyout'" 2>&1
+    * Debug: show if fallback sequences is being used
+    if ("`fallbacksequencesout'" != "") {
+        di as text "  Fallback sequences output: `fallbacksequencesout'"
+    }
+    
+    * For enrichment, show progress inline (don't redirect output)
+    if ("`enrichdataflows'" != "") {
+        di as text "  (Enriching with dataflow info - this takes ~1-2 minutes)"
+        if ("`c(os)'" == "Windows") {
+            shell `cmd'
+        }
+        else {
+            shell `cmd'
+        }
     }
     else {
-        * Unix/Mac: use shell
-        shell `cmd' > "`pyout'" 2>&1
+        * Normal mode: capture output to temp file
+        if ("`c(os)'" == "Windows") {
+            * Windows: use shell
+            shell `cmd' > "`pyout'" 2>&1
+        }
+        else {
+            * Unix/Mac: use shell
+            shell `cmd' > "`pyout'" 2>&1
+        }
     }
     
     * Verify output file was created

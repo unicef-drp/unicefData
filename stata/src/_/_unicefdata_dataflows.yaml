@@ -1,422 +1,639 @@
-metadata:
+_metadata:
+  platform: Stata
   version: '2.0.0'
-  source: UNICEF SDMX dataflow
-  url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF/all/latest
-  last_updated: 2025-12-08T20:39:24
-  description: Comprehensive UNICEF dataflows dataflow with metadata (auto-generated)
-  dataflow_count: 69
+  synced_at: '2026-01-31T22:23:22Z'
+  source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF?references=none&detail=full
+  agency: UNICEF
+  content_type: dataflows
+  total_dataflows: 70
 dataflows:
   CAUSE_OF_DEATH:
-    code: CAUSE_OF_DEATH
-    name: 'Cause of death'
-    description: ''
+    id: CAUSE_OF_DEATH
+    name: Cause of death
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CCRI:
-    code: CCRI
-    name: 'Children’s Climate and Environment Risk Index'
-    description: ''
+    id: CCRI
+    name: Children’s Climate and Environment Risk Index
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: Children’s Climate and Environment Risk Index (CCRI)
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CHILD_RELATED_SDG:
-    code: CHILD_RELATED_SDG
-    name: 'Child-related SDGs 2020'
-    description: ''
+    id: CHILD_RELATED_SDG
+    name: Child-related SDGs 2020
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CHLD_PVTY:
-    code: CHLD_PVTY
-    name: 'Child Poverty'
-    description: ''
+    id: CHLD_PVTY
+    name: Child Poverty
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME:
-    code: CME
-    name: 'Child Mortality'
-    description: ''
+    id: CME
+    name: Child Mortality
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_CAUSE_OF_DEATH:
-    code: CME_CAUSE_OF_DEATH
-    name: 'CME Cause of death'
-    description: ''
+    id: CME_CAUSE_OF_DEATH
+    name: CME Cause of death
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: CME Causes of death. Data source is JHU.
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_COUNTRY_PROFILES_DATA:
-    code: CME_COUNTRY_PROFILES_DATA
-    name: 'CME Country profiles data'
-    description: ''
+    id: CME_COUNTRY_PROFILES_DATA
+    name: CME Country profiles data
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_DF_2021_WQ:
-    code: CME_DF_2021_WQ
-    name: 'IGME Child Mortality Estimates wq'
-    description: ''
+    id: CME_DF_2021_WQ
+    name: IGME Child Mortality Estimates wq
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNATIONAL:
-    code: CME_SUBNATIONAL
-    name: 'CME Subnational Data'
-    description: ''
+    id: CME_SUBNATIONAL
+    name: CME Subnational Data
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_AGO:
-    code: CME_SUBNAT_AGO
-    name: 'CME Angola'
-    description: ''
+    id: CME_SUBNAT_AGO
+    name: CME Angola
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_BDI:
-    code: CME_SUBNAT_BDI
-    name: 'CME Burundi'
-    description: ''
+    id: CME_SUBNAT_BDI
+    name: CME Burundi
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_BEN:
-    code: CME_SUBNAT_BEN
-    name: 'CME Benin'
-    description: ''
+    id: CME_SUBNAT_BEN
+    name: CME Benin
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_BGD:
-    code: CME_SUBNAT_BGD
-    name: 'CME Bangladesh'
-    description: ''
+    id: CME_SUBNAT_BGD
+    name: CME Bangladesh
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_CMR:
-    code: CME_SUBNAT_CMR
-    name: 'CME Cameroon'
-    description: ''
+    id: CME_SUBNAT_CMR
+    name: CME Cameroon
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_ETH:
-    code: CME_SUBNAT_ETH
-    name: 'CME Ethiopia'
-    description: ''
+    id: CME_SUBNAT_ETH
+    name: CME Ethiopia
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_GHA:
-    code: CME_SUBNAT_GHA
-    name: 'CME Ghana'
-    description: ''
+    id: CME_SUBNAT_GHA
+    name: CME Ghana
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_GIN:
-    code: CME_SUBNAT_GIN
-    name: 'CME Guinea'
-    description: ''
+    id: CME_SUBNAT_GIN
+    name: CME Guinea
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_HTI:
-    code: CME_SUBNAT_HTI
-    name: 'CME Haiti'
-    description: ''
+    id: CME_SUBNAT_HTI
+    name: CME Haiti
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_KEN:
-    code: CME_SUBNAT_KEN
-    name: 'CME Kenya'
-    description: ''
+    id: CME_SUBNAT_KEN
+    name: CME Kenya
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_LAO:
-    code: CME_SUBNAT_LAO
-    name: 'CME Lao'
-    description: ''
+    id: CME_SUBNAT_LAO
+    name: CME Lao
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_LBR:
-    code: CME_SUBNAT_LBR
-    name: 'CME Liberia'
-    description: ''
+    id: CME_SUBNAT_LBR
+    name: CME Liberia
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_LSO:
-    code: CME_SUBNAT_LSO
-    name: 'CME Lesotho'
-    description: ''
+    id: CME_SUBNAT_LSO
+    name: CME Lesotho
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_MDG:
-    code: CME_SUBNAT_MDG
-    name: 'CME Madagascar'
-    description: ''
+    id: CME_SUBNAT_MDG
+    name: CME Madagascar
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_MLI:
-    code: CME_SUBNAT_MLI
-    name: 'CME Mali'
-    description: ''
+    id: CME_SUBNAT_MLI
+    name: CME Mali
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_MMR:
-    code: CME_SUBNAT_MMR
-    name: 'CME Myanmar'
-    description: ''
+    id: CME_SUBNAT_MMR
+    name: CME Myanmar
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_MRT:
-    code: CME_SUBNAT_MRT
-    name: 'CME Mauritania'
-    description: ''
+    id: CME_SUBNAT_MRT
+    name: CME Mauritania
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_MWI:
-    code: CME_SUBNAT_MWI
-    name: 'CME Malawi'
-    description: ''
+    id: CME_SUBNAT_MWI
+    name: CME Malawi
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_NAM:
-    code: CME_SUBNAT_NAM
-    name: 'CME Namibia'
-    description: ''
+    id: CME_SUBNAT_NAM
+    name: CME Namibia
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_NGA:
-    code: CME_SUBNAT_NGA
-    name: 'CME Nigeria'
-    description: ''
+    id: CME_SUBNAT_NGA
+    name: CME Nigeria
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_NPL:
-    code: CME_SUBNAT_NPL
-    name: 'CME Nepal'
-    description: ''
+    id: CME_SUBNAT_NPL
+    name: CME Nepal
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_PAK:
-    code: CME_SUBNAT_PAK
-    name: 'CME Pakistan'
-    description: ''
+    id: CME_SUBNAT_PAK
+    name: CME Pakistan
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_RWA:
-    code: CME_SUBNAT_RWA
-    name: 'CME Rwanda'
-    description: ''
+    id: CME_SUBNAT_RWA
+    name: CME Rwanda
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_SEN:
-    code: CME_SUBNAT_SEN
-    name: 'CME Senegal'
-    description: ''
+    id: CME_SUBNAT_SEN
+    name: CME Senegal
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_SLE:
-    code: CME_SUBNAT_SLE
-    name: 'CME Sierra Leone'
-    description: ''
+    id: CME_SUBNAT_SLE
+    name: CME Sierra Leone
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_TCD:
-    code: CME_SUBNAT_TCD
-    name: 'CME Chad'
-    description: ''
+    id: CME_SUBNAT_TCD
+    name: CME Chad
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_TGO:
-    code: CME_SUBNAT_TGO
-    name: 'CME Togo'
-    description: ''
+    id: CME_SUBNAT_TGO
+    name: CME Togo
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_TZA:
-    code: CME_SUBNAT_TZA
-    name: 'CME Tanzania'
-    description: ''
+    id: CME_SUBNAT_TZA
+    name: CME Tanzania
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_UGA:
-    code: CME_SUBNAT_UGA
-    name: 'CME Uganda'
-    description: ''
+    id: CME_SUBNAT_UGA
+    name: CME Uganda
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_ZMB:
-    code: CME_SUBNAT_ZMB
-    name: 'CME Zambia'
-    description: ''
+    id: CME_SUBNAT_ZMB
+    name: CME Zambia
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   CME_SUBNAT_ZWE:
-    code: CME_SUBNAT_ZWE
-    name: 'CME Zimbabwe'
-    description: ''
+    id: CME_SUBNAT_ZWE
+    name: CME Zimbabwe
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   COVID:
-    code: COVID
-    name: 'COVID-19 Baseline Indicators April 2020'
-    description: ''
+    id: COVID
+    name: COVID-19 Baseline Indicators April 2020
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   COVID_CASES:
-    code: COVID_CASES
-    name: 'Covid cases and deaths'
-    description: ''
+    id: COVID_CASES
+    name: Covid cases and deaths
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   DM:
-    code: DM
-    name: 'Demography'
-    description: ''
+    id: DM
+    name: Demography
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   DM_PROJECTIONS:
-    code: DM_PROJECTIONS
-    name: 'Projection Demography'
-    description: ''
+    id: DM_PROJECTIONS
+    name: Projection Demography
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   ECD:
-    code: ECD
-    name: 'Early Childhood Development'
-    description: ''
+    id: ECD
+    name: Early Childhood Development
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   ECONOMIC:
-    code: ECONOMIC
-    name: 'Economic'
-    description: ''
+    id: ECONOMIC
+    name: Economic
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   EDUCATION:
-    code: EDUCATION
-    name: 'EDU - Access and Completion (HH Survey Data)'
-    description: ''
+    id: EDUCATION
+    name: EDU - Access and Completion (HH Survey Data)
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   EDUCATION_FLS:
-    code: EDUCATION_FLS
-    name: 'EDU - Learning and Skills'
-    description: ''
+    id: EDUCATION_FLS
+    name: EDU - Learning and Skills
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   EDUCATION_UIS_SDG:
-    code: EDUCATION_UIS_SDG
-    name: 'EDU - SDG Indicators (UIS Database)'
-    description: ''
+    id: EDUCATION_UIS_SDG
+    name: EDU - SDG Indicators (UIS Database)
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   FUNCTIONAL_DIFF:
-    code: FUNCTIONAL_DIFF
-    name: 'Functional difficulties'
-    description: ''
+    id: FUNCTIONAL_DIFF
+    name: Functional difficulties
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   GENDER:
-    code: GENDER
-    name: 'Gender'
-    description: ''
+    id: GENDER
+    name: Gender
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   GLOBAL_DATAFLOW:
-    code: GLOBAL_DATAFLOW
-    name: 'Cross-sector indicators'
-    description: ''
+    id: GLOBAL_DATAFLOW
+    name: Cross-sector indicators
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   HIV_AIDS:
-    code: HIV_AIDS
-    name: 'HIV/AIDS'
-    description: ''
+    id: HIV_AIDS
+    name: HIV/AIDS
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   IMMUNISATION:
-    code: IMMUNISATION
-    name: 'Immunisation'
-    description: ''
+    id: IMMUNISATION
+    name: Immunisation
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   MG:
-    code: MG
-    name: 'Migration'
-    description: ''
+    id: MG
+    name: Migration
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   MNCH:
-    code: MNCH
-    name: 'Maternal, child and newborn health'
-    description: ''
+    id: MNCH
+    name: Maternal, child and newborn health
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   NUTRITION:
-    code: NUTRITION
-    name: 'Nutrition'
-    description: ''
+    id: NUTRITION
+    name: Nutrition
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   PT:
-    code: PT
-    name: 'Child Protection'
-    description: ''
+    id: PT
+    name: Child Protection
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   PT_CM:
-    code: PT_CM
-    name: 'Child Marriage'
-    description: ''
+    id: PT_CM
+    name: Child Marriage
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
+  PT_CM_SUBNATIONAL:
+    id: PT_CM_SUBNATIONAL
+    name: Child Marriage - Subnational
+    agency: UNICEF
+    version: '1.0'
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   PT_CONFLICT:
-    code: PT_CONFLICT
-    name: 'Children Exposed to Conflict'
-    description: ''
+    id: PT_CONFLICT
+    name: Children Exposed to Conflict
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   PT_FGM:
-    code: PT_FGM
-    name: 'Child Protection FGM'
-    description: ''
+    id: PT_FGM
+    name: Child Protection FGM
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   SDG_PROG_ASSESSMENT:
-    code: SDG_PROG_ASSESSMENT
-    name: 'SDG Progress assessment'
-    description: ''
+    id: SDG_PROG_ASSESSMENT
+    name: SDG Progress assessment
+    agency: UNICEF
     version: '1.1'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   SOC_PROTECTION:
-    code: SOC_PROTECTION
-    name: 'Social protection'
-    description: ''
+    id: SOC_PROTECTION
+    name: Social protection
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WASH_HEALTHCARE_FACILITY:
-    code: WASH_HEALTHCARE_FACILITY
-    name: 'WASH Healthcare Facility'
-    description: ''
+    id: WASH_HEALTHCARE_FACILITY
+    name: WASH Healthcare Facility
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WASH_HOUSEHOLDS:
-    code: WASH_HOUSEHOLDS
-    name: 'WASH Households'
-    description: ''
+    id: WASH_HOUSEHOLDS
+    name: WASH Households
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WASH_HOUSEHOLD_MH:
-    code: WASH_HOUSEHOLD_MH
-    name: 'WASH Household Menstrual Health'
-    description: ''
+    id: WASH_HOUSEHOLD_MH
+    name: WASH Household Menstrual Health
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WASH_HOUSEHOLD_SUBNAT:
-    code: WASH_HOUSEHOLD_SUBNAT
-    name: 'WASH Household subnational'
-    description: ''
+    id: WASH_HOUSEHOLD_SUBNAT
+    name: WASH Household subnational
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WASH_SCHOOLS:
-    code: WASH_SCHOOLS
-    name: 'WASH Schools'
-    description: ''
+    id: WASH_SCHOOLS
+    name: WASH Schools
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'
   WT:
-    code: WT
-    name: 'Transition to Work'
-    description: ''
+    id: WT
+    name: Transition to Work
+    agency: UNICEF
     version: '1.0'
-    agency_id: UNICEF
+    description: null
+    dimensions: null
+    indicators: null
+    last_updated: '2026-01-31T22:23:22Z'

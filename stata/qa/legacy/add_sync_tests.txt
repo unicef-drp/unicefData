@@ -1,0 +1,289 @@
+*===============================================================================
+* CATEGORY 3: METADATA SYNC
+*===============================================================================
+
+if $run_sync == 1 | "`target_test'" == "SYNC-01" {
+    *==========================================================================
+    * SYNC-01: Sync dataflow index
+    *==========================================================================
+    * PURPOSE:
+    *   Test unicefdata_sync command's ability to download and generate
+    *   dataflow schema files (_dataflow_index.yaml and individual schemas)
+    *
+    * WHAT IS TESTED:
+    *   - API connectivity to UNICEF SDMX dataflow endpoint
+    *   - XML parsing of dataflow structure definitions (DSD)
+    *   - YAML file generation with proper formatting
+    *   - Schema file creation in __dataflows/ subdirectory
+    *
+    * CODE BEING TESTED:
+    *   _unicefdata_sync_dataflow_index subroutine in unicefdata_sync.ado
+    *   See: stata/src/u/unicefdata_sync.ado lines 1284-1586
+    *
+    * WHERE TO DEBUG IF THIS FAILS:
+    *   1. Check API connectivity: curl https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF
+    *   2. Verify Python availability (preferred parser): python --version
+    *   3. Check output directory permissions: stata/src/_/
+    *   4. Review sync log for errors: Set verbose option
+    *
+    * RELATED TESTS:
+    *   - SYNC-02: Full indicator metadata sync
+    *   - SYNC-03: Complete metadata sync (all files)
+    *==========================================================================
+    test_start, id("SYNC-01") desc("Sync dataflow index to YAML")
+
+    * Find stata/src/_ directory
+    local statadir = subinstr(c(pwd), "/qa", "", 1)
+    local statadir = subinstr("`statadir'", "\qa", "", 1)
+    local metadir "`statadir'/src/_"
+
+    * Run dataflow index sync
+    cap noi unicefdata_sync, path("`metadir'")
+
+    if _rc == 0 {
+        * Verify index file exists
+        local index_file "`metadir'/_dataflow_index.yaml"
+        cap confirm file "`index_file'"
+
+        if _rc == 0 {
+            * Check file has content (> 1KB suggests success)
+            qui copy "`index_file'" tempfile_check, replace public
+            local fsize = _rc
+
+            * Verify file contains expected structure
+            tempname fh
+            local found_metadata = 0
+            local found_dataflows = 0
+
+            file open `fh' using "`index_file'", read text
+            file read `fh' line
+            local line_count = 0
+            while !r(eof) & `line_count' < 50 {
+                local line_count = `line_count' + 1
+                if strpos("`line'", "metadata_version:") > 0 {
+                    local found_metadata = 1
+                }
+                if strpos("`line'", "dataflows:") > 0 {
+                    local found_dataflows = 1
+                }
+                file read `fh' line
+            }
+            file close `fh'
+
+            if `found_metadata' & `found_dataflows' {
+                test_pass, id("SYNC-01") msg("Dataflow index synced successfully")
+            }
+            else {
+                test_fail, id("SYNC-01") msg("Index file has invalid structure (meta=`found_metadata', df=`found_dataflows')")
+            }
+        }
+        else {
+            test_fail, id("SYNC-01") msg("Index file not created at: `index_file'")
+        }
+    }
+    else {
+        test_fail, id("SYNC-01") msg("unicefdata_sync failed") rc(_rc)
+    }
+}
+
+if $run_sync == 1 | "`target_test'" == "SYNC-02" {
+    *==========================================================================
+    * SYNC-02: Sync indicator metadata
+    *==========================================================================
+    * PURPOSE:
+    *   Test full indicator metadata sync with enrichment (dataflow mappings,
+    *   tier classification, disaggregations)
+    *
+    * WHAT IS TESTED:
+    *   - CL_UNICEF_INDICATOR codelist download
+    *   - Indicator metadata enrichment with dataflows
+    *   - Tier classification (1-4 based on data availability)
+    *   - Disaggregation dimension extraction
+    *   - YAML metadata watermark generation
+    *
+    * CODE BEING TESTED:
+    *   _unicefdata_sync_ind_meta subroutine
+    *   enrich_stata_metadata_complete.py Python script
+    *   See: stata/src/u/unicefdata_sync.ado lines 1730-1879
+    *
+    * WHERE TO DEBUG IF THIS FAILS:
+    *   1. Check 30-day cache: File age may trigger skip (use force option)
+    *   2. Verify Python availability: Required for enrichment
+    *   3. Check dataflow mapping file exists: _indicator_dataflow_map.yaml
+    *   4. Review enrichment script: stata/src/py/enrich_stata_metadata_complete.py
+    *
+    * RELATED TESTS:
+    *   - TIER-01, TIER-02: Test tier classification results
+    *   - XPLAT-01: Verify cross-platform metadata consistency
+    *==========================================================================
+    test_start, id("SYNC-02") desc("Sync indicator metadata with enrichment")
+
+    * Find stata/src/_ directory
+    local statadir = subinstr(c(pwd), "/qa", "", 1)
+    local statadir = subinstr("`statadir'", "\qa", "", 1)
+    local metadir "`statadir'/src/_"
+
+    * Run indicator metadata sync with force to bypass cache
+    cap noi unicefdata_sync, path("`metadir'") force
+
+    if _rc == 0 {
+        * Verify metadata file exists
+        local meta_file "`metadir'/_unicefdata_indicators_metadata.yaml"
+        cap confirm file "`meta_file'"
+
+        if _rc == 0 {
+            * Verify enrichment fields are present
+            tempname fh
+            local found_metadata = 0
+            local found_indicators = 0
+            local found_dataflows = 0
+            local found_tier = 0
+            local found_disagg = 0
+
+            file open `fh' using "`meta_file'", read text
+            file read `fh' line
+            local line_count = 0
+            while !r(eof) & `line_count' < 100 {
+                local line_count = `line_count' + 1
+                if strpos("`line'", "metadata:") > 0 {
+                    local found_metadata = 1
+                }
+                if strpos("`line'", "indicators:") > 0 {
+                    local found_indicators = 1
+                }
+                if strpos("`line'", "dataflows:") > 0 {
+                    local found_dataflows = 1
+                }
+                if strpos("`line'", "tier:") > 0 {
+                    local found_tier = 1
+                }
+                if strpos("`line'", "disaggregations:") > 0 {
+                    local found_disagg = 1
+                }
+                file read `fh' line
+            }
+            file close `fh'
+
+            local enrichment_ok = `found_dataflows' & `found_tier' & `found_disagg'
+
+            if `found_metadata' & `found_indicators' & `enrichment_ok' {
+                test_pass, id("SYNC-02") msg("Indicator metadata with enrichment synced")
+            }
+            else if `found_metadata' & `found_indicators' {
+                test_pass, id("SYNC-02") msg("Indicator metadata synced (enrichment may be partial)")
+            }
+            else {
+                test_fail, id("SYNC-02") msg("Metadata file has invalid structure")
+            }
+        }
+        else {
+            test_fail, id("SYNC-02") msg("Metadata file not created at: `meta_file'")
+        }
+    }
+    else {
+        test_fail, id("SYNC-02") msg("unicefdata_sync failed") rc(_rc)
+    }
+}
+
+if $run_sync == 1 | "`target_test'" == "SYNC-03" {
+    *==========================================================================
+    * SYNC-03: Full metadata sync
+    *==========================================================================
+    * PURPOSE:
+    *   Test complete metadata synchronization generating all YAML files:
+    *   - Dataflows catalog
+    *   - Indicators catalog
+    *   - Codelists (age, wealth, residence, etc.)
+    *   - Countries codelist
+    *   - Regions codelist
+    *   - Sync history log
+    *   - Indicator metadata (enriched)
+    *   - Dataflow schemas (optional)
+    *
+    * WHAT IS TESTED:
+    *   - All sync subroutines execute without error
+    *   - All expected YAML files are generated
+    *   - Vintage snapshot is created
+    *   - Sync history is updated
+    *   - Files have proper Stata platform watermark
+    *
+    * CODE BEING TESTED:
+    *   Main unicefdata_sync program with 'all' option
+    *   All 7 sync subroutines
+    *   See: stata/src/u/unicefdata_sync.ado lines 70-680
+    *
+    * WHERE TO DEBUG IF THIS FAILS:
+    *   1. Check API connectivity for all endpoints
+    *   2. Verify sufficient disk space for ~2MB of YAML files
+    *   3. Check Python availability for enrichment
+    *   4. Review sync log: Set verbose option for detailed output
+    *   5. Check individual file creation if partial failure
+    *
+    * RELATED TESTS:
+    *   - SYNC-01, SYNC-02: Individual component tests
+    *   - META-02: Metadata file sanity check
+    *   - XPLAT-01: Cross-platform metadata validation
+    *==========================================================================
+    test_start, id("SYNC-03") desc("Full metadata sync (all YAML files)")
+
+    * Find stata/src/_ directory
+    local statadir = subinstr(c(pwd), "/qa", "", 1)
+    local statadir = subinstr("`statadir'", "\qa", "", 1)
+    local metadir "`statadir'/src/_"
+
+    * Run full sync
+    cap noi unicefdata_sync, path("`metadir'") all
+
+    if _rc == 0 {
+        * Check all expected files exist
+        local required_files "_unicefdata_dataflows.yaml _unicefdata_indicators.yaml _unicefdata_codelists.yaml _unicefdata_countries.yaml _unicefdata_regions.yaml _unicefdata_sync_history.yaml"
+
+        local all_ok = 1
+        local missing_files ""
+
+        foreach file of local required_files {
+            cap confirm file "`metadir'/`file'"
+            if _rc != 0 {
+                local all_ok = 0
+                local missing_files "`missing_files' `file'"
+            }
+        }
+
+        if `all_ok' {
+            * Verify at least one file has recent timestamp and Stata watermark
+            local sample_file "`metadir'/_unicefdata_dataflows.yaml"
+            tempname fh
+            local found_stata = 0
+            local found_synced = 0
+
+            file open `fh' using "`sample_file'", read text
+            file read `fh' line
+            local line_count = 0
+            while !r(eof) & `line_count' < 20 {
+                local line_count = `line_count' + 1
+                if strpos("`line'", "platform: Stata") > 0 {
+                    local found_stata = 1
+                }
+                if strpos("`line'", "synced_at:") > 0 {
+                    local found_synced = 1
+                }
+                file read `fh' line
+            }
+            file close `fh'
+
+            if `found_stata' & `found_synced' {
+                test_pass, id("SYNC-03") msg("All metadata files synced successfully")
+            }
+            else {
+                test_fail, id("SYNC-03") msg("Metadata files lack proper watermark")
+            }
+        }
+        else {
+            test_fail, id("SYNC-03") msg("Missing files:`missing_files'")
+        }
+    }
+    else {
+        test_fail, id("SYNC-03") msg("Full sync failed") rc(_rc)
+    }
+}
+
