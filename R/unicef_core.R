@@ -124,11 +124,18 @@ get_fallback_dataflows <- function(original_flow) {
     end_year_str = NULL,
     max_retries = 3,
     version = "1.0",
-    page_size = 100000,
+    page_size = 1000000,
     verbose = TRUE
 ) {
   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-  indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  
+  # Build indicator key: NULL means all indicators, otherwise .IND1+IND2.
+  if (is.null(indicator) || length(indicator) == 0) {
+    indicator_str <- ""  # Empty key = all indicators in dataflow
+  } else {
+    indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  }
+  
   rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
 
   full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
@@ -140,6 +147,7 @@ get_fallback_dataflows <- function(original_flow) {
 
   pages <- list()
   page <- 0L
+  prev_nrows <- -1  # Track previous page size to detect stalled pagination
 
   repeat {
     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
@@ -164,11 +172,34 @@ get_fallback_dataflows <- function(original_flow) {
     }
 
     df <- out
-    if (is.null(df) || nrow(df) == 0) break
-
+    
+    # Check if we got data
+    if (is.null(df) || nrow(df) == 0) {
+      if (verbose) message(sprintf("Page %d: No data returned, stopping.", page + 1))
+      break
+    }
+    
+    # Log page size
+    if (verbose) message(sprintf("Page %d: Received %d rows", page + 1, nrow(df)))
+    
+    # Detect if API is ignoring pagination (returning same data repeatedly)
+    # This happens when: current page has same row count as previous AND it exceeds page_size
+    # Indicating the API returned ALL data and is now repeating it
+    if (page > 0 && nrow(df) == prev_nrows && nrow(df) >= page_size) {
+      if (verbose) message(sprintf("API ignoring pagination parameters (repeated %d rows), stopping.", nrow(df)))
+      break
+    }
+    
+    # Store page
     pages[[length(pages) + 1L]] <- df
-    if (nrow(df) < page_size) break
+    
+    # Break if this is the last page (partial page indicates end)
+    if (nrow(df) < page_size) {
+      if (verbose) message(sprintf("Last page reached (%d < %d)", nrow(df), page_size))
+      break
+    }
 
+    prev_nrows <- nrow(df)
     page <- page + 1L
     Sys.sleep(0.2)
   }
@@ -207,10 +238,10 @@ unicefData_raw <- function(
     end_year = NULL,
     max_retries = 3,
     version = NULL,
-    page_size = 100000,
+    page_size = 1000000,
     verbose = TRUE
 ) {
-  # Validate inputs
+  # Validate inputs - at least one must be specified
   if (is.null(dataflow) && is.null(indicator)) {
     stop("Either 'indicator' or 'dataflow' must be specified.")
   }
@@ -232,11 +263,14 @@ unicefData_raw <- function(
 
   # determine primary dataflow
   if (is.null(dataflow)) {
+    if (is.null(indicator)) {
+      stop("If 'dataflow' is not specified, 'indicator' must be provided for auto-detection.")
+    }
     dataflow <- detect_dataflow(indicator[1])
     if (verbose) message(sprintf("Auto-detected dataflow '%s'", dataflow))
   }
 
-  # Candidate flows: primary + fallbacks
+  # Candidate flows: primary + fallbacks (only if indicator specified)
   flows <- dataflow
   if (!is.null(indicator)) {
     fb <- get_fallback_dataflows(original_flow = dataflow)
@@ -273,10 +307,19 @@ unicefData_raw <- function(
 
   # If all candidates were 404 (indicator not found in any attempted flow), return empty
   if (last_not_found) {
-    if (verbose) message(sprintf(
-      "No data found: indicator '%s' not present in tried dataflows: %s",
-      indicator[1], paste(flows, collapse = ", ")
-    ))
+    if (verbose) {
+      if (!is.null(indicator)) {
+        message(sprintf(
+          "No data found: indicator '%s' not present in tried dataflows: %s",
+          indicator[1], paste(flows, collapse = ", ")
+        ))
+      } else {
+        message(sprintf(
+          "No data found in dataflow: %s",
+          paste(flows, collapse = ", ")
+        ))
+      }
+    }
     return(dplyr::tibble())
   }
 
@@ -554,7 +597,18 @@ validate_unicef_schema <- function(df, dataflow_id) {
   expected_cols <- get_expected_columns(dataflow_id)
   if (length(expected_cols) == 0) return(df)
 
-  missing_cols <- setdiff(expected_cols, names(df))
+  # When labels=both, columns are named like "REF_AREA: Reference area"
+  # Check if columns exist either as exact match or as prefix (before colon)
+  df_col_prefixes <- sub(":.*$", "", names(df))  # Extract ID part before colon
+  
+  missing_cols <- character(0)
+  for (col in expected_cols) {
+    # Check if column exists as exact match or as prefix
+    if (!col %in% names(df) && !col %in% df_col_prefixes) {
+      missing_cols <- c(missing_cols, col)
+    }
+  }
+  
   if (length(missing_cols) > 0) {
     warning(sprintf("Data for %s is missing expected columns: %s",
                     dataflow_id, paste(missing_cols, collapse = ", ")))

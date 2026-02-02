@@ -13,7 +13,7 @@ unicefData_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
-  page_size = 1e+05,
+  page_size = 1e+06,
   verbose = TRUE
 )
 
@@ -25,7 +25,7 @@ unicefdata_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
-  page_size = 1e+05,
+  page_size = 1e+06,
   verbose = TRUE
 )
 }
