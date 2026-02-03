@@ -1,52 +1,251 @@
-# Stata Package: unicefData
+# unicefData - Stata Package
 
-![Stata 14+](https://img.shields.io/badge/Stata-14%2B-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Version](https://img.shields.io/badge/version-2.0.4-green)
-![Tests](https://img.shields.io/badge/tests-38%2F38%20passing-brightgreen)
+[![Stata 14+](https://img.shields.io/badge/Stata-14%2B-blue)](https://www.stata.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-2.0.4-green)](https://github.com/unicef-drp/unicefData)
+[![Tests](https://img.shields.io/badge/tests-38%2F38%20passing-brightgreen)](stata/qa/)
 
----
+**Stata component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
 
-## 🆕 What's New in v2.0.4 (Stata)
+This is the Stata implementation of the **unicefData** package. For other implementations, see the links below.
 
-**Bug Fix & Documentation Update** - February 1, 2026
-
-* **False warning fix**: Resolved issue where valid disaggregation filters (e.g., `wealth`) showed "NOT supported" warnings despite working correctly
-  - Fixed metadata_path reset logic at line 707
-  - Now uses conditional fallback instead of unconditional reset
-  - Eliminates false warnings while preserving correct error detection for truly unsupported filters
-  - All 32/32 cross-platform indicators validated (100% consistency)
-
-* **Examples documentation**: Refreshed examples to match unicefdata v2.0.4 API and workflows
-  - Updated syntax documentation
-  - Improved clarity on disaggregation handling
-  - Aligned with latest metadata system
+> **Other languages:** [R](../R/README.md) | [Python](../python/README.md) | [Main README](../README.md)
 
 ---
 
-## 🆕 What's New in v2.0.0
+## Installation
 
-**Major Quality Milestone** - All QA tests passing (38/38, 100% success rate)
+### From GitHub (Recommended)
 
-* **SYNC-02 Enrichment Fix**: Resolved critical path extraction bug
-  - Fixed directory path extraction logic in metadata enrichment pipeline
-  - Phase 2-3 enrichment now working: tier classification + disaggregations
-  - Previously: 37/38 tests passing (SYNC-02 failed)
-  - Now: 38/38 tests passing in 10m 17s
+```stata
+* First install github package (one-time)
+net install github, from("https://haghish.github.io/github/")
 
-* **Enhanced Reliability**: Metadata synchronization pipeline fully operational
-  - All enrichment phases complete successfully
-  - Improved YAML file path resolution
-  - Better error handling and diagnostics
+* Install unicefData
+github install unicef-drp/unicefData, package(stata)
+```
+
+### From URL
+
+```stata
+net install unicefdata, from("https://raw.githubusercontent.com/unicef-drp/unicefData/main/stata/ssc") replace
+```
+
+### Manual Installation
+
+1. Copy `src/u/unicefdata.ado` to your ado path
+2. Copy `src/u/unicefdata.sthlp` to your ado path
+3. Copy `metadata/current/` folder to `ado/plus/_/`
+
+**Verify Installation:**
+
+```stata
+which unicefdata
+help unicefdata
+```
 
 ---
 
-## Overview
+## Quick Start
 
-The **Stata** implementation of unicefData provides seamless access to UNICEF's SDMX API, allowing researchers to download and analyze demographic, health, education, and protection indicators for 196+ countries.
+### Search for Indicators
 
-**Repository:** [github.com/unicef-drp/unicefData](https://github.com/unicef-drp/unicefData)  
-**Documentation:** See [main README](../README.md) for complete package comparison across Stata, R, and Python.
+```stata
+* Search by keyword
+unicefdata, search(mortality)
+unicefdata, search(stunting)
+
+* List all dataflows
+unicefdata, flows
+
+* List categories
+unicefdata, categories
+
+* View dataflow schema
+unicefdata, dataflow(CME)
+```
+
+### Download Data
+
+```stata
+* Fetch under-5 mortality (dataflow auto-detected)
+unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) year(2015:2023) clear
+
+* View the data
+list iso3 country indicator period value in 1/10
+describe
+```
+
+### Get Indicator Info
+
+```stata
+* Check what disaggregations are supported
+unicefdata, info(CME_MRY0T4)
+```
+
+---
+
+## Post-Production Options
+
+### Output Formats
+
+```stata
+* Long format (default)
+unicefdata, indicator(CME_MRY0T4) clear
+
+* Wide format - years as columns
+unicefdata, indicator(CME_MRY0T4) format(wide) clear
+
+* Wide indicators - indicators as columns
+unicefdata, indicator(CME_MRY0T4 NT_ANT_HAZ_NE2_MOD) format(wide_indicators) clear
+```
+
+### Latest Value Per Country
+
+```stata
+unicefdata, indicator(CME_MRY0T4) latest clear
+```
+
+### Most Recent Values (MRV)
+
+```stata
+unicefdata, indicator(CME_MRY0T4) mrv(3) clear
+```
+
+### Circa (Nearest Year)
+
+```stata
+unicefdata, indicator(NT_ANT_HAZ_NE2) year(2015) circa clear
+```
+
+### Disaggregation Filters
+
+```stata
+* By sex
+unicefdata, indicator(NT_ANT_HAZ_NE2) sex(_T M F) clear
+
+* By wealth quintile
+unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1 Q5 _T) clear
+
+* Combined
+unicefdata, indicator(NT_ANT_HAZ_NE2) sex(_T M F) wealth(Q1 Q5) clear
+```
+
+---
+
+## Command Reference
+
+### Syntax
+
+```stata
+unicefdata, indicator(code) [options]
+```
+
+### Main Options
+
+| Option | Description |
+|--------|-------------|
+| `indicator(code)` | Indicator code(s), e.g., `CME_MRY0T4` |
+| `dataflow(name)` | SDMX dataflow (auto-detected if omitted) |
+| `countries(list)` | ISO3 codes, e.g., `ALB USA BRA` or `all` |
+| `year(range)` | Years: single `2020`, range `2015:2023`, or list |
+
+### Disaggregation Options
+
+| Option | Description |
+|--------|-------------|
+| `sex(list)` | Sex filter: `_T` (total), `F`, `M` |
+| `wealth(list)` | Wealth quintiles: `Q1` to `Q5`, `_T` |
+| `residence(list)` | Urban/rural: `U`, `R`, `_T` |
+| `age(list)` | Age groups |
+
+### Post-Production Options
+
+| Option | Description |
+|--------|-------------|
+| `format(type)` | `long`, `wide`, `wide_indicators` |
+| `latest` | Keep only most recent value per country |
+| `mrv(n)` | Keep N most recent values |
+| `circa` | Find closest available year |
+
+### Discovery Options
+
+| Option | Description |
+|--------|-------------|
+| `search(term)` | Search indicators by keyword |
+| `flows` | List all dataflows |
+| `categories` | List indicator categories |
+| `dataflow(name)` | Show dataflow schema |
+| `info(code)` | Show indicator info |
+
+### Other Options
+
+| Option | Description |
+|--------|-------------|
+| `clear` | Replace data in memory |
+| `verbose` | Show detailed progress |
+| `debug` | Show debug information |
+
+---
+
+## Tiered Discovery
+
+Discovery commands include tier filters to control which indicators appear:
+
+```stata
+* Default: Tier 1 only (verified and downloadable)
+unicefdata, search(stunting) limit(10)
+
+* Include Tier 2 (officially defined, may have no data)
+unicefdata, search(stunting) limit(10) showtier2
+
+* Include Tier 3 (legacy/undocumented)
+unicefdata, search(stunting) limit(10) showtier3
+
+* Include all tiers
+unicefdata, search(stunting) limit(20) showall
+
+* Include orphan indicators
+unicefdata, search(stunting) showorphans
+```
+
+### Tier Classification
+
+| Tier | Count | Description |
+|------|------:|-------------|
+| **Tier 1** | 480 | Verified and downloadable |
+| **Tier 2** | 0 | Limited/deprecated |
+| **Tier 3** | 0 | No data available |
+| **Tier 4** | 258 | No dataflow mapping (orphans) |
+
+---
+
+## Common Indicators
+
+### Child Mortality (SDG 3.2)
+
+- `CME_MRM0` - Neonatal mortality rate
+- `CME_MRY0T4` - Under-5 mortality rate
+
+### Nutrition (SDG 2.2)
+
+- `NT_ANT_HAZ_NE2_MOD` - Stunting prevalence
+- `NT_ANT_WHZ_NE2` - Wasting prevalence
+
+### Immunization (SDG 3.b)
+
+- `IM_DTP3` - DTP3 coverage
+- `IM_MCV1` - Measles coverage
+
+### WASH (SDG 6)
+
+- `WS_PPL_W-SM` - Safely managed water
+- `WS_PPL_S-SM` - Safely managed sanitation
+
+### Child Protection
+
+- `PT_CHLD_Y0T4_REG` - Birth registration
+- `PT_F_20-24_MRD_U18_TND` - Child marriage
 
 ---
 
@@ -59,190 +258,101 @@ stata/
 │   │   ├── unicefdata.ado      # Main command
 │   │   └── unicefdata.sthlp    # Help documentation
 │   ├── _/                      # Helper programs (internal)
-│   │   ├── _unicef_*.ado       # YAML processing, metadata handling
-│   │   └── __unicef_*.ado      # Private utilities (double underscore)
+│   │   ├── _unicef_*.ado       # YAML processing, metadata
+│   │   └── __unicef_*.ado      # Private utilities
 │   └── py/                     # Python metadata generators
-│       └── build_*.py          # Metadata sync scripts
-│
 ├── metadata/                   # YAML metadata cache
 │   └── current/                # Latest metadata files
-│       ├── _unicefdata_*.yaml  # Core metadata (dataflows, indicators, etc.)
-│       └── dataflows/          # Individual dataflow schemas
-│
-├── qa/                         # Quality assurance test suite
-│   ├── run_tests.do            # Main test runner
-│   ├── fixtures/               # Test baselines
-│   └── README.md               # Test documentation (38/38 passing)
-│
+├── qa/                         # Quality assurance (38/38 tests)
 ├── examples/                   # Usage examples
-│   └── basic_usage.do          # Quick start examples
-│
-├── doc/                        # User documentation
-│   └── images/                 # Screenshots and diagrams
-│
 └── ssc/                        # SSC distribution package
-    ├── unicefdata.ado          # Packaged command
-    ├── unicefdata.sthlp        # Packaged help
-    └── stata.toc               # Package catalog
 ```
 
 ---
 
-## Core Components
+## Metadata Synchronization
 
-### 1. Main Command: `unicefdata.ado`
-**Location:** `src/u/unicefdata.ado`  
-**Purpose:** Primary user-facing command for downloading UNICEF data  
-**Version:** 2.0.4 (February 1, 2026)
+### Refresh Metadata
 
-**Key Features:**
-- Downloads data from UNICEF SDMX API
-- Supports disaggregation by sex, wealth, residence, age, education
-- Wide/long format reshaping
-- Latest value queries
-- Built-in metadata discovery
-
-**Syntax:**
 ```stata
-unicefdata, indicator(code) [options]
+* Full metadata refresh (recommended)
+unicefdata_refresh_all, verbose
+
+* Check metadata age
+unicefdata_sync, verbose
+
+* Force manual sync
+unicefdata_sync, force verbose
 ```
 
-### 2. Helper Programs: `src/_/`
+### Staleness Warning
 
-| File | Purpose |
-|------|---------|
-| `_unicef_load_fallback_sequences.ado` | Loads dataflow fallback sequences from YAML |
-| `_unicef_parse_yaml.ado` | Parses YAML metadata files |
-| `_unicef_validate_dimensions.ado` | Validates dimension combinations |
-| `__unicef_api_request.ado` | Internal API request handler |
-| `__unicef_parse_response.ado` | Internal XML response parser |
+If metadata is >30 days old, you'll see a warning:
 
-**Naming Convention:**
-- **Single underscore** (`_unicef_`): Public helpers, documented
-- **Double underscore** (`__unicef_`): Private utilities, internal use only
-
-### 3. Metadata System
-
-**Location:** `metadata/current/`
-
-**Core Metadata Files:**
-
-| File | Content | Updated By |
-|------|---------|------------|
-| `_unicefdata_dataflows.yaml` | Dataflow catalog | Python sync script |
-| `_unicefdata_indicators.yaml` | Indicator codelist | Manual updates |
-| `_unicefdata_countries.yaml` | Country reference table | Python sync script |
-| `_unicefdata_regions.yaml` | Regional groupings | Python sync script |
-| `dataflows/*.yaml` | Individual dataflow schemas | Python sync script |
-
-**Metadata Sync:**
-```bash
-# Regenerate metadata from UNICEF SDMX API
-cd src/py
-python build_dataflow_metadata.py --agency UNICEF --outdir ../../metadata/current
+```
+⚠ WARNING: Metadata is 45 days old (last sync: 2025-11-15)
 ```
 
-### 4. Help Documentation
+---
 
-**Main Help:**
-- `src/u/unicefdata.sthlp` - Complete command reference
-- Includes syntax, options, examples, stored results
+## Quality Assurance
 
-**Supplementary Help:**
-- `unicefdata_whatsnew.sthlp` - Release notes and version history
+The Stata package includes a comprehensive test suite:
 
-**Viewing Help:**
-```stata
-help unicefdata
-help unicefdata_whatsnew
-```
+- **38 tests** across 7 families
+- **100% pass rate** as of v2.0.0
+- Test families: ENV, DL, DIS, FILT, META, EDGE, REGR, SYNC
 
-### 5. Quality Assurance Suite
+### Run Tests
 
-**Location:** `qa/`
-
-- **38 tests** across 7 families (ENV, DL, DIS, FILT, META, EDGE, REGR, SYNC, XPLAT)
-- **100% coverage** as of v1.10.0
-- **Regression testing** with baseline snapshots
-- **Documentation:** See [qa/README.md](qa/README.md)
-
-**Run Tests:**
 ```stata
 cd qa
 do run_tests.do
 ```
 
+See [qa/README.md](qa/README.md) for test documentation.
+
 ---
 
-## Installation
+## Troubleshooting
 
-### From GitHub
+### Command Not Found
+
 ```stata
-net install unicefdata, from("https://raw.githubusercontent.com/unicef-drp/unicefData/main/stata/ssc") replace
-```
+* Reinstall
+github install unicef-drp/unicefData, package(stata) replace
 
-### Manual Installation
-1. Copy `src/u/unicefdata.ado` to your ado path
-2. Copy `src/u/unicefdata.sthlp` to your ado path
-3. Copy `metadata/current/` folder to `ado/plus/_/` (metadata cache)
-
-**Verify Installation:**
-```stata
+* Or check ado path
+adopath
 which unicefdata
-help unicefdata
 ```
 
----
+### Connection Errors
 
-## Quick Start
-
-### Example 1: Download Mortality Data
 ```stata
-unicefdata, indicator(CME_MRY0T4) countries(USA BRA IND) year(2015:2023) clear
-describe
-list in 1/10
+* Check internet
+!ping sdmx.data.unicef.org
+
+* Increase timeout
+set timeout1 30
 ```
 
-### Example 2: Disaggregate by Sex and Wealth
+### Indicator Not Found
+
 ```stata
-unicefdata, indicator(NT_ANT_HAZ_NE2) sex(_T M F) wealth(Q1 Q5 _T) clear
-tabulate sex wealth_quintile
+* Search for valid indicators
+unicefdata, search(mortality)
+
+* Check indicator tier
+unicefdata, info(YOUR_INDICATOR)
 ```
 
-### Example 3: Get Latest Values
+### Metadata Issues
+
 ```stata
-unicefdata, indicator(IM_DTP3) countries(all) latest clear
-summarize value
+* Force refresh
+unicefdata_refresh_all, verbose
 ```
-
-### Example 4: Search for Indicators
-```stata
-unicefdata, search("malaria") info
-```
-
----
-
-## Development Workflow
-
-### Testing Changes
-1. Edit `src/u/unicefdata.ado`
-2. Copy to user ado path:
-   ```powershell
-   Copy-Item src\u\unicefdata.ado $env:USERPROFILE\ado\plus\u\ -Force
-   ```
-3. In Stata: `discard` (clear cached programs)
-4. Test: `unicefdata, indicator(CME_MRY0T4) clear`
-
-### Running QA Suite
-```stata
-cd qa
-do run_tests.do
-```
-
-### Updating Help Files
-1. Edit `src/u/unicefdata.sthlp`
-2. Rebuild help index: `discard`
-3. Verify: `help unicefdata`
 
 ---
 
@@ -250,59 +360,55 @@ do run_tests.do
 
 - **Stata:** Version 14+
 - **Internet:** Required for API access
-- **yaml package:** For metadata parsing (auto-installed if missing)
+- **yaml package:** Auto-installed if missing
 
-**Check Dependencies:**
+Check dependencies:
+
 ```stata
 which yaml
 ```
 
 ---
 
-## Architecture Notes
+## Version History
 
-### Metadata Caching Strategy
-- YAML files are cached locally to reduce API calls
-- Fallback sequences allow graceful handling of missing dataflows
-- Refresh metadata by re-running Python sync scripts
+### v2.0.4 (2026-02-01)
 
-### API Integration
-- Uses UNICEF SDMX REST API: https://sdmx.data.unicef.org
-- Parses SDMX-ML 2.1 Generic format
-- Handles HTTP errors gracefully with informative messages
+- Fixed false warning for valid disaggregation filters
+- Updated examples documentation
 
-### Platform Compatibility
-- **Windows:** Tested on Windows 10/11 with Stata 17 MP
-- **macOS:** Compatible (forward slashes in paths)
-- **Linux:** Compatible (forward slashes in paths)
+### v2.0.0 (2026-01-31)
 
----
+- Fixed SYNC-02 enrichment bug
+- All 38/38 QA tests passing
+- Cross-platform alignment
 
-## Version Information
+### v1.10.0 (2026-01-19)
 
-**Current Version:** 2.0.4 (February 1, 2026)
+- Regression snapshot testing
+- Country name generation
+- Enhanced UTF-8 support
 
-**Recent Changes:**
-- ✅ 100% QA test coverage (38/38 passing)
-- ✅ Regression testing framework (REGR-01)
-- ✅ Comprehensive disaggregation support
-- ✅ Enhanced error messages
-
-**See:** [unicefdata_whatsnew.sthlp](src/u/unicefdata_whatsnew.sthlp) for complete version history.
-
----
-
-## Support
-
-- **GitHub Issues:** [github.com/unicef-drp/unicefData/issues](https://github.com/unicef-drp/unicefData/issues)
-- **Documentation:** See [main README](../README.md)
-- **Test Suite:** See [qa/README.md](qa/README.md)
+See `help unicefdata_whatsnew` for complete version history.
 
 ---
 
 ## License
 
-MIT License - See [LICENSE](../LICENSE) file.
+MIT License - See [LICENSE](../LICENSE)
 
-**Author:** João Pedro Azevedo ([UNICEF](https://www.unicef.org))  
-**Contact:** jpazevedo@unicef.org
+## Author
+
+**Joao Pedro Azevedo**
+Chief Statistician, UNICEF Data and Analytics Section
+Email: jazevedo@unicef.org
+
+## Support
+
+- **GitHub Issues:** [github.com/unicef-drp/unicefData/issues](https://github.com/unicef-drp/unicefData/issues)
+- **Help:** `help unicefdata`
+- **Test Suite:** [qa/README.md](qa/README.md)
+
+## Contributing
+
+See [Contributing Guide](../README.md#contributing) in the main README.
