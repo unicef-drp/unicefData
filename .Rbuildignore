@@ -50,6 +50,10 @@
 ^stata$
 ^stataonly$
 ^validation$
+^internal$
+^paper$
+^benchmarks$
+^drafts$
 
 # Stata files
 ^.*\.do$

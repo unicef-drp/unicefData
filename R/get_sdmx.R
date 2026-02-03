@@ -125,8 +125,10 @@ get_sdmx <- function(
     
     url <- paste0(base, "/", rel, "?", query)
     
-    # Log complete URL for testing/debugging
-    message(sprintf("R SDMX Request URL (copy/paste ready): %s", url))
+    # Log complete URL for testing/debugging (only when verbose)
+    if (isTRUE(verbose)) {
+      message(sprintf("R SDMX Request URL (copy/paste ready): %s", url))
+    }
 
     if(format=="sdmx-json") {
       j <- jsonlite::fromJSON(.fetch_sdmx(url, ua=ua, retry=retry))
