@@ -1,0 +1,106 @@
+{
+  "generated": "2026-01-12T13:00:10.032286",
+  "total_tests": 10,
+  "results": [
+    {
+      "indicator_code": "CME",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 1.0455515384674072,
+      "timestamp": "2026-01-12T13:00:08.662667",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_ARR_10T19",
+      "language": "python",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 252,
+      "execution_time_sec": 0.017243623733520508,
+      "timestamp": "2026-01-12T13:00:08.689365",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_130004\\python\\success\\CME_ARR_10T19.csv"
+    },
+    {
+      "indicator_code": "CME_ARR_SBR",
+      "language": "python",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 213,
+      "execution_time_sec": 0.015926837921142578,
+      "timestamp": "2026-01-12T13:00:08.710704",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_130004\\python\\success\\CME_ARR_SBR.csv"
+    },
+    {
+      "indicator_code": "CME_ARR_U5MR",
+      "language": "python",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 245,
+      "execution_time_sec": 0.0159909725189209,
+      "timestamp": "2026-01-12T13:00:08.731673",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_130004\\python\\success\\CME_ARR_U5MR.csv"
+    },
+    {
+      "indicator_code": "CME_COVID_CASES",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.2657618522644043,
+      "timestamp": "2026-01-12T13:00:08.999433",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_CASES_SHARE",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.2522003650665283,
+      "timestamp": "2026-01-12T13:00:09.253629",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_DEATHS",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.24743866920471191,
+      "timestamp": "2026-01-12T13:00:09.504067",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_DEATHS_SHARE",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.24499869346618652,
+      "timestamp": "2026-01-12T13:00:09.751073",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "python",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 11875,
+      "execution_time_sec": 0.049742698669433594,
+      "timestamp": "2026-01-12T13:00:09.880706",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_130004\\python\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRM1T11",
+      "language": "python",
+      "status": "cached",
+      "error_message": null,
+      "rows_returned": 11862,
+      "execution_time_sec": 0.044237613677978516,
+      "timestamp": "2026-01-12T13:00:10.029259",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260112_130004\\python\\success\\CME_MRM1T11.csv"
+    }
+  ]
+}

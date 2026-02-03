@@ -272,6 +272,25 @@ version 11
         exit
     }
 
+    * Check for CATEGORIES subcommand (list categories with indicator counts)
+    if (strpos("`0'", "categories") > 0) {
+        local has_detail = (strpos("`0'", "detail") > 0)
+        local has_verbose = (strpos("`0'", "verbose") > 0)
+
+        local opts ""
+        if (`has_detail') local opts "detail"
+        if (`has_verbose') local opts "`opts' verbose"
+
+        if ("`opts'" == "") {
+            _unicef_list_categories
+        }
+        else {
+            _unicef_list_categories, `opts'
+        }
+
+        exit
+    }
+
     *---------------------------------------------------------------------------
     * Regular syntax for data retrieval
     *---------------------------------------------------------------------------
@@ -686,6 +705,19 @@ version 11
         if ("`verbose'" != "") {
             noi di as text "  Filter option for get_sdmx: " as result `"`filter_option'"'
             noi di as text "  Nofilter option: " as result "`nofilter_option'"
+        }
+        
+        *-----------------------------------------------------------------------
+        * Build filter vector for get_sdmx (dimension order: sex age wealth residence maternal_edu)
+        *-----------------------------------------------------------------------
+        
+        local filter_vector "`sex' `age' `wealth' `residence' `maternal_edu'"
+        
+        if ("`verbose'" != "") {
+            noi di as text "Filter vector: " as result "`filter_vector'"
+        }
+        if ("`maternal_edu'" == "") {
+            local maternal_edu "_T"
         }
         
         if ("`version'" == "") {

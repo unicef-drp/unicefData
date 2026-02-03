@@ -1,0 +1,33 @@
+﻿
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{threeparttable}
+\caption{Sample SDMX Observations: Raw API Response Structure}
+\label{tab:raw-sdmx-sample}
+{\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}llcccccp{1.6cm}p{1.1cm}@{}}
+	\toprule
+	\textbf{Country} & \textbf{Year} & \textbf{Sex} & \textbf{Wealth} & \textbf{Value} & \textbf{Lower} & \textbf{Upper} & \textbf{Src} & \textbf{Stat} \\
+	\textbf{(REF\_AREA)} & \textbf{(TIME)} & \textbf{(SEX)} & \textbf{(QUINTILE)} & \textbf{(OBS)} & \textbf{(CI)} & \textbf{(CI)} & \textbf{(ATT)} & \textbf{(ATT)} \\
+\midrule
+BGD & 2019 & \texttt{F} & \texttt{\_T} & 30.2 & 28.5 & 31.8 & UN\_IGME & A \\
+BGD & 2020 & \texttt{F} & \texttt{\_T} & 29.4 & 27.8 & 30.8 & UN\_IGME & A \\
+BGD & 2019 & \texttt{M} & \texttt{\_T} & 34.5 & 32.6 & 36.2 & UN\_IGME & A \\
+BGD & 2020 & \texttt{M} & \texttt{\_T} & 33.6 & 31.9 & 35.1 & UN\_IGME & A \\
+BGD & 2019 & \texttt{\_T} & \texttt{Q1} & 42.2 & 38.2 & 46.3 & UN\_IGME & A \\
+BGD & 2020 & \texttt{\_T} & \texttt{Q1} & 41.0 & 37.0 & 45.1 & UN\_IGME & A \\
+BGD & 2019 & \texttt{\_T} & \texttt{Q2} & 37.1 & 33.7 & 40.7 & UN\_IGME & A \\
+BGD & 2020 & \texttt{\_T} & \texttt{Q2} & 36.1 & 32.7 & 39.5 & UN\_IGME & A \\
+\bottomrule
+\end{tabular}
+}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item \textbf{Note:} Each row represents one SDMX observation. \textbf{Dimensions} (Country, Year, Sex, Wealth Quintile) define the observation's coordinates and enable filtering. \textbf{Attributes} (confidence intervals, source, status) provide context but are not used for query filtering. Value is under-5 mortality rate per 1,000 live births.
+\item \textbf{Source:} UNICEF SDMX API, indicator CME\_MRY0T4, retrieved January 6, 2026.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\normalsize

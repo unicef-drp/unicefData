@@ -1,0 +1,180 @@
+{smcl}
+{txt}{sf}{ul off}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:17:13
+{txt}r; t=0.00 18:17:13
+
+{com}. 
+. capture {c -(}
+{txt}r; t=14.56 18:17:27
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:17:27
+
+end of do-file
+{search r(199), local:r(199);} t=14.80 18:17:27
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:17:34
+{txt}r; t=0.01 18:17:34
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.26 18:17:43
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:17:43
+
+end of do-file
+{search r(199), local:r(199);} t=9.55 18:17:43
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:17:51
+{txt}r; t=0.00 18:17:51
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.51 18:18:01
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:18:01
+
+end of do-file
+{search r(199), local:r(199);} t=9.69 18:18:01
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:18:08
+{txt}r; t=0.00 18:18:08
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.34 18:18:17
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:18:17
+
+end of do-file
+{search r(199), local:r(199);} t=9.51 18:18:17
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:18:23
+{txt}r; t=0.03 18:18:23
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.11 18:18:33
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:18:33
+
+end of do-file
+{search r(199), local:r(199);} t=9.38 18:18:33
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:18:45
+{txt}r; t=0.00 18:18:45
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.21 18:18:55
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:18:55
+
+end of do-file
+{search r(199), local:r(199);} t=9.43 18:18:55
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:19:01
+{txt}r; t=0.00 18:19:01
+
+{com}. 
+. capture {c -(}
+{txt}r; t=17.75 18:19:19
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:19:19
+
+end of do-file
+{search r(199), local:r(199);} t=18.00 18:19:19
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:19:25
+{txt}r; t=0.00 18:19:25
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.31 18:19:35
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:19:35
+
+end of do-file
+{search r(199), local:r(199);} t=9.56 18:19:35
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:19:44
+{txt}r; t=0.01 18:19:44
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.28 18:19:53
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:19:53
+
+end of do-file
+{search r(199), local:r(199);} t=9.53 18:19:53
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260112_181658/stata/test_log.txt
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Jan 2026, 18:19:59
+{txt}r; t=0.00 18:19:59
+
+{com}. 
+. capture {c -(}
+{txt}r; t=9.32 18:20:08
+
+{com}. {c )-}
+{bf}{err}{c )-}{sf} is not a valid command name
+{txt}{search r(199), local:r(199);} t=0.00 18:20:08
+
+end of do-file
+{search r(199), local:r(199);} t=9.54 18:20:08

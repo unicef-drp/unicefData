@@ -282,7 +282,7 @@ list_unicef_codelist <- memoise::memoise(
 #' @param max_retries Number of retry attempts on failure (default: 3).
 #'   Previously called 'retry'. Both parameter names are supported.
 #' @param cache Logical; if TRUE, memoises results.
-#' @param page_size Integer rows per page (default: 100000).
+#' @param page_size Integer rows per page (default: 1000000).
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
 #' @param labels Label format for SDMX requests: "id" (codes only, default),
@@ -392,7 +392,7 @@ unicefData <- function(
     country_names = TRUE,
     max_retries   = 3,
     cache         = FALSE,
-    page_size     = 100000,
+    page_size     = 1000000,
     detail        = c("data", "structure"),
     version       = NULL,
     labels        = "id",
@@ -513,17 +513,14 @@ unicefData <- function(
     message("")
   }
 
-  # 3. Clean/Tidy Data
+  # 3. Validate Schema (before cleaning to check raw column names)
+  if (!is.null(dataflow) && exists("validate_unicef_schema", mode = "function")) {
+    result <- validate_unicef_schema(result, dataflow[1])
+  }
+
+  # 4. Clean/Tidy Data
   if (tidy && !raw) {
     result <- clean_unicef_data(result)
-
-    # Validate Schema
-    if (!is.null(dataflow)) {
-      # We might have multiple dataflows, just validate against the first one
-      if (exists("validate_unicef_schema", mode = "function")) {
-         result <- validate_unicef_schema(result, dataflow[1])
-      }
-    }
   } else if (raw) {
     # Minimal processing for raw (rename core cols)
      result <- result %>%

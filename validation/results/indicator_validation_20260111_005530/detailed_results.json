@@ -1,0 +1,756 @@
+{
+  "generated": "2026-01-11T01:01:43.354331",
+  "total_tests": 75,
+  "results": [
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 3.921457052230835,
+      "timestamp": "2026-01-11T00:55:34.298034",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 1.9263417720794678,
+      "timestamp": "2026-01-11T00:55:36.232374",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 4.607234239578247,
+      "timestamp": "2026-01-11T00:55:40.839608",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\CME_MRM0.csv"
+    },
+    {
+      "indicator_code": "CME_MRY0T4",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.26310086250305176,
+      "timestamp": "2026-01-11T00:55:41.102709",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\CME_MRY0T4.csv"
+    },
+    {
+      "indicator_code": "CME_MRY0T4",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 2.562610149383545,
+      "timestamp": "2026-01-11T00:55:43.665319",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\CME_MRY0T4.csv"
+    },
+    {
+      "indicator_code": "CME_MRY0T4",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 6.404978036880493,
+      "timestamp": "2026-01-11T00:55:50.078279",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\CME_MRY0T4.csv"
+    },
+    {
+      "indicator_code": "ECD_CHLD_LMPSL",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.35187792778015137,
+      "timestamp": "2026-01-11T00:55:50.430157",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ECD_CHLD_LMPSL",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 1.9342710971832275,
+      "timestamp": "2026-01-11T00:55:52.364428",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ECD_CHLD_LMPSL",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 5.708243131637573,
+      "timestamp": "2026-01-11T00:55:58.072671",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ECD_CHLD_LMPSL.error"
+    },
+    {
+      "indicator_code": "ED_ANAR_L02",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 4,
+      "execution_time_sec": 0.18454408645629883,
+      "timestamp": "2026-01-11T00:55:58.257215",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\ED_ANAR_L02.csv"
+    },
+    {
+      "indicator_code": "ED_ANAR_L02",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 4,
+      "execution_time_sec": 2.2417261600494385,
+      "timestamp": "2026-01-11T00:56:00.498941",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\ED_ANAR_L02.csv"
+    },
+    {
+      "indicator_code": "ED_ANAR_L02",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 17.11692976951599,
+      "timestamp": "2026-01-11T00:56:17.615871",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ED_ANAR_L02.error"
+    },
+    {
+      "indicator_code": "ED_CR_L1_UIS_MOD",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.15053558349609375,
+      "timestamp": "2026-01-11T00:56:17.771817",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\ED_CR_L1_UIS_MOD.csv"
+    },
+    {
+      "indicator_code": "ED_CR_L1_UIS_MOD",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 26.60395073890686,
+      "timestamp": "2026-01-11T00:56:44.375768",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\ED_CR_L1_UIS_MOD.csv"
+    },
+    {
+      "indicator_code": "ED_CR_L1_UIS_MOD",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 20.95162343978882,
+      "timestamp": "2026-01-11T00:57:05.327391",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ED_CR_L1_UIS_MOD.error"
+    },
+    {
+      "indicator_code": "ED_CR_L2_UIS_MOD",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.15186667442321777,
+      "timestamp": "2026-01-11T00:57:05.479258",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\ED_CR_L2_UIS_MOD.csv"
+    },
+    {
+      "indicator_code": "ED_CR_L2_UIS_MOD",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 1.6921474933624268,
+      "timestamp": "2026-01-11T00:57:07.171405",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\ED_CR_L2_UIS_MOD.csv"
+    },
+    {
+      "indicator_code": "ED_CR_L2_UIS_MOD",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 20.99768042564392,
+      "timestamp": "2026-01-11T00:57:28.169085",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ED_CR_L2_UIS_MOD.error"
+    },
+    {
+      "indicator_code": "ED_MAT_L2",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.5057203769683838,
+      "timestamp": "2026-01-11T00:57:28.674806",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ED_MAT_L2",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 5.535584449768066,
+      "timestamp": "2026-01-11T00:57:34.210390",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ED_MAT_L2",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 20.54408025741577,
+      "timestamp": "2026-01-11T00:57:54.754471",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ED_MAT_L2.error"
+    },
+    {
+      "indicator_code": "ED_READ_L2",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.4570436477661133,
+      "timestamp": "2026-01-11T00:57:55.211514",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ED_READ_L2",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 4.701783657073975,
+      "timestamp": "2026-01-11T00:57:59.921294",
+      "output_file": null
+    },
+    {
+      "indicator_code": "ED_READ_L2",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 20.63013005256653,
+      "timestamp": "2026-01-11T00:58:20.559389",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\ED_READ_L2.error"
+    },
+    {
+      "indicator_code": "HVA_EPI_INF_RT",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 0.1921548843383789,
+      "timestamp": "2026-01-11T00:58:20.759540",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\HVA_EPI_INF_RT.csv"
+    },
+    {
+      "indicator_code": "HVA_EPI_INF_RT",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 1.8883094787597656,
+      "timestamp": "2026-01-11T00:58:22.647849",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\HVA_EPI_INF_RT.csv"
+    },
+    {
+      "indicator_code": "HVA_EPI_INF_RT",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 2,
+      "execution_time_sec": 5.175788879394531,
+      "timestamp": "2026-01-11T00:58:27.823638",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\HVA_EPI_INF_RT.csv"
+    },
+    {
+      "indicator_code": "IM_DTP3",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.151932954788208,
+      "timestamp": "2026-01-11T00:58:27.975571",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\IM_DTP3.csv"
+    },
+    {
+      "indicator_code": "IM_DTP3",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 1.7816762924194336,
+      "timestamp": "2026-01-11T00:58:29.765244",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\IM_DTP3.csv"
+    },
+    {
+      "indicator_code": "IM_DTP3",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 4.554348707199097,
+      "timestamp": "2026-01-11T00:58:34.319593",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\IM_DTP3.csv"
+    },
+    {
+      "indicator_code": "IM_MCV1",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.13878369331359863,
+      "timestamp": "2026-01-11T00:58:34.458377",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\IM_MCV1.csv"
+    },
+    {
+      "indicator_code": "IM_MCV1",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 1.7102694511413574,
+      "timestamp": "2026-01-11T00:58:36.168646",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\IM_MCV1.csv"
+    },
+    {
+      "indicator_code": "IM_MCV1",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 4.376462697982788,
+      "timestamp": "2026-01-11T00:58:40.545109",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\IM_MCV1.csv"
+    },
+    {
+      "indicator_code": "MNCH_ABR",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 6,
+      "execution_time_sec": 0.19808101654052734,
+      "timestamp": "2026-01-11T00:58:40.759187",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\MNCH_ABR.csv"
+    },
+    {
+      "indicator_code": "MNCH_ABR",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 6,
+      "execution_time_sec": 1.8014881610870361,
+      "timestamp": "2026-01-11T00:58:42.560675",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\MNCH_ABR.csv"
+    },
+    {
+      "indicator_code": "MNCH_ABR",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 6,
+      "execution_time_sec": 5.081229209899902,
+      "timestamp": "2026-01-11T00:58:47.641905",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\MNCH_ABR.csv"
+    },
+    {
+      "indicator_code": "MNCH_MMR",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.15395593643188477,
+      "timestamp": "2026-01-11T00:58:47.795861",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\MNCH_MMR.csv"
+    },
+    {
+      "indicator_code": "MNCH_MMR",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 25.77781081199646,
+      "timestamp": "2026-01-11T00:59:13.573672",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\MNCH_MMR.csv"
+    },
+    {
+      "indicator_code": "MNCH_MMR",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 4.628173351287842,
+      "timestamp": "2026-01-11T00:59:18.201845",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\MNCH_MMR.csv"
+    },
+    {
+      "indicator_code": "MNCH_SAB",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 2,
+      "execution_time_sec": 0.18012547492980957,
+      "timestamp": "2026-01-11T00:59:18.381970",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\MNCH_SAB.csv"
+    },
+    {
+      "indicator_code": "MNCH_SAB",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 2,
+      "execution_time_sec": 2.1795356273651123,
+      "timestamp": "2026-01-11T00:59:20.561506",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\MNCH_SAB.csv"
+    },
+    {
+      "indicator_code": "MNCH_SAB",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 2,
+      "execution_time_sec": 5.3639092445373535,
+      "timestamp": "2026-01-11T00:59:25.925415",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\MNCH_SAB.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_HAZ_NE2_MOD",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.18113470077514648,
+      "timestamp": "2026-01-11T00:59:26.110615",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\NT_ANT_HAZ_NE2_MOD.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_HAZ_NE2_MOD",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 2.1484503746032715,
+      "timestamp": "2026-01-11T00:59:28.268105",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\NT_ANT_HAZ_NE2_MOD.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_HAZ_NE2_MOD",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 5.291043043136597,
+      "timestamp": "2026-01-11T00:59:33.559148",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\NT_ANT_HAZ_NE2_MOD.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_NE2",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 0.16225671768188477,
+      "timestamp": "2026-01-11T00:59:33.721404",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\NT_ANT_WHZ_NE2.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_NE2",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 2.370882987976074,
+      "timestamp": "2026-01-11T00:59:36.092287",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\NT_ANT_WHZ_NE2.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_NE2",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 18,
+      "execution_time_sec": 7.025211811065674,
+      "timestamp": "2026-01-11T00:59:43.117499",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\NT_ANT_WHZ_NE2.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_PO2_MOD",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.15044784545898438,
+      "timestamp": "2026-01-11T00:59:43.267947",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\NT_ANT_WHZ_PO2_MOD.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_PO2_MOD",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 2.1047022342681885,
+      "timestamp": "2026-01-11T00:59:45.372649",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\NT_ANT_WHZ_PO2_MOD.csv"
+    },
+    {
+      "indicator_code": "NT_ANT_WHZ_PO2_MOD",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 5.054429054260254,
+      "timestamp": "2026-01-11T00:59:50.427078",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\NT_ANT_WHZ_PO2_MOD.csv"
+    },
+    {
+      "indicator_code": "PT_CHLD_1-14_PS-PSY-V_CGVR",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.7002053260803223,
+      "timestamp": "2026-01-11T00:59:51.135281",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PT_CHLD_1-14_PS-PSY-V_CGVR",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 1.6868159770965576,
+      "timestamp": "2026-01-11T00:59:52.822097",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PT_CHLD_1-14_PS-PSY-V_CGVR",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 4.556417942047119,
+      "timestamp": "2026-01-11T00:59:57.378515",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\PT_CHLD_1-14_PS-PSY-V_CGVR.error"
+    },
+    {
+      "indicator_code": "PT_CHLD_Y0T4_REG",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 0.1379871368408203,
+      "timestamp": "2026-01-11T00:59:57.524498",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\PT_CHLD_Y0T4_REG.csv"
+    },
+    {
+      "indicator_code": "PT_CHLD_Y0T4_REG",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 1.7133500576019287,
+      "timestamp": "2026-01-11T00:59:59.237849",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\PT_CHLD_Y0T4_REG.csv"
+    },
+    {
+      "indicator_code": "PT_CHLD_Y0T4_REG",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 2,
+      "execution_time_sec": 5.208127737045288,
+      "timestamp": "2026-01-11T01:00:04.445976",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\PT_CHLD_Y0T4_REG.csv"
+    },
+    {
+      "indicator_code": "PT_F_15-49_FGM",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.5159099102020264,
+      "timestamp": "2026-01-11T01:00:04.961886",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PT_F_15-49_FGM",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 1.8155632019042969,
+      "timestamp": "2026-01-11T01:00:06.777449",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PT_F_15-49_FGM",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 17.57647132873535,
+      "timestamp": "2026-01-11T01:00:24.353921",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\PT_F_15-49_FGM.error"
+    },
+    {
+      "indicator_code": "PT_F_20-24_MRD_U18_TND",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 0.13594412803649902,
+      "timestamp": "2026-01-11T01:00:24.489865",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\PT_F_20-24_MRD_U18_TND.csv"
+    },
+    {
+      "indicator_code": "PT_F_20-24_MRD_U18_TND",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 1,
+      "execution_time_sec": 1.5842106342315674,
+      "timestamp": "2026-01-11T01:00:26.074075",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\PT_F_20-24_MRD_U18_TND.csv"
+    },
+    {
+      "indicator_code": "PT_F_20-24_MRD_U18_TND",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 17.475966930389404,
+      "timestamp": "2026-01-11T01:00:43.550043",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\PT_F_20-24_MRD_U18_TND.error"
+    },
+    {
+      "indicator_code": "PV_CHLD_DPRV-S-L1-HS",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.305377721786499,
+      "timestamp": "2026-01-11T01:00:43.863417",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PV_CHLD_DPRV-S-L1-HS",
+      "language": "r",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 4.201850414276123,
+      "timestamp": "2026-01-11T01:00:48.073256",
+      "output_file": null
+    },
+    {
+      "indicator_code": "PV_CHLD_DPRV-S-L1-HS",
+      "language": "stata",
+      "status": "failed",
+      "error_message": "No output file created",
+      "rows_returned": 0,
+      "execution_time_sec": 21.217345237731934,
+      "timestamp": "2026-01-11T01:01:09.290602",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\failed\\PV_CHLD_DPRV-S-L1-HS.error"
+    },
+    {
+      "indicator_code": "WS_PPL_H-B",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 0.2798929214477539,
+      "timestamp": "2026-01-11T01:01:09.570495",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\WS_PPL_H-B.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_H-B",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 2.3172194957733154,
+      "timestamp": "2026-01-11T01:01:11.887714",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\WS_PPL_H-B.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_H-B",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 4.640593767166138,
+      "timestamp": "2026-01-11T01:01:16.528308",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\WS_PPL_H-B.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_S-SM",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 0.14600729942321777,
+      "timestamp": "2026-01-11T01:01:16.686426",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\WS_PPL_S-SM.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_S-SM",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 14.06165862083435,
+      "timestamp": "2026-01-11T01:01:30.749119",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\WS_PPL_S-SM.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_S-SM",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 5,
+      "execution_time_sec": 5.141855239868164,
+      "timestamp": "2026-01-11T01:01:35.890975",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\WS_PPL_S-SM.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_W-SM",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 0.1464853286743164,
+      "timestamp": "2026-01-11T01:01:36.037460",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\python\\success\\WS_PPL_W-SM.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_W-SM",
+      "language": "r",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 2.2074499130249023,
+      "timestamp": "2026-01-11T01:01:38.252907",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\r\\success\\WS_PPL_W-SM.csv"
+    },
+    {
+      "indicator_code": "WS_PPL_W-SM",
+      "language": "stata",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 3,
+      "execution_time_sec": 5.089562654495239,
+      "timestamp": "2026-01-11T01:01:43.350465",
+      "output_file": "C:\\GitHub\\myados\\unicefData\\validation\\results\\indicator_validation_20260111_005530\\stata\\success\\WS_PPL_W-SM.csv"
+    }
+  ]
+}

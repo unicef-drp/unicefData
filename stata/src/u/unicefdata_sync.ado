@@ -1572,9 +1572,9 @@ program define _unicefdata_sync_dataflow_index, rclass
         file close `infh'
     }
     
-    * Individual dataflow schema files will be created in _dataflows/ subfolder:
-    * _dataflows/{DATAFLOW_ID}.yaml
-    local dataflows_dir "`outdir'_dataflows/"
+    * Individual dataflow schema files will be created in __dataflows/ subfolder:
+    * __dataflows/{DATAFLOW_ID}.yaml
+    local dataflows_dir "`outdir'__dataflows/"
     capture mkdir "`dataflows_dir'"
     
     * Open index file
@@ -1653,7 +1653,7 @@ program define _unicefdata_sync_dataflow_index, rclass
                 syncedat("`synced_at'")
             
             if ("`verbose'" != "") {
-                di as text "       ✓ _dataflows/`df_id'.yaml"
+                di as text "       ✓ __dataflows/`df_id'.yaml"
             }
             
             local success_count = `success_count' + 1

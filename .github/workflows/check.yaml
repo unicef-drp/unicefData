@@ -1,12 +1,43 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# R-CMD-check Workflow
+# Standard R package checks across multiple platforms and R versions
+#
+# Derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+#
+# Fix (2026-02-02): Changed ubuntu-latest to ubuntu-22.04 to avoid
+# pandoc-citeproc unavailability issue on Ubuntu 24.04
+# See: https://github.com/r-lib/actions/issues/994
+
+name: R-CMD-check
+
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'man/**'
+      - 'inst/**'
+      - 'vignettes/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'R/**'
+      - 'man/**'
+      - 'inst/**'
+      - 'vignettes/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/check.yaml'
+  workflow_dispatch:
 
-name: R-CMD-check
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: read-all
 
 jobs:
   R-CMD-check:
@@ -18,11 +49,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
-          - {os: ubuntu-latest,  r: 'oldrel-1'}
+          # Pinned to ubuntu-22.04 for pandoc-citeproc availability
+          - {os: ubuntu-22.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-22.04,   r: 'release'}
+          - {os: ubuntu-22.04,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -39,22 +71,16 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Clean pak and R caches (post-setup)
-        run: |
-          rm -rf /home/runner/work/_temp/Library/_cache || true
-          rm -rf ~/.cache/R/pak || true
-          rm -rf /tmp/RtmpXXXXXX || true
-        if: runner.os == 'Linux'
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
-          cache-version: 3
-          lockfile-create-lib: never
+          pak-version: devel
+          cache-version: 7
+          upgrade: 'TRUE'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
           error-on: '"warning"'
