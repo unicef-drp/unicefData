@@ -1,8 +1,14 @@
+# Validate Metadata Schemas Workflow
+# Validates YAML metadata files across Python, R, and Stata
+#
+# Pinned to ubuntu-22.04 for pandoc/citation tooling compatibility
+# See: https://github.com/r-lib/actions/issues/994
+
 name: Validate Metadata Schemas
 
 on:
   push:
-    branches: [ main, develop, xcross-platform-validation ]
+    branches: [main, develop]
     paths:
       - 'stata/src/_/*.yaml'
       - 'python/metadata/current/*.yaml'
@@ -11,19 +17,25 @@ on:
       - 'validation/scripts/validate_yaml_schema.py'
       - '.github/workflows/validate-schemas.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'stata/src/_/*.yaml'
       - 'python/metadata/current/*.yaml'
       - 'R/metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
       - 'validation/scripts/validate_yaml_schema.py'
+      - '.github/workflows/validate-schemas.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-metadata:
     name: Validate YAML Metadata Files
-    runs-on: ubuntu-latest
+    # Pinned to ubuntu-22.04 for consistency across workflows
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code

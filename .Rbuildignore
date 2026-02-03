@@ -50,6 +50,10 @@
 ^stata$
 ^stataonly$
 ^validation$
+^internal$
+^paper$
+^benchmarks$
+^drafts$
 
 # Non-standard top-level files
 ^CITATION\.cff$

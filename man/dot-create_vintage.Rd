@@ -9,32 +9,15 @@
 \arguments{
 \item{vintage_date}{Character string of vintage date (YYYY-MM-DD format)}
 
-\item{results}{List of sync results with counts and timestamps}
+\item{results}{List of sync results with counts}
 
 \item{verbose}{Logical for progress messages}
 }
 \value{
 Invisible path to vintage directory
-
-Invisible NULL
 }
 \description{
 Copies current metadata files to a dated vintage directory for historical
 reference and rollback capability.
 }
-\keyword{Adds}
-\keyword{Update}
-\keyword{a}
-\keyword{entry}
-\keyword{file}
-\keyword{history}
 \keyword{internal}
-\keyword{metadata}
-\keyword{new}
-\keyword{sync}
-\keyword{synchronizations.}
-\keyword{the}
-\keyword{to}
-\keyword{tracking}
-\keyword{vintage}
-\keyword{with}
