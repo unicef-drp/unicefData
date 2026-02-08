@@ -1,0 +1,5 @@
+scenario,error_type,message_pattern,languages
+invalid_indicator,not_found,not found in any dataflow,python;r;stata
+invalid_indicator,not_found,Tried dataflows,python;r;stata
+network_timeout,timeout,timed out,python;stata
+empty_result,warning,0 observations,r;stata

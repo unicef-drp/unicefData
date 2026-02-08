@@ -1,0 +1,11 @@
+sdmx_column,output_column,data_type,required,description
+DATAFLOW,dataflow,string,yes,Source dataflow identifier
+REF_AREA,iso3,string,yes,ISO 3166-1 alpha-3 country code
+INDICATOR,indicator,string,yes,UNICEF indicator code
+SEX,sex,string,no,Sex disaggregation (_T/M/F)
+AGE,age,string,no,Age group disaggregation
+TIME_PERIOD,period,numeric,yes,Observation time period (year)
+OBS_VALUE,value,numeric,yes,Observed value
+UNIT_MEASURE,unit,string,no,Unit of measurement
+OBS_STATUS,obs_status,string,no,Observation status code
+DATA_SOURCE,data_source,string,no,Data source name

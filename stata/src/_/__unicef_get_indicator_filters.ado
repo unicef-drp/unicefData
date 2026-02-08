@@ -11,16 +11,24 @@ program define __unicef_get_indicator_filters, rclass
   
   syntax, DATAflow(string) [VERbose]
   
-  // Locate dataflow schema
-  // First try: user ado directory
+  // Locate dataflow schema using multi-tier resolution
+  // FIRST: Try user ado directory (PLUS)
   local meta_base "`c(sysdir_plus)'_"
   local dataflow_schema "`meta_base'dataflows/`dataflow'.yaml"
-  
-  // Fallback: dev directory if not found in ado
+
+  // SECOND: Try findfile for adopath resolution (dev mode)
   capture confirm file "`dataflow_schema'"
   if _rc != 0 {
-    local meta_base "C:/GitHub/myados/unicefData-dev/stata/metadata/current"
-    local dataflow_schema "`meta_base'/dataflows/`dataflow'.yaml"
+    capture findfile "_dataflows/`dataflow'.yaml"
+    if _rc == 0 {
+      local dataflow_schema "`r(fn)'"
+    }
+  }
+
+  // THIRD: Try current working directory
+  capture confirm file "`dataflow_schema'"
+  if _rc != 0 {
+    local dataflow_schema "`c(pwd)'/_dataflows/`dataflow'.yaml"
   }
   
   // Validate dataflow schema exists

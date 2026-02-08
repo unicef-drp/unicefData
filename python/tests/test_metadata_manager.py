@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import os
-from unicef_api.metadata_manager import MetadataManager
+from unicefdata.metadata_manager import MetadataManager
 
 class TestMetadataManager(unittest.TestCase):
     def setUp(self):

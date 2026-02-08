@@ -1,14 +1,13 @@
 # Python Test Suite
 
-This directory contains tests for the Python `unicef_api` library.
+This directory contains tests for the Python `unicefdata` library.
 
 > **See also:** [validation/README.md](../../validation/README.md) for the complete testing infrastructure documentation.
 
 ## Quick Start
 
-```powershell
-cd C:\GitHub\others\unicefData\python
-$env:PYTHONPATH = "C:\GitHub\others\unicefData\python"
+```bash
+cd python/
 pytest tests/ -v
 ```
 
@@ -18,6 +17,8 @@ pytest tests/ -v
 |--------|-------------|-----------|
 | `test_unicef_api.py` | Core API and client unit tests | pytest |
 | `test_metadata_manager.py` | Metadata management tests | pytest |
+| `test_cross_language_output.py` | Cross-language fixture validation | pytest |
+| `test_pipeline_mocked.py` | Full pipeline with mocked HTTP | pytest |
 | `run_tests.py` | Comprehensive integration tests | standalone |
 | `test_dimensions.py` | SDMX dimension parsing tests | standalone |
 
@@ -32,7 +33,7 @@ Unit tests for `UNICEFSDMXClient` and utility functions:
 - Country code validation
 - Year range validation
 
-```powershell
+```bash
 pytest tests/test_unicef_api.py -v
 ```
 
@@ -44,7 +45,7 @@ Tests for the `MetadataManager` class:
 - DataFrame standardization
 - DataFrame validation
 
-```powershell
+```bash
 pytest tests/test_metadata_manager.py -v
 ```
 
@@ -58,8 +59,8 @@ Comprehensive test suite that validates all major functionality:
 - Handling multiple indicators
 - Metadata synchronization
 
-```powershell
-python python/tests/run_tests.py
+```bash
+python tests/run_tests.py
 ```
 
 **Output files:**
@@ -73,8 +74,8 @@ python python/tests/run_tests.py
 
 Standalone script to test SDMX dimension extraction from dataflow XML responses.
 
-```powershell
-python python/tests/test_dimensions.py
+```bash
+python tests/test_dimensions.py
 ```
 
 ## Output Directory
@@ -85,12 +86,12 @@ All test artifacts are saved in `output/` (gitignored):
 
 ## Running All Tests
 
-```powershell
+```bash
 # Unit tests only
 pytest tests/ -v
 
 # With coverage
-pytest tests/ -v --cov=unicef_api
+pytest tests/ -v --cov=unicefdata
 
 # Integration tests (requires API connection)
 python tests/run_tests.py

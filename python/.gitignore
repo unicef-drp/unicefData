@@ -81,3 +81,6 @@ dmypy.json
 # Logs
 *.log
 logs/
+
+# Legacy metadata output (real metadata is bundled in unicefdata/metadata/)
+metadata/

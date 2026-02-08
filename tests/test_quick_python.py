@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'python'))
 
-from unicef_api.sdmx_client import UNICEFSDMXClient
+from unicefdata.sdmx_client import UNICEFSDMXClient
 
 print("\n" + "="*60)
 print("Python Integration Test: Direct Metadata Lookup")

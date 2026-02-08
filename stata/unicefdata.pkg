@@ -2,7 +2,7 @@ v 2.0.0
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
-d Support: jazevedo@unicef.org
+d Support: jpazevedo@unicef.org
 d
 d unicefData downloads indicator data from the UNICEF Data Warehouse
 d using the SDMX REST API. It provides access to 748+ indicators
@@ -135,6 +135,10 @@ f src/_/_indicator_dataflow_map.yaml
 * Dataflow metadata (dimensions and attributes for all dataflows - used in enrichment)
 f src/_/_unicefdata_dataflow_metadata.yaml
 
+* NOTE: Individual dataflow schema files (_dataflows/*.yaml, 70 files) are installed
+* separately via: unicefdata_setup, replace
+* This is required because Stata's pkg format has a line limit.
+* After net install, run: unicefdata_setup, replace
 
 * Python enrichment and validation scripts
 f src/py/unicefdata_xml2yaml.py

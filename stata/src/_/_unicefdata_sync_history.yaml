@@ -1,9 +1,9 @@
 vintages:
-- vintage_date: '2026-01-31'
-  synced_at: '2026-01-31T22:23:22Z'
+- vintage_date: '2026-02-07'
+  synced_at: '2026-02-07T16:12:03Z'
   dataflows: 70
   indicators: 738
   codelists: 5
-  countries: 453
+  countries: 454
   regions: 111
   errors: []

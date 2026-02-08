@@ -53,45 +53,38 @@ CACHE_MAX_AGE_DAYS <- 30
 #' @keywords internal
 .get_cache_path <- function() {
   # 1. Environment override for unified cross-language cache
-  # Prefer R-specific override, then unified
-  env_home <- if (nzchar(Sys.getenv("UNICEF_DATA_HOME_R"))) Sys.getenv("UNICEF_DATA_HOME_R") else Sys.getenv("UNICEF_DATA_HOME")
+  env_home <- if (nzchar(Sys.getenv("UNICEF_DATA_HOME_R"))) {
+    Sys.getenv("UNICEF_DATA_HOME_R")
+  } else {
+    Sys.getenv("UNICEF_DATA_HOME")
+  }
   if (nzchar(env_home)) {
     metadata_dir <- file.path(env_home, "metadata", "current")
-    if (!dir.exists(metadata_dir)) dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
+    if (!dir.exists(metadata_dir)) {
+      dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
+    }
     return(file.path(metadata_dir, CACHE_FILENAME))
   }
 
   # 2. Repo/dev path (when working in source tree)
   script_dir <- getwd()
   candidates <- c(
-    file.path(script_dir, "R", "metadata", "current"),      # Project root
-    file.path(script_dir, "metadata", "current"),           # Inside R/
-    file.path(script_dir, "..", "R", "metadata", "current"), # Subdirectory
-    file.path(script_dir, "..", "metadata", "current")      # R/examples/
+    file.path(script_dir, "inst", "metadata", "current"),
+    file.path(script_dir, "..", "inst", "metadata", "current")
   )
   for (metadata_dir in candidates) {
-    parent_dir <- dirname(metadata_dir)
-    grandparent_dir <- dirname(parent_dir)
-    if (dir.exists(parent_dir) || (dir.exists(grandparent_dir) && basename(grandparent_dir) == "R")) {
-      if (!dir.exists(metadata_dir)) dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
-      if (dir.exists(metadata_dir)) return(file.path(metadata_dir, CACHE_FILENAME))
-    }
-  }
-
-  # 3. Cross-language user cache (no repo clone required)
-  # Prefer tools::R_user_dir if available; else use ~/.unicef_data/metadata/current
-  if (suppressWarnings(requireNamespace("tools", quietly = TRUE)) && exists("R_user_dir", envir = asNamespace("tools"))) {
-    base_dir <- tryCatch(tools::R_user_dir("unicefdata", "cache"), error = function(e) "")
-    if (nzchar(base_dir)) {
-      metadata_dir <- file.path(base_dir, "metadata", "current")
-      if (!dir.exists(metadata_dir)) dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
+    if (dir.exists(metadata_dir)) {
       return(file.path(metadata_dir, CACHE_FILENAME))
     }
   }
-  # Fallback to R-specific home path
-  home_dir <- file.path(Sys.getenv("HOME"), ".unicef_data", "r", "metadata", "current")
-  if (!dir.exists(home_dir)) dir.create(home_dir, recursive = TRUE, showWarnings = FALSE)
-  return(file.path(home_dir, CACHE_FILENAME))
+
+  # 3. CRAN-compliant user cache via tools::R_user_dir()
+  base_dir <- tools::R_user_dir("unicefData", "cache")
+  metadata_dir <- file.path(base_dir, "metadata", "current")
+  if (!dir.exists(metadata_dir)) {
+    dir.create(metadata_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+  file.path(metadata_dir, CACHE_FILENAME)
 }
 
 #' Get path to fallback sequences file
@@ -103,26 +96,13 @@ CACHE_MAX_AGE_DAYS <- 30
 .get_fallback_sequences_path <- function() {
   fallback_file <- FALLBACK_SEQUENCES_FILENAME  # "_dataflow_fallback_sequences.yaml"
   
-  # FIRST: Try hardcoded paths for COMMON development setups
-  common_paths <- c(
-    "C:/GitHub/myados/unicefData-dev/metadata/current/_dataflow_fallback_sequences.yaml",
-    "C:/GitHub/myados/unicefData-dev/inst/metadata/current/_dataflow_fallback_sequences.yaml",
-    "C:/GitHub/myados/unicefdata-dev/metadata/current/_dataflow_fallback_sequences.yaml",
-    "C:/GitHub/myados/unicefdata-dev/inst/metadata/current/_dataflow_fallback_sequences.yaml"
-  )
-  for (path in common_paths) {
-    if (file.exists(path)) {
-      return(normalizePath(path))
-    }
-  }
-  
-  # SECOND: Try system.file for installed packages (this is the standard location)
+  # FIRST: Try system.file for installed packages (this is the standard location)
   sys_file <- system.file("metadata", "current", fallback_file, package = "unicefData")
   if (nzchar(sys_file) && file.exists(sys_file)) {
     return(normalizePath(sys_file))
   }
   
-  # THIRD: Look in development folders (relative to cwd)
+  # SECOND: Look in development folders (relative to cwd)
   candidates <- c(
     file.path(getwd(), "metadata", "current", fallback_file),
     file.path(getwd(), "inst", "metadata", "current", fallback_file),
@@ -338,7 +318,7 @@ CACHE_MAX_AGE_DAYS <- 30
 .parse_codelist_xml <- function(xml_content) {
   # Requires xml2 package
   if (!requireNamespace("xml2", quietly = TRUE)) {
-    stop("Package 'xml2' is required for parsing SDMX XML. Install with: install.packages('xml2')")
+    stop("Package 'xml2' is required for parsing SDMX XML but not available.")
   }
   
   doc <- xml2::read_xml(xml_content)
@@ -401,7 +381,7 @@ CACHE_MAX_AGE_DAYS <- 30
   message("Fetching indicator codelist from UNICEF SDMX API...")
   
   if (!requireNamespace("httr", quietly = TRUE)) {
-    stop("Package 'httr' is required for API requests. Install with: install.packages('httr')")
+    stop("Package 'httr' is required for API requests but not available.")
   }
   
   response <- httr::GET(
@@ -435,7 +415,7 @@ CACHE_MAX_AGE_DAYS <- 30
   
   tryCatch({
     if (!requireNamespace("yaml", quietly = TRUE)) {
-      stop("Package 'yaml' is required. Install with: install.packages('yaml')")
+      stop("Package 'yaml' is required but not available.")
     }
     
     data <- yaml::read_yaml(cache_path)
@@ -693,7 +673,7 @@ get_dataflow_for_indicator <- function(indicator_code, default = "GLOBAL_DATAFLO
   # If not cached, try to load from installed package metadata file
   if (is.null(indicators_meta)) {
     indicators_meta <- tryCatch({
-      meta_file <- system.file("metadata/current/_unicefdata_indicators_metadata.yaml",
+      meta_file <- system.file("metadata", "current", "_unicefdata_indicators_metadata.yaml",
                                package = "unicefData", mustWork = FALSE)
       if (nzchar(meta_file) && file.exists(meta_file) && requireNamespace("yaml", quietly = TRUE)) {
         loaded <- yaml::yaml.load_file(meta_file)

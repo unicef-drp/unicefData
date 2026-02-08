@@ -1,21 +1,21 @@
 metadata:
   platform: stata
   version: 2.1.0
-  synced_at: '2026-02-01T16:23:57Z'
+  synced_at: '2026-02-07T21:16:56Z'
   source: UNICEF SDMX Codelist CL_UNICEF_INDICATOR
   agency: UNICEF
   content_type: indicators
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0
-  last_updated: '2026-02-01T16:23:57Z'
+  last_updated: '2026-02-07T21:16:56Z'
   description: Complete enriched UNICEF indicators metadata (auto-generated)
   indicator_count: 738
-  indicators_with_dataflows: 480
-  orphan_indicators: 258
+  indicators_with_dataflows: 485
+  orphan_indicators: 253
   dataflow_count: 31
   total_indicators: 738
   tier_counts:
-    tier_1: 480
-    tier_2: 258
+    tier_1: 485
+    tier_2: 253
     tier_3: 0
     tier_4: 0
 indicators:
@@ -2408,7 +2408,6 @@ indicators:
     parent: DM
     dataflows:
     - DM
-    - DM_PROJECTIONS
     - GLOBAL_DATAFLOW
     tier: 1
     tier_reason: metadata_and_data
@@ -2429,7 +2428,6 @@ indicators:
     parent: DM
     dataflows:
     - DM
-    - DM_PROJECTIONS
     - GLOBAL_DATAFLOW
     tier: 1
     tier_reason: metadata_and_data
@@ -12828,37 +12826,87 @@ indicators:
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_PS_URBN
     parent: DM
-    tier: 2
-    tier_reason: metadata_only_no_data
+    dataflows: DM
+    tier: 1
+    tier_reason: metadata_and_data
+    disaggregations:
+    - AGE
+    - REF_AREA
+    - RESIDENCE
+    - SEX
+    disaggregations_with_totals:
+    - AGE
+    - RESIDENCE
+    - SEX
   DM_POP_DOU:
     code: DM_POP_DOU
     name: Percentage of population by degree of urbanization at mid-year
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_DOU
     parent: DM
-    tier: 2
-    tier_reason: metadata_only_no_data
+    dataflows: DM
+    tier: 1
+    tier_reason: metadata_and_data
+    disaggregations:
+    - AGE
+    - REF_AREA
+    - RESIDENCE
+    - SEX
+    disaggregations_with_totals:
+    - AGE
+    - RESIDENCE
+    - SEX
   DM_POP_PS_DOU:
     code: DM_POP_PS_DOU
     name: Population by degree of urbanization at mid-year
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_PS_DOU
     parent: DM
-    tier: 2
-    tier_reason: metadata_only_no_data
+    dataflows: DM
+    tier: 1
+    tier_reason: metadata_and_data
+    disaggregations:
+    - AGE
+    - REF_AREA
+    - RESIDENCE
+    - SEX
+    disaggregations_with_totals:
+    - AGE
+    - RESIDENCE
+    - SEX
   DM_POP_DOU_GRT:
     code: DM_POP_DOU_GRT
     name: Annual rate of change of the population by degree of urbanization
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_POP_DOU_GRT
     parent: DM
-    tier: 2
-    tier_reason: metadata_only_no_data
+    dataflows: DM
+    tier: 1
+    tier_reason: metadata_and_data
+    disaggregations:
+    - AGE
+    - REF_AREA
+    - RESIDENCE
+    - SEX
+    disaggregations_with_totals:
+    - AGE
+    - RESIDENCE
+    - SEX
   DM_BU_PC_DOU:
     code: DM_BU_PC_DOU
     name: Built-up area per capita by degree of urbanization (m2)
     description: ''
     urn: urn:sdmx:org.sdmx.infomodel.codelist.Code=UNICEF:CL_UNICEF_INDICATOR(1.0).DM_BU_PC_DOU
     parent: DM
-    tier: 2
-    tier_reason: metadata_only_no_data
+    dataflows: DM
+    tier: 1
+    tier_reason: metadata_and_data
+    disaggregations:
+    - AGE
+    - REF_AREA
+    - RESIDENCE
+    - SEX
+    disaggregations_with_totals:
+    - AGE
+    - RESIDENCE
+    - SEX

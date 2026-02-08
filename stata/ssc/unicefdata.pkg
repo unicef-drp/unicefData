@@ -1,0 +1,73 @@
+3
+d unicefData. Download indicators from UNICEF Data Warehouse
+d
+d Author: Joao Pedro Azevedo
+d Support: jpazvd.github.io
+d
+d unicefData downloads indicator data from the UNICEF Data Warehouse
+d using the SDMX REST API. It provides access to 733+ indicators
+d covering child health, nutrition, education, protection, HIV/AIDS, 
+d WASH, and more.
+d
+d Features:
+d   - Download data by indicator, geography, and time period
+d   - Discovery: categories, flows, search, indicators, info
+d   - Multiple output formats: long, wide, wide_indicators
+d   - Automatic dataflow detection from indicator codes
+d   - Geographic type classification (country vs aggregate)
+d   - YAML-based metadata with sync capabilities
+d   - Stata 16+ frames support for better isolation
+d
+d Requires: Stata 14.0+ (Stata 16+ recommended)
+d
+d Distribution-Date: 20251219
+d
+* Main command and help
+f src/u/unicefdata.ado
+f src/u/unicefdata.sthlp
+
+* Sync command and help
+f src/u/unicefdata_sync.ado
+f src/u/unicefdata_sync.sthlp
+
+* XML to YAML conversion
+f src/u/unicefdata_xmltoyaml.ado
+f src/u/unicefdata_xmltoyaml_py.ado
+
+* YAML command and help
+f src/y/yaml.ado
+f src/y/yaml.sthlp
+
+* Discovery helper programs
+f src/_/_unicef_list_categories.ado
+f src/_/_unicef_list_dataflows.ado
+f src/_/_unicef_list_indicators.ado
+f src/_/_unicef_search_indicators.ado
+f src/_/_unicef_indicator_info.ado
+f src/_/_unicef_fetch_with_fallback.ado
+
+* Sync helper programs
+f src/_/_unicefdata_sync_dataflow_index.ado
+f src/_/_unicefdata_sync_df_schema.ado
+f src/_/_unicefdata_sync_ind_meta.ado
+f src/_/_unicefdata_update_sync_history.ado
+
+* XML parsing helper programs
+f src/_/_xmltoyaml_get_schema.ado
+f src/_/_xmltoyaml_parse.ado
+f src/_/_xmltoyaml_parse_lines.ado
+f src/_/_xmltoyaml_parse_python.ado
+f src/_/_xmltoyaml_parse_stata.ado
+
+* YAML metadata files (API metadata)
+f src/_/_unicefdata_dataflows.yaml
+f src/_/_unicefdata_indicators.yaml
+f src/_/_unicefdata_codelists.yaml
+f src/_/_unicefdata_countries.yaml
+f src/_/_unicefdata_regions.yaml
+f src/_/_unicefdata_sync_history.yaml
+
+* Python helper scripts (optional, for XML parsing during sync)
+f src/py/unicefdata_xml2yaml.py
+f src/py/stata_schema_sync.py
+f src/py/python_xml_helper.py

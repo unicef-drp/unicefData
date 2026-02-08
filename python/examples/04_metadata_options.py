@@ -14,7 +14,7 @@ Examples:
 import sys
 sys.path.insert(0, '..')
 
-from unicef_api import unicefData
+from unicefdata import unicefData
 
 print("=" * 70)
 print("04_metadata_options.py - Add Metadata to Data")
