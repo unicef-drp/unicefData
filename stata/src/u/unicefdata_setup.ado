@@ -1,6 +1,6 @@
-*! version 2.0.1  01Feb2026
-*! unicefdata_setup - Install YAML metadata files for unicefdata
-*! Author: Joao Pedro Azevedo (jazevedo@unicef.org)
+*! version 2.1.0  07Feb2026
+*! unicefdata_setup - Install YAML metadata and dataflow schema files for unicefdata
+*! Author: Joao Pedro Azevedo (jpazevedo@unicef.org)
 
 program define unicefdata_setup, rclass
     version 14.0
@@ -178,6 +178,56 @@ program define unicefdata_setup, rclass
         }
     }
     
+    * Install individual dataflow schema files
+    local dfdir "`targetdir'/_dataflows"
+    cap mkdir "`dfdir'"
+    local dataflows "CAUSE_OF_DEATH CCRI CHILD_RELATED_SDG CHLD_PVTY"
+    local dataflows "`dataflows' CME CME_CAUSE_OF_DEATH CME_COUNTRY_PROFILES_DATA CME_DF_2021_WQ"
+    local dataflows "`dataflows' CME_SUBNAT_AGO CME_SUBNAT_BDI CME_SUBNAT_BEN CME_SUBNAT_BGD"
+    local dataflows "`dataflows' CME_SUBNAT_CMR CME_SUBNAT_ETH CME_SUBNAT_GHA CME_SUBNAT_GIN"
+    local dataflows "`dataflows' CME_SUBNAT_HTI CME_SUBNAT_KEN CME_SUBNAT_LAO CME_SUBNAT_LBR"
+    local dataflows "`dataflows' CME_SUBNAT_LSO CME_SUBNAT_MDG CME_SUBNAT_MLI CME_SUBNAT_MMR"
+    local dataflows "`dataflows' CME_SUBNAT_MRT CME_SUBNAT_MWI CME_SUBNAT_NAM CME_SUBNAT_NGA"
+    local dataflows "`dataflows' CME_SUBNAT_NPL CME_SUBNAT_PAK CME_SUBNAT_RWA CME_SUBNAT_SEN"
+    local dataflows "`dataflows' CME_SUBNAT_SLE CME_SUBNAT_TCD CME_SUBNAT_TGO CME_SUBNAT_TZA"
+    local dataflows "`dataflows' CME_SUBNAT_UGA CME_SUBNAT_ZMB CME_SUBNAT_ZWE CME_SUBNATIONAL"
+    local dataflows "`dataflows' COVID COVID_CASES DM DM_PROJECTIONS ECD ECONOMIC"
+    local dataflows "`dataflows' EDUCATION EDUCATION_FLS EDUCATION_UIS_SDG"
+    local dataflows "`dataflows' FUNCTIONAL_DIFF GENDER GLOBAL_DATAFLOW HIV_AIDS IMMUNISATION"
+    local dataflows "`dataflows' MG MNCH NUTRITION PT PT_CM PT_CM_SUBNATIONAL PT_CONFLICT PT_FGM"
+    local dataflows "`dataflows' SDG_PROG_ASSESSMENT SOC_PROTECTION"
+    local dataflows "`dataflows' WASH_HEALTHCARE_FACILITY WASH_HOUSEHOLD_MH WASH_HOUSEHOLD_SUBNAT"
+    local dataflows "`dataflows' WASH_HOUSEHOLDS WASH_SCHOOLS WT"
+    local df_installed 0
+    local df_failed 0
+    if "`quiet'" == "" {
+        di as text ""
+        di as text "Installing dataflow schema files..."
+    }
+    foreach df of local dataflows {
+        if `local_found' == 1 {
+            local srcfile = "`from'" + "`pathsep'" + "_" + "`pathsep'" + "_dataflows" + "`pathsep'" + "`df'.yaml"
+        }
+        else {
+            local srcfile "`from'/_/_dataflows/`df'.yaml"
+        }
+        local destfile "`dfdir'/`df'.yaml"
+        cap copy "`srcfile'" "`destfile'", `replace'
+        if _rc == 0 {
+            local df_installed = `df_installed' + 1
+        }
+        else if _rc == 602 & "`replace'" == "" {
+            * Already exists
+        }
+        else {
+            local df_failed = `df_failed' + 1
+        }
+    }
+    if "`quiet'" == "" {
+        di as text "  `df_installed' dataflow schemas installed, `df_failed' failed"
+    }
+    local installed = `installed' + `df_installed'
+    local failed = `failed' + `df_failed'
     if "`quiet'" == "" {
         di as text "{hline 70}"
         di as text "Installation complete: `installed' installed, `failed' failed"
@@ -190,13 +240,10 @@ program define unicefdata_setup, rclass
         di as text "Files installed to: `targetdir'"
         di as text "{hline 70}"
     }
-    
     if `failed' > 0 {
         di as error "Some files failed to install. Check network connection or use from() option."
         error 601
     }
-    
-    * Return results
     return local targetdir "`targetdir'"
     return local source "`from'"
     return local source_type "`source_type'"

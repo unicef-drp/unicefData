@@ -40,6 +40,23 @@ These files simulate responses from the UNICEF SDMX API without requiring actual
 - Used by: Invalid indicator and 404 fallback tests
 - Simulates: Indicator not found or no data available
 
+**nutrition_multi_country.csv**
+- Nutrition stunting data for 3 countries (IND, ETH, BGD)
+- Indicator: NT_ANT_HAZ_NE2 (Stunting prevalence)
+- Includes AGE disaggregation (Y0T4)
+- Used by: Multi-country and disaggregation tests
+
+**cme_disaggregated_sex.csv**
+- CME data for Brazil with sex disaggregation
+- Indicator: CME_MRY0T4, SEX: _T, M, F
+- Years: 2020-2021
+- Used by: Sex disaggregation and cross-language validation tests
+
+**vaccination_multi_indicator.csv**
+- Two vaccination indicators for 2 countries (GHA, KEN)
+- Indicators: IM_DTP3, IM_MCV1
+- Used by: Multi-indicator and cross-language validation tests
+
 ## Usage
 
 ### Python (pytest)

@@ -1,5 +1,5 @@
 """
-Comprehensive test suite for unicef_api package
+Comprehensive test suite for unicefdata package
 Tests all major functionality and saves results to CSV files
 """
 
@@ -10,8 +10,8 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unicef_api import get_unicef, list_dataflows, COMMON_INDICATORS, list_vintages
-from unicef_api.metadata import sync_metadata, MetadataSync
+from unicefdata import unicefData, list_dataflows, list_vintages
+from unicefdata.metadata import sync_metadata, MetadataSync
 
 # Output directory
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
@@ -40,8 +40,8 @@ def test_child_mortality():
     """Test fetching child mortality data (CME_MRY0T4)"""
     log("Testing child mortality (CME_MRY0T4)...")
     
-    # Use get_unicef() for consistent column names with R
-    df = get_unicef(
+    # Use unicefData() for consistent column names with R
+    df = unicefData(
         indicator='CME_MRY0T4',
         countries=['USA', 'GBR', 'FRA', 'DEU', 'JPN'],
         start_year=2015,
@@ -62,8 +62,8 @@ def test_stunting():
     """Test fetching stunting data (NT_ANT_HAZ_NE2)"""
     log("Testing stunting (NT_ANT_HAZ_NE2)...")
     
-    # Use get_unicef() for consistent column names with R
-    df = get_unicef(
+    # Use unicefData() for consistent column names with R
+    df = unicefData(
         indicator='NT_ANT_HAZ_NE2',
         countries=['IND', 'BGD', 'PAK', 'NPL', 'ETH'],
         start_year=2010,
@@ -81,8 +81,8 @@ def test_immunization():
     """Test fetching immunization data (IM_DTP3)"""
     log("Testing immunization (IM_DTP3)...")
     
-    # Use get_unicef() for consistent column names with R
-    df = get_unicef(
+    # Use unicefData() for consistent column names with R
+    df = unicefData(
         indicator='IM_DTP3',
         countries=['NGA', 'COD', 'BRA', 'IDN', 'MEX'],
         start_year=2015,
@@ -121,8 +121,8 @@ def test_multiple_indicators():
     
     for ind in indicators:
         try:
-            # Use get_unicef() for consistent column names with R
-            df = get_unicef(
+            # Use unicefData() for consistent column names with R
+            df = unicefData(
                 indicator=ind,
                 countries=['BRA', 'IND', 'CHN'],
                 start_year=2020,

@@ -12,7 +12,7 @@ import sys
 import time
 sys.path.insert(0, '..')
 
-from unicef_api import unicefData
+from unicefdata import unicefData
 
 print("=" * 70)
 print("06_test_fallback.py - Test Dataflow Fallback Mechanism")

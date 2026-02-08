@@ -5,7 +5,7 @@ PKG_ROOT = os.path.abspath(os.path.join(HERE, os.pardir))
 if PKG_ROOT not in sys.path:
     sys.path.insert(0, PKG_ROOT)
 
-from unicef_api.core import unicefData
+from unicefdata.unicefdata import unicefData
 
 if __name__ == "__main__":
     # Test with totals mode enabled

@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14%2B-blue)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.0.4-green)](https://github.com/unicef-drp/unicefData)
+[![Version](https://img.shields.io/badge/version-2.1.0-green)](https://github.com/unicef-drp/unicefData)
 [![Tests](https://img.shields.io/badge/tests-38%2F38%20passing-brightgreen)](stata/qa/)
 
 **Stata component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
@@ -183,6 +183,10 @@ unicefdata, indicator(code) [options]
 | Option | Description |
 |--------|-------------|
 | `clear` | Replace data in memory |
+| `clearcache` | Drop cached frames and reload metadata |
+| `noerror` | Return empty dataset instead of error on failure |
+| `fromfile(path)` | Load data from CSV fixture instead of API |
+| `tofile(path)` | Save API response to CSV for offline testing |
 | `verbose` | Show detailed progress |
 | `debug` | Show debug information |
 
@@ -372,6 +376,13 @@ which yaml
 
 ## Version History
 
+### v2.1.0 (2026-02-07)
+
+- Added `clearcache` subcommand — drops cached frames and reloads metadata
+- 3-tier path resolution (PLUS -> findfile/adopath -> cwd) replaces hardcoded paths
+- 404 errors now include tried dataflows in messages
+- Cross-language fixture tests (12/12 passing)
+
 ### v2.0.4 (2026-02-01)
 
 - Fixed false warning for valid disaggregation filters
@@ -401,7 +412,8 @@ MIT License - See [LICENSE](../LICENSE)
 
 **Joao Pedro Azevedo**
 Chief Statistician, UNICEF Data and Analytics Section
-Email: jazevedo@unicef.org
+Email: jpazevedo@unicef.org
+Website: [jpazvd.github.io](https://jpazvd.github.io/)
 
 ## Support
 
@@ -411,4 +423,4 @@ Email: jazevedo@unicef.org
 
 ## Contributing
 
-See [Contributing Guide](../README.md#contributing) in the main README.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.

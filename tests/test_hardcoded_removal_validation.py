@@ -18,7 +18,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'python'))
 
-from unicef_api.sdmx_client import UNICEFSDMXClient
+from unicefdata.sdmx_client import UNICEFSDMXClient
 
 def test_client_initialization():
     """Test 1: Client can be initialized"""
@@ -117,7 +117,7 @@ def test_no_hardcoded_imports():
     print("-" * 50)
     
     try:
-        import unicef_api.config as config
+        import unicefdata.config as config
         
         # These should NOT exist
         removed_items = [

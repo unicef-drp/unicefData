@@ -1016,3 +1016,17 @@ Skipped:  0
 Result:   ALL TESTS PASSED
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run:  7 Feb 2026
+Started:  16:00:44
+Ended:    16:17:51
+Duration: 17m 7s
+Branch:   fix/p0-remove-hardcoded-paths
+Version:  2.0.4
+Stata:    17
+Tests:    38 run, 38 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================

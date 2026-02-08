@@ -4,7 +4,7 @@
 import sys
 sys.path.insert(0, 'python')
 
-from unicef_api.sdmx_client import UNICEFSDMXClient
+from unicefdata.sdmx_client import UNICEFSDMXClient
 
 print("=" * 50)
 print("Python Direct Metadata Lookup Test")

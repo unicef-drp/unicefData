@@ -20,8 +20,8 @@ import logging
 # Add python directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from unicef_api.metadata import MetadataSync
-from unicef_api.schema_sync import sync_dataflow_schemas
+from unicefdata.metadata import MetadataSync
+from unicefdata.schema_sync import sync_dataflow_schemas
 
 def main():
     print("Starting metadata generation...")

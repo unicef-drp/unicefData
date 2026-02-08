@@ -1,11 +1,11 @@
 _metadata:
   platform: Stata
   version: '2.0.0'
-  synced_at: '2026-01-31T22:23:23Z'
+  synced_at: '2026-02-07T16:12:06Z'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
   agency: UNICEF
   content_type: countries
-  total_countries: 453
+  total_countries: 454
   codelist_id: CL_COUNTRY
   codelist_name: 'Statistical Reference Areas'
 countries:
@@ -462,3 +462,4 @@ countries:
   UNSDG_WESTERNEUROPE: 'Western Europe (UNSDG)'
   UNSDG_MICRONESIA: 'Micronesia (UNSDG)'
   WB_ECA: 'Europe and Central Asia (World Bank regions)'
+  UNSDG_CAUCASUS_CENTRALASIA: 'Caucasus and Central Asia (UNSDG)'

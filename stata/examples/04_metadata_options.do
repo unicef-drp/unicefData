@@ -8,13 +8,18 @@
 *
 * Examples:
 *   1. View variable labels (metadata)
-*   2. Disaggregation filters (sex, age, etc.)
-*   3. Raw vs standardized output
-*   4. Verbose output for debugging
-*   5. Simplify output columns
+*   2. Filter by sex
+*   3. Filter by wealth quintile
+*   4. Raw SDMX output
+*   5. Simplified output columns
+*   6. Add region classification (UNICEF regions)
+*   7. Add income group (World Bank classification)
+*   8. Multiple metadata (region + income + continent)
+*   9. Verbose mode for debugging
 *
 * Note: Stata includes metadata as variable labels by default.
 *       Use 'describe' or 'codebook' to view labels.
+*       Use addmeta() option to add country classifications.
 *******************************************************************************/
 
 clear all
@@ -111,9 +116,53 @@ list in 1/5, clean
 export delimited using "`data_dir'/04_ex5_simplified.csv", replace
 
 * =============================================================================
-* Example 6: Verbose Mode for Debugging
+* Example 6: Add Region Classification
 * =============================================================================
-display _n "--- Example 6: Verbose Mode ---"
+display _n "--- Example 6: Add Region Classification ---"
+display "UNICEF regional classification" _n
+
+unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
+    year(2020) addmeta(region) latest clear
+
+display "Columns with region:"
+describe, short
+list iso3 country region value in 1/5, clean
+
+export delimited using "`data_dir'/04_ex6_region.csv", replace
+
+* =============================================================================
+* Example 7: Add Income Group
+* =============================================================================
+display _n "--- Example 7: Add Income Group ---"
+display "World Bank income classification" _n
+
+unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
+    year(2020) addmeta(income_group) latest clear
+
+display "Columns with income group:"
+list iso3 country income_group value, clean
+
+export delimited using "`data_dir'/04_ex7_income.csv", replace
+
+* =============================================================================
+* Example 8: Multiple Metadata
+* =============================================================================
+display _n "--- Example 8: Multiple Metadata ---"
+display "Combine region, income group, and continent" _n
+
+unicefdata, indicator(CME_MRY0T4) countries(`COUNTRIES') ///
+    year(2020) addmeta(region income_group continent) latest clear
+
+display "Columns with all metadata:"
+describe, short
+list iso3 country region income_group continent value in 1/5, clean
+
+export delimited using "`data_dir'/04_ex8_multiple.csv", replace
+
+* =============================================================================
+* Example 9: Verbose Mode for Debugging
+* =============================================================================
+display _n "--- Example 9: Verbose Mode ---"
 display "Show API request details" _n
 
 unicefdata, indicator(CME_MRY0T4) countries(ALB USA) ///
