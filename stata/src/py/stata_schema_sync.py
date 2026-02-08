@@ -14,7 +14,7 @@ Usage:
     python stata_schema_sync.py <output_dir> [--suffix SUFFIX] [--verbose]
 
 Example:
-    python stata_schema_sync.py stata/metadata/current --verbose
+    python stata_schema_sync.py stata/src/_ --verbose
 """
 
 import os

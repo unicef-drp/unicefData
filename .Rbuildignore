@@ -72,3 +72,16 @@
 ^stata\.log$
 ^test_multi_indicator\.log$
 ^.*\.log$
+
+# Non-standard top-level files
+^cran-comments\.md$
+^CHANGELOG\.md$
+^CITATION\.cff$
+^install_package\.R$
+^scripts$
+
+# Non-standard R/ subdirectories (CRAN compliance)
+^R/tests$
+^R/tests/.*$
+^R/scripts$
+^R/scripts/.*$

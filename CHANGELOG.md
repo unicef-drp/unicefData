@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-02-07 (All Platforms)
+
+### Added
+
+- **Cache management APIs**: `clear_unicef_cache()` (R, 6 layers), `clear_cache()` (Python, 5 layers), `clearcache` subcommand (Stata, drops cached frames)
+- **Python `SDMXTimeoutError`**: Typed exception for timeouts; configurable via `UNICEFSDMXClient(timeout=120)`
+- **Cross-language test suite**: 39 shared fixture tests (Python 14, R 13, Stata 12) using shared CSV fixtures
+- **YAML_SCHEMA.md**: Documents all 7 YAML file types used across the package
+
+### Fixed
+
+- **R `apply_circa()`**: Countries with all-NA values no longer silently dropped
+- **R hardcoded paths**: Replaced with `system.file()` resolution in `indicator_registry.R`
+- **Stata hardcoded paths**: 3-tier resolution (PLUS -> findfile/adopath -> cwd)
+- **404 error context**: All 3 languages now include tried dataflows in error messages
+
+### Changed
+
+- Python timeout: raises `SDMXTimeoutError` instead of returning empty DataFrame
+- Staleness threshold verified at 30 days across all 3 languages
+
+### Tested
+
+- Python: 32/32 tests passing
+- R: 26/26 tests passing
+- Stata: 7/7 QA + 12/12 cross-language tests passing
+
 ## [2.0.4] - 2026-02-01 (Stata)
 
 ### Fixed

@@ -16,7 +16,7 @@ import sys
 import os
 sys.path.insert(0, '..')
 
-from unicef_api import (
+from unicefdata import (
     list_categories,
     search_indicators, 
     get_indicator_info,

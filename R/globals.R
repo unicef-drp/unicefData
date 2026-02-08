@@ -7,7 +7,7 @@ utils::globalVariables(c(
   "obs_status_name", "lower_bound", "upper_bound", "obs_status", "data_source",
   "ref_period", "country_notes",
   # apply_circa variables
-  "dist", "target_year",
+  ".has_value", "dist", "target_year",
   # get_sdmx internal variable
   "verbose"
 ))

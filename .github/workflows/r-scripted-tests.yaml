@@ -47,16 +47,39 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            libwebp-dev
 
-      - name: Install R dependencies
+      - name: Install minimal dependencies for OFFLINE tests
         run: |
+          # OFFLINE tests only need yaml package (no full package dependencies)
           Rscript -e "install.packages('yaml', repos='https://cloud.r-project.org')"
           Rscript -e "cat('Installed packages:', paste(installed.packages()[,'Package'], collapse=', '))"
 
-      - name: Run scripted tests
+      - name: Run scripted tests (YAML metadata)
         env:
           CI: true
           UNICEF_API_TIMEOUT: 30
         run: |
           Rscript -e "setwd('.'); source('R/tests/run_tests.R')"
+
+      - name: Run pipeline fixture tests (clean/filter)
+        run: |
+          Rscript R/tests/test_pipeline_fixtures.R
+
+      - name: Run mocked pipeline tests (full unicefData flow)
+        run: |
+          Rscript R/tests/test_pipeline_mocked.R
+
+      - name: Run cross-language fixture tests
+        run: |
+          Rscript tests/test_cross_language_output.R

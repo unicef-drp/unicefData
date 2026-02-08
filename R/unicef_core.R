@@ -1,13 +1,34 @@
-# Lazy-load fallback sequences at first use (not at module init) to respect working directory
-.FALLBACK_ENV <- new.env(parent = emptyenv())
-
 # =============================================================================
 # unicef_core.R - Core data fetching with intelligent fallback logic
 # =============================================================================
+#
+# PURPOSE:
+#   Low-level data fetching engine for UNICEF SDMX API. Handles HTTP requests,
+#   dataflow detection, fallback logic, and data cleaning. Called by the
+#   user-facing unicefData.R module.
+#
+# STRUCTURE:
+#   1. Imports & Setup - Package dependencies and environment
+#   2. YAML Loaders - Metadata, fallback sequences, region codes
+#   3. HTTP Helpers - SDMX fetch with retry and 404 handling
+#   4. Dataflow Detection - Auto-detect and fallback logic
+#   5. Data Fetching - Raw API calls with pagination
+#   6. Data Cleaning - Column standardization
+#   7. Data Filtering - Disaggregation filtering
+#   8. Schema Validation - Structure verification
+#
 # Version: 1.6.1 (2026-01-12) - Unified fallback architecture
 # Author: João Pedro Azevedo (UNICEF)
 # License: MIT
 # =============================================================================
+
+
+# =============================================================================
+# #### 1. Imports & Setup ####
+# =============================================================================
+
+# Lazy-load fallback sequences at first use (not at module init) to respect working directory
+.FALLBACK_ENV <- new.env(parent = emptyenv())
 
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -23,6 +44,7 @@ if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
 if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 
 `%>%` <- magrittr::`%>%`
+
 
 #' Check if an error is an HTTP 404 response
 #'
@@ -41,7 +63,9 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
   FALSE
 }
 
-# --- Helper: Load Indicators Metadata from Canonical YAML ---
+# =============================================================================
+# #### 2. YAML Loaders ####
+# =============================================================================
 
 #' Load comprehensive indicators metadata from canonical YAML file
 #'
@@ -52,12 +76,12 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 #' @keywords internal
 .load_indicators_metadata_yaml <- function() {
   candidates <- c(
-    # Workspace root (where user is editing) - use getwd() directly (it's the package root)
-    file.path(getwd(), 'metadata/current/_unicefdata_indicators_metadata.yaml'),
+    # Workspace root (where user is editing) - inst/metadata/current/ in dev repo
+    file.path(getwd(), 'inst', 'metadata', 'current', '_unicefdata_indicators_metadata.yaml'),
     # Stata src folder (canonical source in private -dev repo)
-    file.path(getwd(), 'stata/src/__unicefdata_indicators_metadata.yaml'),
-    # Package bundled location
-    system.file('metadata/_unicefdata_indicators_metadata.yaml', package = 'unicefData', mustWork = FALSE)
+    file.path(getwd(), 'stata', 'src', '__unicefdata_indicators_metadata.yaml'),
+    # Package bundled location (inst/ is stripped at install time)
+    system.file('metadata', 'current', '_unicefdata_indicators_metadata.yaml', package = 'unicefData', mustWork = FALSE)
   )
   
   for (candidate in candidates) {
@@ -81,8 +105,6 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
   return(NULL)
 }
 
-# --- Helper: Load Fallback Sequences from Canonical YAML ---
-
 #' Load fallback dataflow sequences from canonical YAML (shared with Python/Stata)
 #'
 #' Reads _dataflow_fallback_sequences.yaml from the workspace root or package metadata.
@@ -93,14 +115,14 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 .load_fallback_sequences_yaml <- function() {
   # Priority 1: Check workspace root (where user has latest YAML)
   candidates <- c(
-    # Workspace root (where user is editing) - use getwd() directly (it's the package root)
-    file.path(getwd(), 'metadata/current/_dataflow_fallback_sequences.yaml'),
-   # Python metadata folder (cross-platform metadata source)
-   file.path(getwd(), 'python/metadata/current/_dataflow_fallback_sequences.yaml'),
+    # Workspace root (where user is editing) - inst/metadata/current/ in dev repo
+    file.path(getwd(), 'inst', 'metadata', 'current', '_dataflow_fallback_sequences.yaml'),
+    # Python metadata folder (cross-platform metadata source)
+    file.path(getwd(), 'python', 'metadata', 'current', '_dataflow_fallback_sequences.yaml'),
     # Stata src folder (canonical source in private -dev repo)
-   file.path(getwd(), 'stata/src/_/_dataflow_fallback_sequences.yaml'),
-    # Package bundled location
-    system.file('metadata/_dataflow_fallback_sequences.yaml', package = 'unicefData', mustWork = FALSE)
+    file.path(getwd(), 'stata', 'src', '_', '_dataflow_fallback_sequences.yaml'),
+    # Package bundled location (inst/ is stripped at install time)
+    system.file('metadata', 'current', '_dataflow_fallback_sequences.yaml', package = 'unicefData', mustWork = FALSE)
   )
   
   for (candidate in candidates) {
@@ -140,8 +162,6 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 # Load comprehensive indicators metadata at module initialization
 .INDICATORS_METADATA_YAML <- .load_indicators_metadata_yaml()
 
-# --- Helper: Load aggregate/region codes from YAML ---
-
 #' Load aggregate/region ISO3 codes for geo_type classification
 #'
 #' Reads _unicefdata_regions.yaml to get codes for regions, income groups, and 
@@ -152,12 +172,12 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 #' @keywords internal
 .load_region_codes_yaml <- function() {
   candidates <- c(
-    # Workspace root (where user is editing)
-    file.path(getwd(), 'metadata/current/_unicefdata_regions.yaml'),
+    # Workspace root (where user is editing) - inst/metadata/current/ in dev repo
+    file.path(getwd(), 'inst', 'metadata', 'current', '_unicefdata_regions.yaml'),
     # Stata src folder (canonical source in private -dev repo)
-    file.path(getwd(), 'stata/src/_/_unicefdata_regions.yaml'),
-    # Package bundled location
-    system.file('metadata/_unicefdata_regions.yaml', package = 'unicefData', mustWork = FALSE)
+    file.path(getwd(), 'stata', 'src', '_', '_unicefdata_regions.yaml'),
+    # Package bundled location (inst/ is stripped at install time)
+    system.file('metadata', 'current', '_unicefdata_regions.yaml', package = 'unicefData', mustWork = FALSE)
   )
   
   for (candidate in candidates) {
@@ -187,7 +207,95 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 # Load region codes at module initialization
 .REGION_CODES_YAML <- .load_region_codes_yaml()
 
-# --- Helper: Fetch SDMX ---
+
+#' Clear All UNICEF Caches
+#'
+#' Resets all in-memory caches across the package: indicator metadata,
+#' fallback sequences, region codes, schema cache, and config cache.
+#' After clearing, the next API call will reload all metadata from
+#' YAML files (or fetch fresh from the API if file cache is stale).
+#'
+#' @param reload Logical. If TRUE (default), immediately reload YAML-based
+#'   caches (indicators metadata, fallback sequences, region codes).
+#'   If FALSE, caches are cleared but not reloaded until next use.
+#' @param verbose Logical. If TRUE, print what was cleared.
+#'
+#' @return Invisibly returns a named list of cleared cache names.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Clear everything and reload
+#'   clear_unicef_cache()
+#'
+#'   # Clear without reloading (lazy reload on next use)
+#'   clear_unicef_cache(reload = FALSE)
+#' }
+clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
+  cleared <- character(0)
+  ns <- environment(clear_unicef_cache)
+
+  # 1. Fallback sequences (unicef_core.R)
+  if (exists("sequences", envir = .FALLBACK_ENV, inherits = FALSE)) {
+    rm("sequences", envir = .FALLBACK_ENV)
+  }
+  cleared <- c(cleared, "fallback_sequences")
+
+  # 2. Indicators metadata YAML (unicef_core.R)
+  tryCatch({
+    unlockBinding(".INDICATORS_METADATA_YAML", ns)
+    assign(".INDICATORS_METADATA_YAML", NULL, envir = ns)
+  }, error = function(e) NULL)
+  cleared <- c(cleared, "indicators_metadata")
+
+  # 3. Region codes YAML (unicef_core.R)
+  tryCatch({
+    unlockBinding(".REGION_CODES_YAML", ns)
+    assign(".REGION_CODES_YAML", NULL, envir = ns)
+  }, error = function(e) NULL)
+  cleared <- c(cleared, "region_codes")
+
+  # 4. Indicator registry cache (indicator_registry.R)
+  .indicator_cache$data <- NULL
+  .indicator_cache$loaded <- FALSE
+  .indicator_cache$fallback_sequences <- NULL
+  .indicator_cache$fallback_loaded <- FALSE
+  cleared <- c(cleared, "indicator_registry")
+
+  # 5. Schema cache (schema_cache.R)
+  rm(list = ls(envir = .schema_cache_env), envir = .schema_cache_env)
+  cleared <- c(cleared, "schema_cache")
+
+  # 6. Config cache (config_loader.R)
+  .config_cache$config <- NULL
+  cleared <- c(cleared, "config_cache")
+
+  # Reload YAML-based caches if requested
+  if (reload) {
+    tryCatch({
+      assign(".INDICATORS_METADATA_YAML", .load_indicators_metadata_yaml(), envir = ns)
+      lockBinding(".INDICATORS_METADATA_YAML", ns)
+    }, error = function(e) NULL)
+    tryCatch({
+      assign(".REGION_CODES_YAML", .load_region_codes_yaml(), envir = ns)
+      lockBinding(".REGION_CODES_YAML", ns)
+    }, error = function(e) NULL)
+    # Fallback sequences reload lazily via .get_fallback_sequences()
+  }
+
+  if (verbose) {
+    msg <- sprintf("Cleared %d caches: %s", length(cleared), paste(cleared, collapse = ", "))
+    if (reload) msg <- paste0(msg, " (YAML caches reloaded)")
+    message(msg)
+  }
+
+  invisible(cleared)
+}
+
+
+# =============================================================================
+# #### 3. HTTP Helpers ####
+# =============================================================================
 
 #' Fetch SDMX content as text
 #'
@@ -212,6 +320,10 @@ fetch_sdmx_text <- function(url, ua = .unicefData_ua, retry) {
   httr::stop_for_status(resp)
   httr::content(resp, as = "text", encoding = "UTF-8")
 }
+
+# =============================================================================
+# #### 4. Dataflow Detection ####
+# =============================================================================
 
 #' @title Detect Dataflow from Indicator
 #' @description Auto-detects the correct dataflow for a given indicator code.
@@ -301,6 +413,10 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   
   return(fallbacks)
 }
+
+# =============================================================================
+# #### 5. Data Fetching ####
+# =============================================================================
 
 #' Fetch data from a single dataflow with 404 detection
 #'
@@ -539,10 +655,11 @@ unicefData_raw <- function(
 
   # If all candidates were 404 (indicator not found in any attempted flow), return empty
   if (last_not_found) {
-    if (verbose) message(sprintf(
-      "No data found: indicator '%s' not present in tried dataflows: %s",
+    # Always show which dataflows were tried (not just when verbose)
+    warning(sprintf(
+      "Not Found (404): Indicator '%s' not found in any dataflow.\n  Tried dataflows: %s\n  Browse available indicators at: https://data.unicef.org/",
       indicator[1], paste(flows, collapse = ", ")
-    ))
+    ), call. = FALSE)
     return(dplyr::tibble())
   }
 
@@ -603,6 +720,10 @@ validate_unicef_schema <- function(df, dataflow) {
     }
   }
 }
+
+# =============================================================================
+# #### 6. Data Cleaning ####
+# =============================================================================
 
 #' @title Clean and Standardize UNICEF Data
 #' @description Renames columns and converts types.
@@ -685,6 +806,10 @@ clean_unicef_data <- function(df) {
 
   return(df_clean)
 }
+# =============================================================================
+# #### 7. Data Filtering ####
+# =============================================================================
+
 #' @title Filter UNICEF Data (Sex, Age, Wealth, etc.)
 #' @description Filters data to specific disaggregations or defaults to totals.
 #'   Uses indicator metadata (disaggregations_with_totals) to determine which
@@ -927,6 +1052,10 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
 
   return(df)
 }
+
+# =============================================================================
+# #### 8. Schema Validation ####
+# =============================================================================
 
 #' @title Validate Data Against Schema
 #' @description Checks if the data matches the expected schema for the dataflow.

@@ -1,27 +1,26 @@
+* =============================================================================
+* get_sdmx.ado - Low-level SDMX data fetcher for any agency
+* =============================================================================
 *! version 1.3.3  20Jan2026
-*! Get SDMX data from any agency
-*! Description: Low-level function to fetch SDMX data or structure from any agency
 *! Author: João Pedro Azevedo (https://jpazvd.github.io)
 *! License: MIT
-*!
-*! NEW in v1.3.3:
-*! - Wide format now reorders variables: context/dimension columns before year columns
-*!
-*! NEW in v1.3.0:
-*! - Added bulk download support: indicator(all) fetches entire dataflow
-*! - Filters (countries, year, disaggregations) still work with bulk mode
-*! - Performance: ~3-10x faster for multiple indicators from same dataflow
-*!
-*! NEW in v1.2.0:
-*! - Added filename() parameter for flexible data handling
-*!   - When specified: saves CSV to that file, caller handles import
-*!   - When omitted: creates tempfile, loads data directly into memory
-*!
-*! NEW in v1.1.0:
-*! - Integrated intelligent query filter engine (__unicef_get_indicator_filters)
-*! - Query mode detection (auto-detect, bypass, validation)
-*! - Automatic dimension extraction from dataflow schemas
-*! - Enhanced verbose output showing query mode and dimensions
+*
+* PURPOSE:
+*   Low-level function for downloading SDMX data from any agency (UNICEF, World Bank, etc.)
+*   with paging, retries, caching, and post-processing options.
+*
+* STRUCTURE:
+*   1. Main Program - get_sdmx (syntax, URL building, fetch, processing)
+*   2. Fetch Helper - _get_sdmx_fetch (HTTP request with retry)
+*   3. Structure Parser - _get_sdmx_parse_structure (metadata extraction)
+*   4. Tidy Helper - _get_sdmx_tidy (column cleanup)
+*
+* CHANGELOG:
+*! v1.3.3: Wide format now reorders variables: context/dimension columns before year columns
+*! v1.3.0: Added bulk download support: indicator(all) fetches entire dataflow
+*! v1.2.0: Added filename() parameter for flexible data handling
+*! v1.1.0: Integrated intelligent query filter engine
+* =============================================================================
 
 /*
 GET_SDMX - Fetch SDMX Data or Structure
@@ -173,6 +172,11 @@ With caching enabled, subsequent calls from same dataflow are 8-17x faster.
 First call: ~2.2 seconds (API + schema fetch)
 Cached call: ~0.13 seconds (memory lookup only)
 */
+
+
+* =============================================================================
+* #### 1. Main Program ####
+* =============================================================================
 
 program define get_sdmx, rclass
   version 11
@@ -717,10 +721,11 @@ program define get_sdmx, rclass
       }
     }
     
-    // If not successful, retry with delay
+    // If not successful, retry with exponential backoff (1s, 2s, 4s...)
     if !`success' {
       if `attempt' < `retry' {
-        sleep 1000  // 1 second delay before retry
+        local sleep_ms = 1000 * 2^(`attempt' - 1)
+        sleep `sleep_ms'
       }
       }
       }  // Close forvalues retry loop
@@ -869,7 +874,11 @@ program define get_sdmx, rclass
   }
 end
 
-// Helper: Fetch with curl + fallback to copy
+* =============================================================================
+* #### 2. Fetch Helper ####
+* =============================================================================
+* HTTP request with curl + fallback to copy
+
 program define _get_sdmx_fetch, rclass
   syntax, URL(string) [RETry(integer 3) TIMEOUT(integer 30)]
   
@@ -912,13 +921,22 @@ program define _get_sdmx_fetch, rclass
       exit 0
     }
     
+    // Exponential backoff before next attempt (1s, 2s, 4s...)
+    if `attempt' < `retry' {
+      local sleep_ms = 1000 * 2^(`attempt' - 1)
+      sleep `sleep_ms'
+    }
     local attempt = `attempt' + 1
   }
-  
+
   error 631  // Network error
 end
 
-// Helper: Parse SDMX structure
+
+* =============================================================================
+* #### 3. Structure Parser ####
+* =============================================================================
+
 program define _get_sdmx_parse_structure, rclass
   syntax, INFile(string)
   
@@ -927,7 +945,11 @@ program define _get_sdmx_parse_structure, rclass
   return local structure "`infile'"
 end
 
-// Helper: Tidy SDMX data columns
+
+* =============================================================================
+* #### 4. Tidy Helper ####
+* =============================================================================
+
 program define _get_sdmx_tidy
   
   // Standardize core column names

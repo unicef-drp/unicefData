@@ -123,7 +123,8 @@ and destination paths.
 {pstd}
 Joao Pedro Azevedo{break}
 UNICEF{break}
-jazevedo@unicef.org
+jpazevedo@unicef.org{break}
+{browse "https://jpazvd.github.io/"}
 
 
 {marker alsosee}{...}

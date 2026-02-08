@@ -4,8 +4,8 @@ Unit tests for UNICEF API
 
 import pytest
 import pandas as pd
-from unicef_api import UNICEFSDMXClient
-from unicef_api.utils import validate_country_codes, validate_year_range
+from unicefdata import UNICEFSDMXClient
+from unicefdata.utils import validate_country_codes, validate_year_range
 
 
 class TestSDMXClient:

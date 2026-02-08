@@ -1,39 +1,32 @@
-# UNICEF API Python Library - Installation and Usage Guide
+# unicefData Python Library - Installation and Usage Guide
 
-## 📦 Installation
+## Installation
 
-### Option 1: Install in Development Mode (Recommended)
+### Option 1: Install from PyPI (Recommended)
 
-```powershell
+```bash
+pip install unicefdata
+```
+
+### Option 2: Install in Development Mode
+
+```bash
 # Navigate to the python directory
-cd D:\jazevedo\GitHub\unicefData\python
+cd python/
 
-# Install in editable mode with dependencies
-pip install -e .
+# Install in editable mode with all dependencies
+pip install -e ".[dev]"
 ```
 
-### Option 2: Install from Requirements
-
-```powershell
-# Install core dependencies only
-pip install -r requirements.txt
-
-# Install development dependencies (for testing)
-pip install -r requirements-dev.txt
-```
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Example
 
 ```python
-from unicef_api import UNICEFSDMXClient
-
-# Initialize client
-client = UNICEFSDMXClient()
+from unicefdata import unicefData
 
 # Fetch under-5 mortality for Brazil, India, Nigeria
-df = client.fetch_indicator(
+df = unicefData(
     'CME_MRY0T4',
     countries=['BRA', 'IND', 'NGA'],
     start_year=2015,
@@ -46,57 +39,78 @@ df.to_csv('mortality_data.csv', index=False)
 
 ### Run Examples
 
-```powershell
+```bash
 # Navigate to examples directory
-cd D:\jazevedo\GitHub\unicefData\python\examples
+cd python/examples
 
 # Run basic usage example
-python 01_basic_usage.py
+python 00_quick_start.py
 
-# Run multiple indicators example
-python 02_multiple_indicators.py
+# Run indicator discovery example
+python 01_indicator_discovery.py
 
 # Run SDG indicators example
-python 03_sdg_indicators.py
+python 02_sdg_indicators.py
 
-# Run data analysis example
-python 04_data_analysis.py
+# Run data formats example
+python 03_data_formats.py
 ```
 
-## 📂 Package Structure
+## Package Structure
 
 ```
-D:\jazevedo\GitHub\unicefData\python\
-├── unicef_api/              # Main package
-│   ├── __init__.py          # Package initialization and exports
-│   ├── sdmx_client.py       # SDMX API client (main class)
-│   ├── config.py            # Dataflow and indicator configurations
-│   └── utils.py             # Utility functions
+python/
+├── unicefdata/                 # Main package (pip install unicefdata)
+│   ├── __init__.py             # Package exports, version
+│   ├── unicefdata.py           # Main API: unicefData(), parse_year(), clear_cache()
+│   ├── sdmx_client.py          # UNICEFSDMXClient class, HTTP, 404 handling
+│   ├── sdmx.py                 # Low-level SDMX helpers
+│   ├── flows.py                # list_dataflows(), dataflow_schema()
+│   ├── indicator_registry.py   # Indicator-to-dataflow mapping
+│   ├── metadata.py             # MetadataSync class
+│   ├── metadata_manager.py     # MetadataManager class
+│   ├── schema_sync.py          # Schema synchronization
+│   ├── schema_cache.py         # Schema caching utilities
+│   ├── utils.py                # Validation, cleaning, reference data
+│   ├── config.py               # Configuration settings
+│   ├── config_loader.py        # Load config from files
+│   ├── yaml_formatter.py       # YAML formatting utilities
+│   ├── run_sync.py             # CLI for metadata sync
+│   └── metadata/               # Bundled YAML metadata (~700KB)
+│       └── current/
+│           ├── _unicefdata_indicators_metadata.yaml
+│           ├── _dataflow_fallback_sequences.yaml
+│           ├── _unicefdata_regions.yaml
+│           ├── _unicefdata_dataflows.yaml
+│           ├── _unicefdata_countries.yaml
+│           ├── _unicefdata_codelists.yaml
+│           └── dataflows/*.yaml
 │
-├── examples/                # Usage examples
-│   ├── 01_basic_usage.py
-│   ├── 02_multiple_indicators.py
-│   ├── 03_sdg_indicators.py
-│   └── 04_data_analysis.py
+├── examples/                   # Usage examples
+│   ├── 00_quick_start.py
+│   ├── 01_indicator_discovery.py
+│   ├── 02_sdg_indicators.py
+│   └── ...
 │
-├── tests/                   # Unit tests
-│   └── test_unicef_api.py
+├── tests/                      # Unit and integration tests
+│   ├── test_unicef_api.py
+│   ├── test_metadata_manager.py
+│   └── ...
 │
-├── setup.py                 # Package installation config
-├── requirements.txt         # Core dependencies
-├── requirements-dev.txt     # Development dependencies
-├── README.md                # Full documentation
-└── .gitignore              # Git ignore rules
+├── pyproject.toml              # Package build configuration
+├── LICENSE                     # MIT License
+├── README.md                   # Full documentation
+└── CHANGELOG.md                # Version history
 ```
 
-## 🎯 Key Features
+## Key Features
 
 ### 1. Download Single Indicator
 
 ```python
-client = UNICEFSDMXClient()
+from unicefdata import unicefData
 
-df = client.fetch_indicator(
+df = unicefData(
     'CME_MRY0T4',           # Indicator code
     countries=['ALB'],       # Country filter (optional)
     start_year=2015,         # Start year (optional)
@@ -107,63 +121,45 @@ df = client.fetch_indicator(
 ### 2. Download Multiple Indicators
 
 ```python
+from unicefdata import unicefData
+
 indicators = ['CME_MRY0T4', 'NT_ANT_HAZ_NE2_MOD', 'IM_DTP3']
 
-# Combined into single DataFrame
-df = client.fetch_multiple_indicators(
-    indicators,
-    countries=['BRA', 'IND'],
-    start_year=2015,
-    combine=True
-)
-
-# Or as separate DataFrames
-df_dict = client.fetch_multiple_indicators(
-    indicators,
-    combine=False
-)
+# Fetch each indicator
+for ind in indicators:
+    df = unicefData(ind, countries=['BRA', 'IND'], start_year=2015)
+    print(f"{ind}: {len(df)} rows")
 ```
 
-### 3. Work with SDG Indicators
+### 3. Search for Indicators
 
 ```python
-from unicef_api.config import (
-    list_indicators_by_sdg,
-    get_indicator_metadata
-)
+from unicefdata import search_indicators
 
-# Find indicators for SDG target 3.2.1
-indicators = list_indicators_by_sdg('3.2.1')
-
-# Get indicator metadata
-meta = get_indicator_metadata('CME_MRY0T4')
-print(meta['name'])  # 'Under-5 mortality rate'
+# Search by keyword
+results = search_indicators('mortality')
+print(results)
 ```
 
-### 4. Data Utilities
+### 4. List Available Dataflows
 
 ```python
-from unicef_api.utils import (
-    clean_dataframe,
-    pivot_wide,
-    calculate_growth_rate,
-    merge_with_country_names
-)
+from unicefdata import list_dataflows
 
-# Clean data
-df = clean_dataframe(df, remove_nulls=True, sort_by=['country_code', 'year'])
-
-# Add country names
-df = merge_with_country_names(df)
-
-# Pivot to wide format
-df_wide = pivot_wide(df, index_cols=['country_code', 'year'])
-
-# Calculate growth rates
-df = calculate_growth_rate(df, periods=1)
+flows = list_dataflows()
+print(flows)
 ```
 
-## 🔍 Available Indicators
+### 5. Clear Cache
+
+```python
+from unicefdata import clear_cache
+
+# Clear all 5 cache layers with optional reload
+clear_cache(reload=True)
+```
+
+## Available Indicators
 
 ### Key SDG Indicators
 
@@ -180,75 +176,77 @@ df = calculate_growth_rate(df, periods=1)
 | `WS_PPL_S-SM` | Safely managed sanitation | 6.2.1 |
 | `PT_CHLD_Y0T4_REG` | Birth registration | 16.9.1 |
 
-See `unicef_api/config.py` for complete list.
+Use `search_indicators()` to find more indicators by keyword.
 
-## 🧪 Testing
+## Testing
 
-```powershell
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-cd D:\jazevedo\GitHub\unicefData\python
+```bash
+# Run unit tests
+cd python/
 pytest tests/ -v
 
-# Run tests with coverage
-pytest tests/ --cov=unicef_api --cov-report=html
+# Run with coverage
+pytest tests/ -v --cov=unicefdata
+
+# Integration tests (requires API connection)
+python tests/run_tests.py
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Import Error
 
 ```python
-# If you get "ModuleNotFoundError: No module named 'unicef_api'"
-# Make sure you installed the package:
-pip install -e .
+# If you get "ModuleNotFoundError: No module named 'unicefdata'"
+# Install the package:
+pip install unicefdata
+
+# Or for development:
+pip install -e ".[dev]"
 ```
 
 ### API Connection Error
 
 ```python
-# The library automatically retries failed requests
-# You can increase retry attempts:
+from unicefdata import UNICEFSDMXClient
+
+# Configure timeout (default: 60s)
+client = UNICEFSDMXClient(timeout=120)
+
+# The library automatically retries failed requests with exponential backoff
 df = client.fetch_indicator('CME_MRY0T4', max_retries=5)
 ```
 
-### Invalid Indicator Code
+### Stale Cache
 
 ```python
-# Use config to verify indicator codes:
-from unicef_api.config import COMMON_INDICATORS
-print(list(COMMON_INDICATORS.keys()))
+from unicefdata import clear_cache
+
+# Clear all caches and reload metadata
+clear_cache(reload=True)
 ```
 
-## 📊 Integration with Existing Workflows
+## Integration with Existing Workflows
 
-### Integration with PROD-SDG-REP-2025
-
-Replace R API calls with Python:
+### Replace R API calls with Python
 
 **R code:**
 ```r
-unf_dw_mort <- read_csv(sdg_mortality)
+df <- unicefData("CME_MRY0T4", countries = c("ALB", "USA"))
 ```
 
 **Python equivalent:**
 ```python
-from unicef_api import UNICEFSDMXClient
+from unicefdata import unicefData
 
-client = UNICEFSDMXClient()
-df_mortality = client.fetch_indicator('CME_MRY0T4')
-df_mortality.to_csv('api_unf_mort.csv', index=False)
+df = unicefData('CME_MRY0T4', countries=['ALB', 'USA'])
+df.to_csv('mortality_data.csv', index=False)
 ```
 
 ### Batch Download Script
 
 ```python
-# Create a batch download script
-from unicef_api import UNICEFSDMXClient
-
-client = UNICEFSDMXClient()
+from unicefdata import unicefData
 
 indicators = {
     'mortality': ['CME_MRM0', 'CME_MRY0T4'],
@@ -257,28 +255,25 @@ indicators = {
 }
 
 for category, indicator_list in indicators.items():
-    df = client.fetch_multiple_indicators(
-        indicator_list,
-        start_year=2015,
-        combine=True
-    )
-    df.to_csv(f'api_{category}.csv', index=False)
-    print(f"✓ Downloaded {category}: {len(df)} observations")
+    for ind in indicator_list:
+        df = unicefData(ind, start_year=2015)
+        df.to_csv(f'api_{category}_{ind}.csv', index=False)
+        print(f"Downloaded {ind}: {len(df)} observations")
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **UNICEF Data Portal**: https://data.unicef.org/
 - **SDMX API Documentation**: https://data.unicef.org/sdmx-api-documentation/
-- **Full README**: `D:\jazevedo\GitHub\unicefData\python\README.md`
-- **Examples**: `D:\jazevedo\GitHub\unicefData\python\examples\`
+- **PyPI Package**: https://pypi.org/project/unicefdata/
+- **GitHub Repository**: https://github.com/unicef-drp/unicefData
 
-## 👤 Author
+## Author
 
-**Joao Pedro Azevedo**  
+**Joao Pedro Azevedo**
 Chief Statistician, UNICEF Data and Analytics Section
 
-## 📄 License
+## License
 
 MIT License
 
@@ -286,9 +281,7 @@ MIT License
 
 **Next Steps:**
 
-1. Install the package: `pip install -e .`
-2. Run examples: `python examples/01_basic_usage.py`
-3. Integrate with your workflows
-4. Customize for your specific needs
-
-For questions or issues, please refer to the full documentation in `README.md`.
+1. Install the package: `pip install unicefdata`
+2. Run examples: `python examples/00_quick_start.py`
+3. Search indicators: `search_indicators('mortality')`
+4. Integrate with your workflows

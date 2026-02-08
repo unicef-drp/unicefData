@@ -10,7 +10,7 @@ import os
 # Add python module to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'python'))
 
-from unicef_api.sdmx_client import SDMXClient
+from unicefdata.sdmx_client import SDMXClient
 
 print("\n" + "="*60)
 print("Python Integration Test: Direct Metadata Lookup")

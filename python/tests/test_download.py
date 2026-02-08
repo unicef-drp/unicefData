@@ -7,7 +7,8 @@ Uses golden indicators from validation/xval/golden_indicators.yaml
 
 import pytest
 
-from unicef_api import unicefData
+from unicefdata import unicefData
+from unicefdata.sdmx_client import SDMXForbiddenError
 
 
 @pytest.mark.parametrize(
@@ -22,12 +23,15 @@ def test_indicator_downloads_successfully(indicator, year):
     Ensure that calling unicefData for selected indicators returns
     a non-empty DataFrame with an iso3 country column.
     """
-    df = unicefData(
-        indicator=indicator,
-        countries=None,  # All countries
-        year=year,
-    )
-    
+    try:
+        df = unicefData(
+            indicator=indicator,
+            countries=None,  # All countries
+            year=year,
+        )
+    except SDMXForbiddenError:
+        pytest.skip(f"API returned 403 Forbidden for {indicator}")
+
     # Basic structural assertions replacing previous print-based checks.
     assert df is not None
     assert not df.empty

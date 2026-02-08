@@ -9,7 +9,7 @@ NOTE: All tests use mocked API responses - no live API calls are made.
 import pytest
 import pandas as pd
 import responses
-from unicef_api import list_dataflows
+from unicefdata import list_dataflows
 
 
 class TestListDataflows:

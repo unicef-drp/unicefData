@@ -1,16 +1,14 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
-Version: 2.0.0
-Authors@R: c(
-    person("Joao Pedro", "Azevedo", email = "jazevedo@unicef.org", role = c("aut", "cre")),
-    person("Garen", "Avanesian", role = "aut"))
-Description: A bilingual R and Python client to fetch SDMX CSV series from
-    UNICEF's Data Warehouse. Features include automatic pagination, caching
+Version: 2.1.0
+Authors@R: person("Joao Pedro", "Azevedo", email = "jpazevedo@unicef.org", role = c("aut", "cre"))
+Description: A trilingual R, Python, and Stata client to fetch SDMX CSV series
+    from UNICEF's Data Warehouse. Features include automatic pagination, caching
     with memoisation, country name lookups, metadata versioning (vintages),
     and comprehensive indicator support for SDG monitoring.
+Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
@@ -31,7 +29,11 @@ Imports:
     tidyr
 Suggests:
     testthat (>= 3.0.0),
-    devtools
+    devtools,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/unicef-drp/unicefData
+URL: https://github.com/unicef-drp/unicefData,
+    https://jpazvd.github.io/
 BugReports: https://github.com/unicef-drp/unicefData/issues

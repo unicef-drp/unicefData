@@ -11,11 +11,13 @@ on:
     branches: [main, develop]
     paths:
       - 'python/**'
+      - 'tests/**'
       - '.github/workflows/python-tests.yaml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'python/**'
+      - 'tests/**'
       - '.github/workflows/python-tests.yaml'
   workflow_dispatch:
 
@@ -48,10 +50,14 @@ jobs:
         cd python
         pip install -e .
 
-    - name: Run tests with pytest
+    - name: Run Python unit tests
       run: |
         cd python
-        pytest tests/ --cov=unicef_api --cov-report=xml -v
+        pytest tests/ --cov=unicefdata --cov-report=xml -v
+
+    - name: Run cross-language fixture tests
+      run: |
+        pytest tests/test_cross_language_output.py -v
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
