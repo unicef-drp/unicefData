@@ -175,6 +175,13 @@ validation/xval/metadata/
 python/tests/metadata/
 python/tests/*.csv
 
+# Dev-only test artifacts (not synced to public repo)
+tests/fixtures/test_curl_*.csv
+tests/fixtures/test_sdmx_*.csv
+stata/tests/run_p0_validation.log
+stata/tests/**/*.log
+R/tests/output/test_*.csv
+
 # Additional temporary/personal folders
 drafts/
 benchmarks/
