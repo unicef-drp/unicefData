@@ -69,6 +69,12 @@
 
 # Log files and temp outputs
 ^check_output\.txt$
+^check_full_output\.txt$
+^check_no_vignettes\.txt$
+^build_output\.txt$
+^install_deps\.R$
+^install_all_deps\.R$
+^run_check\.R$
 ^stata\.log$
 ^test_multi_indicator\.log$
 ^.*\.log$
