@@ -27,12 +27,30 @@ jobs:
           pip install requests pyyaml
       
       - name: Build dataflow dimension values
+        timeout-minutes: 15
         run: |
           cd stata/src/py
-          python build_dataflow_metadata.py \
+          
+          # Create output directory if needed
+          mkdir -p ../_/
+          
+          # Run with retry on network failures
+          max_attempts=3
+          attempt=1
+          until python build_dataflow_metadata.py \
             --outdir ../_/ \
             --agency UNICEF \
-            --verbose
+            --create-outdir \
+            --verbose; do
+            exit_code=$?
+            if [ $attempt -ge $max_attempts ]; then
+              echo "Failed after $max_attempts attempts"
+              exit $exit_code
+            fi
+            echo "Attempt $attempt failed (exit code $exit_code), retrying in 30 seconds..."
+            attempt=$((attempt + 1))
+            sleep 30
+          done
         continue-on-error: false
       
       - name: Enrich indicators with dimension values
