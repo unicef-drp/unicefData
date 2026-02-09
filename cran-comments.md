@@ -1,13 +1,24 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 3 notes
+
+* NOTE: "License stub is invalid DCF" - The package uses a standard MIT license
+  with a LICENSE file. The DESCRIPTION correctly specifies "MIT + file LICENSE".
 
 * NOTE: `unlockBinding()` calls in `unicef_core.R` are intentional for
   cache invalidation of locked namespace bindings (`.INDICATORS_METADATA_YAML`,
   `.REGION_CODES_YAML`). These are wrapped in `tryCatch()` for safety.
 
-* NOTE: "License stub is invalid DCF" - The package uses a standard MIT license
-  with a LICENSE file. The DESCRIPTION correctly specifies "MIT + file LICENSE".
+* NOTE: "lastMiKTeXException" found in temp directory during check. This is a
+  transient artifact from MiKTeX PDF manual generation, not from the package.
+
+## URL checks
+
+URLs pointing to https://data.unicef.org/ return HTTP 403 to automated URL
+checkers. The UNICEF Data Portal uses bot detection that blocks crawlers, but
+the URLs are valid and accessible in any browser. These are permanent
+institutional URLs maintained by UNICEF. The SDMX API endpoint
+(https://sdmx.data.unicef.org/) used by the package responds correctly.
 
 ## Test environments
 
@@ -20,8 +31,9 @@
 
 ## Vignettes
 
-Vignettes are pre-built and included in the package. The source .Rmd files are
-included for reference but do not require Pandoc for installation.
+Vignettes are pre-built and included in `inst/doc/`. The source .Rmd files
+(with `eval = FALSE` on all code chunks) are included in `vignettes/` for
+reference but do not require network access or Pandoc for installation.
 
 ## Downstream dependencies
 

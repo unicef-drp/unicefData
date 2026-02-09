@@ -404,16 +404,75 @@ See `help unicefdata_whatsnew` for complete version history.
 
 ---
 
-## License
+## Acknowledgments
 
-MIT License - See [LICENSE](../LICENSE)
+This package was developed at the UNICEF Data and Analytics Section. The author gratefully acknowledges the collaboration of **Lucas Rodrigues**, **Yang Liu**, and **Karen Avanesian**, whose technical contributions and feedback were instrumental in the development of this Stata package.
+
+Special thanks to **Yves Jaques**, **Alberto Sibileau**, and **Daniele Olivotti** for designing and maintaining the UNICEF SDMX data warehouse infrastructure that makes this package possible.
+
+The author also acknowledges the **UNICEF database managers** and technical teams who ensure data quality, as well as the country office staff and National Statistical Offices whose data collection efforts make this work possible.
+
+Development of this package was supported by UNICEF institutional funding for data infrastructure and statistical capacity building. The author also acknowledges UNICEF colleagues who provided testing and feedback during development, as well as the broader open-source Stata community.
+
+Development was assisted by AI coding tools (GitHub Copilot, Claude). All code has been reviewed, tested, and validated by the package maintainers.
+
+## Disclaimer
+
+**This package is provided for research and analytical purposes.**
+
+The `unicefData` package provides programmatic access to UNICEF's public data warehouse. While the author is affiliated with UNICEF, **this package is not an official UNICEF product and the statements in this documentation are the views of the author and do not necessarily reflect the policies or views of UNICEF**.
+
+Data accessed through this package comes from the [UNICEF Data Warehouse](https://sdmx.data.unicef.org/). Users should verify critical data points against official UNICEF publications at [data.unicef.org](https://data.unicef.org/).
+
+This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or UNICEF be liable for any claim, damages or other liability arising from the use of this software.
+
+The designations employed and the presentation of material in this package do not imply the expression of any opinion whatsoever on the part of UNICEF concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.
+
+## Data Citation and Provenance
+
+**Important Note on Data Vintages**
+
+Official statistics are subject to revisions as new information becomes available and estimation methodologies improve. UNICEF indicators are regularly updated based on new surveys, censuses, and improved modeling techniques. Historical values may be revised retroactively to reflect better information or methodological improvements.
+
+**For reproducible research and proper data attribution, users should:**
+
+1. **Document the indicator code** - Specify the exact SDMX indicator code(s) used (e.g., `CME_MRY0T4`)
+2. **Record the download date** - Note when data was accessed (e.g., "Data downloaded: 2026-02-09")
+3. **Cite the data source** - Reference both the package and the UNICEF Data Warehouse
+4. **Archive your dataset** - Save a copy of the exact data used in your analysis
+
+**Example citation for data used in research:**
+
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.1.0) on 2026-02-09. Data available at: https://sdmx.data.unicef.org/
+
+This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
+
+## Citation
+
+If you use this package, please cite:
+
+> Azevedo, Joao Pedro (2026). "unicefdata: Unified access to UNICEF indicators across R, Python, and Stata." Mimeo, UNICEF Chief Statistician Office.
+
+---
+
+## Development
+
+Development assisted by AI coding tools (GitHub Copilot, Claude). All code reviewed and validated by maintainers.
+
+---
 
 ## Author
 
-**Joao Pedro Azevedo**
+**Joao Pedro Azevedo** ([@jpazvd](https://github.com/jpazvd))
 Chief Statistician, UNICEF Data and Analytics Section
 Email: jpazevedo@unicef.org
 Website: [jpazvd.github.io](https://jpazvd.github.io/)
+
+---
+
+## License
+
+MIT License - See [LICENSE](../LICENSE)
 
 ## Support
 

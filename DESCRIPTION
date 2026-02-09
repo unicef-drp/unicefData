@@ -1,7 +1,12 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
 Version: 2.1.0
-Authors@R: person("Joao Pedro", "Azevedo", email = "jpazevedo@unicef.org", role = c("aut", "cre"))
+Authors@R: c(
+    person("Joao Pedro", "Azevedo", email = "jpazevedo@unicef.org", role = c("aut", "cre")),
+    person("Lucas", "Rodrigues", role = "ctb"),
+    person("Yang", "Liu", role = "ctb"),
+    person("Karen", "Avanesian", role = "ctb")
+  )
 Description: A trilingual R, Python, and Stata client to fetch SDMX CSV series
     from UNICEF's Data Warehouse. Features include automatic pagination, caching
     with memoisation, country name lookups, metadata versioning (vintages),

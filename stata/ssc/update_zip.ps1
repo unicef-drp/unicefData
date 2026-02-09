@@ -1,11 +1,11 @@
 # PowerShell script to automate the creation of the unicefdata zip package
 
 # Define paths
-$pkgFile = "c:\GitHub\myados\unicefData\stata\ssc\unicefdata.pkg"
-$srcFolder = "c:\GitHub\myados\unicefData\stata\src"
-$zipFolder = "c:\GitHub\myados\unicefData\stata\ssc"
+$pkgFile = "c:\GitHub\myados\unicefData-dev\stata\ssc\unicefdata.pkg"
+$srcFolder = "c:\GitHub\myados\unicefData-dev\stata\src"
+$zipFolder = "c:\GitHub\myados\unicefData-dev\stata\ssc"
 $tempFolder = "$zipFolder\temp_unzip"
-$zipFile = "$zipFolder\unicefdata_package_151.zip"
+$zipFile = "$zipFolder\unicefData_204.zip"
 
 # Ensure temp folder exists
 if (Test-Path $tempFolder) {
@@ -18,7 +18,9 @@ $files = Get-Content $pkgFile | Where-Object { $_ -match '^f ' } | ForEach-Objec
 
 # Copy files to temp folder
 foreach ($file in $files) {
-    $sourcePath = Join-Path -Path $srcFolder -ChildPath $file
+    # Remove 'src/' prefix if present since srcFolder already points to src/
+    $relativePath = $file -replace '^src/', ''
+    $sourcePath = Join-Path -Path $srcFolder -ChildPath $relativePath
     if (Test-Path $sourcePath) {
         Copy-Item -Path $sourcePath -Destination $tempFolder -Force
     } else {

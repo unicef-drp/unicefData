@@ -20,11 +20,19 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20251219
+d Distribution-Date: 20260201
 d
 * Main command and help
 f src/u/unicefdata.ado
 f src/u/unicefdata.sthlp
+
+* Setup and utility commands
+f src/u/unicefdata_setup.ado
+f src/u/unicefdata_setup.sthlp
+f src/u/unicefdata_refresh_all.ado
+f src/u/unicefdata_examples.ado
+f src/u/unicefdata_examples.sthlp
+f src/u/unicefdata_whatsnew.sthlp
 
 * Sync command and help
 f src/u/unicefdata_sync.ado
@@ -32,19 +40,23 @@ f src/u/unicefdata_sync.sthlp
 
 * XML to YAML conversion
 f src/u/unicefdata_xmltoyaml.ado
+f src/u/unicefdata_xmltoyaml.sthlp
 f src/u/unicefdata_xmltoyaml_py.ado
+f src/u/unicefdata_xmltoyaml_py.sthlp
 
 * YAML command and help
 f src/y/yaml.ado
 f src/y/yaml.sthlp
 
 * Discovery helper programs
-f src/_/_unicef_list_categories.ado
 f src/_/_unicef_list_dataflows.ado
 f src/_/_unicef_list_indicators.ado
 f src/_/_unicef_search_indicators.ado
 f src/_/_unicef_indicator_info.ado
+f src/_/_unicef_dataflow_info.ado
 f src/_/_unicef_fetch_with_fallback.ado
+f src/_/_unicef_build_schema_key.ado
+f src/_/_unicef_get_disagg_totals.ado
 
 * Sync helper programs
 f src/_/_unicefdata_sync_dataflow_index.ado
@@ -59,13 +71,34 @@ f src/_/_xmltoyaml_parse_lines.ado
 f src/_/_xmltoyaml_parse_python.ado
 f src/_/_xmltoyaml_parse_stata.ado
 
+* Core metadata query helpers
+f src/_/_query_metadata.ado
+f src/_/_query_indicators.ado
+f src/_/_metadata_linewrap.ado
+f src/_/_linewrap.ado
+f src/_/_get_sdmx_rename_year_columns.ado
+f src/_/_get_dataflow_direct.ado
+f src/_/_set_default_dataflows.ado
+
+* Private helper programs (internal use)
+f src/_/__unicef_fetch_paged.ado
+f src/_/__unicef_get_indicator_dataflow.ado
+f src/_/__unicef_get_indicator_filters.ado
+f src/_/__unicef_parse_indicator_yaml.ado
+
 * YAML metadata files (API metadata)
 f src/_/_unicefdata_dataflows.yaml
 f src/_/_unicefdata_indicators.yaml
+f src/_/_unicefdata_indicators_metadata.yaml
+f src/_/_unicefdata_dataflow_metadata.yaml
 f src/_/_unicefdata_codelists.yaml
 f src/_/_unicefdata_countries.yaml
+f src/_/_unicefdata_countries.dta
 f src/_/_unicefdata_regions.yaml
 f src/_/_unicefdata_sync_history.yaml
+f src/_/_dataflow_index.yaml
+f src/_/_dataflow_fallback_sequences.yaml
+f src/_/_indicator_dataflow_map.yaml
 
 * Python helper scripts (optional, for XML parsing during sync)
 f src/py/unicefdata_xml2yaml.py
