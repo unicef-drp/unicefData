@@ -67,7 +67,7 @@ This is a trilingual package (R, Python, Stata). When modifying shared behavior:
 | Platform | Primary File | Tests |
 |----------|-------------|-------|
 | R | `R/unicefData.R` | `devtools::test()` |
-| Python | `python/unicef_api/core.py` | `pytest python/tests/` |
+| Python | `python/unicefdata/unicefdata.py` | `pytest python/tests/` |
 | Stata | `stata/src/u/unicefdata.ado` | `do stata/qa/run_tests.do` |
 
 ## Pull Request Guidelines
