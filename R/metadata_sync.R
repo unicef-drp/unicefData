@@ -51,7 +51,7 @@ SDMX_NS <- c(
 # =============================================================================
 
 #' Get metadata directory path
-#' @return Path to R/metadata/current/
+#' @return Path to metadata directory: prefers \code{inst/metadata/current} in the source tree, otherwise a user cache directory \verb{tools::R_user_dir("unicefData", "cache")/metadata/current}.
 #' @keywords internal
 .get_metadata_dir <- function() {
   # Try dev-mode paths (inst/metadata/current/ in source tree)

@@ -43,9 +43,9 @@ from unicefdata import unicefData
 # Basic fetch
 df = unicefData("CME_MRY0T4", countries=["ALB", "USA"])
 
-# Multiple indicators (loop)
+# Multiple indicators (loop - fetch each indicator separately)
 for ind in ["CME_MRY0T4", "CME_MRM0"]:
-    df = unicefData(ind, countries=["ALB"])
+    df_single = unicefData(ind, countries=["ALB"])
 
 # With year range
 df = unicefData("CME_MRY0T4", countries=["ALB"], start_year=2015, end_year=2023)
