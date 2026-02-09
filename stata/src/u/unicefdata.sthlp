@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.0.3  01Feb2026}{...}
+{* *! version 2.1.0  07Feb2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -13,7 +13,7 @@
 {viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {hline}
-{cmd:help unicefdata}{right:{bf:version 2.0.0}}
+{cmd:help unicefdata}{right:{bf:version 2.1.0}}
 {hline}
 
 {title:Title}
@@ -58,6 +58,10 @@
 {synopt :{opt dropna}} drop missing values{p_end}
 {synopt :{opt subnational}} enable access to subnational dataflows{p_end}
 {synopt :{opt verbose}} display progress messages{p_end}
+{synopt :{opt fromfile(filename)}}load from CSV file instead of API (CI/testing){p_end}
+{synopt :{opt tofile(filename)}}save API response to CSV for test fixtures{p_end}
+{synopt :{opt noerror}}suppress printed error messages (programmatic use){p_end}
+{synopt :{opt clearcache}}drop all in-memory cached frames and exit{p_end}
 {synoptline}
 {p 4 6 2}
 {cmd:unicefdata} requires an internet connection. See {help unicefdata_whatsnew:What's New} for version history.{p_end}
@@ -555,7 +559,7 @@ country, indicator, and disaggregation dimensions.
 {phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
 {phang2}• Automatic proxy detection and handling{p_end}
 {phang2}• Automatic retry logic for temporary network failures{p_end}
-{phang2}• User-Agent header: "unicefdata/2.0.0 (Stata)"{p_end}
+{phang2}• User-Agent header: "unicefdata/2.1.0 (Stata)"{p_end}
 {phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
 
 {pstd}
@@ -601,6 +605,49 @@ Use this option to skip the metadata display.
 {phang}
 {opt verbose} displays progress messages during data download.
 {p_end}
+
+{dlgtab:Offline/CI Testing (v2.1.0)}
+
+{phang}
+{opt fromfile(filename)} loads data from a local CSV file instead of querying the
+UNICEF SDMX API. This option skips all network requests and reads the specified
+file using {cmd:import delimited}. Designed for CI/CD pipelines and deterministic
+testing where network access is unavailable or undesirable.
+{p_end}
+{phang2}The file must be a CSV with the same column structure as the API response.
+Use {opt tofile()} to generate fixture files from live API responses.{p_end}
+{phang2}Example: {cmd:unicefdata, indicator(CME_MRY0T4) fromfile("test_data.csv") clear}{p_end}
+
+{phang}
+{opt tofile(filename)} saves the raw API response to a CSV file after download.
+The data is still loaded into memory as usual. Use this to create test fixture
+files for offline testing with {opt fromfile()}.
+{p_end}
+{phang2}Example: {cmd:unicefdata, indicator(CME_MRY0T4) tofile("fixtures/cme_mry0t4.csv") clear}{p_end}
+
+{dlgtab:Programmatic Use}
+
+{phang}
+{opt noerror} suppresses all printed error messages and prevents non-zero exit
+codes. When enabled, errors are captured in {cmd:r(success)}, {cmd:r(successcode)},
+and {cmd:r(fail_message)} instead of being displayed. This allows callers to
+handle errors programmatically without interrupting batch execution.
+{p_end}
+{phang2}Use case: Looping over multiple indicators where some may not exist:{p_end}
+{phang2}{cmd:foreach ind in CME_MRY0T4 INVALID_IND IM_DTP3 {c -(}}{p_end}
+{phang3}{cmd:capture noisily unicefdata, indicator(`ind') noerror clear}{p_end}
+{phang3}{cmd:if r(success) == 1 save "`ind'.dta", replace}{p_end}
+{phang2}{cmd:{c )-}}{p_end}
+
+{dlgtab:Cache Management}
+
+{phang}
+{opt clearcache} drops all in-memory cached frames (indicator-to-dataflow mappings
+and parsed YAML data) and exits. The next {cmd:unicefdata} call will re-parse
+metadata from YAML files. Use this after updating metadata files via
+{cmd:unicefdata_sync} or when troubleshooting stale data.
+{p_end}
+{phang2}Example: {cmd:unicefdata, clearcache}{p_end}
 
 
 {marker examples}{...}
@@ -1029,6 +1076,8 @@ Sync indicators only:{p_end}
 {synoptset 25 tabbed}{...}
 {p2col 5 25 29 2: Scalars}{p_end}
 {synopt:{cmd:r(obs_count)}}number of observations downloaded{p_end}
+{synopt:{cmd:r(success)}}1 if data was retrieved, 0 on failure{p_end}
+{synopt:{cmd:r(successcode)}}numeric error code (0 = success, 677 = not found, etc.){p_end}
 
 {p2col 5 25 29 2: Macros}{p_end}
 {synopt:{cmd:r(indicator)}}indicator code(s) requested{p_end}
@@ -1040,6 +1089,8 @@ Sync indicators only:{p_end}
 {synopt:{cmd:r(wide_indicators)}}wide_indicators format indicator {it:(v1.3.0)}{p_end}
 {synopt:{cmd:r(addmeta)}}metadata columns added {it:(v1.3.0)}{p_end}
 {synopt:{cmd:r(url)}}API URL used for download{p_end}
+{synopt:{cmd:r(fail_message)}}error description when {cmd:r(success)}==0{p_end}
+{synopt:{cmd:r(tried_dataflows)}}comma-separated list of dataflows attempted (on 404){p_end}
 
 {p2col 5 25 29 2: Indicator Metadata (single indicator only)}{p_end}
 {synopt:{cmd:r(indicator_name)}}full indicator name{p_end}
@@ -1163,7 +1214,8 @@ Use the Python status script to verify consistency:{p_end}
 {pstd}
 Joao Pedro Azevedo{break}
 UNICEF{break}
-jazevedo@unicef.org
+jpazevedo@unicef.org{break}
+{browse "https://jpazvd.github.io/"}
 
 {pstd}
 This command is part of the {cmd:unicefData} package, which provides 

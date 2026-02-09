@@ -16,7 +16,7 @@ import sys
 import os
 sys.path.insert(0, '..')
 
-from unicef_api import unicefData
+from unicefdata import unicefData
 
 # Setup data directory - centralized for cross-language validation
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'validation', 'data', 'python')

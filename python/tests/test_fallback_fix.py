@@ -13,7 +13,7 @@ import sys
 import logging
 from pathlib import Path
 
-# Add parent directory to path so unicef_api can be imported when running tests directly
+# Add parent directory to path so unicefdata can be imported when running tests directly
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Configure logging to see debug messages during test runs
@@ -23,7 +23,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from unicef_api import unicefData
+import pytest
+
+from unicefdata import unicefData
+from unicefdata.sdmx_client import SDMXForbiddenError
 
 
 def test_cod_alcohol_use_disorders_fallback():
@@ -31,11 +34,14 @@ def test_cod_alcohol_use_disorders_fallback():
     COD_ALCOHOL_USE_DISORDERS should successfully retrieve data using the
     CAUSE_OF_DEATH dataflow via Tier 1 metadata lookup.
     """
-    df1 = unicefData(
-        indicator="COD_ALCOHOL_USE_DISORDERS",
-        countries=None,  # None = ALL countries
-        year=2019,
-    )
+    try:
+        df1 = unicefData(
+            indicator="COD_ALCOHOL_USE_DISORDERS",
+            countries=None,  # None = ALL countries
+            year=2019,
+        )
+    except SDMXForbiddenError:
+        pytest.skip("API returned 403 Forbidden for COD_ALCOHOL_USE_DISORDERS")
 
     # Basic sanity checks: we expect some data and an iso3 column with values.
     assert df1 is not None, "unicefData returned None for COD_ALCOHOL_USE_DISORDERS"
@@ -55,11 +61,14 @@ def test_hva_pmtct_mtct_fallback():
     HVA_PMTCT_MTCT (Mother-to-child HIV transmission rate) should successfully
     retrieve data using the HIV_AIDS dataflow via Tier 1 metadata lookup.
     """
-    df2 = unicefData(
-        indicator="HVA_PMTCT_MTCT",
-        countries=None,  # All countries
-        year="2015:2023",
-    )
+    try:
+        df2 = unicefData(
+            indicator="HVA_PMTCT_MTCT",
+            countries=None,  # All countries
+            year="2015:2023",
+        )
+    except SDMXForbiddenError:
+        pytest.skip("API returned 403 Forbidden for HVA_PMTCT_MTCT")
 
     # Basic sanity checks: we expect some data for the requested indicator.
     assert df2 is not None, "unicefData returned None for HVA_PMTCT_MTCT"

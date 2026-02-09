@@ -55,11 +55,6 @@
 ^benchmarks$
 ^drafts$
 
-# Non-standard top-level files
-^CITATION\.cff$
-^PR14_TEST_COVERAGE_SUMMARY\.md$
-^temp$
-
 # Stata files
 ^.*\.do$
 
@@ -77,5 +72,16 @@
 ^stata\.log$
 ^test_multi_indicator\.log$
 ^.*\.log$
-^doc$
-^Meta$
+
+# Non-standard top-level files
+^cran-comments\.md$
+^CHANGELOG\.md$
+^CITATION\.cff$
+^install_package\.R$
+^scripts$
+
+# Non-standard R/ subdirectories (CRAN compliance)
+^R/tests$
+^R/tests/.*$
+^R/scripts$
+^R/scripts/.*$

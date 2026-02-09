@@ -1,4 +1,34 @@
 *! v 2.0.4  01Feb2026               by Joao Pedro Azevedo (UNICEF)
+* =============================================================================
+* unicefdata.ado - Stata interface to UNICEF SDMX Data API
+* =============================================================================
+*
+* PURPOSE:
+*   User-facing command for fetching UNICEF indicator data from the SDMX warehouse.
+*   Provides discovery (search, list dataflows/indicators), data retrieval with
+*   filtering, and multiple output formats. Aligned with R and Python implementations.
+*
+* STRUCTURE:
+*   1. Auto-setup - Check/install YAML metadata files
+*   2. Subcommand Routing - flows, search, indicators, info, sync
+*   3. Main Syntax Definition - Parse command options
+*   4. Option Normalization - Handle aliases and defaults
+*   5. Year Parameter Parsing - Range/list/circa handling
+*   6. Multi-Indicator Dispatch - Loop over multiple indicators
+*   7. Single Indicator Fetch - API call with fallback logic
+*   8. Data Cleaning & Labels - Column names, types, labels
+*   9. Disaggregation Filtering - sex, age, wealth, residence, maternal_edu
+*  10. Latest & MRV Filters - Most recent value selection
+*  11. Wide Format Transform - Pivot by year, indicator, or attribute
+*  12. Output & Return Values - Display results and set r()
+*  13. Helper Programs - _linewrap, etc.
+*
+* Version: 2.0.4 (2026-02-01)
+* Author: João Pedro Azevedo (UNICEF)
+* License: MIT
+* =============================================================================
+*
+* CHANGELOG:
 * v 2.0.4   01Feb2026  - FEATURE: NUTRITION dataflow now defaults age to Y0T4 (0-4 years) instead of _T
 *                        because the AGE dimension in NUTRITION has no _T total
 *                      - FEATURE: Added wealth_quintile() as alias for wealth() option
@@ -11,27 +41,15 @@
 * v 2.0.2   01Feb2026  - Deprecate _unicefdata_indicators.yaml; use _unicefdata_indicators_metadata.yaml exclusively
 * v 2.0.1   30Jan2026  - Patch: Fixed false warning about unsupported disaggregations
 *                        (metadata_path was being reset at line 707, breaking dimension check)
+*
 cap program drop unicefdata
 program define unicefdata, rclass
 version 11
-* Download indicators from UNICEF Data Warehouse via SDMX API
-* Aligned with R get_unicef() and Python unicef_api
-* Uses YAML metadata for dataflow detection and validation
-*
-* NEW in v2.0.0:
-* - FEATURE: Metadata-driven filtering using disaggregations_with_totals from YAML
-* - FEATURE: Dimensions not in disaggregations_with_totals are not defaulted to _T
-* - FEATURE: DISABILITY_STATUS special handling - filters to PD (baseline) when no _T exists
-* - ALIGNMENT: Now matches Python/R filtering behavior for cross-platform consistency
-* - FIX: SYNC-02 enrichment path extraction bug resolved (all QA tests passing)
-* - ENHANCEMENT: Improved metadata enrichment pipeline reliability
-* - FIX: Multi-indicator wide format now includes geo_type in output
-* - FIX: alias_id no longer appears in final wide format output
-*
 
     * =========================================================================
-    * Auto-setup: Check if YAML metadata files exist, install if missing
+    * #### 1. Auto-setup ####
     * =========================================================================
+    * Check if YAML metadata files exist, install if missing
     local plusdir : sysdir PLUS
     cap confirm file "`plusdir'_/_unicefdata_indicators_metadata.yaml"
     if _rc != 0 {
@@ -53,7 +71,11 @@ version 11
     }
     * =========================================================================
 
-    
+    * =========================================================================
+    * #### 2. Subcommand Routing ####
+    * =========================================================================
+    * Route to specialized handlers: flows, search, indicators, info, sync
+
     * Check for FLOWS/DATAFLOWS subcommand (list available dataflows with counts)
     * Accept both "flows" and "dataflows" for user convenience
     if (strpos("`0'", "flows") > 0 | strpos("`0'", "dataflows") > 0) {
@@ -244,6 +266,40 @@ version 11
         }
     }
     
+    * Check for CLEARCACHE subcommand (drop in-memory cached frames)
+    if (strpos(lower("`0'"), "clearcache") > 0) {
+        local cleared 0
+
+        * 1. Drop indicator-to-dataflow metadata frame (from _get_dataflow_direct.ado)
+        capture frame drop _unicef_meta_cache
+        if _rc == 0 {
+            local ++cleared
+            noi di as text "  Cleared: _unicef_meta_cache (indicator-to-dataflow mappings)"
+        }
+
+        * 2. Drop any yaml_* frames (from yaml.ado)
+        capture quietly frames dir
+        local all_frames `r(frames)'
+        foreach fr of local all_frames {
+            if (substr("`fr'", 1, 5) == "yaml_") {
+                capture frame drop `fr'
+                if _rc == 0 {
+                    local ++cleared
+                    noi di as text "  Cleared: `fr'"
+                }
+            }
+        }
+
+        * 3. Summary
+        if (`cleared' > 0) {
+            noi di as result "  Cleared `cleared' cached frame(s)"
+        }
+        else {
+            noi di as text "  No cached frames found (cache was already empty)"
+        }
+        exit
+    }
+
     * Check for SYNC subcommand (route to unicefdata_sync)
     if (strpos("`0'", "sync") > 0) {
         * Parse sync options: sync(all), sync(indicators), sync(dataflows), etc.
@@ -272,28 +328,10 @@ version 11
         exit
     }
 
-    * Check for CATEGORIES subcommand (list categories with indicator counts)
-    if (strpos("`0'", "categories") > 0) {
-        local has_detail = (strpos("`0'", "detail") > 0)
-        local has_verbose = (strpos("`0'", "verbose") > 0)
-
-        local opts ""
-        if (`has_detail') local opts "detail"
-        if (`has_verbose') local opts "`opts' verbose"
-
-        if ("`opts'" == "") {
-            _unicef_list_categories
-        }
-        else {
-            _unicef_list_categories, `opts'
-        }
-
-        exit
-    }
-
-    *---------------------------------------------------------------------------
-    * Regular syntax for data retrieval
-    *---------------------------------------------------------------------------
+    * =========================================================================
+    * #### 3. Main Syntax Definition ####
+    * =========================================================================
+    * Parse command options for data retrieval
 
     syntax                                          ///
                  [,                                 ///
@@ -349,6 +387,11 @@ version 11
                  ]
 
     quietly {
+
+        * =====================================================================
+        * #### 4. Option Normalization ####
+        * =====================================================================
+        * Validate inputs, handle aliases, set defaults
 
                  * Allow caller to suppress printed error messages (undocumented)
                  local noerror_flag 0
@@ -707,28 +750,15 @@ version 11
             noi di as text "  Nofilter option: " as result "`nofilter_option'"
         }
         
-        *-----------------------------------------------------------------------
-        * Build filter vector for get_sdmx (dimension order: sex age wealth residence maternal_edu)
-        *-----------------------------------------------------------------------
-        
-        local filter_vector "`sex' `age' `wealth' `residence' `maternal_edu'"
-        
-        if ("`verbose'" != "") {
-            noi di as text "Filter vector: " as result "`filter_vector'"
-        }
-        if ("`maternal_edu'" == "") {
-            local maternal_edu "_T"
-        }
-        
         if ("`version'" == "") {
             local version "1.0"
         }
         
         local base_url "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-        
-        *-----------------------------------------------------------------------
-        * Parse year parameter
-        *-----------------------------------------------------------------------
+
+        * =====================================================================
+        * #### 5. Year Parameter Parsing ####
+        * =====================================================================
         * Supports: single (2020), range (2015:2023), list (2015,2018,2020)
         
         local start_year = 0
@@ -794,15 +824,20 @@ version 11
                 local metadata_path "`c(sysdir_plus)'_/"
             }
         }
-        
+
+        * =====================================================================
+        * #### 6. Multi-Indicator Dispatch ####
+        * =====================================================================
+        * Handle multiple indicators by fetching each separately and appending
+
         * Check for multiple indicators (space-separated)
         local n_indicators : word count `indicator'
-        
+
         * Skip multi-indicator processing if bulk download
         if (`bulk_download' == 1) {
             local n_indicators = 1
         }
-        
+
         if (`n_indicators' > 1) {
             * Multiple indicators: fetch each separately and append
             * (This matches Python/R behavior where each indicator is fetched individually)
@@ -883,9 +918,11 @@ version 11
                         continue, break
                     }
                     if ("`verbose'" != "" & `attempt' < `max_retries') {
-                        noi di as text "  Network attempt `attempt'/`max_retries' failed (r=" _rc "), retrying..."
+                        local sleep_ms = 1000 * 2^(`attempt' - 1)
+                        noi di as text "  Network attempt `attempt'/`max_retries' failed (r=" _rc "), retrying in " `sleep_ms'/1000 "s..."
                     }
-                    sleep 1000
+                    local sleep_ms = 1000 * 2^(`attempt' - 1)
+                    sleep `sleep_ms'
                 }
                 
                 * Report final network failure with details
@@ -1048,6 +1085,12 @@ version 11
             * Skip the single-indicator fetch logic below
             local skip_single_fetch 1
         }
+
+        * =====================================================================
+        * #### 7. Single Indicator Fetch ####
+        * =====================================================================
+        * Fetch data for a single indicator with dataflow detection and fallback
+
         else {
             * Single indicator - use normal flow
             local skip_single_fetch 0
@@ -1268,6 +1311,7 @@ version 11
         * Try primary dataflow with get_sdmx (includes filter vector in URL)
         local success 0
         local full_url ""
+        local tried_dataflows ""  // Track all dataflows tried for error message
         
         * Build get_sdmx call with conditional year parameters
         local year_opts ""
@@ -1277,6 +1321,8 @@ version 11
         * Ensure we always have a dataflow for primary fetch
         local dataflow_for_fetch "`dataflow'"
         if ("`dataflow_for_fetch'" == "") local dataflow_for_fetch "`primary_dataflow'"
+        * Track primary dataflow as first attempt
+        local tried_dataflows "`dataflow_for_fetch'"
 
         * Recompute filter option for the primary dataflow if needed
         local filter_option_primary "`filter_option'"
@@ -1352,9 +1398,11 @@ version 11
             foreach fallback_df of local fallback_dataflows {
                 * Skip the primary dataflow (already tried)
                 if ("`fallback_df'" == "`dataflow_for_fetch'") continue
-                
+
                 local fallback_attempt = `fallback_attempt' + 1
-                
+                * Track this dataflow in tried list
+                local tried_dataflows "`tried_dataflows', `fallback_df'"
+
                 if ("`verbose'" != "") {
                     noi di as text "  Fallback attempt `fallback_attempt': trying dataflow `fallback_df'..."
                 }
@@ -1409,7 +1457,9 @@ version 11
         if (`success' == 0) {
             if (`noerror_flag' == 0) {
                 noi di ""
-                noi di as err "{p 4 4 2}Could not download data from UNICEF SDMX API.{p_end}"
+                noi di as err "{p 4 4 2}Not Found (404): Indicator '`indicator'' not found in any dataflow.{p_end}"
+                noi di as text "{p 4 4 2}Tried dataflows: `tried_dataflows'{p_end}"
+                noi di as text ""
                 noi di as text `"{p 4 4 2}(1) Please check your internet connection by {browse "https://data.unicef.org/" :clicking here}.{p_end}"'
                 noi di as text `"{p 4 4 2}(2) Please check if the indicator code is correct.{p_end}"'
                 noi di as text `"{p 4 4 2}(3) Please check your firewall settings.{p_end}"'
@@ -1422,7 +1472,8 @@ version 11
             * Return structured failure info for callers that capture this program
             return scalar success = 0
             return scalar successcode = 677
-            return local fail_message "Could not download data from UNICEF SDMX API"
+            return local fail_message "Not Found (404): Indicator '`indicator'' not found. Tried: `tried_dataflows'"
+            return local tried_dataflows "`tried_dataflows'"
             if (`noerror_flag' == 0) exit 677
             return
         }
@@ -1461,14 +1512,13 @@ version 11
             return
         }
         
-        *-----------------------------------------------------------------------
-        * Rename and standardize variables
-        * (Aligned with R get_unicef() and Python unicef_api)
-        * Using short names with descriptive variable labels
-        *-----------------------------------------------------------------------
-        
+        * =====================================================================
+        * #### 8. Data Cleaning & Labels ####
+        * =====================================================================
+        * Rename, standardize, and label variables (aligned with R/Python)
+
         if ("`raw'" == "") {
-            
+
             * =================================================================
             * OPTIMIZED: Batch rename, label, and destring operations
             * v1.3.2: Reduced from ~50 individual commands to batch operations
@@ -1734,7 +1784,12 @@ version 11
                     noi di as text "Applied filters: " as result "`applied_filters'"
                 }
             }
-            
+
+            * =================================================================
+            * #### 9. Disaggregation Filtering ####
+            * =================================================================
+            * Filter by sex, age, wealth, residence, maternal_edu
+
             * Filter by sex if specified
             if ("`sex'" != "" & "`sex'" != "ALL") {
                 capture confirm variable sex
@@ -2038,12 +2093,10 @@ version 11
             }
         }
         
-        *-----------------------------------------------------------------------
-        * Apply latest value filter
-        * FIXED in v1.7.2: Include disaggregation dimensions in grouping so that
-        * latest keeps one observation per country-indicator-disaggregation combo,
-        * not just per country-indicator (which would drop all but one disagg value)
-        *-----------------------------------------------------------------------
+        * =====================================================================
+        * #### 10. Latest & MRV Filters ####
+        * =====================================================================
+        * Most recent value selection (latest, mrv, dropna)
 
         if ("`latest'" != "") {
             capture confirm variable iso3
@@ -2238,10 +2291,11 @@ version 11
             }
         }
         
-        *-----------------------------------------------------------------------
-        * Format output (long/wide/wide_indicators) - aligned with R/Python
-        *-----------------------------------------------------------------------
-        
+        * =====================================================================
+        * #### 11. Wide Format Transform ####
+        * =====================================================================
+        * Pivot by year, indicator, or attribute (aligned with R/Python)
+
         * Check for conflicting wide format options
         * Note: wide option uses API csv-ts format (years as columns: yr2015, yr2016, etc.)
         * wide_indicators and wide_attributes use Stata reshape (traditional unicefdata behavior)
@@ -3004,10 +3058,11 @@ version 11
             }
         }
         
-        *-----------------------------------------------------------------------
-        * Return values
-        *-----------------------------------------------------------------------
-        
+        * =====================================================================
+        * #### 12. Output & Return Values ####
+        * =====================================================================
+        * Set return values and display metadata
+
         return local indicator "`indicator'"
         return local dataflow "`dataflow'"
         return local countries "`countries'"
@@ -3138,9 +3193,10 @@ version 11
 end
 
 
-*******************************************************************************
-* Helper program: Add region metadata
-*******************************************************************************
+* =============================================================================
+* #### 13. Helper Programs ####
+* =============================================================================
+* Internal subroutines for region/income mapping
 
 program define _unicef_add_region
     * UNICEF regions mapping (simplified - can be expanded)

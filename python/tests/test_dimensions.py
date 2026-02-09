@@ -9,7 +9,7 @@ import requests
 import xml.etree.ElementTree as ET
 
 try:
-    from unicef_api import list_dataflows
+    from unicefdata import list_dataflows
 except Exception:  # pragma: no cover
     list_dataflows = None
 
@@ -21,7 +21,7 @@ NS = {
 
 
 def _get_flow_version(flow_id: str) -> str:
-    """Resolve version for a dataflow via unicef_api if available; default to 1.0."""
+    """Resolve version for a dataflow via unicefdata if available; default to 1.0."""
     if list_dataflows is None:
         return "1.0"
     try:

@@ -30,12 +30,12 @@
 safe_read_csv <- function(path, label = NULL, show_col_types = FALSE) {
   tryCatch({
     df <- readr::read_csv(path, show_col_types = show_col_types)
-    cat("[OK] Loaded:", label %||% basename(path), "-", nrow(df), "rows\n")
+    message("[OK] Loaded: ", label %||% basename(path), " - ", nrow(df), " rows")
     return(df)
   }, error = function(e) {
-    cat("[ERROR] loading:", label %||% basename(path),
-        "\n-> Path:", path,
-        "\n-> Message:", conditionMessage(e), "\n")
+    message("[ERROR] loading: ", label %||% basename(path),
+            "\n-> Path: ", path,
+            "\n-> Message: ", conditionMessage(e))
     return(NULL)
   })
 }
@@ -55,14 +55,14 @@ safe_write_csv <- function(df, path, label = NULL) {
   tryCatch({
     if (!is.null(df) && nrow(df) > 0) {
       readr::write_csv(df, path, na = "")
-      cat("[SAVED] Saved:", label %||% basename(path), "-", nrow(df), "rows\n")
+      message("[SAVED] Saved: ", label %||% basename(path), " - ", nrow(df), " rows")
     } else {
-      warning("[WARNING] Skipped saving:", label %||% basename(path), "- Data is empty or NULL")
+      warning("[WARNING] Skipped saving: ", label %||% basename(path), " - Data is empty or NULL")
     }
   }, error = function(e) {
-    cat("[ERROR] writing:", label %||% basename(path),
-        "\n-> Path:", path,
-        "\n-> Message:", conditionMessage(e), "\n")
+    message("[ERROR] writing: ", label %||% basename(path),
+            "\n-> Path: ", path,
+            "\n-> Message: ", conditionMessage(e))
   })
 }
 
@@ -77,12 +77,12 @@ safe_write_csv <- function(df, path, label = NULL) {
 #' @return The result of the expression or NULL on error.
 #' @export
 process_block <- function(label, expr) {
-  cat(paste0("\n--- ", label, " ---\n"))
+  message("\n--- ", label, " ---")
   tryCatch({
     eval(expr)
   }, error = function(e) {
-    cat("[ERROR] in block:", label,
-        "\n-> Message:", conditionMessage(e), "\n")
+    message("[ERROR] in block: ", label,
+            "\n-> Message: ", conditionMessage(e))
   })
 }
 
@@ -101,10 +101,10 @@ process_block <- function(label, expr) {
 safe_read_csv_url <- function(url, name) {
   tryCatch({
     df <- readr::read_csv(url, show_col_types = FALSE)
-    cat(sprintf("[OK] SDMX: %-20s downloaded [%d rows]\n", name, nrow(df)))
+    message(sprintf("[OK] SDMX: %-20s downloaded [%d rows]", name, nrow(df)))
     df
   }, error = function(e) {
-    cat(sprintf("[ERROR] downloading %s\n   -> URL: %s\n   -> %s\n", name, url, e$message))
+    message(sprintf("[ERROR] downloading %s\n   -> URL: %s\n   -> %s", name, url, e$message))
     NULL
   })
 }
@@ -118,15 +118,15 @@ safe_read_csv_url <- function(url, name) {
 #' @export
 safe_save_csv <- function(df, path, label) {
   if (is.null(df)) {
-    cat(sprintf("[WARNING] Skipped saving %s: Data is NULL\n", label))
+    message(sprintf("[WARNING] Skipped saving %s: Data is NULL", label))
     return(invisible())
   }
   tryCatch({
     utils::write.csv(df, path, row.names = FALSE, na = "")
-    cat(sprintf("[SAVED] Saved: %-20s [%d rows, %d cols]\n",
+    message(sprintf("[SAVED] Saved: %-20s [%d rows, %d cols]",
                 basename(path), nrow(df), ncol(df)))
   }, error = function(e) {
-    cat(sprintf("[ERROR] saving %s to %s:\n   -> %s\n",
+    message(sprintf("[ERROR] saving %s to %s:\n   -> %s",
                 label, path, e$message))
   })
 }

@@ -1,9 +1,30 @@
 # =============================================================================
 # unicefData.R - R interface to UNICEF SDMX Data API
 # =============================================================================
+#
+# PURPOSE:
+#   User-facing API for fetching UNICEF indicator data from the SDMX warehouse.
+#   Provides high-level functions with post-processing options (filtering,
+#   formatting, metadata enrichment) while delegating low-level fetching to
+#   unicef_core.R.
+#
+# STRUCTURE:
+#   1. Imports & Setup - Package dependencies and operators
+#   2. Utilities - Year parsing, circa matching helpers
+#   3. SDMX Fetchers - Low-level HTTP and flow listing
+#   4. Main API - unicefData() entry point
+#   5. Post-Processing - Metadata, MRV, latest, format transforms
+#   6. Reference Data - Region/income/continent mappings
+#   7. Convenience Wrappers - Python-compatible aliases
+#
 # Version: 2.0.0 (2026-01-31)
 # Author: João Pedro Azevedo (UNICEF)
 # License: MIT
+# =============================================================================
+
+
+# =============================================================================
+# #### 1. Imports & Setup ####
 # =============================================================================
 
 # Load required packages for pipe operator
@@ -13,16 +34,16 @@ NULL
 
 # Ensure required packages are loaded when sourcing directly
 if (!requireNamespace("magrittr", quietly = TRUE)) {
-  stop("Package 'magrittr' is required. Install with: install.packages('magrittr')")
+  stop("Package 'magrittr' is required but not available.")
 }
 if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required. Install with: install.packages('dplyr')")
+  stop("Package 'dplyr' is required but not available.")
 }
 if (!requireNamespace("purrr", quietly = TRUE)) {
-  stop("Package 'purrr' is required. Install with: install.packages('purrr')")
+  stop("Package 'purrr' is required but not available.")
 }
 if (!requireNamespace("httr", quietly = TRUE)) {
-  stop("Package 'httr' is required. Install with: install.packages('httr')")
+  stop("Package 'httr' is required but not available.")
 }
 
 # Import pipe operator for direct sourcing
@@ -30,6 +51,11 @@ if (!requireNamespace("httr", quietly = TRUE)) {
 
 # Null coalescing operator
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+
+# =============================================================================
+# #### 2. Utilities ####
+# =============================================================================
 
 #' Parse year parameter into start_year, end_year, and year_list
 #'
@@ -123,28 +149,29 @@ apply_circa <- function(df, target_years) {
     return(df)
   }
 
-  # Drop NA values before finding closest
-  if ("value" %in% names(df)) {
-    df <- df %>% dplyr::filter(!is.na(value))
-  }
-
   # Determine grouping columns
   group_cols <- "iso3"
   if ("indicator" %in% names(df)) {
     group_cols <- c("iso3", "indicator")
   }
 
+  has_value <- "value" %in% names(df)
+
   results <- list()
 
   for (target in target_years) {
-    # For each group, find the observation closest to target
+    # For each group, find the closest observation to target year.
+    # Prefer non-NA values; fall back to NA if all values are NA for a group.
     closest <- df %>%
       dplyr::group_by(dplyr::across(dplyr::all_of(group_cols))) %>%
-      dplyr::mutate(dist = abs(period - target)) %>%
-      dplyr::filter(dist == min(dist)) %>%
-      dplyr::slice(1) %>%  # In case of ties, take first
+      dplyr::mutate(
+        dist = abs(period - target),
+        .has_value = if (has_value) !is.na(value) else TRUE
+      ) %>%
+      dplyr::arrange(!.has_value, dist) %>%
+      dplyr::slice(1) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-dist) %>%
+      dplyr::select(-dist, -.has_value) %>%
       dplyr::mutate(target_year = target)
 
     results[[length(results) + 1]] <- closest
@@ -158,6 +185,10 @@ apply_circa <- function(df, target_years) {
 
   return(result)
 }
+
+# =============================================================================
+# #### 3. SDMX Fetchers ####
+# =============================================================================
 
 # Source core functions (only needed when sourcing directly, not as a package)
 # When loaded as a package, unicefData_raw is already available via namespace
@@ -174,21 +205,10 @@ if (!exists("unicefData_raw", mode = "function")) {
   # No warning needed - when loaded as package, unicef_core.R is loaded via NAMESPACE
 }
 
-# Internal helper to perform HTTP GET and return text
-#' Fetch SDMX content from URL
-#'
-#' @param url URL to fetch
-#' @param ua User agent string
-#' @param retry Number of retries
-#' @return Content as text
-#' @keywords internal
-fetch_sdmx <- function(url, ua, retry) {
-  resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
-  httr::stop_for_status(resp)
-  httr::content(resp, as = "text", encoding = "UTF-8")
-}
+# Note: HTTP fetching is handled by .fetch_sdmx() in utils.R
+# Data fetching with 404 fallback is handled by fetch_sdmx_text() in unicef_core.R
 
-#' @title List available UNICEF SDMX “flows”
+#' @title List available UNICEF SDMX "flows"
 #' @description
 #' Download and cache the SDMX data-flow definitions from UNICEF’s REST endpoint.
 #' @param cache_dir Character path to cache directory.
@@ -197,9 +217,8 @@ fetch_sdmx <- function(url, ua, retry) {
 #' @export
 list_unicef_flows <- memoise::memoise(
   function(cache_dir = tools::R_user_dir("unicefData","cache"), retry = 3) {
-    ua <- .unicefData_ua
     url <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF?references=none&detail=full"
-    xml_text <- fetch_sdmx(url, ua, retry)
+    xml_text <- .fetch_sdmx(url, retry = retry)
     doc <- xml2::read_xml(xml_text)
     # Use namespace-aware XPath
     ns <- xml2::xml_ns(doc)
@@ -223,12 +242,11 @@ list_unicef_flows <- memoise::memoise(
 list_unicef_codelist <- memoise::memoise(
   function(flow, dimension, cache_dir = tools::R_user_dir("unicefData","cache"), retry = 3) {
     stopifnot(is.character(flow), is.character(dimension), length(flow) == 1, length(dimension) == 1)
-    ua <- .unicefData_ua
     url <- sprintf(
       "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/structure/codelist/UNICEF.%s.%s?references=none&detail=full",
       flow, dimension
     )
-    xml_text <- fetch_sdmx(url, ua, retry)
+    xml_text <- .fetch_sdmx(url, retry = retry)
     doc <- xml2::read_xml(xml_text)
     codes <- xml2::xml_find_all(doc, ".//Code")
     tibble::tibble(
@@ -237,6 +255,10 @@ list_unicef_codelist <- memoise::memoise(
     )
   }
 )
+
+# =============================================================================
+# #### 4. Main API ####
+# =============================================================================
 
 #' @title Fetch UNICEF SDMX data or structure
 #' @description
@@ -441,11 +463,9 @@ unicefData <- function(
   # Handle structure request
   if (detail == "structure") {
     if (is.null(dataflow)) stop("Dataflow must be specified for structure request.")
-    # Use legacy fetch_sdmx for structure as unicefData_raw is for data
-    ua <- .unicefData_ua
     base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
     url <- sprintf("%s/structure/dataflow/UNICEF.%s?references=all&detail=full", base, dataflow[1])
-    return(xml2::read_xml(fetch_sdmx(url, ua, max_retries)))
+    return(xml2::read_xml(.fetch_sdmx(url, retry = max_retries)))
   }
 
   # 1. Fetch Raw Data
@@ -667,6 +687,10 @@ unicefData <- function(
 
   return(result)
 }
+
+# =============================================================================
+# #### 5. Post-Processing Helpers ####
+# =============================================================================
 
 #' Add country-level metadata columns
 #' @keywords internal
@@ -916,6 +940,10 @@ simplify_columns <- function(df, format) {
 }
 
 
+# =============================================================================
+# #### 6. Reference Data ####
+# =============================================================================
+
 #' Get ISO3 to UNICEF region mapping
 #' @keywords internal
 get_country_regions <- function() {
@@ -1118,6 +1146,10 @@ get_continents <- function() {
     'SLB' = 'Oceania', 'TON' = 'Oceania', 'TUV' = 'Oceania', 'VUT' = 'Oceania'
   )
 }
+
+# =============================================================================
+# #### 7. Convenience Wrappers ####
+# =============================================================================
 
 #' @title List available UNICEF SDMX dataflows
 #' @description Convenience wrapper around \code{list_sdmx_flows()} for parity with Python.

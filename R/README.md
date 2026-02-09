@@ -213,6 +213,15 @@ Get schema (dimensions, attributes) for a dataflow.
 schema <- dataflow_schema("CME")
 ```
 
+### clear_unicef_cache()
+
+Clear all 6 cache layers and optionally reload YAML metadata.
+
+```r
+clear_unicef_cache()          # Clear all caches
+clear_unicef_cache(reload = TRUE)  # Clear and reload
+```
+
 ### refresh_indicator_cache()
 
 Force refresh of the indicator metadata cache.
@@ -360,7 +369,10 @@ get_indicator_info("CME_MRY0T4")
 ### Stale Cache
 
 ```r
-# Force refresh
+# Clear all caches and reload
+clear_unicef_cache(reload = TRUE)
+
+# Or just refresh indicator cache
 refresh_indicator_cache()
 ```
 
@@ -395,6 +407,12 @@ See the `R/examples/` directory:
 
 ## Version History
 
+### v2.1.0 (2026-02-07)
+- Added `clear_unicef_cache()` — clears 6 cache layers with optional reload
+- Fixed `apply_circa()` NA handling — countries with all-NA values no longer dropped
+- Replaced hardcoded paths with `system.file()` resolution
+- Cross-language fixture tests (13/13 passing)
+
 ### v2.0.0 (2026-01-31)
 - Fixed SYNC-02 enrichment bug
 - All QA tests passing (R: 26, Python: 28, Stata: 38)
@@ -422,8 +440,9 @@ MIT License - See [LICENSE](../LICENSE)
 
 **Joao Pedro Azevedo**
 Chief Statistician, UNICEF Data and Analytics Section
-Email: jazevedo@unicef.org
+Email: jpazevedo@unicef.org
+Website: [jpazvd.github.io](https://jpazvd.github.io/)
 
 ## Contributing
 
-See [Contributing Guide](../README.md#contributing) in the main README.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.

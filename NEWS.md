@@ -1,5 +1,37 @@
 # unicefData Changelog
 
+## 2.1.0 (2026-02-07)
+
+### Cache Management
+
+* **R**: Added `clear_unicef_cache()` - clears 6 cache layers with optional reload
+* **Python**: Added `clear_cache()` - clears 5 cache layers with optional reload
+* **Stata**: Added `clearcache` subcommand - drops cached frames
+* All three languages verified at 30-day staleness threshold
+
+### Error Handling Improvements
+
+* **Python**: Added `SDMXTimeoutError` exception; configurable timeout via constructor
+* **R**: Fixed `apply_circa()` NA handling - no longer drops countries with all-NA values
+
+### Portability Fixes
+
+* **R**: Replaced hardcoded paths with `system.file()` resolution
+* **Stata**: Implemented 3-tier path resolution (PLUS -> findfile/adopath -> cwd)
+* All 404 errors now include tried dataflows context across all 3 languages
+
+### Docs & Help
+
+* Created YAML_SCHEMA.md documenting all 7 YAML file formats
+* Documented `noerror`, `fromfile()`/`tofile()`, and `clearcache` in Stata help
+* Documented Python prerequisites in `unicefdata_sync.sthlp`
+
+### Testing Infrastructure
+
+* Added 3 new API response fixture CSVs (nutrition, sex disaggregation, multi-indicator)
+* Created expected output fixtures for cross-language comparison
+* Cross-language validation tests: Python (14/14), R (13/13), Stata (12/12)
+
 ## 2.0.0 (2026-01-31)
 
 ### Major Fixes

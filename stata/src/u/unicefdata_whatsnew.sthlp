@@ -228,7 +228,8 @@ analysis.
 
 {pstd}
 Joao Pedro Azevedo, UNICEF{break}
-jazevedo@unicef.org
+jpazevedo@unicef.org{break}
+{browse "https://jpazvd.github.io/"}
 
 {pstd}
 {it:Return to {help unicefdata:main help file}}

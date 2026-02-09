@@ -172,3 +172,112 @@ def mock_sdmx_data_endpoints(mock_csv_valid_cme, mock_csv_valid_usa, mock_csv_em
         )
 
     return _setup_mocks
+
+
+@pytest.fixture
+def mock_csv_nutrition():
+    """
+    Mock CSV response for NUTRITION indicator (NT_ANT_HAZ_NE2).
+    Multi-country stunting data for India, Ethiopia, Bangladesh.
+
+    Source: tests/fixtures/api_responses/nutrition_multi_country.csv
+    """
+    return (FIXTURES_DIR / "nutrition_multi_country.csv").read_text(encoding='utf-8')
+
+
+@pytest.fixture
+def mock_csv_disaggregated_sex():
+    """
+    Mock CSV response for CME with sex disaggregation (M/F/_T).
+    Brazil data with 3 sex values across 2 years.
+
+    Source: tests/fixtures/api_responses/cme_disaggregated_sex.csv
+    """
+    return (FIXTURES_DIR / "cme_disaggregated_sex.csv").read_text(encoding='utf-8')
+
+
+@pytest.fixture
+def mock_csv_vaccination():
+    """
+    Mock CSV response for multiple vaccination indicators (IM_DTP3, IM_MCV1).
+    Ghana and Kenya data.
+
+    Source: tests/fixtures/api_responses/vaccination_multi_indicator.csv
+    """
+    return (FIXTURES_DIR / "vaccination_multi_indicator.csv").read_text(encoding='utf-8')
+
+
+@pytest.fixture
+def mock_pipeline_endpoints(
+    mock_csv_valid_cme,
+    mock_csv_nutrition,
+    mock_csv_disaggregated_sex,
+    mock_csv_vaccination,
+    mock_csv_empty,
+):
+    """
+    Setup mocks for full pipeline tests across multiple indicator types.
+
+    Mocked scenarios:
+    - CME_MRY0T4 → cme_albania_valid.csv (Albania, _T sex only)
+    - CME_MRY0T4 with sex disaggregation → cme_disaggregated_sex.csv (Brazil, M/F/_T)
+    - NT_ANT_HAZ_NE2 → nutrition_multi_country.csv (IND/ETH/BGD, with AGE)
+    - IM_DTP3 / IM_MCV1 → vaccination_multi_indicator.csv (GHA/KEN)
+    - Any unmatched → 404
+
+    Use with @responses.activate decorator in tests.
+    """
+    def _setup_mocks(sex_fixture="albania"):
+        import re
+
+        base_url = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
+
+        # Structure/schema endpoint — return empty XML to avoid schema errors
+        responses.add(
+            responses.GET,
+            re.compile(rf'{re.escape(base_url)}/datastructure/.*'),
+            body='<?xml version="1.0"?><Structure/>',
+            status=200,
+            content_type='application/xml'
+        )
+
+        data_url = f"{base_url}/data"
+
+        # Nutrition indicator
+        responses.add(
+            responses.GET,
+            re.compile(rf'{re.escape(data_url)}/UNICEF,.*NT_ANT_HAZ.*'),
+            body=mock_csv_nutrition,
+            status=200,
+            content_type='text/csv'
+        )
+
+        # Vaccination indicators
+        responses.add(
+            responses.GET,
+            re.compile(rf'{re.escape(data_url)}/UNICEF,.*IM_(DTP3|MCV1).*'),
+            body=mock_csv_vaccination,
+            status=200,
+            content_type='text/csv'
+        )
+
+        # CME indicator — choose fixture based on test needs
+        cme_body = mock_csv_disaggregated_sex if sex_fixture == "brazil" else mock_csv_valid_cme
+        responses.add(
+            responses.GET,
+            re.compile(rf'{re.escape(data_url)}/UNICEF,.*CME_MRY0T4.*'),
+            body=cme_body,
+            status=200,
+            content_type='text/csv'
+        )
+
+        # Catch-all: any unmatched data request → 404
+        responses.add(
+            responses.GET,
+            re.compile(rf'{re.escape(data_url)}/UNICEF,.*'),
+            body='',
+            status=404,
+            content_type='text/plain'
+        )
+
+    return _setup_mocks

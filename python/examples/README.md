@@ -1,6 +1,6 @@
 # UNICEF Data Examples (Python)
 
-This folder contains example scripts demonstrating how to use the `unicef_api` package.
+This folder contains example scripts demonstrating how to use the `unicefdata` package.
 Each example has identical counterparts in `R/examples/` and `stata/examples/`.
 
 ## Example Files
@@ -38,20 +38,19 @@ Use `python validation/validate_outputs.py --all` to compare outputs.
 ## Quick Reference
 
 ```python
-from unicef_api import get_unicef
+from unicefdata import unicefData
 
 # Basic fetch
-df = get_unicef("CME_MRY0T4", countries=["ALB", "USA"])
+df = unicefData("CME_MRY0T4", countries=["ALB", "USA"])
 
-# Multiple indicators
-df = get_unicef(["CME_MRY0T4", "CME_MRM0"], countries=["ALB"])
+# Multiple indicators (loop - fetch each indicator separately)
+for ind in ["CME_MRY0T4", "CME_MRM0"]:
+    df_single = unicefData(ind, countries=["ALB"])
 
-# Latest values only
-df = get_unicef("CME_MRY0T4", countries=["ALB"], latest=True)
+# With year range
+df = unicefData("CME_MRY0T4", countries=["ALB"], start_year=2015, end_year=2023)
 
-# Wide format
-df = get_unicef("CME_MRY0T4", countries=["ALB"], output_format="wide")
-
-# With metadata
-df = get_unicef("CME_MRY0T4", countries=["ALB"], add_metadata=["region", "income_group"])
+# Search for indicators
+from unicefdata import search_indicators
+results = search_indicators("mortality")
 ```

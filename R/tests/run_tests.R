@@ -5,7 +5,7 @@
 # - OFFLINE tests: Use bundled YAML metadata files (always run, fast)
 # - NETWORK tests: Call UNICEF API (skipped in CI, run locally)
 #
-# Bundled metadata location: R/metadata/current/
+# Bundled metadata location: metadata/current/
 #
 # Dependencies:
 # - Only 'yaml' package needed - CI runs OFFLINE tests that parse bundled
@@ -46,11 +46,18 @@ if (IN_CI) {
 }
 
 # Determine paths
-if (file.exists("R/metadata/current")) {
+if (file.exists("metadata/current")) {
+  # Running from repo root (CI/standard case)
+  METADATA_DIR <- "metadata/current"
+  OUTPUT_DIR <- "R/tests/output"
+  R_DIR <- "R"
+} else if (file.exists("R/metadata/current")) {
+  # Running with R/metadata symlink
   METADATA_DIR <- "R/metadata/current"
   OUTPUT_DIR <- "R/tests/output"
   R_DIR <- "R"
 } else if (file.exists("../metadata/current")) {
+  # Running from R/tests subdirectory
   METADATA_DIR <- "../metadata/current"
   OUTPUT_DIR <- "output"
   R_DIR <- ".."

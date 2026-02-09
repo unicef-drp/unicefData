@@ -65,6 +65,7 @@ Thumbs.db
 *.csv
 !python/examples/*.csv
 !tests/fixtures/api_responses/*.csv
+!tests/fixtures/expected/*.csv
 
 # Test and Example Outputs
 python/tests/output/
@@ -137,6 +138,10 @@ stata/qa/check_*.log
 *.fls
 *.out
 *.synctex.gz
+
+# Paper sjlogs - keep only cleaned .log.tex files
+paper/sjlogs/*.tex
+!paper/sjlogs/*.log.tex
 *.toc
 *.lof
 *.lot
@@ -145,6 +150,9 @@ stata/qa/check_*.log
 *.nav
 *.snm
 *.vrb
+
+# SSC packaging - only ignore staging directory
+stata/ssc/temp_unzip/
 
 # Generated package files
 *.tar.gz
@@ -166,6 +174,13 @@ validation/xval/metadata/
 # Test metadata caches (generated at runtime)
 python/tests/metadata/
 python/tests/*.csv
+
+# Dev-only test artifacts (not synced to public repo)
+tests/fixtures/test_curl_*.csv
+tests/fixtures/test_sdmx_*.csv
+stata/tests/run_p0_validation.log
+stata/tests/**/*.log
+R/tests/output/test_*.csv
 
 # Additional temporary/personal folders
 drafts/

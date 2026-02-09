@@ -1,14 +1,34 @@
-*******************************************************************************
-* unicefdata_sync
+* =============================================================================
+* unicefdata_sync.ado - Sync UNICEF metadata from SDMX API to local YAML
+* =============================================================================
 *! v 2.0.0   24Jan2026               by Joao Pedro Azevedo (UNICEF)
-* Sync UNICEF metadata from SDMX API to local YAML files
-* Creates standardized YAML files with watermarks matching R/Python format
+*
+* PURPOSE:
+*   Synchronizes metadata from the UNICEF SDMX Data Warehouse API.
+*   Downloads dataflows, codelists, countries, regions, and indicator
+*   definitions, saving them as YAML files with standardized watermarks.
+*
+* STRUCTURE:
+*   1. Main Program - unicefdata_sync (syntax, dispatch)
+*   2. Show History - _unicefdata_show_history
+*   3. Sync Dataflows - _unicefdata_sync_dataflows
+*   4. Sync Codelists - _unicefdata_sync_codelists
+*   5. Sync Single Codelist - _unicefdata_sync_cl_single
+*   6. Sync Indicators - _unicefdata_sync_indicators
+*   7. Sync Dataflow Index - _unicefdata_sync_dataflow_index
+*   8. Sync Dataflow Schema - _unicefdata_sync_df_schema
+*   9. Sync Indicator Metadata - _unicefdata_sync_ind_meta
+*  10. Update Sync History - _unicefdata_update_sync_history
+*
+* CHANGELOG:
 * v2.0.0: Fixed enrichment path extraction bug (SYNC-02 test now passing)
 * v1.5.0: Added staleness detection (warns if metadata >30 days old)
 * v1.4.0: Added fallbacksequences option to auto-generate fallback sequences file
 * v1.3.0: Indicator metadata enrichment (tier, disaggregations) enabled automatically
 * v1.2.0: Added selective sync options (all, dataflows, codelists, countries, regions, indicators, history)
-*******************************************************************************
+*
+* License: MIT
+* =============================================================================
 
 /*
 DESCRIPTION:
@@ -67,6 +87,10 @@ SEE ALSO:
     help unicefdata
     help yaml
 */
+
+* =============================================================================
+* #### 1. Main Program ####
+* =============================================================================
 
 program define unicefdata_sync, rclass
     version 14.0
@@ -720,9 +744,10 @@ program define unicefdata_sync, rclass
     
 end
 
-*******************************************************************************
-* Helper: Show sync history
-*******************************************************************************
+
+* =============================================================================
+* #### 2. Show History ####
+* =============================================================================
 
 program define _unicefdata_show_history
     syntax [, PATH(string) SUFFIX(string)]
@@ -779,11 +804,12 @@ program define _unicefdata_show_history
     
 end
 
-*******************************************************************************
-* Helper: Sync dataflows from API
+
+* =============================================================================
+* #### 3. Sync Dataflows ####
+* =============================================================================
 * Uses wbopendata-style line-by-line XML parsing with filefilter preprocessing
 * Optionally uses Python-based unicefdata_xmltoyaml for robust large-file parsing
-*******************************************************************************
 
 program define _unicefdata_sync_dataflows, rclass
     syntax, URL(string) OUTFILE(string) VERSION(string) AGENCY(string) [FORCEPYTHON FORCESTATA]
@@ -1002,10 +1028,11 @@ program define _unicefdata_sync_dataflows, rclass
     return scalar count = `n_dataflows'
 end
 
-*******************************************************************************
-* Helper: Sync multiple codelists with actual code values
-* Uses wbopendata-style line-by-line XML parsing with filefilter preprocessing
-*******************************************************************************
+
+* =============================================================================
+* #### 4. Sync Codelists ####
+* =============================================================================
+* Sync multiple codelists with actual code values
 
 program define _unicefdata_sync_codelists, rclass
     syntax, BASEURL(string) OUTFILE(string) VERSION(string) AGENCY(string)
@@ -1129,10 +1156,11 @@ program define _unicefdata_sync_codelists, rclass
     return scalar count = `n_codelists'
 end
 
-*******************************************************************************
-* Helper: Sync single codelist (countries/regions)
-* Uses wbopendata-style line-by-line XML parsing with filefilter preprocessing
-*******************************************************************************
+
+* =============================================================================
+* #### 5. Sync Single Codelist ####
+* =============================================================================
+* Sync single codelist (countries/regions)
 
 program define _unicefdata_sync_cl_single, rclass
     syntax, URL(string) OUTFILE(string) CONTENTTYPE(string) VERSION(string) AGENCY(string) CODELISTID(string) [FORCEPYTHON FORCESTATA]
@@ -1317,9 +1345,10 @@ program define _unicefdata_sync_cl_single, rclass
     return scalar count = `n_codes'
 end
 
-*******************************************************************************
-* Helper: Sync indicators (hardcoded catalog)
-*******************************************************************************
+
+* =============================================================================
+* #### 6. Sync Indicators ####
+* =============================================================================
 
 program define _unicefdata_sync_indicators, rclass
     syntax, OUTFILE(string) VERSION(string) AGENCY(string) ///
@@ -1366,13 +1395,12 @@ program define _unicefdata_sync_indicators, rclass
     return scalar count = `count'
 end
 
-*******************************************************************************
-* Extended Sync: Dataflow Index with dimension/attribute counts
+
+* =============================================================================
+* #### 7. Sync Dataflow Index ####
+* =============================================================================
 * Generates _dataflow_index.yaml and _dataflows_{ID}.yaml files
-* 
-* Uses Python helper (stata_schema_sync.py) when forcepython is specified
-* to avoid Stata's macro length limitations on large XML responses.
-*******************************************************************************
+* Uses Python helper when forcepython is specified
 
 program define _unicefdata_sync_dataflow_index, rclass
     syntax, OUTDIR(string) AGENCY(string) [SUFFIX(string) FORCEPYTHON FORCESTATA]
@@ -1678,9 +1706,10 @@ program define _unicefdata_sync_dataflow_index, rclass
     return scalar total = `n_dataflows'
 end
 
-*******************************************************************************
-* Helper: Sync single dataflow schema to YAML file
-*******************************************************************************
+
+* =============================================================================
+* #### 8. Sync Dataflow Schema ####
+* =============================================================================
 
 program define _unicefdata_sync_df_schema
     syntax, DSDXML(string) OUTFILE(string) DFID(string) DFNAME(string) ///
@@ -1807,18 +1836,12 @@ program define _unicefdata_sync_df_schema
     file close `fh'
 end
 
-*******************************************************************************
-* Extended Sync: Full indicator catalog from CL_UNICEF_INDICATOR codelist
+
+* =============================================================================
+* #### 9. Sync Indicator Metadata ####
+* =============================================================================
+* Full indicator catalog from CL_UNICEF_INDICATOR codelist
 * Generates _unicefdata_indicators_metadata.yaml matching Python/R format
-* 
-* Uses unicefdata_xmltoyaml (Python backend) to handle the large XML file
-* that exceeds Stata's macro length limits when parsed inline.
-* 
-* Features aligned with Python/R:
-*   - metadata header with version, source, timestamp
-*   - URN field for each indicator
-*   - 30-day staleness check (skip fetch if file recent)
-*******************************************************************************
 
 program define _unicefdata_sync_ind_meta, rclass
     syntax, OUTFILE(string) AGENCY(string) [FORCE FORCEPYTHON FORCESTATA ENRICHDATAFLOWS FALLBACKSEQUENCESOUT(string)]
@@ -2041,9 +2064,10 @@ program define _unicefdata_sync_ind_meta, rclass
     error 601
 end
 
-*******************************************************************************
-* Helper: Update sync history
-*******************************************************************************
+
+* =============================================================================
+* #### 10. Update Sync History ####
+* =============================================================================
 
 program define _unicefdata_update_sync_history
     syntax, FILEPATH(string) VINTAGEDATE(string) SYNCEDAT(string) ///

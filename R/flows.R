@@ -177,36 +177,36 @@ print.unicef_dataflow_schema <- function(x, ...) {
 #' @keywords internal
 .find_metadata_dir <- function() {
   # 1. Environment override
-  env_home <- Sys.getenv("UNICEF_DATA_HOME_R", Sys.getenv("UNICEF_DATA_HOME", ""))
+  env_home <- Sys.getenv(
+    "UNICEF_DATA_HOME_R",
+    Sys.getenv("UNICEF_DATA_HOME", "")
+  )
   if (nzchar(env_home)) {
     metadata_dir <- file.path(env_home, "metadata", "current")
     if (dir.exists(metadata_dir)) return(metadata_dir)
   }
 
-  # 2. Relative to working directory
+  # 2. Dev-mode path (inst/metadata/current/ in source tree)
   script_dir <- getwd()
   candidates <- c(
-    file.path(script_dir, "R", "metadata", "current"),
-    file.path(script_dir, "metadata", "current"),
-    file.path(script_dir, "..", "R", "metadata", "current"),
-    file.path(script_dir, "..", "metadata", "current")
+    file.path(script_dir, "inst", "metadata", "current"),
+    file.path(script_dir, "..", "inst", "metadata", "current")
   )
   for (path in candidates) {
     if (dir.exists(path)) return(normalizePath(path))
   }
 
-  # 3. User cache directory
-  if (exists("R_user_dir", envir = asNamespace("tools"))) {
-    base_dir <- tryCatch(tools::R_user_dir("unicefdata", "cache"), error = function(e) "")
-    if (nzchar(base_dir)) {
-      metadata_dir <- file.path(base_dir, "metadata", "current")
-      if (dir.exists(metadata_dir)) return(metadata_dir)
-    }
-  }
+  # 3. Installed package metadata
+  pkg_dir <- system.file(
+    "metadata", "current",
+    package = "unicefData", mustWork = FALSE
+  )
+  if (nzchar(pkg_dir) && dir.exists(pkg_dir)) return(pkg_dir)
 
-  # 4. Home directory fallback
-  home_dir <- file.path(Sys.getenv("HOME"), ".unicef_data", "r", "metadata", "current")
-  if (dir.exists(home_dir)) return(home_dir)
+  # 4. CRAN-compliant user cache via tools::R_user_dir()
+  base_dir <- tools::R_user_dir("unicefData", "cache")
+  metadata_dir <- file.path(base_dir, "metadata", "current")
+  if (dir.exists(metadata_dir)) return(metadata_dir)
 
   stop("Could not find metadata directory. Run sync_metadata() first.")
 }

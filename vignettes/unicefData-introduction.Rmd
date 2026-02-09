@@ -1,0 +1,344 @@
+---
+title: "Introduction to unicefData"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to unicefData}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## The UNICEF Data Warehouse
+
+The United Nations Children's Fund (UNICEF) maintains one of the world's most
+comprehensive databases on child welfare, covering health, nutrition, education,
+protection, HIV/AIDS, and water, sanitation and hygiene (WASH). The
+[UNICEF Data Warehouse](https://sdmx.data.unicef.org/) uses the Statistical
+Data and Metadata eXchange (SDMX) standard, an ISO-certified framework for
+exchanging statistical information.
+
+The warehouse currently maintains **733+ indicators** organized across thematic
+dataflows:
+
+| Dataflow | Domain | Indicators |
+|----------|--------|------------|
+| CME | Child Mortality Estimates | 39 |
+| NUTRITION | Stunting, wasting, underweight | 112 |
+| IMMUNISATION | Immunization coverage | 18 |
+| WASH_HOUSEHOLDS | Water and sanitation | 57 |
+| EDUCATION | Education access and quality | 38 |
+| HIV_AIDS | HIV-related indicators | 38 |
+| MNCH | Maternal, newborn, child health | varies |
+| PT | Child protection | varies |
+| CHLD_PVTY | Child poverty | varies |
+| GENDER | Gender equality | varies |
+
+## What is SDMX?
+
+SDMX (Statistical Data and Metadata eXchange) is an international standard for
+structuring and exchanging statistical data. Within SDMX:
+
+- An **indicator** is a time-series measure of a specific phenomenon (e.g.,
+  under-5 mortality rate, stunting prevalence, DTP3 coverage).
+- Each indicator is identified by a unique code (e.g., `CME_MRY0T4`) and
+  belongs to a **dataflow**, which groups related indicators.
+- Observations are disaggregated along **dimensions**: sex, age, wealth
+  quintile, residence (urban/rural), and maternal education.
+- Each observation also carries **attributes** (data source, confidence
+  intervals, observation status) that contextualize the value.
+
+While powerful, direct SDMX API interaction requires knowledge of dataflow
+structures, dimension codes, and RESTful query syntax. The `unicefData` package
+removes these barriers.
+
+## Why unicefData?
+
+The `unicefData` package provides a simple R interface to the UNICEF Data
+Warehouse. It is part of a trilingual ecosystem with identical implementations
+in R, Python (`unicef_api`), and Stata (`unicefdata`), sharing the same function
+names and parameter structures for cross-team collaboration.
+
+Key features:
+
+- **Automatic dataflow detection**: specify only the indicator code; the package
+  finds the correct dataflow automatically.
+- **Discovery commands**: search indicators by keyword, list dataflows, display
+  metadata---no prior SDMX knowledge required.
+- **Flexible filtering**: countries, years, sex, age, wealth quintiles,
+  residence, maternal education.
+- **Multiple output formats**: long (default), wide (years as columns),
+  wide_indicators (indicators as columns).
+- **Caching with memoisation**: repeated queries are fast.
+
+## Installation
+
+Install from GitHub:
+
+```{r install}
+# install.packages("devtools")
+devtools::install_github("unicef-drp/unicefData")
+```
+
+## Quick start
+
+```{r library}
+library(unicefData)
+```
+
+### Discovering indicators
+
+Before downloading data, explore what is available:
+
+```{r discovery}
+# Browse indicator categories (thematic dataflows)
+list_categories()
+
+# Search for indicators by keyword
+search_indicators("mortality")
+
+# List all indicators in the Child Mortality Estimates dataflow
+list_indicators("CME")
+
+# Get detailed information about a specific indicator
+get_indicator_info("CME_MRY0T4")
+```
+
+These discovery commands mirror the paper's Examples 1--4 and the Stata
+equivalents:
+
+```
+. unicefdata, categories
+. unicefdata, search(mortality)
+. unicefdata, indicators(CME)
+. unicefdata, info(CME_MRY0T4)
+```
+
+### Basic data retrieval
+
+Fetch under-5 mortality rate for three countries over a year range:
+
+```{r basic-retrieval}
+# Example 5 (paper): Basic data retrieval
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BRA", "IND", "CHN"),
+  year = "2015:2023"
+)
+head(df)
+```
+
+The equivalent Stata command is:
+
+```
+. unicefdata, indicator(CME_MRY0T4) countries(BRA IND CHN) year(2015:2023) clear
+```
+
+### Geographic filtering
+
+Fetch data for East African countries for a single year:
+
+```{r geographic}
+# Example 6 (paper): Geographic filtering
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("KEN", "TZA", "UGA", "ETH", "RWA"),
+  year = 2020
+)
+```
+
+### Latest values and most recent values
+
+```{r latest-mrv}
+# Example 7 (paper): Get the latest available value per country
+df_latest <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BGD", "IND", "PAK"),
+  latest = TRUE
+)
+
+# Get the 3 most recent values per country
+df_mrv <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BGD", "IND", "PAK"),
+  mrv = 3
+)
+```
+
+### Year specifications
+
+The `year` parameter supports multiple formats:
+
+```{r year-formats}
+# Single year
+df <- unicefData(indicator = "CME_MRY0T4", year = 2020)
+
+# Year range
+df <- unicefData(indicator = "CME_MRY0T4", year = "2015:2023")
+
+# Non-contiguous years
+df <- unicefData(indicator = "CME_MRY0T4", year = "2015,2018,2020")
+
+# Circa mode: find closest available year
+df <- unicefData(indicator = "CME_MRY0T4", year = 2015, circa = TRUE)
+```
+
+## Disaggregations
+
+UNICEF data supports rich disaggregation along multiple dimensions. Not all
+dimensions are available for all indicators---availability depends on the
+dataflow (see the disaggregation matrix in the package paper).
+
+### By sex
+
+```{r sex}
+# Total only (default)
+df <- unicefData(indicator = "CME_MRY0T4", sex = "_T")
+
+# Female only
+df <- unicefData(indicator = "CME_MRY0T4", sex = "F")
+
+# All sex categories (total, male, female)
+df <- unicefData(indicator = "CME_MRY0T4", sex = "ALL")
+```
+
+### By wealth quintile
+
+```{r wealth}
+# Example 8 (paper): Stunting by wealth and sex
+df <- unicefData(
+  indicator = "NT_ANT_WHZ_NE2",
+  countries = "IND",
+  sex = "ALL",
+  wealth = "ALL"
+)
+```
+
+### By residence
+
+```{r residence}
+# Urban only
+df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "U")
+
+# Rural only
+df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "R")
+```
+
+## Output formats
+
+### Wide format (years as columns)
+
+Useful for time-series analysis:
+
+```{r wide}
+# Example 9 (paper): Wide format
+df_wide <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("USA", "GBR", "DEU", "FRA"),
+  year = "2000,2010,2020,2023",
+  format = "wide"
+)
+```
+
+### Multiple indicators
+
+Fetch and merge multiple indicators automatically:
+
+```{r multi-indicator}
+# Example 10 (paper): Multiple indicators
+df <- unicefData(
+  indicator = c("CME_MRM0", "CME_MRY0T4"),
+  countries = c("KEN", "TZA", "UGA"),
+  year = 2020
+)
+
+# Wide indicators format: one column per indicator
+df_wide <- unicefData(
+  indicator = c("CME_MRY0T4", "CME_MRY0", "IM_DTP3", "IM_MCV1"),
+  countries = c("AFG", "ETH", "PAK", "NGA"),
+  latest = TRUE,
+  format = "wide_indicators"
+)
+```
+
+## Metadata enrichment
+
+Add regional and income group classifications:
+
+```{r metadata}
+# Example 12 (paper): Regional classifications
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  add_metadata = c("region", "income_group"),
+  latest = TRUE
+)
+```
+
+## Data cleaning and filtering
+
+Post-processing utilities for downloaded data:
+
+```{r clean-filter}
+# Clean raw SDMX column names to user-friendly names
+df_raw <- unicefData_raw(indicator = "CME_MRY0T4", countries = "BRA")
+df_clean <- clean_unicef_data(df_raw)
+
+# Filter to specific disaggregations
+df_filtered <- filter_unicef_data(df_clean, sex = "F", wealth = "Q1")
+```
+
+## Cache management
+
+The package caches metadata and API responses for performance. To clear and
+refresh all caches:
+
+```{r cache}
+# Clear all caches and reload metadata
+clear_unicef_cache()
+
+# Clear without reloading (lazy reload on next use)
+clear_unicef_cache(reload = FALSE)
+
+# View cache status
+get_cache_info()
+```
+
+## Dataflow schemas
+
+Inspect the structure of any dataflow:
+
+```{r schema}
+# View the dimensions and attributes of a dataflow
+schema <- dataflow_schema("CME")
+print(schema)
+```
+
+## Cross-language parity
+
+The `unicefData` ecosystem provides identical functionality across R, Python,
+and Stata. The same analytical workflow translates directly:
+
+| Operation | R | Python | Stata |
+|-----------|---|--------|-------|
+| Search | `search_indicators("mortality")` | `search_indicators("mortality")` | `unicefdata, search(mortality)` |
+| Fetch | `unicefData(indicator="CME_MRY0T4")` | `unicefData(indicator="CME_MRY0T4")` | `unicefdata, indicator(CME_MRY0T4) clear` |
+| Latest | `unicefData(..., latest=TRUE)` | `unicefData(..., latest=True)` | `unicefdata, ... latest clear` |
+| Wide | `unicefData(..., format="wide")` | `unicefData(..., format="wide")` | `unicefdata, ... wide clear` |
+| Cache | `clear_unicef_cache()` | `clear_cache()` | `unicefdata, clearcache` |
+| Sync | `sync_metadata()` | `sync_metadata()` | `unicefdata_sync, all` |
+
+This parity enables cross-team collaboration: an analyst can prototype in R and
+a colleague can reproduce the workflow in Stata or Python with minimal
+translation.
+
+## Further reading
+
+- [UNICEF Data Warehouse](https://sdmx.data.unicef.org/)
+- [SDMX standard documentation](https://sdmx.org/)
+- [Package source on GitHub](https://github.com/unicef-drp/unicefData)

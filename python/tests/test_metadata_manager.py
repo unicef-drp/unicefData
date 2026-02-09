@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import os
-from unicef_api.metadata_manager import MetadataManager
+from unicefdata.metadata_manager import MetadataManager
 
 class TestMetadataManager(unittest.TestCase):
     def setUp(self):
@@ -11,7 +11,9 @@ class TestMetadataManager(unittest.TestCase):
         # Assuming CME.yaml exists from previous steps
         schema = self.manager.get_schema('CME')
         self.assertIsNotNone(schema)
-        self.assertEqual(schema['id'], 'CME')
+        # Schema should have dimensions and time_dimension
+        self.assertIn('dimensions', schema)
+        self.assertIn('time_dimension', schema)
         
     def test_get_column_mapping(self):
         mapping = self.manager.get_column_mapping('CME')

@@ -16,9 +16,17 @@ The **unicefData** package provides lightweight, consistent interfaces to the [U
 
 | Platform | README | Version |
 |----------|--------|---------|
-| **R** | [R/README.md](R/README.md) | 2.0.0 |
-| **Python** | [python/README.md](python/README.md) | 2.0.0 |
-| **Stata** | [stata/README.md](stata/README.md) | 2.0.4 |
+| **R** | [R/README.md](R/README.md) | 2.1.0 |
+| **Python** | [python/README.md](python/README.md) | 2.1.0 |
+| **Stata** | [stata/README.md](stata/README.md) | 2.1.0 |
+
+| Document | Purpose |
+|----------|---------|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [CHANGELOG.md](CHANGELOG.md) | Recent version history |
+| [NEWS.md](NEWS.md) | Complete changelog |
+| [CITATION.cff](CITATION.cff) | Citation metadata for academic use |
+| [docs/](docs/INDEX.md) | Technical documentation index |
 
 ---
 
@@ -118,6 +126,8 @@ See platform-specific READMEs for detailed installation options.
 | Add metadata (region, income) | ✅ | ✅ | 🔜 |
 | 700+ indicators | ✅ | ✅ | ✅ |
 | Automatic retries | ✅ | ✅ | ✅ |
+| Cache management | `clear_unicef_cache()` | `clear_cache()` | `unicefdata, clearcache` |
+| Timeout exceptions | ✅ | `SDMXTimeoutError` | ✅ |
 
 ---
 
@@ -201,6 +211,17 @@ unicefData/
 
 ## Version History
 
+### v2.1.0 (2026-02-07)
+
+**Cross-Language Quality & Testing**
+
+- **Cache management APIs**: `clear_cache()` (Python), `clear_unicef_cache()` (R), `clearcache` (Stata)
+- **Error handling improvements**: Configurable timeouts with `SDMXTimeoutError` (Python), fixed `apply_circa()` NA handling (R)
+- **Portability**: Removed all hardcoded paths; R uses `system.file()`, Stata uses 3-tier resolution
+- **Error context**: All 404 errors now show which dataflows were tried
+- **Cross-language test suite**: 39 shared fixture tests (Python 14, R 13, Stata 12)
+- **YAML schema documentation**: Comprehensive format reference for all 7 YAML file types
+
 ### v2.0.0 (2026-01-31)
 
 **Major Quality Milestone**
@@ -241,6 +262,24 @@ refresh_indicator_cache()
 refresh_indicator_cache()
 ```
 
+### Clear Cache
+
+**Python:**
+```python
+from unicefdata import clear_cache
+clear_cache()  # Clears all 5 cache layers, reloads YAML
+```
+
+**R:**
+```r
+clear_unicef_cache()  # Clears all 6 cache layers, reloads YAML
+```
+
+**Stata:**
+```stata
+unicefdata, clearcache
+```
+
 ### Cross-Language Sync
 
 ```powershell
@@ -248,7 +287,7 @@ refresh_indicator_cache()
 .\scripts\sync_metadata_cross_language.ps1
 ```
 
-See [tests/README.md](tests/README.md) for detailed metadata sync documentation.
+See [docs/METADATA_GENERATION_GUIDE.md](docs/METADATA_GENERATION_GUIDE.md) for detailed metadata sync documentation.
 
 ---
 
@@ -272,6 +311,21 @@ cd stata/qa
 do run_tests.do
 ```
 
+### Cross-Language Fixture Tests
+
+Shared test fixtures validate structural consistency across all three languages:
+
+```bash
+# Python
+python tests/test_cross_language_output.py
+
+# R
+Rscript tests/test_cross_language_output.R
+
+# Stata
+do tests/test_cross_language_output.do
+```
+
 ### Cross-Platform Validation
 
 ```bash
@@ -279,11 +333,13 @@ cd validation
 python run_validation.py --limit 10 --languages python r stata
 ```
 
-See [validation/](validation/) for validation documentation.
+See [validation/](validation/) for validation documentation, including the [Quick Start](validation/docs/00_START_HERE.md), [Indicator Testing Guide](validation/docs/INDICATOR_TESTING_GUIDE.md), and [Documentation Index](validation/docs/DOCUMENTATION_INDEX.md).
 
 ---
 
 ## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
 1. **Report bugs** — Open an [issue](https://github.com/unicef-drp/unicefData/issues)
 2. **Request features** — Suggest new indicators or functionality

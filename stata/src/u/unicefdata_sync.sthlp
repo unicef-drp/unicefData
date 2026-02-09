@@ -60,8 +60,15 @@ naming convention and include watermark headers matching the R and Python
 implementations. Files are saved to {cmd:src/_/} alongside the helper ado files.
 
 {pstd}
-{bf:Note:} For complete metadata extraction, especially for large XML files 
-like dataflow schemas, consider using the Python-assisted version or the 
+{bf:Prerequisites:} Some features require Python 3.6+ with specific packages:
+{p_end}
+{phang2}• {opt forcepython}: Requires {cmd:lxml} package{p_end}
+{phang2}• {opt enrichdataflows}: Requires {cmd:requests} package{p_end}
+{phang2}Install via: {cmd:pip install lxml requests}{p_end}
+
+{pstd}
+{bf:Note:} For complete metadata extraction, especially for large XML files
+like dataflow schemas, consider using the Python-assisted version or the
 Python library directly. See {help unicefdata_sync##limitations:Limitations} below.
 
 
@@ -290,7 +297,8 @@ as the reference.
 
 {pstd}
 Joao Pedro Azevedo, UNICEF{break}
-jazevedo@unicef.org
+jpazevedo@unicef.org{break}
+{browse "https://jpazvd.github.io/"}
 
 {pstd}
 Part of the {cmd:unicefData} package for accessing UNICEF Data Warehouse.

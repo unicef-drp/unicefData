@@ -51,29 +51,26 @@ SDMX_NS <- c(
 # =============================================================================
 
 #' Get metadata directory path
-#' @return Path to R/metadata/current/
+#' @return Path to metadata directory: prefers \code{inst/metadata/current} in the source tree, otherwise a user cache directory at \code{tools::R_user_dir("unicefData", "cache")/metadata/current}.
 #' @keywords internal
 .get_metadata_dir <- function() {
-  # Try relative to working directory
+  # Try dev-mode paths (inst/metadata/current/ in source tree)
   candidates <- c(
-    file.path(getwd(), "metadata", "current"),           # If in R/
-    file.path(getwd(), "R", "metadata", "current"),      # If in project root
-    file.path(dirname(getwd()), "metadata", "current")   # If in R subdirectory
+    file.path(getwd(), "inst", "metadata", "current"),
+    file.path(getwd(), "..", "inst", "metadata", "current")
   )
-  
+
   for (path in candidates) {
-    if (dir.exists(dirname(path))) {
-      if (!dir.exists(path)) {
-        dir.create(path, recursive = TRUE, showWarnings = FALSE)
-      }
-      return(path)
-    }
+    if (dir.exists(path)) return(path)
   }
-  
-  # Default fallback
-  path <- file.path(getwd(), "metadata", "current")
-  dir.create(path, recursive = TRUE, showWarnings = FALSE)
-  return(path)
+
+  # CRAN-compliant user cache via tools::R_user_dir()
+  base_dir <- tools::R_user_dir("unicefData", "cache")
+  path <- file.path(base_dir, "metadata", "current")
+  if (!dir.exists(path)) {
+    dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  }
+  path
 }
 
 #' Create watermarked metadata structure

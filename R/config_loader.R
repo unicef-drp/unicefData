@@ -39,8 +39,8 @@ get_config_path <- function() {
     file.path(getwd(), "..", "config", "indicators.yaml"),
     file.path(getwd(), "..", "..", "config", "indicators.yaml"),
     # Common installation paths
-    system.file("config", "indicators.yaml", package = "unicefdata"),
-    file.path(Sys.getenv("HOME"), ".unicefdata", "indicators.yaml")
+    system.file("config", "indicators.yaml", package = "unicefData"),
+    file.path(tools::R_user_dir("unicefData", "config"), "indicators.yaml")
   )
   
   for (path in possible_paths) {

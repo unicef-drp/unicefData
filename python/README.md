@@ -1,7 +1,9 @@
 # unicefData - Python Package
 
+[![PyPI version](https://badge.fury.io/py/unicefdata.svg)](https://pypi.org/project/unicefdata/)
 [![Python Tests](https://github.com/unicef-drp/unicefData/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/unicef-drp/unicefData/actions)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Downloads](https://static.pepy.tech/badge/unicefdata)](https://pepy.tech/project/unicefdata)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Python component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
@@ -15,16 +17,36 @@ This is the Python implementation of the **unicefData** package. For other imple
 ## Installation
 
 ```bash
-# Clone repository
+pip install unicefdata
+```
+
+For development:
+
+```bash
 git clone https://github.com/unicef-drp/unicefData.git
 cd unicefData/python
-
-# Install in development mode
-pip install -e .
-
-# Or install dependencies directly
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
+
+### Verify Installation
+
+```python
+import unicefdata
+print(unicefdata.__version__)  # Should print: 2.1.0
+```
+
+---
+
+## What's New in 2.1.0
+
+- 🧪 **Cross-language test suite**: 14 shared fixture tests validating structural consistency across Python, R, and Stata
+- 📚 **YAML schema documentation**: Comprehensive format reference for all 7 YAML file types
+- 🗑️ **Enhanced cache management**: 5-layer cache clearing with optional reload, 30-day staleness threshold
+- 🔍 **Improved 404 errors**: All not-found errors now include tried dataflows in error messages
+- ✅ **Version alignment**: All sub-modules now match package version, dynamic User-Agent strings
+- 🧹 **Removed hardcoded paths**: All path resolution is now dynamic
+
+See [CHANGELOG.md](CHANGELOG.md) for complete details.
 
 ---
 
@@ -33,7 +55,7 @@ pip install -r requirements.txt
 ### Search for Indicators
 
 ```python
-from unicef_api import search_indicators, list_categories
+from unicefdata import search_indicators, list_categories
 
 # Search by keyword
 search_indicators("mortality")
@@ -50,7 +72,7 @@ search_indicators("rate", category="CME")
 ### Download Data
 
 ```python
-from unicef_api import unicefData
+from unicefdata import unicefData
 
 # Fetch under-5 mortality (dataflow auto-detected)
 df = unicefData(
@@ -65,7 +87,7 @@ print(df.head())
 ### View Dataflow Schema
 
 ```python
-from unicef_api import dataflow_schema, print_dataflow_schema
+from unicefdata import dataflow_schema, print_dataflow_schema
 
 schema = dataflow_schema("CME")
 print_dataflow_schema(schema)
@@ -162,7 +184,7 @@ Main function for fetching UNICEF indicator data.
 ### UNICEFSDMXClient (Advanced)
 
 ```python
-from unicef_api import UNICEFSDMXClient
+from unicefdata import UNICEFSDMXClient
 
 client = UNICEFSDMXClient()
 
@@ -190,8 +212,7 @@ df = client.fetch_multiple_indicators(
 | `list_categories()` | List all categories |
 | `list_dataflows()` | List available dataflows |
 | `dataflow_schema(dataflow)` | Get dataflow schema |
-| `refresh_indicator_cache()` | Force cache refresh |
-| `get_cache_info()` | Get cache status |
+| `clear_cache()` | Clear all 5 cache layers |
 
 ---
 
@@ -231,20 +252,10 @@ Monthly periods are converted to decimal years:
 
 ---
 
-## Cache Locations
-
-| Environment | Path |
-|-------------|------|
-| Standard | `~/.unicef_data/python/metadata/current/` |
-| Override | Set `UNICEF_DATA_HOME_PY` or `UNICEF_DATA_HOME` |
-| Development | `python/metadata/current/` |
-
----
-
 ## Error Handling
 
 ```python
-from unicef_api import SDMXNotFoundError, SDMXBadRequestError
+from unicefdata import SDMXNotFoundError, SDMXBadRequestError, SDMXTimeoutError
 
 try:
     df = unicefData(indicator="INVALID_CODE")
@@ -252,6 +263,17 @@ except SDMXNotFoundError as e:
     print(f"Indicator not found: {e}")
 except SDMXBadRequestError as e:
     print(f"Invalid request: {e}")
+except SDMXTimeoutError as e:
+    print(f"Request timed out: {e}")
+```
+
+### Configurable Timeout
+
+```python
+from unicefdata import UNICEFSDMXClient
+
+# Set custom timeout (default: 60s)
+client = UNICEFSDMXClient(timeout=120)
 ```
 
 ---
@@ -265,22 +287,11 @@ except SDMXBadRequestError as e:
 df = unicefData(indicator="CME_MRY0T4", max_retries=5)
 ```
 
-### Invalid Indicator
-
-```python
-# Search for valid indicators
-search_indicators("mortality")
-
-# Check indicator metadata
-from unicef_api.config import get_indicator_metadata
-meta = get_indicator_metadata("CME_MRY0T4")
-```
-
 ### Stale Cache
 
 ```python
-from unicef_api import refresh_indicator_cache
-refresh_indicator_cache()
+from unicefdata import clear_cache
+clear_cache()  # Clears all 5 cache layers
 ```
 
 ---
@@ -290,24 +301,15 @@ refresh_indicator_cache()
 See `examples/` folder:
 
 - `00_quick_start.py` - Basic usage
-- `01_basic_usage.py` - Data download
-- `02_multiple_indicators.py` - Batch downloads
-- `03_data_analysis.py` - Data cleaning
-- `04_sdg_indicators.py` - SDG queries
+- `01_indicator_discovery.py` - Finding indicators
+- `02_sdg_indicators.py` - SDG queries
+- `03_data_formats.py` - Output formats
+- `04_metadata_options.py` - Metadata enrichment
+- `05_advanced_features.py` - Advanced options
 
 ---
 
 ## Version History
-
-### v2.0.0 (2026-01-31)
-- Fixed SYNC-02 enrichment bug
-- All 28 tests passing
-- Cross-platform alignment
-
-### v1.5.2 (2026-01-07)
-- Fixed 404 fallback behavior
-- Added dynamic User-Agent strings
-- Added 10 new integration tests
 
 See [CHANGELOG.md](CHANGELOG.md) for complete changelog.
 
@@ -318,7 +320,6 @@ See [CHANGELOG.md](CHANGELOG.md) for complete changelog.
 - pandas
 - requests
 - pyyaml
-- countrycode (optional)
 
 ---
 
@@ -330,8 +331,9 @@ MIT License - See [LICENSE](../LICENSE)
 
 **Joao Pedro Azevedo**
 Chief Statistician, UNICEF Data and Analytics Section
-Email: jazevedo@unicef.org
+Email: jpazevedo@unicef.org
+Website: [jpazvd.github.io](https://jpazvd.github.io/)
 
 ## Contributing
 
-See [Contributing Guide](../README.md#contributing) in the main README.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.

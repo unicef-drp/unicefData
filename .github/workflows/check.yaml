@@ -17,9 +17,12 @@ on:
       - 'R/**'
       - 'man/**'
       - 'inst/**'
+      - 'tests/**'
       - 'vignettes/**'
       - 'DESCRIPTION'
       - 'NAMESPACE'
+      - 'LICENSE'
+      - '.Rbuildignore'
       - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
@@ -27,9 +30,12 @@ on:
       - 'R/**'
       - 'man/**'
       - 'inst/**'
+      - 'tests/**'
       - 'vignettes/**'
       - 'DESCRIPTION'
       - 'NAMESPACE'
+      - 'LICENSE'
+      - '.Rbuildignore'
       - '.github/workflows/check.yaml'
   workflow_dispatch:
 
