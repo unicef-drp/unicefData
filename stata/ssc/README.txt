@@ -1,36 +1,64 @@
 unicefData: Stata module for accessing UNICEF SDMX indicators
 
-This package contains the following files:
+Version: 2.0.4 (01Feb2026)
 
-1. ado-files:
-   - unicefdata.ado
-   - unicefdata_sync.ado
-   - unicefdata_xmltoyaml.ado
+This package provides access to 733+ indicators from the UNICEF Data Warehouse
+using the SDMX REST API, covering child health, nutrition, education, protection,
+HIV/AIDS, WASH, and more.
 
-2. help files:
-   - unicefdata.sthlp
-   - unicefdata_sync.sthlp
+MAIN FEATURES:
+- Download data by indicator, geography, and time period
+- Discovery tools: search, indicators, dataflows, info
+- Multiple output formats: long, wide, wide_indicators
+- Automatic dataflow detection from indicator codes
+- Geographic type classification (country vs aggregate)
+- YAML-based metadata with sync capabilities
+- Stata 16+ frames support for better isolation
 
-3. Example do-files:
-   - examples/unicefdata_examples.ado
+REQUIREMENTS:
+- Stata 14.0+ (Stata 16+ recommended for frames support)
+- yaml.ado package (included)
 
-4. Metadata:
-   - src/_/unicefdata_codelists.yaml
-   - src/_/unicefdata_indicators.yaml
+INSTALLATION:
 
-5. Documentation:
-   - stata/05_paper/unicefData_documentation_draft.tex
+From SSC Archive:
+  ssc install unicefdata, replace
 
-6. Tests:
-   - tests/unicefdata_tests.do
+From GitHub:
+  net install unicefdata, from(https://raw.githubusercontent.com/unicef-drp/unicefData/main/stata/ssc) replace
 
-Installation:
-To install the package, copy the ado-files and help files to your Stata PLUS directory:
+Quick setup (creates metadata cache):
+  unicefdata_setup
 
-```
-. net install unicefdata, from(https://github.com/unicef-drp/unicefData/stata/ssc) replace
-```
+EXAMPLE USAGE:
 
-Version: 1.5.1 (as referenced in the zip file: unicefdata_package.zip)
+  * Download child mortality data for all countries
+  unicefdata, indicator(CME_MRY0T4) clear
+  
+  * Search for nutrition indicators
+  unicefdata, search(nutrition)
+  
+  * Get latest values by sex disaggregation
+  unicefdata, indicator(NT_ANT_HAZ_NE2) sex(F M) latest clear
+  
+  * See all available dataflows
+  unicefdata, flows
 
-For more information, see the help files or the documentation in stata/05_paper.
+DOCUMENTATION:
+  help unicefdata
+  help unicefdata_sync
+  help unicefdata_setup
+  help unicefdata_examples
+  help unicefdata_xmltoyaml
+  help unicefdata_xmltoyaml_py
+  unicefdata, whatsnew
+
+AUTHOR:
+  João Pedro Azevedo (UNICEF)
+  Contact: https://jpazvd.github.io
+
+LICENSE:
+  MIT License
+
+For complete documentation and examples, visit:
+https://github.com/unicef-drp/unicefData

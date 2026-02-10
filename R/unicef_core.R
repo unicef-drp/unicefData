@@ -528,7 +528,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     out <- tryCatch(
       {
         txt <- fetch_sdmx_text(page_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
-        readr::read_csv(txt, show_col_types = FALSE)
+        readr::read_csv(I(txt), show_col_types = FALSE)
       },
       error = function(e) e
     )

@@ -8,10 +8,10 @@
 #'   with paging, retries, caching, format & labels options, and post-processing.
 #'   
 #'   Schemas are cached in memory per session for performance: subsequent indicators
-#'   from the same dataflow load 8-17x faster (2.2s → 0.13s).
+#'   from the same dataflow load 8-17x faster (2.2s --> 0.13s).
 #'
 #' @param agency Character agency ID (e.g., "UNICEF").
-#' @param flow Character vector of flow IDs; length ≥ 1.
+#' @param flow Character vector of flow IDs; length >= 1.
 #' @param key Optional character vector of codes to filter the flow.
 #' @param start_period Optional single 4-digit year for start (e.g., 2000).
 #' @param end_period Optional single 4-digit year for end (e.g., 2020).

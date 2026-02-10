@@ -1,5 +1,9 @@
 # Minimal sanity check for unicefData R functions
-source("c:/GitHub/others/unicefData/R/unicefData.R")
+# Load the package (works both in dev and installed mode)
+if (!requireNamespace("unicefData", quietly = TRUE)) {
+  # For dev mode, load from source
+  devtools::load_all()
+}
 
 df <- unicefData(
   indicator = "CME_MRY0T4",
