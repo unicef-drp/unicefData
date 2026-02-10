@@ -27,7 +27,7 @@ get_sdmx(
 \arguments{
 \item{agency}{Character agency ID (e.g., "UNICEF").}
 
-\item{flow}{Character vector of flow IDs; length ≥ 1.}
+\item{flow}{Character vector of flow IDs; length >= 1.}
 
 \item{key}{Optional character vector of codes to filter the flow.}
 
@@ -68,5 +68,5 @@ Download one or more SDMX flows from a specified agency,
 with paging, retries, caching, format & labels options, and post-processing.
 
 Schemas are cached in memory per session for performance: subsequent indicators
-from the same dataflow load 8-17x faster (2.2s → 0.13s).
+from the same dataflow load 8-17x faster (2.2s --> 0.13s).
 }

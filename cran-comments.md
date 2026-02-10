@@ -1,6 +1,23 @@
+## Resubmission
+
+This is a resubmission. The previous submission was archived due to a LaTeX
+error caused by Unicode characters in Rd files. Changes in this version:
+
+* Replaced Unicode symbols in roxygen documentation with ASCII equivalents
+  (U+2265 `>=`, U+2192 `-->`, smart quotes removed) to fix PDF manual
+  generation on CRAN's LaTeX infrastructure.
+
 ## R CMD check results
 
-0 errors | 0 warnings | 3 notes
+0 errors | 0 warnings | 4 notes
+
+* NOTE: New submission.
+
+* NOTE: Possibly misspelled words in DESCRIPTION: SDG, SDMX, Stata, lookups,
+  memoisation, trilingual. These are all correct domain-specific terms:
+  SDG (Sustainable Development Goals), SDMX (Statistical Data and Metadata
+  eXchange, ISO standard), Stata (statistical software), lookups (standard
+  English), memoisation (British spelling), trilingual (standard English).
 
 * NOTE: "License stub is invalid DCF" - The package uses a standard MIT license
   with a LICENSE file. The DESCRIPTION correctly specifies "MIT + file LICENSE".
@@ -8,9 +25,6 @@
 * NOTE: `unlockBinding()` calls in `unicef_core.R` are intentional for
   cache invalidation of locked namespace bindings (`.INDICATORS_METADATA_YAML`,
   `.REGION_CODES_YAML`). These are wrapped in `tryCatch()` for safety.
-
-* NOTE: "lastMiKTeXException" found in temp directory during check. This is a
-  transient artifact from MiKTeX PDF manual generation, not from the package.
 
 ## URL checks
 
