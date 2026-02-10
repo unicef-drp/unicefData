@@ -19,6 +19,10 @@
 # Note: Dependencies (httr, xml2, yaml, tibble, dplyr) declared in DESCRIPTION
 # Use namespaced calls when needed
 
+# Declare global variables used in NSE (non-standard evaluation) contexts
+# This suppresses R CMD check NOTEs about undefined global variables
+utils::globalVariables(c("id"))
+
 # =============================================================================
 # Configuration
 # =============================================================================

@@ -69,6 +69,12 @@
 
 # Log files and temp outputs
 ^check_output\.txt$
+^check_full_output\.txt$
+^check_no_vignettes\.txt$
+^build_output\.txt$
+^install_deps\.R$
+^install_all_deps\.R$
+^run_check\.R$
 ^stata\.log$
 ^test_multi_indicator\.log$
 ^.*\.log$
@@ -79,9 +85,23 @@
 ^CITATION\.cff$
 ^install_package\.R$
 ^scripts$
+^CONTRIBUTING\.md$
+^CRAN_SUBMISSION_GUIDE\.md$
+^build_vignettes\.R$
+^build_vignettes_manual\.R$
+^build_vignettes_rstudio\.R$
+^cran_submission_final\.R$
+^final_check_output\.txt$
+^final_cran_check\.R$
+^final_cran_check_output\.txt$
+^install_pandoc\.R$
+^install_pandoc\.bat$
+^setup_pandoc_and_build\.ps1$
+^vignette_footer_template\.md$
 
 # Non-standard R/ subdirectories (CRAN compliance)
 ^R/tests$
 ^R/tests/.*$
 ^R/scripts$
 ^R/scripts/.*$
+^CRAN-SUBMISSION$

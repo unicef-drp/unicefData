@@ -432,16 +432,32 @@ See [NEWS.md](../NEWS.md) for complete changelog.
 
 ---
 
-## License
+## Citation
 
-MIT License - See [LICENSE](../LICENSE)
+If you use this package, please cite:
+
+> Azevedo, Joao Pedro (2026). "unicefdata: Unified access to UNICEF indicators across R, Python, and Stata." Mimeo, UNICEF Chief Statistician Office.
+
+---
+
+## Development
+
+Development assisted by AI coding tools (GitHub Copilot, Claude). All code reviewed and validated by maintainers.
+
+---
 
 ## Author
 
-**Joao Pedro Azevedo**
+**Joao Pedro Azevedo** ([@jpazvd](https://github.com/jpazvd))
 Chief Statistician, UNICEF Data and Analytics Section
 Email: jpazevedo@unicef.org
 Website: [jpazvd.github.io](https://jpazvd.github.io/)
+
+---
+
+## License
+
+MIT License - See [LICENSE](../LICENSE)
 
 ## Contributing
 

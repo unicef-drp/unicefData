@@ -39,21 +39,15 @@ get_unicef <- function(
     }
   }
   
-  # Ensure core functions are available when sourcing directly (not as package)
-  if (!exists("unicefData_raw", mode = "function")) {
-    core_core <- "c:/GitHub/others/unicefData/R/unicef_core.R"
-    if (file.exists(core_core)) {
-      source(core_core)
-    }
-  }
+  # Ensure unicefData function is available
+  # When used as a package, this will already be loaded via NAMESPACE
+  # For standalone usage, require the package explicitly
   if (!exists("unicefData", mode = "function")) {
-    core_path <- "c:/GitHub/others/unicefData/R/unicefData.R"
-    if (!file.exists(core_path)) {
-      stop("unicefData.R not found at ", core_path)
+    if (!requireNamespace("unicefData", quietly = TRUE)) {
+      stop("unicefData package is required but not installed. Install with: install.packages('unicefData')")
     }
-    source(core_path)
   }
-  
+
   df <- unicefData(
     indicator = indicator,
     dataflow = dataflow,
