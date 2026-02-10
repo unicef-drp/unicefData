@@ -1,6 +1,6 @@
 # R/flows.R
 
-#' @title List available SDMX “flows” for an agency
+#' @title List Available SDMX Flows for an Agency
 #' @description Download and cache the SDMX dataflow definitions from a specified agency's REST endpoint.
 #' @param agency Character agency ID (e.g., "UNICEF").
 #' @param retry Number of retries for transient HTTP failures; default is 3.

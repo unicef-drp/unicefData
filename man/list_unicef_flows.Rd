@@ -2,7 +2,7 @@
 % Please edit documentation in R/unicefData.R
 \name{list_unicef_flows}
 \alias{list_unicef_flows}
-\title{List available UNICEF SDMX "flows"}
+\title{List Available UNICEF SDMX Flows}
 \usage{
 list_unicef_flows(
   cache_dir = tools::R_user_dir("unicefData", "cache"),
@@ -18,5 +18,5 @@ list_unicef_flows(
 A tibble with columns \code{id}, \code{agency}, and \code{version}
 }
 \description{
-Download and cache the SDMX data-flow definitions from UNICEF’s REST endpoint.
+Download and cache the SDMX data-flow definitions from the UNICEF REST endpoint.
 }

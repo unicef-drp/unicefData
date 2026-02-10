@@ -208,9 +208,9 @@ if (!exists("unicefData_raw", mode = "function")) {
 # Note: HTTP fetching is handled by .fetch_sdmx() in utils.R
 # Data fetching with 404 fallback is handled by fetch_sdmx_text() in unicef_core.R
 
-#' @title List available UNICEF SDMX "flows"
+#' @title List Available UNICEF SDMX Flows
 #' @description
-#' Download and cache the SDMX data-flow definitions from UNICEF’s REST endpoint.
+#' Download and cache the SDMX data-flow definitions from the UNICEF REST endpoint.
 #' @param cache_dir Character path to cache directory.
 #' @param retry Integer, number of retries.
 #' @return A tibble with columns \code{id}, \code{agency}, and \code{version}

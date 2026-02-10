@@ -2,7 +2,7 @@
 % Please edit documentation in R/flows.R
 \name{list_sdmx_flows}
 \alias{list_sdmx_flows}
-\title{List available SDMX “flows” for an agency}
+\title{List Available SDMX Flows for an Agency}
 \usage{
 list_sdmx_flows(
   agency = "UNICEF",
