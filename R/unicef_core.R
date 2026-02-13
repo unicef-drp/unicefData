@@ -29,6 +29,8 @@
 
 # Lazy-load fallback sequences at first use (not at module init) to respect working directory
 .FALLBACK_ENV <- new.env(parent = emptyenv())
+# Cache mutable YAML-derived metadata without mutating namespace bindings
+.YAML_CACHE_ENV <- new.env(parent = emptyenv())
 
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -160,7 +162,7 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
   get("sequences", envir = .FALLBACK_ENV, inherits = FALSE)
 }
 # Load comprehensive indicators metadata at module initialization
-.INDICATORS_METADATA_YAML <- .load_indicators_metadata_yaml()
+.YAML_CACHE_ENV$indicators_metadata <- .load_indicators_metadata_yaml()
 
 #' Load aggregate/region ISO3 codes for geo_type classification
 #'
@@ -205,7 +207,7 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 }
 
 # Load region codes at module initialization
-.REGION_CODES_YAML <- .load_region_codes_yaml()
+.YAML_CACHE_ENV$region_codes <- .load_region_codes_yaml()
 
 
 #' Clear All UNICEF Caches
@@ -233,7 +235,6 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 #' }
 clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
   cleared <- character(0)
-  ns <- environment(clear_unicef_cache)
 
   # 1. Fallback sequences (unicef_core.R)
   if (exists("sequences", envir = .FALLBACK_ENV, inherits = FALSE)) {
@@ -242,17 +243,11 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
   cleared <- c(cleared, "fallback_sequences")
 
   # 2. Indicators metadata YAML (unicef_core.R)
-  tryCatch({
-    unlockBinding(".INDICATORS_METADATA_YAML", ns)
-    assign(".INDICATORS_METADATA_YAML", NULL, envir = ns)
-  }, error = function(e) NULL)
+  .YAML_CACHE_ENV$indicators_metadata <- NULL
   cleared <- c(cleared, "indicators_metadata")
 
   # 3. Region codes YAML (unicef_core.R)
-  tryCatch({
-    unlockBinding(".REGION_CODES_YAML", ns)
-    assign(".REGION_CODES_YAML", NULL, envir = ns)
-  }, error = function(e) NULL)
+  .YAML_CACHE_ENV$region_codes <- character(0)
   cleared <- c(cleared, "region_codes")
 
   # 4. Indicator registry cache (indicator_registry.R)
@@ -272,14 +267,8 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
 
   # Reload YAML-based caches if requested
   if (reload) {
-    tryCatch({
-      assign(".INDICATORS_METADATA_YAML", .load_indicators_metadata_yaml(), envir = ns)
-      lockBinding(".INDICATORS_METADATA_YAML", ns)
-    }, error = function(e) NULL)
-    tryCatch({
-      assign(".REGION_CODES_YAML", .load_region_codes_yaml(), envir = ns)
-      lockBinding(".REGION_CODES_YAML", ns)
-    }, error = function(e) NULL)
+    .YAML_CACHE_ENV$indicators_metadata <- .load_indicators_metadata_yaml()
+    .YAML_CACHE_ENV$region_codes <- .load_region_codes_yaml()
     # Fallback sequences reload lazily via .get_fallback_sequences()
   }
 
@@ -362,6 +351,8 @@ detect_dataflow <- function(indicator) {
 #' @return Character vector of fallback dataflow IDs to try
 #' @keywords internal
 get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
+  indicators_meta <- .YAML_CACHE_ENV$indicators_metadata
+
   # Build prefix-specific fallback chains from canonical YAML or comprehensive metadata
   fallbacks <- c()
   
@@ -369,8 +360,8 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   if (!is.null(indicator_code)) {
     # Priority 1: Direct lookup in comprehensive indicators metadata
     # Check both 'dataflow' (singular) and 'dataflows' (plural) fields
-    if (!is.null(.INDICATORS_METADATA_YAML) && indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
-      meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+    if (!is.null(indicators_meta) && indicator_code %in% names(indicators_meta)) {
+      meta <- indicators_meta[[indicator_code]]
       # Check 'dataflows' (plural) first, then 'dataflow' (singular)
       dataflow_value <- meta$dataflows %||% meta$dataflow
       if (!is.null(dataflow_value)) {
@@ -673,11 +664,12 @@ unicefData_raw <- function(
 
   # If all candidates were 404 (indicator not found in any attempted flow), return empty
   if (last_not_found) {
-    # Always show which dataflows were tried (not just when verbose)
-    warning(sprintf(
-      "Not Found (404): Indicator '%s' not found in any dataflow.\n  Tried dataflows: %s\n  Browse available indicators at: https://data.unicef.org/",
-      indicator[1], paste(flows, collapse = ", ")
-    ), call. = FALSE)
+    if (isTRUE(verbose)) {
+      message(sprintf(
+        "Not Found (404): Indicator '%s' not found in any dataflow.\n  Tried dataflows: %s\n  Browse available indicators at: https://data.unicef.org/",
+        indicator[1], paste(flows, collapse = ", ")
+      ))
+    }
     return(dplyr::tibble())
   }
 
@@ -813,12 +805,13 @@ clean_unicef_data <- function(df) {
 
   # Add geo_type: 1 for aggregates (ISO3 in YAML regions list), 0 otherwise (numeric)
   if ("iso3" %in% names(df_clean)) {
-    if (length(.REGION_CODES_YAML) == 0) {
+    region_codes <- .YAML_CACHE_ENV$region_codes %||% character(0)
+    if (length(region_codes) == 0) {
       warning("geo_type classification: region codes not loaded; treating all as country (0).")
     }
     df_clean <- df_clean %>%
       dplyr::mutate(
-        geo_type = dplyr::if_else(iso3 %in% .REGION_CODES_YAML, 1L, 0L)
+        geo_type = dplyr::if_else(iso3 %in% region_codes, 1L, 0L)
       )
   }
 
@@ -853,9 +846,10 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
 
   # Get indicator metadata for smart filtering (disaggregations_with_totals)
   dims_with_totals <- c()
-  if (!is.null(indicator_code) && !is.null(.INDICATORS_METADATA_YAML) &&
-      indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
-    meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+  indicators_meta <- .YAML_CACHE_ENV$indicators_metadata
+  if (!is.null(indicator_code) && !is.null(indicators_meta) &&
+      indicator_code %in% names(indicators_meta)) {
+    meta <- indicators_meta[[indicator_code]]
     if (!is.null(meta$disaggregations_with_totals)) {
       dims_with_totals <- meta$disaggregations_with_totals
       if (verbose) {
