@@ -66,6 +66,8 @@
 
 # Python artifacts
 ^\.pytest_cache$
+^\.venv$
+^\.venv/.*$
 
 # Log files and temp outputs
 ^check_output\.txt$
@@ -105,3 +107,4 @@
 ^R/scripts$
 ^R/scripts/.*$
 ^CRAN-SUBMISSION$
+^doc
