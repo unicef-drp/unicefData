@@ -7,7 +7,7 @@
 .get_metadata_dir()
 }
 \value{
-Path to R/metadata/current/
+Path to metadata directory: prefers \code{inst/metadata/current} in the source tree, otherwise a user cache directory at \code{tools::R_user_dir("unicefData", "cache")/metadata/current}.
 }
 \description{
 Get metadata directory path

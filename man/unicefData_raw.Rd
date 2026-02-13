@@ -13,7 +13,6 @@ unicefData_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
-  page_size = 1e+05,
   verbose = TRUE,
   totals = FALSE,
   labels = "id"
@@ -27,7 +26,6 @@ unicefdata_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
-  page_size = 1e+05,
   verbose = TRUE,
   totals = FALSE,
   labels = "id"
@@ -47,8 +45,6 @@ unicefdata_raw(
 \item{max_retries}{Integer, number of retries for failed requests.}
 
 \item{version}{Character string of SDMX version (e.g. "1.0").}
-
-\item{page_size}{Integer, number of rows per page.}
 
 \item{verbose}{Logical, print progress messages.}
 

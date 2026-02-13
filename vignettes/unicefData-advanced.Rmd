@@ -23,6 +23,7 @@ and the Stata help file, enabling cross-language reproducibility.
 ```{r library}
 library(unicefData)
 library(dplyr)
+library(ggplot2)
 ```
 
 ## U5MR trends in South Asia
@@ -45,7 +46,7 @@ plot(
   data = df_total[df_total$iso3 == "AFG", ],
   type = "l", col = "red", lwd = 2,
   ylim = range(df_total$value, na.rm = TRUE),
-  xlab = "Year", ylab = "Under-5 mortality rate (per 1,000)",
+  xlab = "Year", ylab = "Under-five mortality rate (deaths per 1,000 live births)",
   main = "U5MR Trends in South Asia"
 )
 lines(value ~ period, data = df_total[df_total$iso3 == "BGD", ], col = "blue", lwd = 2)

@@ -626,7 +626,7 @@ def _fetch_with_fallback(
 # =============================================================================
 
 def unicefData(
-    indicator: Union[str, List[str]],
+    indicator: Optional[Union[str, List[str]]] = None,
     countries: Optional[List[str]] = None,
     year: Union[int, str, List[int], Tuple[int, int], None] = None,
     dataflow: Optional[str] = None,
@@ -656,6 +656,7 @@ def unicefData(
     Args:
         indicator: Indicator code(s). Single string or list of codes.
             Examples: "CME_MRY0T4" (under-5 mortality), "NT_ANT_HAZ_NE2_MOD" (stunting)
+            If None, dataflow must be provided and the full dataflow is fetched.
         countries: ISO 3166-1 alpha-3 country codes. If None, fetches all countries.
             Examples: ["ALB", "USA", "BRA"]
         year: Year specification. Supports multiple formats:
@@ -812,7 +813,18 @@ def unicefData(
         print(f"Warning: Metadata sync failed ({e}). Proceeding without cached metadata.")
 
     # Handle single indicator or list
-    indicators = [indicator] if isinstance(indicator, str) else indicator
+    if isinstance(indicator, str):
+        indicator_clean = indicator.strip()
+        indicators = [indicator_clean] if indicator_clean else None
+    elif indicator is None:
+        indicators = None
+    else:
+        indicators = [str(ind).strip() for ind in indicator if str(ind).strip()]
+        if len(indicators) == 0:
+            indicators = None
+
+    if indicators is None and dataflow is None:
+        raise ValueError("Either 'indicator' or 'dataflow' must be specified.")
     
     # Parse the year parameter
     year_spec = parse_year(year)
@@ -827,19 +839,32 @@ def unicefData(
     
     print("")
     
-    # Use get_sdmx() for the actual data fetch
-    # This provides the low-level SDMX query with fallback logic
-    result = _fetch_with_fallback(
-        indicators=indicators,
-        dataflow=dataflow,
-        countries=countries,
-        start_year=start_year,
-        end_year=end_year,
-        sex=sex,
-        totals=totals,
-        max_retries=max_retries,
-        tidy=not raw,
-    )
+    # Use get_sdmx() / fallback fetch for the actual data fetch
+    if indicators is None:
+        result = get_sdmx(
+            flow=dataflow,
+            key=None,
+            start_period=start_year,
+            end_period=end_year,
+            labels="id",
+            tidy=not raw,
+            country_names=country_names,
+            countries=countries,
+            sex=sex,
+            retry=max_retries,
+        )
+    else:
+        result = _fetch_with_fallback(
+            indicators=indicators,
+            dataflow=dataflow,
+            countries=countries,
+            start_year=start_year,
+            end_year=end_year,
+            sex=sex,
+            totals=totals,
+            max_retries=max_retries,
+            tidy=not raw,
+        )
     
     print("")
     
