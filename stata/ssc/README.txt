@@ -1,6 +1,6 @@
 unicefData: Stata module for accessing UNICEF SDMX indicators
 
-Version: 2.0.4 (01Feb2026)
+Version: 2.2.0 (10Feb2026)
 
 This package provides access to 733+ indicators from the UNICEF Data Warehouse
 using the SDMX REST API, covering child health, nutrition, education, protection,
@@ -51,6 +51,7 @@ DOCUMENTATION:
   help unicefdata_examples
   help unicefdata_xmltoyaml
   help unicefdata_xmltoyaml_py
+  help get_sdmx
   unicefdata, whatsnew
 
 AUTHOR:

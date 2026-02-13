@@ -1030,3 +1030,91 @@ Skipped:  0
 Result:   ALL TESTS PASSED
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run: 12 Feb 2026
+Started:  01:11:14
+Ended:    01:50:06
+Duration: 38m 52s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 57 passed, 6 failed
+Skipped:  0
+Result:   FAILED
+Failed:   XPLAT-01, XPLAT-04, ERR-02, ERR-03, ERR-07, EXT-05
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 12 Feb 2026
+Started:  02:14:28
+Ended:    02:48:31
+Duration: 34m 3s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 61 passed, 2 failed
+Skipped:  0
+Result:   FAILED
+Failed:   XPLAT-01, EXT-05
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 12 Feb 2026
+Started:  02:58:21
+Ended:    03:59:48
+Duration: 61m 27s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 63 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 13 Feb 2026
+Started:  01:40:50
+Ended:    02:17:25
+Duration: 36m 35s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 63 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 13 Feb 2026
+Started:  13:15:19
+Ended:    14:43:17
+Duration: 87m 58s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 53 passed, 9 failed
+Skipped:  1 (see run_tests.log for reasons)
+Skip detail: MULTI-02: Network unavailable - cannot test API csv-ts format
+Result:   FAILED
+Failed:   TRANS-01, TRANS-02, META-01, MULTI-01, EDGE-02, EDGE-03, PERF-01, REGR-01, XPLAT-02
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 13 Feb 2026
+Started:  14:44:26
+Ended:    15:47:08
+Duration: 62m 42s
+Branch:   feat/qa-improvement-plan
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 63 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================

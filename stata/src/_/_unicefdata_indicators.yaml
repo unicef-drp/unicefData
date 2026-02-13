@@ -2,7 +2,7 @@ metadata:
   version: '2.0.0'
   source: UNICEF SDMX Codelist CL_UNICEF_INDICATOR
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0
-  last_updated: 2026-02-07T16:12:10
+  last_updated: 2026-02-13T15:23:32
   description: Comprehensive UNICEF indicators codelist with metadata (auto-generated)
   indicator_count: 738
 indicators:

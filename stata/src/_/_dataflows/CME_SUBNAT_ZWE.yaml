@@ -2,7 +2,7 @@ id: CME_SUBNAT_ZWE
 name: 'CME Zimbabwe'
 version: '1.0'
 agency: UNICEF
-synced_at: '2026-02-07T16:12:13Z'
+synced_at: '2026-02-13T15:23:33Z'
 dimensions:
 - id: REF_AREA
   position: 1

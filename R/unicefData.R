@@ -32,25 +32,23 @@
 #' @importFrom magrittr %>%
 NULL
 
-# Ensure required packages are loaded when sourcing directly
-if (!requireNamespace("magrittr", quietly = TRUE)) {
-  stop("Package 'magrittr' is required but not available.")
+# Guards for standalone sourcing only (skipped when loaded as a package)
+if (!isNamespace(topenv(environment()))) {
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package 'magrittr' is required but not available.")
+  }
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    stop("Package 'dplyr' is required but not available.")
+  }
+  if (!requireNamespace("purrr", quietly = TRUE)) {
+    stop("Package 'purrr' is required but not available.")
+  }
+  if (!requireNamespace("httr", quietly = TRUE)) {
+    stop("Package 'httr' is required but not available.")
+  }
+  `%>%` <- magrittr::`%>%`
+  `%||%` <- function(x, y) if (is.null(x)) y else x
 }
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required but not available.")
-}
-if (!requireNamespace("purrr", quietly = TRUE)) {
-  stop("Package 'purrr' is required but not available.")
-}
-if (!requireNamespace("httr", quietly = TRUE)) {
-  stop("Package 'httr' is required but not available.")
-}
-
-# Import pipe operator for direct sourcing
-`%>%` <- magrittr::`%>%`
-
-# Null coalescing operator
-`%||%` <- function(x, y) if (is.null(x)) y else x
 
 
 # =============================================================================
