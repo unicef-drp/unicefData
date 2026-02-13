@@ -107,4 +107,5 @@
 ^R/scripts$
 ^R/scripts/.*$
 ^CRAN-SUBMISSION$
-^doc
+^doc$
+^doc/.*$
