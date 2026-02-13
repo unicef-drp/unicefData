@@ -431,7 +431,6 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year_str Character string of end year (optional)
 #' @param max_retries Integer number of retry attempts
 #' @param version SDMX version string (default "1.0")
-#' @param page_size Integer number of rows per page
 #' @param verbose Logical for progress messages
 #' @param totals Logical for including totals
 #' @param labels Label format ("id" or "name")
@@ -445,15 +444,25 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     end_year_str = NULL,
     max_retries = 3,
     version = "1.0",
-    page_size = 100000,
   verbose = TRUE,
   totals = FALSE,
   labels = "id"
 ) {
   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-  indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  if (is.null(indicator) || length(indicator) == 0) {
+    indicator_str <- ""
+  } else {
+    indicator <- trimws(as.character(indicator))
+    indicator <- indicator[nzchar(indicator)]
+    indicator_str <- if (length(indicator) > 0) {
+      paste0(".", paste(indicator, collapse = "+"), ".")
+    } else {
+      ""
+    }
+  }
+
   # Override and expand dimensions for WS_HCF_* to expose service/hcf/residence breakdowns
-  if (length(indicator) == 1 && grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+  if (!is.null(indicator) && length(indicator) == 1 && grepl("^WS_HCF_", toupper(indicator[[1]]))) {
     dataflow <- "WASH_HEALTHCARE_FACILITY"
     code <- toupper(indicator[[1]])
     tail <- sub("^WS_HCF_", "", code)
@@ -480,7 +489,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     }
   }
   # Explicit totals across known dimensions when requested
-  if (totals && !grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+  if (totals && !is.null(indicator) && length(indicator) > 0 && !grepl("^WS_HCF_", toupper(indicator[[1]]))) {
     # Attempt to load schema to determine dimension count
     if (!exists("load_dataflow_schema", mode = "function")) {
       script_dir <- dirname(sys.frame(1)$ofile %||% ".")
@@ -500,7 +509,11 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     }
     indicator_str <- paste0(indicator_str, sub("^\\.", "", dim_suffix))
   }
-  rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
+  rel_path <- if (nzchar(indicator_str)) {
+    sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
+  } else {
+    sprintf("data/UNICEF,%s,%s/", dataflow, version)
+  }
 
   # Validate labels parameter
   if (!labels %in% c("id", "both", "none")) {
@@ -517,42 +530,30 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   # Shared dynamic User-Agent
   ua <- .unicefData_ua
 
-  pages <- list()
-  page <- 0L
+  if (verbose) message("Fetching data...")
 
-  repeat {
-    page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-    if (verbose) message(sprintf("Fetching page %d...", page + 1))
+  # IMPORTANT: catch 404 as a signal, not a fatal error
+  out <- tryCatch(
+    {
+      txt <- fetch_sdmx_text(full_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
+      readr::read_csv(I(txt), show_col_types = FALSE)
+    },
+    error = function(e) e
+  )
 
-    # IMPORTANT: catch 404 as a signal, not a fatal error
-    out <- tryCatch(
-      {
-        txt <- fetch_sdmx_text(page_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
-        readr::read_csv(I(txt), show_col_types = FALSE)
-      },
-      error = function(e) e
-    )
-
-    if (inherits(out, "error")) {
-      if (.is_http_404(out)) {
-        # "Not in this dataflow"
-        return(list(status = "not_found", df = NULL))
-      }
-      # Any other error is still fatal (transient errors should be handled by RETRY)
-      stop(out)
+  if (inherits(out, "error")) {
+    if (.is_http_404(out)) {
+      # "Not in this dataflow"
+      return(list(status = "not_found", df = NULL))
     }
-
-    df <- out
-    if (is.null(df) || nrow(df) == 0) break
-
-    pages[[length(pages) + 1L]] <- df
-    if (nrow(df) < page_size) break
-
-    page <- page + 1L
-    Sys.sleep(0.2)
+    # Any other error is still fatal (transient errors should be handled by RETRY)
+    stop(out)
   }
 
-  df_all <- dplyr::bind_rows(pages)
+  df_all <- out
+  if (is.null(df_all)) {
+    df_all <- dplyr::tibble()
+  }
 
   # Filter countries (post-fetch)
   if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
@@ -572,7 +573,6 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year Numeric or character end year (YYYY).
 #' @param max_retries Integer, number of retries for failed requests.
 #' @param version Character string of SDMX version (e.g. "1.0").
-#' @param page_size Integer, number of rows per page.
 #' @param verbose Logical, print progress messages.
 #' @param totals Logical, include total aggregations.
 #' @param labels Character, label format ("id" or "name").
@@ -585,11 +585,30 @@ unicefData_raw <- function(
     end_year = NULL,
     max_retries = 3,
     version = NULL,
-    page_size = 100000,
     verbose = TRUE,
     totals = FALSE,
     labels = "id"
 ) {
+  # Validate indicator input to prevent hard-to-read API 400 errors.
+  if (!is.null(indicator)) {
+    indicator <- as.character(indicator)
+    indicator <- trimws(indicator)
+
+    if (length(indicator) == 0 || all(!nzchar(indicator))) {
+      stop(
+        "`indicator` cannot be empty. Provide a valid indicator code (e.g., 'CME_MRY0T4').\n",
+        "Use search_indicators() to find available indicator codes."
+      )
+    }
+
+    if (any(!nzchar(indicator))) {
+      stop(
+        "`indicator` contains empty value(s). Remove blank entries and try again.\n",
+        "Use search_indicators() to find available indicator codes."
+      )
+    }
+  }
+
   # Validate inputs
   if (is.null(dataflow) && is.null(indicator)) {
     stop("Either 'indicator' or 'dataflow' must be specified.")
@@ -613,7 +632,7 @@ unicefData_raw <- function(
   # determine primary dataflow
   if (is.null(dataflow)) {
     dataflow <- detect_dataflow(indicator[1])
-    if (verbose) message(sprintf("Auto-detected dataflow '%s'", dataflow))
+    if (verbose) message(sprintf("Auto-detected dataflow: '%s'", dataflow))
   }
 
   # Candidate flows: primary + fallbacks
@@ -637,7 +656,6 @@ unicefData_raw <- function(
       end_year_str   = end_year_str,
       max_retries = max_retries,
       version = ver,
-      page_size = page_size,
       verbose = verbose,
       totals = totals,
       labels = labels
@@ -684,7 +702,7 @@ unicefData_raw <- function(
 #   page <- 0L
 #
 #   repeat {
-#     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
+#     page_url <- full_url
 #     if (verbose) message(sprintf("Fetching page %d...", page + 1))
 #     # this NULL here masks 404, let's fix and make fallback possible:
 #     df <- tryCatch(
