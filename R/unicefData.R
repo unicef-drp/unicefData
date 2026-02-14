@@ -735,6 +735,14 @@ add_country_metadata <- function(df, metadata_list) {
 add_indicator_metadata <- function(df, metadata_list) {
   if (!"indicator" %in% names(df)) return(df)
 
+  if ("indicator_name" %in% metadata_list && !"indicator_name" %in% names(df)) {
+    df <- df %>% dplyr::mutate(indicator_name = NA_character_)
+  }
+
+  if ("indicator_category" %in% metadata_list && !"indicator_category" %in% names(df)) {
+    df <- df %>% dplyr::mutate(indicator_category = NA_character_)
+  }
+
   if ("indicator_name" %in% metadata_list || "indicator_category" %in% metadata_list) {
     unique_inds <- unique(df$indicator)
 
@@ -743,12 +751,12 @@ add_indicator_metadata <- function(df, metadata_list) {
       if (!is.null(info)) {
         if ("indicator_name" %in% metadata_list) {
           df <- df %>% dplyr::mutate(
-            indicator_name = dplyr::if_else(indicator == ind, info$name, indicator_name)
+            indicator_name = dplyr::if_else(indicator == ind, info$name %||% NA_character_, indicator_name)
           )
         }
         if ("indicator_category" %in% metadata_list) {
           df <- df %>% dplyr::mutate(
-            indicator_category = dplyr::if_else(indicator == ind, info$category, indicator_category)
+            indicator_category = dplyr::if_else(indicator == ind, info$category %||% NA_character_, indicator_category)
           )
         }
       }

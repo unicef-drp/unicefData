@@ -521,7 +521,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   # Shared dynamic User-Agent
   ua <- .unicefData_ua
 
-  if (verbose) message("Fetching data...")
+  if (verbose) message("Fetching url: ", full_url)
 
   # IMPORTANT: catch 404 as a signal, not a fatal error
   out <- tryCatch(
@@ -566,7 +566,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param version Character string of SDMX version (e.g. "1.0").
 #' @param verbose Logical, print progress messages.
 #' @param totals Logical, include total aggregations.
-#' @param labels Character, label format ("id" or "name").
+#' @param labels Character, label format ("id", "name", or "both").
 #' @export
 unicefData_raw <- function(
     indicator = NULL,
@@ -578,7 +578,7 @@ unicefData_raw <- function(
     version = NULL,
     verbose = TRUE,
     totals = FALSE,
-    labels = "id"
+    labels = "both"
 ) {
   # Validate indicator input to prevent hard-to-read API 400 errors.
   if (!is.null(indicator)) {
