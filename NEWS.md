@@ -1,5 +1,44 @@
 # unicefData Changelog
 
+## 2.2.0 (2026-02-15)
+
+### Cross-Platform Testing Infrastructure
+
+* **328+ automated tests** across 11 test families (unit, integration, deterministic, sync-pipeline, discovery, error-conditions, transformations, cross-language, API-mock, regression, smoke)
+* **Deterministic fixture system**: Single `tests/fixtures.zip` source with automated extraction via git hooks and `unpack_fixtures.py`
+* **Full CI matrix**: R (devel/release/oldrel × Ubuntu/macOS/Windows), Python 3.9-3.11, YAML schema validation
+* **19 CI checks** all passing
+
+### R Package
+
+* Added 5 new testthat test files: transformations, deterministic, discovery, sync-pipeline, error-conditions
+* Added `helper-fixtures.R` with `testthat::test_path()` for R CMD check compatibility
+* Fixed category resolution fallback in `list_categories()` - eliminates "UNKNOWN" entries
+* Added input validation for `unicefData()` with helpful `search_indicators()` hint
+
+### Python Package
+
+* Fixed missing sex filter in full-dataflow path (`get_sdmx(flow="CME", sex="_T")`)
+* Fixed `None` indicator converting to literal `"None"` string
+* Added retry logic with exponential backoff for full-dataflow fetches  
+* Added `detail` parameter validation
+* Validated indicator input and filter empty/None values
+
+### CI/CD
+
+* Added fixture extraction step to all 3 test workflows
+* Relaxed R-CMD-check from `error-on: "warning"` to `error-on: "error"`
+* Excluded legacy debug scripts from pytest collection
+* Fixed lint issues in `unpack_fixtures.py`
+
+### Documentation
+
+* Added cross-platform testing framework paper
+* Added test audit with 11-family typology
+* Added versioning policy document
+* Documented git hooks and SHA-256 fixture stamps
+* Added roxygen2 documentation and vignettes
+
 ## 2.1.0 (2026-02-07)
 
 ### Cache Management

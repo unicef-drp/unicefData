@@ -451,7 +451,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citation for data used in research:**
 
-> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.1.0) on 2026-02-09. Data available at: https://sdmx.data.unicef.org/
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 
