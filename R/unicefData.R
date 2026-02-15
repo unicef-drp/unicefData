@@ -438,6 +438,16 @@ unicefData <- function(
   format <- match.arg(format)
   detail <- match.arg(detail)
 
+  # Validate indicator input
+  if (!is.null(indicator)) {
+    indicator <- trimws(as.character(indicator))
+    indicator <- indicator[nzchar(indicator)]
+    if (length(indicator) == 0) {
+      stop("No valid indicator codes provided (all empty or whitespace). ",
+           "Use search_indicators() to find valid codes.")
+    }
+  }
+
   # Validate metadata parameter
   if (!metadata %in% c("light", "full")) {
     stop(sprintf("metadata must be 'light' or 'full', got '%s'", metadata))

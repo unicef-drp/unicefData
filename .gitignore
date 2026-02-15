@@ -69,6 +69,16 @@ nul
 !tests/fixtures/api_responses/*.csv
 !tests/fixtures/expected/*.csv
 
+# ============================================
+# Test fixtures — ZIP is the authoritative source
+# ============================================
+# The ZIP is tracked; unpacked directories are gitignored.
+# Run: python scripts/unpack_fixtures.py (or hooks handle it)
+tests/fixtures/deterministic/
+tests/fixtures/xml_full/
+tests/fixtures/_staging/
+tests/fixtures/.unpack_stamp
+
 # Test and Example Outputs
 python/tests/output/
 R/tests/output/

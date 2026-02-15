@@ -812,7 +812,23 @@ def unicefData(
         print(f"Warning: Metadata sync failed ({e}). Proceeding without cached metadata.")
 
     # Handle single indicator or list
-    indicators = [indicator] if isinstance(indicator, str) else indicator
+    if isinstance(indicator, str):
+        # Normalize single string: strip whitespace and discard if empty
+        normalized = indicator.strip()
+        indicators = [normalized] if normalized else []
+    else:
+        # Normalize iterable: skip None, strip whitespace, and discard empties
+        indicators = []
+        for ind in indicator:
+            if ind is None:
+                continue
+            code = str(ind).strip()
+            if code:
+                indicators.append(code)
+    if not indicators:
+        raise ValueError(
+            "No valid indicator codes provided (all values were None or empty/whitespace)."
+        )
     
     # Parse the year parameter
     year_spec = parse_year(year)

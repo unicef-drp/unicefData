@@ -186,22 +186,23 @@ Use `list_categories()` for the complete list (733 indicators across 22 categori
 
 ```
 unicefData/
-├── R/                      # R package
-│   ├── *.R                 # R source files
-│   ├── metadata/current/   # R metadata cache
-│   └── README.md           # R documentation
-├── python/                 # Python package
-│   ├── unicef_api/         # Python module
-│   ├── metadata/current/   # Python metadata cache
-│   └── README.md           # Python documentation
-├── stata/                  # Stata package
-│   ├── src/                # Stata source files
-│   ├── metadata/current/   # Stata metadata cache
-│   ├── qa/                 # QA test suite
-│   └── README.md           # Stata documentation
-├── config/                 # Shared configuration
-├── tests/                  # Cross-platform tests
+├── R/                      # R package source
+├── python/                 # Python package source
+├── stata/                  # Stata package source
+│   └── qa/                 # Stata QA test suite (63 tests)
+├── tests/
+│   ├── fixtures.zip        # Authoritative test fixtures (single source)
+│   ├── fixtures/           # Unpacked fixtures (auto-extracted)
+│   └── testthat/           # R unit tests (105 tests)
+├── scripts/
+│   ├── generate_fixtures.py  # Download + pack fixtures from API
+│   └── unpack_fixtures.py    # Extract ZIP to all platform dirs
+├── .githooks/              # Auto-unpack on clone/pull
 ├── validation/             # Cross-platform validation
+├── internal/docs/          # Dev-only documentation
+│   ├── TEST_REFERENCE.md   # Full cross-platform test map
+│   ├── QA_SETUP.md         # Environment setup guide
+│   └── FIXTURE_INFRASTRUCTURE.md  # ZIP fixture system
 ├── DESCRIPTION             # R package metadata
 ├── NEWS.md                 # Changelog
 └── README.md               # This file
@@ -293,38 +294,58 @@ See [docs/METADATA_GENERATION_GUIDE.md](docs/METADATA_GENERATION_GUIDE.md) for d
 
 ## Testing & Validation
 
+443 automated tests across all three platforms (63 Stata, 160 Python, 220 R).
+All tests run offline using frozen fixtures from `tests/fixtures.zip`.
+Full suite executes in under 14 minutes (12m 13s Stata, 34s Python, 7s R).
+
 ### Run Tests
 
-**R:**
-```r
-devtools::test()
-```
-
-**Python:**
+**Python** (160 tests):
 ```bash
-cd python && pytest
+cd python && pytest tests/ -v
 ```
 
-**Stata:**
+**R** (220 expectations):
+```r
+testthat::test_dir("tests/testthat/")
+```
+
+**Stata** (63 tests):
 ```stata
 cd stata/qa
 do run_tests.do
 ```
 
-### Cross-Language Fixture Tests
+### Test Families
 
-Shared test fixtures validate structural consistency across all three languages:
+Tests are organized into 16 families aligned across platforms:
+
+| Family | Stata | Python | R | Description |
+| ------ | ----: | -----: | -: | ----------- |
+| DET | 11 | 37 | 32 | Deterministic / offline (frozen CSV) |
+| SYNC | 4 | 12 | 12 | Metadata sync (XML → YAML) |
+| DISC | 3 | 24 | 24 | Discovery (YAML → output) |
+| DL | 9 | 15 | 8 | Download / API fetch |
+| ERR | 8 | 18 | 6 | Error handling / input validation |
+| TRANS | 2 | 23 | 14 | Transformations (wide, latest, MRV) |
+| REGR | 1 | 4 | 2 | Regression baselines (value pinning) |
+| Other | 25 | 27 | 122 | DATA, TIER, META, MULTI, EDGE, EXT, PERF, ENV, XPLAT |
+
+See [internal/docs/TEST_REFERENCE.md](internal/docs/TEST_REFERENCE.md) for the
+complete cross-platform test map.
+
+### Fixture Infrastructure
+
+Test fixtures are stored in a single ZIP file (`tests/fixtures.zip`) and
+auto-extracted by git hooks on clone and pull:
 
 ```bash
-# Python
-python tests/test_cross_language_output.py
-
-# R
-Rscript tests/test_cross_language_output.R
-
-# Stata
-do tests/test_cross_language_output.do
+git config core.hooksPath .githooks    # one-time setup
+python scripts/unpack_fixtures.py      # manual alternative
 ```
+
+See [internal/docs/FIXTURE_INFRASTRUCTURE.md](internal/docs/FIXTURE_INFRASTRUCTURE.md)
+for the full extraction map and regeneration workflow.
 
 ### Cross-Platform Validation
 
@@ -350,9 +371,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 ```bash
 git clone https://github.com/unicef-drp/unicefData.git
 cd unicefData
+git config core.hooksPath .githooks    # enable auto-unpack fixtures
 
 # Python
-cd python && pip install -e .
+cd python && pip install -e ".[dev]"
 
 # R (in RStudio)
 devtools::load_all()
@@ -360,6 +382,9 @@ devtools::load_all()
 # Stata
 cd stata && do install_local.do
 ```
+
+See [internal/docs/QA_SETUP.md](internal/docs/QA_SETUP.md) for detailed
+setup instructions across all three platforms.
 
 ---
 

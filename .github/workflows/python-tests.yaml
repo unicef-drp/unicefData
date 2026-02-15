@@ -43,6 +43,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Unpack test fixtures
+      run: python scripts/unpack_fixtures.py --force
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
