@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.1.0  07Feb2026}{...}
+{* *! version 2.2.0  10Feb2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -13,7 +13,7 @@
 {viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {hline}
-{cmd:help unicefdata}{right:{bf:version 2.1.0}}
+{cmd:help unicefdata}{right:{bf:version 2.2.0}}
 {hline}
 
 {title:Title}
@@ -187,8 +187,12 @@ data availability varies. Different countries may have different actual years
 in the result. Only applies when {opt year()} is specified.
 {p_end}
 {pstd}
-Example: {cmd:year(2015), circa} might return 2014 data for Country A and 
+Example: {cmd:year(2015), circa} might return 2014 data for Country A and
 2016 data for Country B if 2015 is not available for either.
+
+{pstd}
+{bf:Constraint:} {cmd:circa} requires {cmd:year()} to be specified. Using {cmd:circa}
+without {cmd:year()} raises {err:error 198}.
 
 {dlgtab:Disaggregation Filters}
 
@@ -415,6 +419,8 @@ become separate columns. Use this for cross-indicator analysis.
 {phang2}even when some indicators have zero observations after filtering. This prevents reshape{p_end}
 {phang2}failures and "variable not found" errors.{p_end}
 {phang2}Use case: Compare multiple indicators side-by-side, correlation analysis, reliable batch processing{p_end}
+{phang2}{bf:Constraint:} Requires two or more indicators. An error is raised if only one
+indicator is specified. Use {cmd:wide} format instead for single-indicator reshaping.{p_end}
 
 {phang}
 {opt attributes(string)} {it:(v1.5.1)} specifies which disaggregation attribute values 
@@ -426,6 +432,7 @@ filtering of rows before reshaping.
 {bf:Key Facts About attributes():}
 {p_end}
 {phang2}• Works with: {cmd:wide_attributes} and {cmd:wide_indicators} (not with {cmd:long} or {cmd:wide}){p_end}
+{phang2}• {bf:Constraint:} Using {cmd:attributes()} without {cmd:wide_attributes} or {cmd:wide_indicators} raises {err:error 198}.{p_end}
 {phang2}• Syntax: Accepts space-separated attribute codes, case-insensitive{p_end}
 {phang2}• Default for {cmd:wide_indicators}: _T (total only) - backward compatible{p_end}
 {phang2}• Default for {cmd:wide_attributes}: No default - if attributes() not specified, all values included{p_end}
@@ -559,7 +566,7 @@ country, indicator, and disaggregation dimensions.
 {phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
 {phang2}• Automatic proxy detection and handling{p_end}
 {phang2}• Automatic retry logic for temporary network failures{p_end}
-{phang2}• User-Agent header: "unicefdata/2.1.0 (Stata)"{p_end}
+{phang2}• User-Agent header: "unicefdata/2.2.0 (Stata)"{p_end}
 {phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
 
 {pstd}
@@ -606,7 +613,7 @@ Use this option to skip the metadata display.
 {opt verbose} displays progress messages during data download.
 {p_end}
 
-{dlgtab:Offline/CI Testing (v2.1.0)}
+{dlgtab:Offline/CI Testing (v2.2.0)}
 
 {phang}
 {opt fromfile(filename)} loads data from a local CSV file instead of querying the

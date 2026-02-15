@@ -1,4 +1,4 @@
-*! version 2.1.0  07Feb2026
+*! version 2.2.0  10Feb2026
 *! unicefdata_setup - Install YAML metadata and dataflow schema files for unicefdata
 *! Author: Joao Pedro Azevedo (jpazevedo@unicef.org)
 

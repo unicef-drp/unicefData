@@ -1,9 +1,11 @@
 # Test 404 fallback behavior (PR #14)
 # Invalid indicators should return empty result, not throw error
+# NOTE: These are live API tests - skip in CI to avoid rate limiting (HTTP 403)
 
 test_that("invalid indicator returns empty data frame without error", {
   skip_if_not_installed("unicefData")
   skip_on_cran()  # Requires network
+  skip_on_ci()    # API rate limiting on GitHub runners
   
   # Test with clearly invalid indicator code
   result <- unicefData(
@@ -23,6 +25,7 @@ test_that("invalid indicator returns empty data frame without error", {
 test_that("404 fallback preserves standard column structure", {
   skip_if_not_installed("unicefData")
   skip_on_cran()
+  skip_on_ci()    # API rate limiting on GitHub runners
   
   # Even with invalid indicator, structure should be consistent
   result <- unicefData(
@@ -44,6 +47,7 @@ test_that("404 fallback preserves standard column structure", {
 test_that("valid indicator after 404 test still works", {
   skip_if_not_installed("unicefData")
   skip_on_cran()
+  skip_on_ci()    # API rate limiting on GitHub runners
   
   # Regression test: ensure 404 fallback doesn't break subsequent valid calls
   result <- unicefData(

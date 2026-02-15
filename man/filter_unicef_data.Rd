@@ -37,6 +37,9 @@ Placed at end to preserve backward compatibility with existing positional calls.
 \item{dataflow}{Optional dataflow name for dataflow-specific filtering logic.
 For NUTRITION dataflow, age defaults to Y0T4 instead of _T.}
 }
+\value{
+A filtered data frame matching the specified disaggregation criteria.
+}
 \description{
 Filters data to specific disaggregations or defaults to totals.
 Uses indicator metadata (disaggregations_with_totals) to determine which

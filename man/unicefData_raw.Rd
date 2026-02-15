@@ -56,6 +56,9 @@ unicefdata_raw(
 
 \item{labels}{Character, label format ("id" or "name").}
 }
+\value{
+A tibble of raw SDMX data, or an empty tibble if no data found.
+}
 \description{
 Low-level fetcher for UNICEF SDMX API.
 }

@@ -32,25 +32,23 @@
 #' @importFrom magrittr %>%
 NULL
 
-# Ensure required packages are loaded when sourcing directly
-if (!requireNamespace("magrittr", quietly = TRUE)) {
-  stop("Package 'magrittr' is required but not available.")
+# Guards for standalone sourcing only (skipped when loaded as a package)
+if (!isNamespace(topenv(environment()))) {
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package 'magrittr' is required but not available.")
+  }
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    stop("Package 'dplyr' is required but not available.")
+  }
+  if (!requireNamespace("purrr", quietly = TRUE)) {
+    stop("Package 'purrr' is required but not available.")
+  }
+  if (!requireNamespace("httr", quietly = TRUE)) {
+    stop("Package 'httr' is required but not available.")
+  }
+  `%>%` <- magrittr::`%>%`
+  `%||%` <- function(x, y) if (is.null(x)) y else x
 }
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required but not available.")
-}
-if (!requireNamespace("purrr", quietly = TRUE)) {
-  stop("Package 'purrr' is required but not available.")
-}
-if (!requireNamespace("httr", quietly = TRUE)) {
-  stop("Package 'httr' is required but not available.")
-}
-
-# Import pipe operator for direct sourcing
-`%>%` <- magrittr::`%>%`
-
-# Null coalescing operator
-`%||%` <- function(x, y) if (is.null(x)) y else x
 
 
 # =============================================================================
@@ -439,6 +437,16 @@ unicefData <- function(
 
   format <- match.arg(format)
   detail <- match.arg(detail)
+
+  # Validate indicator input
+  if (!is.null(indicator)) {
+    indicator <- trimws(as.character(indicator))
+    indicator <- indicator[nzchar(indicator)]
+    if (length(indicator) == 0) {
+      stop("No valid indicator codes provided (all empty or whitespace). ",
+           "Use search_indicators() to find valid codes.")
+    }
+  }
 
   # Validate metadata parameter
   if (!metadata %in% c("light", "full")) {

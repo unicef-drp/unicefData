@@ -2,7 +2,7 @@ id: SDG_PROG_ASSESSMENT
 name: 'SDG Progress assessment'
 version: '1.1'
 agency: UNICEF
-synced_at: '2026-02-07T16:12:13Z'
+synced_at: '2026-02-15T15:06:47Z'
 dimensions:
 - id: COUNTRY
   position: 1

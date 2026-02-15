@@ -2,7 +2,7 @@ id: CME_SUBNAT_BEN
 name: 'CME Benin'
 version: '1.0'
 agency: UNICEF
-synced_at: '2026-02-07T16:12:13Z'
+synced_at: '2026-02-15T15:06:47Z'
 dimensions:
 - id: REF_AREA
   position: 1

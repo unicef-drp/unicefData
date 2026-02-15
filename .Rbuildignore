@@ -105,3 +105,4 @@
 ^R/scripts$
 ^R/scripts/.*$
 ^CRAN-SUBMISSION$
+^nul$

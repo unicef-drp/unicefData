@@ -1,6 +1,6 @@
 vintages:
-- vintage_date: '2026-02-07'
-  synced_at: '2026-02-07T16:12:03Z'
+- vintage_date: '2026-02-15'
+  synced_at: '2026-02-15T15:06:42Z'
   dataflows: 70
   indicators: 738
   codelists: 5

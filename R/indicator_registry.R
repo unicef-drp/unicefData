@@ -1004,6 +1004,31 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
 }
 
 
+#' Resolve indicator category through multiple fallback strategies
+#'
+#' Tries: explicit category field -> parent code -> prefix-based inference.
+#' Used by list_categories() for accurate category counts.
+#'
+#' @param indicator_code Character. The indicator code
+#' @param info Named list. The indicator metadata from cache
+#' @return Character. Resolved category name
+#' @keywords internal
+.resolve_indicator_category <- function(indicator_code, info) {
+  # 1. Explicit category in metadata
+  if (!is.null(info$category) && nzchar(info$category)) {
+    return(info$category)
+  }
+
+  # 2. Parent code (top-level codes often map to categories)
+  if (!is.null(info$parent) && nzchar(info$parent)) {
+    return(info$parent)
+  }
+
+  # 3. Prefix-based inference via .infer_category()
+  .infer_category(indicator_code)
+}
+
+
 #' List Categories
 #'
 #' List all available indicator categories (dataflows) with counts.
@@ -1020,11 +1045,12 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
 #' @export
 list_categories <- function() {
   indicators <- .ensure_cache_loaded()
-  
-  # Count indicators per category
+
+  # Count indicators per category, resolving missing categories
   category_counts <- list()
   for (code in names(indicators)) {
-    cat_name <- indicators[[code]]$category %||% "UNKNOWN"
+    info <- indicators[[code]]
+    cat_name <- .resolve_indicator_category(code, info)
     category_counts[[cat_name]] <- (category_counts[[cat_name]] %||% 0) + 1
   }
   

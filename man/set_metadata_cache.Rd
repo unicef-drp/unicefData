@@ -9,6 +9,9 @@ set_metadata_cache(path = NULL)
 \arguments{
 \item{path}{Path to cache directory}
 }
+\value{
+Invisibly returns the path to the cache directory.
+}
 \description{
 Set metadata cache directory
 }

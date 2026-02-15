@@ -1,8 +1,10 @@
 {smcl}
-{* *! version 2.0.0  24Jan2026}{...}
+{* *! version 2.2.0  10Feb2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v2.2.0" "unicefdata_whatsnew##v220"}{...}
+{viewerjumpto "v2.1.0" "unicefdata_whatsnew##v210"}{...}
 {viewerjumpto "v2.0.0" "unicefdata_whatsnew##v200"}{...}
 {viewerjumpto "v1.10.0" "unicefdata_whatsnew##v1100"}{...}
 {viewerjumpto "v1.6.0" "unicefdata_whatsnew##v160"}{...}
@@ -20,6 +22,76 @@
 {pstd}
 {it:Return to {help unicefdata:main help file}}
 {p_end}
+
+
+{marker v220}{...}
+{title:What's New in v2.2.0 (10Feb2026)}
+
+{pstd}
+{bf:Major QA Expansion:} Test suite expanded to 63 tests across 16 families (100% pass rate).
+{p_end}
+
+{pstd}
+{bf:Input Validation (3 new checks):}
+{p_end}
+{phang2}• {cmd:wide_indicators} with a single indicator now raises {err:error 198} (previously only warned){p_end}
+{phang2}• {cmd:attributes()} without {cmd:wide_attributes} or {cmd:wide_indicators} now raises {err:error 198} (previously silently ignored){p_end}
+{phang2}• {cmd:circa} without {cmd:year()} now raises {err:error 198} (previously silently ignored){p_end}
+
+{pstd}
+{bf:Compound Quoting Fix:}
+{p_end}
+{phang2}• All {cmd:strpos()} and {cmd:lower()} calls on the {cmd:`0'} macro now use compound quotes{p_end}
+{phang2}• Fixes parsing errors when {cmd:fromfile()} paths contain special characters{p_end}
+
+{pstd}
+{bf:Dataset Metadata ({cmd:char}):}
+{p_end}
+{phang2}• Dataset-level {cmd:_dta[]} chars record version, timestamp, syntax, indicator, dataflow{p_end}
+{phang2}• Variable-level chars on value and indicator columns{p_end}
+{phang2}• New {cmd:nochar} option to suppress char metadata writes{p_end}
+
+{pstd}
+{bf:New Test Families:}
+{p_end}
+{phang2}• {cmd:DATA} — Data integrity tests (value types, numeric/string validation){p_end}
+{phang2}• {cmd:MULTI} — Multi-indicator tests (wide_indicators and wide format){p_end}
+{phang2}• {cmd:PERF} — Performance tests (runtime benchmarking){p_end}
+{phang2}• {cmd:REGR} — Regression tests (baseline value comparisons){p_end}
+{phang2}• {cmd:DET} expanded from 6 to 11 tests (multi-country, time series, vaccination fixtures){p_end}
+
+{pstd}
+{bf:Cross-Platform:}
+{p_end}
+{phang2}• XPLAT metadata paths corrected (Root/R/Stata instead of Python/R/Stata){p_end}
+{phang2}• EXT-05: Replaced unavailable CCRI dataflow with ECD; accepts graceful API error{p_end}
+
+
+{marker v210}{...}
+{title:What's New in v2.1.0 (07Feb2026)}
+
+{pstd}
+{bf:Cache Management:} New {cmd:clearcache} subcommand drops cached frames and reloads metadata.
+{p_end}
+
+{pstd}
+{bf:Path Resolution:}
+{p_end}
+{phang2}• 3-tier path resolution (PLUS -> findfile/adopath -> cwd) replaces hardcoded paths{p_end}
+{phang2}• 404 errors now include tried dataflows in messages{p_end}
+
+{pstd}
+{bf:Cross-Language Test Suite:}
+{p_end}
+{phang2}• 39 shared fixture tests (Python 14, R 13, Stata 12) using shared CSV fixtures{p_end}
+{phang2}• New {cmd:YAML_SCHEMA.md} documents all 7 YAML file types{p_end}
+
+{pstd}
+{bf:Bug Fixes:}
+{p_end}
+{phang2}• R {cmd:apply_circa()}: Countries with all-NA values no longer silently dropped{p_end}
+{phang2}• R hardcoded paths replaced with {cmd:system.file()} resolution{p_end}
+{phang2}• Stata hardcoded paths replaced with 3-tier resolution{p_end}
 
 
 {marker v200}{...}

@@ -20,7 +20,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260201
+d Distribution-Date: 20260210
 d
 * Main command and help
 f src/u/unicefdata.ado
@@ -43,6 +43,10 @@ f src/u/unicefdata_xmltoyaml.ado
 f src/u/unicefdata_xmltoyaml.sthlp
 f src/u/unicefdata_xmltoyaml_py.ado
 f src/u/unicefdata_xmltoyaml_py.sthlp
+
+* Low-level SDMX data fetcher
+f src/g/get_sdmx.ado
+f src/g/get_sdmx.sthlp
 
 * YAML command and help
 f src/y/yaml.ado
@@ -100,7 +104,12 @@ f src/_/_dataflow_index.yaml
 f src/_/_dataflow_fallback_sequences.yaml
 f src/_/_indicator_dataflow_map.yaml
 
-* Python helper scripts (optional, for XML parsing during sync)
+* Python helper scripts (optional, for XML parsing and metadata sync)
 f src/py/unicefdata_xml2yaml.py
 f src/py/stata_schema_sync.py
 f src/py/python_xml_helper.py
+f src/py/build_dataflow_metadata.py
+f src/py/build_indicator_dataflow_map.py
+f src/py/enrich_indicators_metadata.py
+f src/py/enrich_stata_metadata_complete.py
+f src/py/validate_yaml_schema.py

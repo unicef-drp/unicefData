@@ -12,12 +12,21 @@ import sys
 import csv
 from pathlib import Path
 
+import pytest
+
 # Add python module to path
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT / "python"))
 
 FIXTURES_DIR = REPO_ROOT / "tests" / "fixtures" / "api_responses"
 EXPECTED_DIR = REPO_ROOT / "tests" / "fixtures" / "expected"
+
+# Guard: Skip all tests if fixtures are missing (CI-friendly)
+if not FIXTURES_DIR.exists() or not EXPECTED_DIR.exists():
+    pytest.skip(
+        f"Fixture directories not found: {FIXTURES_DIR} or {EXPECTED_DIR}",
+        allow_module_level=True
+    )
 
 
 def load_csv(filepath):

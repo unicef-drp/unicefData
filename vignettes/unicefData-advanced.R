@@ -1,12 +1,17 @@
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = FALSE
 )
 
+
+## ----library------------------------------------------------------------------
 library(unicefData)
 library(dplyr)
 
+
+## ----south-asia-trends--------------------------------------------------------
 # Fetch under-5 mortality for South Asian countries
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -33,6 +38,8 @@ legend("topright",
   col = c("red", "blue", "green", "orange"), lwd = 2
 )
 
+
+## ----stunting-wealth----------------------------------------------------------
 # Fetch stunting data with all wealth quintiles
 df <- unicefData(
   indicator = "NT_ANT_HAZ_NE2",
@@ -62,6 +69,8 @@ barplot(
   col = c("#d73027", "#fc8d59", "#fee090", "#91bfdb", "#4575b4")
 )
 
+
+## ----wealth-gap---------------------------------------------------------------
 # Fetch stunting for specific countries with Q1 and Q5
 df <- unicefData(
   indicator = "NT_ANT_HAZ_NE2",
@@ -83,6 +92,8 @@ df_gap <- df %>%
 
 print(df_gap)
 
+
+## ----multi-mortality----------------------------------------------------------
 # Fetch multiple mortality indicators
 df <- unicefData(
   indicator = c("CME_MRM0", "CME_MRY0T4"),
@@ -104,6 +115,8 @@ df_wide <- df_latest %>%
 
 print(df_wide)
 
+
+## ----immunization-trends------------------------------------------------------
 # Fetch immunization indicators
 df <- unicefData(
   indicator = c("IM_DTP3", "IM_MCV1"),
@@ -126,6 +139,8 @@ lines(coverage ~ period, data = mcv1, col = "red", lwd = 2)
 legend("bottomright", legend = c("DTP3", "MCV1"),
        col = c("blue", "red"), lwd = 2)
 
+
+## ----regional-----------------------------------------------------------------
 # Fetch with regional classifications
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -153,6 +168,8 @@ by_income <- df_countries %>%
 
 print(by_income)
 
+
+## ----wide-timeseries----------------------------------------------------------
 # Wide format: years as columns
 df_wide <- unicefData(
   indicator = "CME_MRY0T4",
@@ -166,6 +183,8 @@ df_wide <- unicefData(
 # (exact names depend on available data)
 print(df_wide)
 
+
+## ----wide-indicators----------------------------------------------------------
 # One column per indicator
 df_cross <- unicefData(
   indicator = c("CME_MRY0T4", "CME_MRY0", "IM_DTP3", "IM_MCV1"),
@@ -182,6 +201,8 @@ if (all(c("CME_MRY0T4", "IM_DTP3") %in% names(df_cross))) {
   message("Correlation between U5MR and DTP3: ", round(cor_val, 3))
 }
 
+
+## ----sex-gap------------------------------------------------------------------
 # Fetch all sex categories
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -202,6 +223,8 @@ df_gap <- df %>%
 
 print(df_gap)
 
+
+## ----nutrition----------------------------------------------------------------
 # Stunting prevalence
 df_stunting <- unicefData(indicator = "NT_ANT_HAZ_NE2", latest = TRUE)
 
@@ -219,18 +242,24 @@ df_rural <- unicefData(
   latest = TRUE
 )
 
+
+## ----wash---------------------------------------------------------------------
 # Basic drinking water services
 df_water <- unicefData(indicator = "WS_PPL_W-B", latest = TRUE)
 
 # Basic sanitation services
 df_sanitation <- unicefData(indicator = "WS_PPL_S-B", latest = TRUE)
 
+
+## ----education----------------------------------------------------------------
 # Out-of-school rate (primary)
 df_oos <- unicefData(indicator = "ED_ROFST_L1", latest = TRUE)
 
 # Net attendance rate (primary)
 df_nar <- unicefData(indicator = "ED_ANAR_L1", latest = TRUE)
 
+
+## ----defensive----------------------------------------------------------------
 # Process multiple indicators, some of which may not exist
 indicators <- c("CME_MRY0T4", "IM_DTP3", "INVALID_CODE_XYZ")
 
@@ -244,6 +273,8 @@ for (ind in indicators) {
   })
 }
 
+
+## ----export-------------------------------------------------------------------
 # Fetch and export to CSV
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -255,6 +286,8 @@ df <- unicefData(
 # Export
 write.csv(df, "unicef_mortality_data.csv", row.names = FALSE)
 
+
+## ----sync---------------------------------------------------------------------
 # Sync all metadata
 sync_metadata()
 
@@ -262,3 +295,4 @@ sync_metadata()
 sync_dataflows()
 sync_indicators()
 sync_codelists()
+

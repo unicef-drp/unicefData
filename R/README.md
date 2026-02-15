@@ -407,6 +407,13 @@ See the `R/examples/` directory:
 
 ## Version History
 
+### v2.2.0 (2026-02-15)
+- **328+ automated tests** across 11 test families with deterministic fixtures
+- Added 5 new testthat test files (transformations, deterministic, discovery, sync-pipeline, error-conditions)
+- Added `helper-fixtures.R` with `testthat::test_path()` for R CMD check compatibility
+- Fixed category resolution fallback in `list_categories()` - eliminates "UNKNOWN" entries
+- Added input validation for `unicefData()` with helpful `search_indicators()` hint
+
 ### v2.1.0 (2026-02-07)
 - Added `clear_unicef_cache()` — clears 6 cache layers with optional reload
 - Fixed `apply_circa()` NA handling — countries with all-NA values no longer dropped

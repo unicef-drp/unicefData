@@ -1,4 +1,4 @@
-v 2.0.0
+v 2.2.0
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -6,7 +6,7 @@ d Support: jpazevedo@unicef.org
 d
 d unicefData downloads indicator data from the UNICEF Data Warehouse
 d using the SDMX REST API. It provides access to 748+ indicators
-d covering child health, nutrition, education, protection, HIV/AIDS, 
+d covering child health, nutrition, education, protection, HIV/AIDS,
 d WASH, and more.
 d
 d Features:
@@ -24,18 +24,19 @@ d   - Intelligent SDMX query engine with three modes
 d     * Auto-detect: System infers dataflow from indicator
 d     * Bypass: User specifies dataflow explicitly
 d     * Validation: Dimension extraction for filter validation
-d   - Metadata-driven filtering using disaggregations_with_totals (NEW)
+d   - Metadata-driven filtering using disaggregations_with_totals
 d     * Matches Python/R filtering for cross-platform consistency
 d     * DISABILITY_STATUS special handling (PD baseline when no _T)
+d   - Offline/deterministic testing via fromfile() (NEW in 2.2.0)
 d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260125
+d Distribution-Date: 20260210
 d
 d Quality Assurance:
-d   - 30 comprehensive tests (100% passing)
-d   - 7 test families: ENV, DL, DIS, FILT, META, EDGE, REGR
+d   - 16 test families (63 tests): ENV, DL, DISC, SYNC, TRANS, EDGE, XPLAT, ERR, EXT, DET, DATA, MULTI, PERF, REGR, DOC, TIDY
+d   - Error condition tests (Gould 2001) and deterministic offline tests
 d   - Regression baselines for API stability monitoring
 d
 

@@ -1,16 +1,17 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
-Version: 2.1.0
+Version: 2.2.0
 Authors@R: c(
     person("Joao Pedro", "Azevedo", email = "jpazevedo@unicef.org", role = c("aut", "cre")),
     person("Lucas", "Rodrigues", role = "ctb"),
     person("Yang", "Liu", role = "ctb"),
     person("Karen", "Avanesian", role = "ctb")
   )
-Description: A trilingual R, Python, and Stata client to fetch SDMX CSV series
-    from UNICEF's Data Warehouse. Features include automatic pagination, caching
-    with memoisation, country name lookups, metadata versioning (vintages),
-    and comprehensive indicator support for SDG monitoring.
+Description: A trilingual R, Python, and 'Stata' client to fetch SDMX CSV series
+    from the UNICEF Data Warehouse <https://data.unicef.org/>. Features include
+    automatic pagination, caching with memoisation, country name lookups,
+    metadata versioning (vintages), and comprehensive indicator support for
+    SDG monitoring.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8

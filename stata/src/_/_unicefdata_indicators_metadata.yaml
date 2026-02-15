@@ -1,12 +1,12 @@
 metadata:
   platform: stata
   version: 2.1.0
-  synced_at: '2026-02-07T21:16:56Z'
+  synced_at: '2026-02-15T20:09:44Z'
   source: UNICEF SDMX Codelist CL_UNICEF_INDICATOR
   agency: UNICEF
   content_type: indicators
   url: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/1.0
-  last_updated: '2026-02-07T21:16:56Z'
+  last_updated: '2026-02-15T20:09:44Z'
   description: Complete enriched UNICEF indicators metadata (auto-generated)
   indicator_count: 738
   indicators_with_dataflows: 485

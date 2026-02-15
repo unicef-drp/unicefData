@@ -28,7 +28,7 @@ from dataclasses import dataclass, asdict
 import hashlib
 
 # Package version - used in watermarks
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 __sync_version__ = "1.0.0"
 
 

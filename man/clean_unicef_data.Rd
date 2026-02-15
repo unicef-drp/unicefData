@@ -9,6 +9,9 @@ clean_unicef_data(df)
 \arguments{
 \item{df}{Data frame to clean.}
 }
+\value{
+A cleaned data frame with standardized column names and types.
+}
 \description{
 Renames columns and converts types.
 }

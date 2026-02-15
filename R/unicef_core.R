@@ -30,20 +30,24 @@
 # Lazy-load fallback sequences at first use (not at module init) to respect working directory
 .FALLBACK_ENV <- new.env(parent = emptyenv())
 
+# Mutable metadata cache - avoids locked namespace bindings (no unlockBinding needed)
+.METADATA_ENV <- new.env(parent = emptyenv())
+
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @importFrom stats na.omit setNames
 #' @importFrom utils capture.output head write.csv
 NULL
 
-# Ensure required packages are loaded
-if (!requireNamespace("magrittr", quietly = TRUE)) stop("Package 'magrittr' required")
-if (!requireNamespace("dplyr", quietly = TRUE)) stop("Package 'dplyr' required")
-if (!requireNamespace("httr", quietly = TRUE)) stop("Package 'httr' required")
-if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
-if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
-
-`%>%` <- magrittr::`%>%`
+# Guards for standalone sourcing only (skipped when loaded as a package)
+if (!isNamespace(topenv(environment()))) {
+  if (!requireNamespace("magrittr", quietly = TRUE)) stop("Package 'magrittr' required")
+  if (!requireNamespace("dplyr", quietly = TRUE)) stop("Package 'dplyr' required")
+  if (!requireNamespace("httr", quietly = TRUE)) stop("Package 'httr' required")
+  if (!requireNamespace("readr", quietly = TRUE)) stop("Package 'readr' required")
+  if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
+  `%>%` <- magrittr::`%>%`
+}
 
 
 #' Check if an error is an HTTP 404 response
@@ -160,7 +164,12 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
   get("sequences", envir = .FALLBACK_ENV, inherits = FALSE)
 }
 # Load comprehensive indicators metadata at module initialization
-.INDICATORS_METADATA_YAML <- .load_indicators_metadata_yaml()
+.METADATA_ENV$indicators_yaml <- .load_indicators_metadata_yaml()
+
+#' @keywords internal
+.get_indicators_metadata <- function() {
+  .METADATA_ENV$indicators_yaml
+}
 
 #' Load aggregate/region ISO3 codes for geo_type classification
 #'
@@ -205,7 +214,12 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 }
 
 # Load region codes at module initialization
-.REGION_CODES_YAML <- .load_region_codes_yaml()
+.METADATA_ENV$region_codes <- .load_region_codes_yaml()
+
+#' @keywords internal
+.get_region_codes <- function() {
+  .METADATA_ENV$region_codes
+}
 
 
 #' Clear All UNICEF Caches
@@ -233,7 +247,6 @@ if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' required")
 #' }
 clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
   cleared <- character(0)
-  ns <- environment(clear_unicef_cache)
 
   # 1. Fallback sequences (unicef_core.R)
   if (exists("sequences", envir = .FALLBACK_ENV, inherits = FALSE)) {
@@ -242,17 +255,11 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
   cleared <- c(cleared, "fallback_sequences")
 
   # 2. Indicators metadata YAML (unicef_core.R)
-  tryCatch({
-    unlockBinding(".INDICATORS_METADATA_YAML", ns)
-    assign(".INDICATORS_METADATA_YAML", NULL, envir = ns)
-  }, error = function(e) NULL)
+  .METADATA_ENV$indicators_yaml <- NULL
   cleared <- c(cleared, "indicators_metadata")
 
   # 3. Region codes YAML (unicef_core.R)
-  tryCatch({
-    unlockBinding(".REGION_CODES_YAML", ns)
-    assign(".REGION_CODES_YAML", NULL, envir = ns)
-  }, error = function(e) NULL)
+  .METADATA_ENV$region_codes <- NULL
   cleared <- c(cleared, "region_codes")
 
   # 4. Indicator registry cache (indicator_registry.R)
@@ -272,14 +279,8 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
 
   # Reload YAML-based caches if requested
   if (reload) {
-    tryCatch({
-      assign(".INDICATORS_METADATA_YAML", .load_indicators_metadata_yaml(), envir = ns)
-      lockBinding(".INDICATORS_METADATA_YAML", ns)
-    }, error = function(e) NULL)
-    tryCatch({
-      assign(".REGION_CODES_YAML", .load_region_codes_yaml(), envir = ns)
-      lockBinding(".REGION_CODES_YAML", ns)
-    }, error = function(e) NULL)
+    .METADATA_ENV$indicators_yaml <- .load_indicators_metadata_yaml()
+    .METADATA_ENV$region_codes <- .load_region_codes_yaml()
     # Fallback sequences reload lazily via .get_fallback_sequences()
   }
 
@@ -369,8 +370,8 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   if (!is.null(indicator_code)) {
     # Priority 1: Direct lookup in comprehensive indicators metadata
     # Check both 'dataflow' (singular) and 'dataflows' (plural) fields
-    if (!is.null(.INDICATORS_METADATA_YAML) && indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
-      meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+    if (!is.null(.get_indicators_metadata()) && indicator_code %in% names(.get_indicators_metadata())) {
+      meta <- .get_indicators_metadata()[[indicator_code]]
       # Check 'dataflows' (plural) first, then 'dataflow' (singular)
       dataflow_value <- meta$dataflows %||% meta$dataflow
       if (!is.null(dataflow_value)) {
@@ -576,6 +577,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param verbose Logical, print progress messages.
 #' @param totals Logical, include total aggregations.
 #' @param labels Character, label format ("id" or "name").
+#' @return A tibble of raw SDMX data, or an empty tibble if no data found.
 #' @export
 unicefData_raw <- function(
     indicator = NULL,
@@ -691,36 +693,6 @@ unicefData_raw <- function(
 #       readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
 #       error = function(e) {
 
-#' @title Validate Data Against Schema
-#' @description Checks if dataframe matches expected schema. Warns on mismatch.
-#' @export
-validate_unicef_schema <- function(df, dataflow) {
-  # Ensure schema_sync is loaded
-  if (!exists("load_dataflow_schema", mode = "function")) {
-    script_dir <- dirname(sys.frame(1)$ofile %||% ".")
-    schema_script <- file.path(script_dir, "schema_sync.R")
-    if (file.exists(schema_script)) source(schema_script)
-  }
-
-  if (exists("load_dataflow_schema", mode = "function")) {
-    schema <- load_dataflow_schema(dataflow)
-    if (!is.null(schema)) {
-      # Check dimensions
-      expected_dims <- sapply(schema$dimensions, function(d) d$id)
-      missing_dims <- setdiff(expected_dims, names(df))
-      if (length(missing_dims) > 0) {
-        warning(sprintf("Dataflow '%s': Missing expected dimensions: %s",
-                        dataflow, paste(missing_dims, collapse = ", ")))
-      }
-
-      # Check attributes (optional but good to know)
-      expected_attrs <- sapply(schema$attributes, function(a) a$id)
-      missing_attrs <- setdiff(expected_attrs, names(df))
-      # Don't warn for attributes as they are often optional
-    }
-  }
-}
-
 # =============================================================================
 # #### 6. Data Cleaning ####
 # =============================================================================
@@ -728,6 +700,7 @@ validate_unicef_schema <- function(df, dataflow) {
 #' @title Clean and Standardize UNICEF Data
 #' @description Renames columns and converts types.
 #' @param df Data frame to clean.
+#' @return A cleaned data frame with standardized column names and types.
 #' @export
 clean_unicef_data <- function(df) {
   if (nrow(df) == 0) return(df)
@@ -795,12 +768,12 @@ clean_unicef_data <- function(df) {
 
   # Add geo_type: 1 for aggregates (ISO3 in YAML regions list), 0 otherwise (numeric)
   if ("iso3" %in% names(df_clean)) {
-    if (length(.REGION_CODES_YAML) == 0) {
+    if (length(.get_region_codes()) == 0) {
       warning("geo_type classification: region codes not loaded; treating all as country (0).")
     }
     df_clean <- df_clean %>%
       dplyr::mutate(
-        geo_type = dplyr::if_else(iso3 %in% .REGION_CODES_YAML, 1L, 0L)
+        geo_type = dplyr::if_else(iso3 %in% .get_region_codes(), 1L, 0L)
       )
   }
 
@@ -825,6 +798,7 @@ clean_unicef_data <- function(df) {
 #'   Placed at end to preserve backward compatibility with existing positional calls.
 #' @param dataflow Optional dataflow name for dataflow-specific filtering logic.
 #'   For NUTRITION dataflow, age defaults to Y0T4 instead of _T.
+#' @return A filtered data frame matching the specified disaggregation criteria.
 #' @export
 filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, residence = NULL, maternal_edu = NULL, verbose = TRUE, indicator_code = NULL, dataflow = NULL) {
   if (nrow(df) == 0) return(df)
@@ -835,9 +809,9 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
 
   # Get indicator metadata for smart filtering (disaggregations_with_totals)
   dims_with_totals <- c()
-  if (!is.null(indicator_code) && !is.null(.INDICATORS_METADATA_YAML) &&
-      indicator_code %in% names(.INDICATORS_METADATA_YAML)) {
-    meta <- .INDICATORS_METADATA_YAML[[indicator_code]]
+  if (!is.null(indicator_code) && !is.null(.get_indicators_metadata()) &&
+      indicator_code %in% names(.get_indicators_metadata())) {
+    meta <- .get_indicators_metadata()[[indicator_code]]
     if (!is.null(meta$disaggregations_with_totals)) {
       dims_with_totals <- meta$disaggregations_with_totals
       if (verbose) {

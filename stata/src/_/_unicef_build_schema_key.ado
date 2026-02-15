@@ -1,4 +1,4 @@
-*! version 2.0.0  18Jan2026
+*! version 2.0.1  13Feb2026
 program define _unicef_build_schema_key, rclass
 * Build SDMX data key using schema-aware dimension construction
 * 
@@ -78,7 +78,11 @@ program define _unicef_build_schema_key, rclass
       display "    Schema lookup failed; using fallback"
     }
     // Fallback: conservative assumption
-    if (`nofilter' == 1) {
+    // Bulk mode: return "all" as-is (SDMX REST standard: /all means entire dataflow)
+    if (lower("`indicator_code'") == "all") {
+      return local key "all"
+    }
+    else if (`nofilter' == 1) {
       return local key ".`indicator_code'"
     }
     else {
@@ -90,6 +94,14 @@ program define _unicef_build_schema_key, rclass
   // Build key respecting dimension order
   // Strategy: Create position-aware filter vector
   
+  // Bulk mode with successful schema: still return "all" — get_sdmx handles the URL
+  if (lower("`indicator_code'") == "all") {
+    if "`verbose'" != "" {
+      display "    Bulk mode: returning 'all' key"
+    }
+    return local key "all"
+  }
+
   if (`nofilter' == 1) {
     // No filter: pad with dots based on dimension count
     // Output: .INDICATOR. . . . . (one dot per non-fixed dimension)

@@ -132,7 +132,4 @@ safe_save_csv <- function(df, path, label) {
 }
 
 
-#--------------------------#
-# Null coalescing operator
-#--------------------------#
-`%||%` <- function(a, b) if (!is.null(a)) a else b
+# %||% is imported from rlang via utils.R
