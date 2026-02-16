@@ -12,12 +12,14 @@ on:
     paths:
       - 'python/**'
       - 'tests/**'
+      - 'scripts/unpack_fixtures.py'
       - '.github/workflows/python-tests.yaml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'python/**'
       - 'tests/**'
+      - 'scripts/unpack_fixtures.py'
       - '.github/workflows/python-tests.yaml'
   workflow_dispatch:
 

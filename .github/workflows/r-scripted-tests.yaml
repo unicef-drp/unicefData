@@ -12,6 +12,7 @@ on:
     paths:
       - 'R/**'
       - 'tests/**'
+      - 'scripts/unpack_fixtures.py'
       - 'DESCRIPTION'
       - 'NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
@@ -20,6 +21,7 @@ on:
     paths:
       - 'R/**'
       - 'tests/**'
+      - 'scripts/unpack_fixtures.py'
       - 'DESCRIPTION'
       - 'NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
