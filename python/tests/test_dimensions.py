@@ -2,11 +2,19 @@
 
 Converts the previous script into proper tests and expands coverage via
 parameterization across common UNICEF dataflows.
+
+NOTE: These tests make live API calls and are SKIPPED in CI environments.
+Run locally to validate dimension structure against the live SDMX endpoint.
 """
 
+import os
 import pytest
 import requests
 import xml.etree.ElementTree as ET
+
+# Skip in CI environment - these are live API tests
+IN_CI = os.environ.get("CI", "").lower() == "true" or os.environ.get("GITHUB_ACTIONS", "") != ""
+pytestmark = pytest.mark.skipif(IN_CI, reason="Skipping live API tests in CI")
 
 try:
     from unicefdata import list_dataflows

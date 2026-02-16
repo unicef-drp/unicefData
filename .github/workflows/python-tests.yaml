@@ -47,11 +47,17 @@ jobs:
 
     - name: Unpack test fixtures
       run: |
+        echo "--- Working directory and ZIP check ---"
+        pwd
+        ls -la tests/*.zip || echo "No ZIP in tests/"
+        ls -la tests/fixtures.zip || echo "fixtures.zip not found"
+        echo "--- Running unpack script ---"
         python scripts/unpack_fixtures.py --force
         echo "--- Verifying fixture extraction ---"
-        ls -la tests/fixtures/ || true
-        ls -la tests/fixtures/deterministic/ || true
-        ls -la tests/fixtures/api_responses/ || true
+        ls -la tests/fixtures/ || echo "tests/fixtures/ not found"
+        ls -la tests/fixtures/deterministic/ || echo "deterministic/ not found"
+        ls -la tests/fixtures/api_responses/ || echo "api_responses/ not found"
+        test -f tests/fixtures/deterministic/CME_MRY0T4_USA_2020_pinning.csv || echo "CRITICAL: pinning.csv missing"
 
     - name: Install dependencies
       run: |
