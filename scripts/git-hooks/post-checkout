@@ -10,12 +10,18 @@ if [ -f "$FIXTURES_ZIP" ]; then
     # Check if we need to unpack (zip is newer than stamp)
     if [ ! -f "$STAMP_FILE" ] || [ "$FIXTURES_ZIP" -nt "$STAMP_FILE" ]; then
         echo "Unpacking test fixtures..."
+        UNPACK_OK=0
         if command -v unzip >/dev/null 2>&1; then
-            unzip -o -q "$FIXTURES_ZIP" -d "$FIXTURES_DIR"
+            unzip -o -q "$FIXTURES_ZIP" -d "$FIXTURES_DIR" && UNPACK_OK=1
         elif command -v powershell >/dev/null 2>&1; then
-            powershell -Command "Expand-Archive -Path '$FIXTURES_ZIP' -DestinationPath '$FIXTURES_DIR' -Force"
+            powershell -Command "Expand-Archive -Path '$FIXTURES_ZIP' -DestinationPath '$FIXTURES_DIR' -Force" && UNPACK_OK=1
         fi
-        touch "$STAMP_FILE"
-        echo "Test fixtures unpacked."
+        if [ "$UNPACK_OK" -eq 1 ]; then
+            touch "$STAMP_FILE"
+            echo "Test fixtures unpacked."
+        else
+            echo "ERROR: Failed to unpack fixtures" >&2
+            exit 1
+        fi
     fi
 fi

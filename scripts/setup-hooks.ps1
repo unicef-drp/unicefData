@@ -22,8 +22,13 @@ $FixturesZip = Join-Path $RepoRoot "tests\fixtures.zip"
 $FixturesDir = Join-Path $RepoRoot "tests\fixtures"
 
 if (Test-Path $FixturesZip) {
-    Expand-Archive -Path $FixturesZip -DestinationPath $FixturesDir -Force
-    Write-Host "Test fixtures unpacked."
+    try {
+        Expand-Archive -Path $FixturesZip -DestinationPath $FixturesDir -Force
+        Write-Host "Test fixtures unpacked."
+    } catch {
+        Write-Error "ERROR: Failed to unpack fixtures: $_"
+        exit 1
+    }
 }
 
 Write-Host "Done!"

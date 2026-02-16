@@ -21,6 +21,9 @@ fi
 
 echo "Running initial fixture unpack..."
 cd "$REPO_ROOT"
-"$HOOKS_DST/post-checkout"
+if ! "$HOOKS_DST/post-checkout"; then
+    echo "ERROR: Initial fixture unpack failed" >&2
+    exit 1
+fi
 
 echo "Done!"
