@@ -77,7 +77,12 @@ jobs:
           python-version: '3.11'
 
       - name: Unpack test fixtures
-        run: python scripts/unpack_fixtures.py --force
+        run: |
+          python scripts/unpack_fixtures.py --force
+          echo "--- Verifying fixture extraction ---"
+          ls -la tests/fixtures/ || true
+          ls -la tests/fixtures/deterministic/ || true
+          ls -la tests/fixtures/api_responses/ || true
 
       - uses: r-lib/actions/setup-pandoc@v2
 
