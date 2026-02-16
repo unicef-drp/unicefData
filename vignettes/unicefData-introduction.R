@@ -1,14 +1,21 @@
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = FALSE
 )
 
+
+## ----install------------------------------------------------------------------
 # install.packages("devtools")
 devtools::install_github("unicef-drp/unicefData")
 
+
+## ----library------------------------------------------------------------------
 library(unicefData)
 
+
+## ----discovery----------------------------------------------------------------
 # Browse indicator categories (thematic dataflows)
 list_categories()
 
@@ -21,6 +28,8 @@ list_indicators("CME")
 # Get detailed information about a specific indicator
 get_indicator_info("CME_MRY0T4")
 
+
+## ----basic-retrieval----------------------------------------------------------
 # Example 5 (paper): Basic data retrieval
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -29,6 +38,8 @@ df <- unicefData(
 )
 head(df)
 
+
+## ----geographic---------------------------------------------------------------
 # Example 6 (paper): Geographic filtering
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -36,6 +47,8 @@ df <- unicefData(
   year = 2020
 )
 
+
+## ----latest-mrv---------------------------------------------------------------
 # Example 7 (paper): Get the latest available value per country
 df_latest <- unicefData(
   indicator = "CME_MRY0T4",
@@ -50,6 +63,8 @@ df_mrv <- unicefData(
   mrv = 3
 )
 
+
+## ----year-formats-------------------------------------------------------------
 # Single year
 df <- unicefData(indicator = "CME_MRY0T4", year = 2020)
 
@@ -62,6 +77,8 @@ df <- unicefData(indicator = "CME_MRY0T4", year = "2015,2018,2020")
 # Circa mode: find closest available year
 df <- unicefData(indicator = "CME_MRY0T4", year = 2015, circa = TRUE)
 
+
+## ----sex----------------------------------------------------------------------
 # Total only (default)
 df <- unicefData(indicator = "CME_MRY0T4", sex = "_T")
 
@@ -71,6 +88,8 @@ df <- unicefData(indicator = "CME_MRY0T4", sex = "F")
 # All sex categories (total, male, female)
 df <- unicefData(indicator = "CME_MRY0T4", sex = "ALL")
 
+
+## ----wealth-------------------------------------------------------------------
 # Example 8 (paper): Stunting by wealth and sex
 df <- unicefData(
   indicator = "NT_ANT_WHZ_NE2",
@@ -79,12 +98,16 @@ df <- unicefData(
   wealth = "ALL"
 )
 
+
+## ----residence----------------------------------------------------------------
 # Urban only
 df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "U")
 
 # Rural only
 df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "R")
 
+
+## ----wide---------------------------------------------------------------------
 # Example 9 (paper): Wide format
 df_wide <- unicefData(
   indicator = "CME_MRY0T4",
@@ -93,6 +116,8 @@ df_wide <- unicefData(
   format = "wide"
 )
 
+
+## ----multi-indicator----------------------------------------------------------
 # Example 10 (paper): Multiple indicators
 df <- unicefData(
   indicator = c("CME_MRM0", "CME_MRY0T4"),
@@ -108,6 +133,8 @@ df_wide <- unicefData(
   format = "wide_indicators"
 )
 
+
+## ----metadata-----------------------------------------------------------------
 # Example 12 (paper): Regional classifications
 df <- unicefData(
   indicator = "CME_MRY0T4",
@@ -115,6 +142,8 @@ df <- unicefData(
   latest = TRUE
 )
 
+
+## ----clean-filter-------------------------------------------------------------
 # Clean raw SDMX column names to user-friendly names
 df_raw <- unicefData_raw(indicator = "CME_MRY0T4", countries = "BRA")
 df_clean <- clean_unicef_data(df_raw)
@@ -122,6 +151,8 @@ df_clean <- clean_unicef_data(df_raw)
 # Filter to specific disaggregations
 df_filtered <- filter_unicef_data(df_clean, sex = "F", wealth = "Q1")
 
+
+## ----cache--------------------------------------------------------------------
 # Clear all caches and reload metadata
 clear_unicef_cache()
 
@@ -131,6 +162,9 @@ clear_unicef_cache(reload = FALSE)
 # View cache status
 get_cache_info()
 
+
+## ----schema-------------------------------------------------------------------
 # View the dimensions and attributes of a dataflow
 schema <- dataflow_schema("CME")
 print(schema)
+

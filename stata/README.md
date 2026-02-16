@@ -2,8 +2,8 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14%2B-blue)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.1.0-green)](https://github.com/unicef-drp/unicefData)
-[![Tests](https://img.shields.io/badge/tests-38%2F38%20passing-brightgreen)](stata/qa/)
+[![Version](https://img.shields.io/badge/version-2.2.0-green)](https://github.com/unicef-drp/unicefData)
+[![Tests](https://img.shields.io/badge/tests-63%2F63%20passing-brightgreen)](stata/qa/)
 
 **Stata component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
 
@@ -303,9 +303,9 @@ If metadata is >30 days old, you'll see a warning:
 
 The Stata package includes a comprehensive test suite:
 
-- **38 tests** across 7 families
-- **100% pass rate** as of v2.0.0
-- Test families: ENV, DL, DIS, FILT, META, EDGE, REGR, SYNC
+- **63 tests** across 16 families
+- **100% pass rate** as of v2.2.0
+- Test families: ENV, DL, DATA, DISC, TIER, SYNC, TRANS, META, MULTI, EDGE, PERF, REGR, XPLAT, ERR, EXT, DET
 
 ### Run Tests
 
@@ -376,6 +376,14 @@ which yaml
 
 ## Version History
 
+### v2.2.0 (2026-02-10)
+
+- Input validation: `wide_indicators` (single indicator), `attributes()` (missing format), `circa` (missing year) now raise errors
+- Compound quoting fix for `fromfile()` paths with special characters
+- Dataset/variable char metadata for self-documenting .dta files
+- QA suite expanded: 63 tests across 16 families (100% pass rate)
+- New test families: DATA, MULTI, PERF, REGR; DET expanded from 6 to 11
+
 ### v2.1.0 (2026-02-07)
 
 - Added `clearcache` subcommand — drops cached frames and reloads metadata
@@ -443,7 +451,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citation for data used in research:**
 
-> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.1.0) on 2026-02-09. Data available at: https://sdmx.data.unicef.org/
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

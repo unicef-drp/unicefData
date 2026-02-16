@@ -32,19 +32,18 @@ pip install -e ".[dev]"
 
 ```python
 import unicefdata
-print(unicefdata.__version__)  # Should print: 2.1.0
+print(unicefdata.__version__)  # Should print: 2.2.0
 ```
 
 ---
 
-## What's New in 2.1.0
+## What's New in 2.2.0
 
-- 🧪 **Cross-language test suite**: 14 shared fixture tests validating structural consistency across Python, R, and Stata
-- 📚 **YAML schema documentation**: Comprehensive format reference for all 7 YAML file types
-- 🗑️ **Enhanced cache management**: 5-layer cache clearing with optional reload, 30-day staleness threshold
-- 🔍 **Improved 404 errors**: All not-found errors now include tried dataflows in error messages
-- ✅ **Version alignment**: All sub-modules now match package version, dynamic User-Agent strings
-- 🧹 **Removed hardcoded paths**: All path resolution is now dynamic
+- 🧪 **328+ automated tests** across 11 test families with deterministic fixtures
+- 📦 **Fixture ZIP system**: Single source `tests/fixtures.zip` with automated extraction
+- ✅ **Full CI matrix**: Python 3.9-3.11 on Ubuntu/macOS/Windows
+- 🐛 **Bug fixes**: Sex filter for full-dataflow, None indicator handling, retry logic
+- 📝 **Input validation**: Filters empty/whitespace indicators with helpful error messages
 
 See [CHANGELOG.md](CHANGELOG.md) for complete details.
 

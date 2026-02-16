@@ -139,6 +139,7 @@ dataflow_schema <- function(dataflow, metadata_dir = NULL) {
 #' Print method for dataflow schema
 #' @param x A unicef_dataflow_schema object
 #' @param ... Additional arguments (ignored)
+#' @return Invisibly returns the input object \code{x}.
 #' @export
 print.unicef_dataflow_schema <- function(x, ...) {
   cat("\n")

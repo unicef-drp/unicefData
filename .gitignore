@@ -61,12 +61,23 @@ R/tests/output/raw_api_data/
 # OS
 .DS_Store
 Thumbs.db
+nul
 
 # Misc
 *.csv
 !python/examples/*.csv
 !tests/fixtures/api_responses/*.csv
 !tests/fixtures/expected/*.csv
+
+# ============================================
+# Test fixtures — ZIP is the authoritative source
+# ============================================
+# The ZIP is tracked; unpacked directories are gitignored.
+# Run: python scripts/unpack_fixtures.py (or hooks handle it)
+tests/fixtures/deterministic/
+tests/fixtures/xml_full/
+tests/fixtures/_staging/
+tests/fixtures/.unpack_stamp
 
 # Test and Example Outputs
 python/tests/output/
@@ -130,6 +141,12 @@ stata/tests/output/*
 stata/qa/run_tests_*.log
 stata/qa/*_diagnose*.log
 stata/qa/check_*.log
+stata/qa/_tmp_*.do
+
+# QA fixtures — only the zip archive is tracked in git.
+# All individual files (CSVs, XMLs, YAMLs, manifests, scripts) live inside the zip.
+stata/qa/fixtures/*
+!stata/qa/fixtures/fixtures.zip
 
 # LaTeX build artifacts
 *.aux

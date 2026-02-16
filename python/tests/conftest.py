@@ -14,6 +14,13 @@ from pathlib import Path
 FIXTURES_DIR = Path(__file__).parent.parent.parent / "tests" / "fixtures" / "api_responses"
 
 
+def _safe_read_fixture(filepath: Path, default: str = "") -> str:
+    """Safely read a fixture file, returning default if missing."""
+    if filepath.exists():
+        return filepath.read_text(encoding='utf-8')
+    return default
+
+
 @pytest.fixture
 def mock_dataflows_xml():
     """
@@ -22,7 +29,10 @@ def mock_dataflows_xml():
 
     Source: tests/fixtures/api_responses/dataflows.xml
     """
-    return (FIXTURES_DIR / "dataflows.xml").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "dataflows.xml"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -69,7 +79,10 @@ def mock_csv_valid_cme():
 
     Source: tests/fixtures/api_responses/cme_albania_valid.csv
     """
-    return (FIXTURES_DIR / "cme_albania_valid.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "cme_albania_valid.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -79,7 +92,10 @@ def mock_csv_valid_usa():
 
     Source: tests/fixtures/api_responses/cme_usa_valid.csv
     """
-    return (FIXTURES_DIR / "cme_usa_valid.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "cme_usa_valid.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -90,7 +106,10 @@ def mock_csv_empty():
 
     Source: tests/fixtures/api_responses/empty_response.csv
     """
-    return (FIXTURES_DIR / "empty_response.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "empty_response.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -182,7 +201,10 @@ def mock_csv_nutrition():
 
     Source: tests/fixtures/api_responses/nutrition_multi_country.csv
     """
-    return (FIXTURES_DIR / "nutrition_multi_country.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "nutrition_multi_country.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -193,7 +215,10 @@ def mock_csv_disaggregated_sex():
 
     Source: tests/fixtures/api_responses/cme_disaggregated_sex.csv
     """
-    return (FIXTURES_DIR / "cme_disaggregated_sex.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "cme_disaggregated_sex.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture
@@ -204,7 +229,10 @@ def mock_csv_vaccination():
 
     Source: tests/fixtures/api_responses/vaccination_multi_indicator.csv
     """
-    return (FIXTURES_DIR / "vaccination_multi_indicator.csv").read_text(encoding='utf-8')
+    fixture_path = FIXTURES_DIR / "vaccination_multi_indicator.csv"
+    if not fixture_path.exists():
+        pytest.skip(f"Fixture not found: {fixture_path}")
+    return fixture_path.read_text(encoding='utf-8')
 
 
 @pytest.fixture

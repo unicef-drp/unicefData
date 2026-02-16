@@ -11,6 +11,9 @@
 
 \item{...}{Additional arguments (ignored)}
 }
+\value{
+Invisibly returns the input object \code{x}.
+}
 \description{
 Print method for dataflow schema
 }

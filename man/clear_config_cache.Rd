@@ -6,6 +6,9 @@
 \usage{
 clear_config_cache()
 }
+\value{
+Invisible NULL.
+}
 \description{
 Clear the cached configuration
 }
