@@ -1,11 +1,11 @@
-3
+v 2.2.0
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
 d Support: jpazvd.github.io
 d
 d unicefData downloads indicator data from the UNICEF Data Warehouse
-d using the SDMX REST API. It provides access to 733+ indicators
+d using the SDMX REST API. It provides access to 748+ indicators
 d covering child health, nutrition, education, protection, HIV/AIDS, 
 d WASH, and more.
 d
