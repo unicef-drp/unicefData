@@ -42,13 +42,16 @@ STAMP_PATH = ROOT / "tests" / "fixtures" / ".unpack_stamp"
 
 EXTRACT_MAP = {
     # ZIP prefix              → target directory (relative to ROOT)
-    "data/":                  ["tests/fixtures/deterministic", "stata/qa/fixtures"],
+    # Match actual ZIP structure created by fixtures.zip packaging
+    "deterministic/":         ["tests/fixtures/deterministic", "stata/qa/fixtures"],
     "api_responses/":         ["tests/fixtures/api_responses"],
-    "xml_subset/":            ["tests/fixtures/xml"],
-    "xml/enrichment/":        ["tests/fixtures/xml_full/enrichment", "stata/qa/fixtures/api/enrichment"],
-    "xml/":                   ["tests/fixtures/xml_full", "stata/qa/fixtures/api"],
+    "expected/":              ["tests/fixtures/expected"],
+    "mock_design/":           ["tests/fixtures/mock_design"],
+    "xml_full/enrichment/":   ["tests/fixtures/xml_full/enrichment", "stata/qa/fixtures/api/enrichment"],
+    "xml_full/":              ["tests/fixtures/xml_full", "stata/qa/fixtures/api"],
+    "xml/":                   ["tests/fixtures/xml"],
     "yaml/":                  ["tests/fixtures/yaml"],
-    "manifest.json":          ["tests/fixtures/deterministic"],
+    "_staging/":              ["tests/fixtures/_staging"],
 }
 
 
