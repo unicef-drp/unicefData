@@ -40,6 +40,55 @@ CACHE_MAX_AGE_DAYS <- 30
 .indicator_cache$fallback_loaded <- FALSE
 
 
+#' Resolve category for one indicator record
+#' @param indicator_code Character. UNICEF indicator code
+#' @param info Named list. Indicator metadata
+#' @return Character. Resolved category/dataflow
+#' @keywords internal
+.resolve_indicator_category <- function(indicator_code, info) {
+  explicit_category <- info$category %||% ""
+  if (nzchar(explicit_category)) {
+    return(explicit_category)
+  }
+
+  parent_category <- info$parent %||% ""
+  if (nzchar(parent_category)) {
+    return(parent_category)
+  }
+
+  # Top-level codelist nodes (e.g., CME, NT, WS) should classify as themselves.
+  if (!grepl("_", indicator_code, fixed = TRUE)) {
+    return(indicator_code)
+  }
+
+  fallback_category <- get_dataflow_for_indicator(indicator_code, default = .infer_category(indicator_code))
+  if (is.null(fallback_category) || !nzchar(fallback_category)) {
+    return("GLOBAL_DATAFLOW")
+  }
+
+  fallback_category
+}
+
+
+#' Normalize indicator records to ensure category is present
+#' @param indicators Named list of indicator metadata
+#' @return Named list of normalized indicator metadata
+#' @keywords internal
+.normalize_indicator_categories <- function(indicators) {
+  if (is.null(indicators) || length(indicators) == 0) {
+    return(indicators)
+  }
+
+  for (code in names(indicators)) {
+    info <- indicators[[code]]
+    info$category <- .resolve_indicator_category(code, info)
+    indicators[[code]] <- info
+  }
+
+  indicators
+}
+
+
 # ==============================================================================
 # Internal Functions
 # ==============================================================================
@@ -365,6 +414,9 @@ CACHE_MAX_AGE_DAYS <- 30
     # Add parent only if present
     if (nchar(parent_id) > 0) {
       indicator_data$parent <- parent_id
+      indicator_data$category <- parent_id
+    } else if (!grepl("_", code_id, fixed = TRUE)) {
+      indicator_data$category <- code_id
     }
     
     indicators[[code_id]] <- indicator_data
@@ -584,6 +636,7 @@ CACHE_MAX_AGE_DAYS <- 30
 .ensure_cache_loaded <- function(force_refresh = FALSE) {
   # Return memory cache if already loaded
   if (.indicator_cache$loaded && !is.null(.indicator_cache$data) && !force_refresh) {
+    .indicator_cache$data <- .normalize_indicator_categories(.indicator_cache$data)
     return(.indicator_cache$data)
   }
   
@@ -592,7 +645,7 @@ CACHE_MAX_AGE_DAYS <- 30
   
   # Use file cache if valid and not stale
   if (!is.null(cached) && !.is_cache_stale(cached$last_updated) && !force_refresh) {
-    .indicator_cache$data <- cached$indicators
+    .indicator_cache$data <- .normalize_indicator_categories(cached$indicators)
     .indicator_cache$loaded <- TRUE
     return(.indicator_cache$data)
   }
@@ -600,6 +653,7 @@ CACHE_MAX_AGE_DAYS <- 30
   # Fetch fresh data from API
   tryCatch({
     fresh_indicators <- .fetch_indicator_codelist()
+    fresh_indicators <- .normalize_indicator_categories(fresh_indicators)
     .save_cache(fresh_indicators)
     .indicator_cache$data <- fresh_indicators
     .indicator_cache$loaded <- TRUE
@@ -609,7 +663,7 @@ CACHE_MAX_AGE_DAYS <- 30
     # If fetch fails but we have stale cache, use it
     if (!is.null(cached)) {
       warning(sprintf("Using stale cache (fetch failed): %s", e$message))
-      .indicator_cache$data <- cached$indicators
+      .indicator_cache$data <- .normalize_indicator_categories(cached$indicators)
       .indicator_cache$loaded <- TRUE
       return(.indicator_cache$data)
     }
@@ -1049,8 +1103,7 @@ list_categories <- function() {
   # Count indicators per category, resolving missing categories
   category_counts <- list()
   for (code in names(indicators)) {
-    info <- indicators[[code]]
-    cat_name <- .resolve_indicator_category(code, info)
+    cat_name <- .resolve_indicator_category(code, indicators[[code]])
     category_counts[[cat_name]] <- (category_counts[[cat_name]] %||% 0) + 1
   }
   

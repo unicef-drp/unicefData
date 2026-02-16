@@ -5,7 +5,7 @@
 
 #' @title Fetch SDMX data or structure from any agency
 #' @description Download one or more SDMX flows from a specified agency,
-#'   with paging, retries, caching, format & labels options, and post-processing.
+#'   with retries, caching, format & labels options, and post-processing.
 #'   
 #'   Schemas are cached in memory per session for performance: subsequent indicators
 #'   from the same dataflow load 8-17x faster (2.2s --> 0.13s).
@@ -23,7 +23,6 @@
 #' @param labels One of "both","id","none"; default "both".
 #' @param tidy Logical; if TRUE, rename core columns and retain metadata; default TRUE.
 #' @param country_names Logical; if TRUE, join ISO3 to country names; default TRUE.
-#' @param page_size Rows per page for CSV; default 1000000L.
 #' @param retry Number of retries; default 3L.
 #' @param cache Logical; if TRUE, cache per flow on disk; default FALSE.
 #' @param sleep Pause (in seconds) between pages; default 0.2.
@@ -54,7 +53,6 @@ get_sdmx <- function(
   labels        = c("id","both","none"),
   tidy          = TRUE,
   country_names = TRUE,
-  page_size     = 1000000L,
   retry         = 3L,
   cache         = FALSE,
   sleep         = 0.2,
@@ -137,18 +135,6 @@ get_sdmx <- function(
         tidyr::unnest_wider(observations)
     } else {
       df <- readr::read_csv(.fetch_sdmx(url, ua=ua, retry=retry), show_col_types=FALSE)
-      if(format=="csv") {
-        pages <- list(df); p <- 0L
-        while(nrow(df)==page_size) {
-          Sys.sleep(sleep)
-          p <- p+1L
-          next_url <- paste0(url, "&startIndex=", p*page_size)
-          df <- readr::read_csv(.fetch_sdmx(next_url, ua=ua, retry=retry), show_col_types=FALSE)
-          if(nrow(df)==0L) break
-          pages[[length(pages)+1L]] <- df
-        }
-        df <- dplyr::bind_rows(pages)
-      }
     }
 
     if(is.function(post_process)) df <- post_process(df)

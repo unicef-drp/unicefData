@@ -2,7 +2,6 @@ from typing import List, Optional, Union
 import time
 import pandas as pd
 import logging
-import requests
 from io import StringIO
 from unicefdata.sdmx_client import UNICEFSDMXClient
 
@@ -26,7 +25,6 @@ def get_sdmx(
     country_names: bool = True,
     countries: Optional[List[str]] = None,
     sex: str = "_T",
-    page_size: int = 100000,
     retry: int = 3,
     cache: bool = False,
 ) -> pd.DataFrame:
@@ -56,7 +54,6 @@ def get_sdmx(
         country_names: If True, add country name column.
         countries: ISO3 country codes to filter. If None, fetches all.
         sex: Sex disaggregation filter. "_T" (total), "F", "M", or None.
-        page_size: Rows per page for pagination. Default: 100000.
         retry: Number of retry attempts on failure. Default: 3.
         cache: If True, cache results (not yet implemented).
     
@@ -138,57 +135,57 @@ def get_sdmx(
                 if not df.empty:
                     dfs.append(df)
         else:
-            # Fetch entire dataflow (no key filter)
-            if detail != "data":
-                raise ValueError(
-                    f"detail='{detail}' is not supported for full-dataflow fetches "
-                    f"(key=None). Only detail='data' is supported."
-                )
+            # Fetch entire dataflow (no indicator key filter)
             _logger.warning(
                 f"Fetching entire dataflow '{fl}' without key filter. "
                 f"This may return a large dataset."
             )
-            url = f"{_client.base_url}/data/{agency},{fl},{_client.version}/"
-            params = {"format": "csv", "labels": labels}
-            if start_period:
+
+            ver = version if version else _client.version
+            url = f"{_client.base_url}/data/{agency},{fl},{ver}/"
+
+            params = {"format": format, "labels": labels}
+            if start_period is not None:
                 params["startPeriod"] = str(start_period)
-            if end_period:
+            if end_period is not None:
                 params["endPeriod"] = str(end_period)
 
-            # Retry loop with exponential backoff (matching fetch_indicator)
-            df = pd.DataFrame()
-            for attempt in range(retry):
-                try:
-                    _logger.info(
-                        f"Full-dataflow request attempt {attempt + 1}/{retry}: {fl}"
-                    )
-                    response = _client.session.get(
-                        url, params=params, timeout=_client.timeout
-                    )
-                    response.raise_for_status()
-                    df = pd.read_csv(StringIO(response.text))
-                    break
-                except (requests.exceptions.HTTPError,
-                        requests.exceptions.Timeout,
-                        requests.exceptions.ConnectionError) as e:
-                    _logger.warning(
-                        f"Attempt {attempt + 1}/{retry} failed for dataflow "
-                        f"'{fl}': {e}"
-                    )
-                    if attempt < retry - 1:
-                        time.sleep(2 ** attempt)
-                    else:
-                        _logger.error(
-                            f"Failed to fetch dataflow '{fl}' after {retry} attempts."
-                        )
+            response = _client.session.get(url, params=params, timeout=_client.timeout)
+            response.raise_for_status()
 
-            # Apply sex filter post-fetch (not handled by key construction)
-            if not df.empty and sex is not None:
-                sex_col = next(
-                    (c for c in df.columns if c.upper() == "SEX"), None
-                )
-                if sex_col:
-                    df = df[df[sex_col] == sex]
+            if format != "csv":
+                raise ValueError("Full dataflow fetch currently supports format='csv' only.")
+
+            df = pd.read_csv(StringIO(response.text))
+
+            # Optional country filter (applied post-fetch)
+            if countries:
+                if "REF_AREA" in df.columns:
+                    df = df[df["REF_AREA"].isin(countries)].copy()
+                elif "iso3" in df.columns:
+                    df = df[df["iso3"].isin(countries)].copy()
+
+            if tidy and not df.empty:
+                col_mapping = {
+                    "REF_AREA": "iso3",
+                    "INDICATOR": "indicator",
+                    "TIME_PERIOD": "period",
+                    "OBS_VALUE": "value",
+                    "UNIT_MEASURE": "unit",
+                }
+                for old, new in col_mapping.items():
+                    if old in df.columns and new not in df.columns:
+                        df = df.rename(columns={old: new})
+
+                if "period" in df.columns:
+                    df["period"] = pd.to_numeric(df["period"], errors="coerce")
+                if "value" in df.columns:
+                    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+
+                if country_names and "iso3" in df.columns and "country" not in df.columns:
+                    countries_meta = _client._load_countries_metadata_for_enrichment()
+                    if countries_meta:
+                        df["country"] = df["iso3"].map(countries_meta)
 
             if not df.empty:
                 dfs.append(df)

@@ -29,6 +29,8 @@
 
 # Lazy-load fallback sequences at first use (not at module init) to respect working directory
 .FALLBACK_ENV <- new.env(parent = emptyenv())
+# Cache mutable YAML-derived metadata without mutating namespace bindings
+.YAML_CACHE_ENV <- new.env(parent = emptyenv())
 
 # Mutable metadata cache - avoids locked namespace bindings (no unlockBinding needed)
 .METADATA_ENV <- new.env(parent = emptyenv())
@@ -164,12 +166,7 @@ if (!isNamespace(topenv(environment()))) {
   get("sequences", envir = .FALLBACK_ENV, inherits = FALSE)
 }
 # Load comprehensive indicators metadata at module initialization
-.METADATA_ENV$indicators_yaml <- .load_indicators_metadata_yaml()
-
-#' @keywords internal
-.get_indicators_metadata <- function() {
-  .METADATA_ENV$indicators_yaml
-}
+.YAML_CACHE_ENV$indicators_metadata <- .load_indicators_metadata_yaml()
 
 #' Load aggregate/region ISO3 codes for geo_type classification
 #'
@@ -214,12 +211,7 @@ if (!isNamespace(topenv(environment()))) {
 }
 
 # Load region codes at module initialization
-.METADATA_ENV$region_codes <- .load_region_codes_yaml()
-
-#' @keywords internal
-.get_region_codes <- function() {
-  .METADATA_ENV$region_codes
-}
+.YAML_CACHE_ENV$region_codes <- .load_region_codes_yaml()
 
 
 #' Clear All UNICEF Caches
@@ -255,11 +247,11 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
   cleared <- c(cleared, "fallback_sequences")
 
   # 2. Indicators metadata YAML (unicef_core.R)
-  .METADATA_ENV$indicators_yaml <- NULL
+  .YAML_CACHE_ENV$indicators_metadata <- NULL
   cleared <- c(cleared, "indicators_metadata")
 
   # 3. Region codes YAML (unicef_core.R)
-  .METADATA_ENV$region_codes <- NULL
+  .YAML_CACHE_ENV$region_codes <- character(0)
   cleared <- c(cleared, "region_codes")
 
   # 4. Indicator registry cache (indicator_registry.R)
@@ -279,8 +271,8 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
 
   # Reload YAML-based caches if requested
   if (reload) {
-    .METADATA_ENV$indicators_yaml <- .load_indicators_metadata_yaml()
-    .METADATA_ENV$region_codes <- .load_region_codes_yaml()
+    .YAML_CACHE_ENV$indicators_metadata <- .load_indicators_metadata_yaml()
+    .YAML_CACHE_ENV$region_codes <- .load_region_codes_yaml()
     # Fallback sequences reload lazily via .get_fallback_sequences()
   }
 
@@ -363,6 +355,8 @@ detect_dataflow <- function(indicator) {
 #' @return Character vector of fallback dataflow IDs to try
 #' @keywords internal
 get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
+  indicators_meta <- .YAML_CACHE_ENV$indicators_metadata
+
   # Build prefix-specific fallback chains from canonical YAML or comprehensive metadata
   fallbacks <- c()
   
@@ -370,8 +364,8 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   if (!is.null(indicator_code)) {
     # Priority 1: Direct lookup in comprehensive indicators metadata
     # Check both 'dataflow' (singular) and 'dataflows' (plural) fields
-    if (!is.null(.get_indicators_metadata()) && indicator_code %in% names(.get_indicators_metadata())) {
-      meta <- .get_indicators_metadata()[[indicator_code]]
+    if (!is.null(indicators_meta) && indicator_code %in% names(indicators_meta)) {
+      meta <- indicators_meta[[indicator_code]]
       # Check 'dataflows' (plural) first, then 'dataflow' (singular)
       dataflow_value <- meta$dataflows %||% meta$dataflow
       if (!is.null(dataflow_value)) {
@@ -432,7 +426,6 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year_str Character string of end year (optional)
 #' @param max_retries Integer number of retry attempts
 #' @param version SDMX version string (default "1.0")
-#' @param page_size Integer number of rows per page
 #' @param verbose Logical for progress messages
 #' @param totals Logical for including totals
 #' @param labels Label format ("id" or "name")
@@ -446,15 +439,25 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     end_year_str = NULL,
     max_retries = 3,
     version = "1.0",
-    page_size = 100000,
   verbose = TRUE,
   totals = FALSE,
   labels = "id"
 ) {
   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-  indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
+  if (is.null(indicator) || length(indicator) == 0) {
+    indicator_str <- ""
+  } else {
+    indicator <- trimws(as.character(indicator))
+    indicator <- indicator[nzchar(indicator)]
+    indicator_str <- if (length(indicator) > 0) {
+      paste0(".", paste(indicator, collapse = "+"), ".")
+    } else {
+      ""
+    }
+  }
+
   # Override and expand dimensions for WS_HCF_* to expose service/hcf/residence breakdowns
-  if (length(indicator) == 1 && grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+  if (!is.null(indicator) && length(indicator) == 1 && grepl("^WS_HCF_", toupper(indicator[[1]]))) {
     dataflow <- "WASH_HEALTHCARE_FACILITY"
     code <- toupper(indicator[[1]])
     tail <- sub("^WS_HCF_", "", code)
@@ -481,7 +484,7 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     }
   }
   # Explicit totals across known dimensions when requested
-  if (totals && !grepl("^WS_HCF_", toupper(indicator[[1]]))) {
+  if (totals && !is.null(indicator) && length(indicator) > 0 && !grepl("^WS_HCF_", toupper(indicator[[1]]))) {
     # Attempt to load schema to determine dimension count
     if (!exists("load_dataflow_schema", mode = "function")) {
       script_dir <- dirname(sys.frame(1)$ofile %||% ".")
@@ -501,7 +504,11 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     }
     indicator_str <- paste0(indicator_str, sub("^\\.", "", dim_suffix))
   }
-  rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
+  rel_path <- if (nzchar(indicator_str)) {
+    sprintf("data/UNICEF,%s,%s/%s", dataflow, version, indicator_str)
+  } else {
+    sprintf("data/UNICEF,%s,%s/", dataflow, version)
+  }
 
   # Validate labels parameter
   if (!labels %in% c("id", "both", "none")) {
@@ -518,42 +525,30 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   # Shared dynamic User-Agent
   ua <- .unicefData_ua
 
-  pages <- list()
-  page <- 0L
+  if (verbose) message("Fetching url: ", full_url)
 
-  repeat {
-    page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-    if (verbose) message(sprintf("Fetching page %d...", page + 1))
+  # IMPORTANT: catch 404 as a signal, not a fatal error
+  out <- tryCatch(
+    {
+      txt <- fetch_sdmx_text(full_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
+      readr::read_csv(I(txt), show_col_types = FALSE)
+    },
+    error = function(e) e
+  )
 
-    # IMPORTANT: catch 404 as a signal, not a fatal error
-    out <- tryCatch(
-      {
-        txt <- fetch_sdmx_text(page_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
-        readr::read_csv(I(txt), show_col_types = FALSE)
-      },
-      error = function(e) e
-    )
-
-    if (inherits(out, "error")) {
-      if (.is_http_404(out)) {
-        # "Not in this dataflow"
-        return(list(status = "not_found", df = NULL))
-      }
-      # Any other error is still fatal (transient errors should be handled by RETRY)
-      stop(out)
+  if (inherits(out, "error")) {
+    if (.is_http_404(out)) {
+      # "Not in this dataflow"
+      return(list(status = "not_found", df = NULL))
     }
-
-    df <- out
-    if (is.null(df) || nrow(df) == 0) break
-
-    pages[[length(pages) + 1L]] <- df
-    if (nrow(df) < page_size) break
-
-    page <- page + 1L
-    Sys.sleep(0.2)
+    # Any other error is still fatal (transient errors should be handled by RETRY)
+    stop(out)
   }
 
-  df_all <- dplyr::bind_rows(pages)
+  df_all <- out
+  if (is.null(df_all)) {
+    df_all <- dplyr::tibble()
+  }
 
   # Filter countries (post-fetch)
   if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
@@ -573,11 +568,9 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year Numeric or character end year (YYYY).
 #' @param max_retries Integer, number of retries for failed requests.
 #' @param version Character string of SDMX version (e.g. "1.0").
-#' @param page_size Integer, number of rows per page.
 #' @param verbose Logical, print progress messages.
 #' @param totals Logical, include total aggregations.
-#' @param labels Character, label format ("id" or "name").
-#' @return A tibble of raw SDMX data, or an empty tibble if no data found.
+#' @param labels Character, label format ("id", "name", or "both").
 #' @export
 unicefData_raw <- function(
     indicator = NULL,
@@ -587,11 +580,30 @@ unicefData_raw <- function(
     end_year = NULL,
     max_retries = 3,
     version = NULL,
-    page_size = 100000,
     verbose = TRUE,
     totals = FALSE,
-    labels = "id"
+    labels = "both"
 ) {
+  # Validate indicator input to prevent hard-to-read API 400 errors.
+  if (!is.null(indicator)) {
+    indicator <- as.character(indicator)
+    indicator <- trimws(indicator)
+
+    if (length(indicator) == 0 || all(!nzchar(indicator))) {
+      stop(
+        "`indicator` cannot be empty. Provide a valid indicator code (e.g., 'CME_MRY0T4').\n",
+        "Use search_indicators() to find available indicator codes."
+      )
+    }
+
+    if (any(!nzchar(indicator))) {
+      stop(
+        "`indicator` contains empty value(s). Remove blank entries and try again.\n",
+        "Use search_indicators() to find available indicator codes."
+      )
+    }
+  }
+
   # Validate inputs
   if (is.null(dataflow) && is.null(indicator)) {
     stop("Either 'indicator' or 'dataflow' must be specified.")
@@ -615,7 +627,7 @@ unicefData_raw <- function(
   # determine primary dataflow
   if (is.null(dataflow)) {
     dataflow <- detect_dataflow(indicator[1])
-    if (verbose) message(sprintf("Auto-detected dataflow '%s'", dataflow))
+    if (verbose) message(sprintf("Auto-detected dataflow: '%s'", dataflow))
   }
 
   # Candidate flows: primary + fallbacks
@@ -639,7 +651,6 @@ unicefData_raw <- function(
       end_year_str   = end_year_str,
       max_retries = max_retries,
       version = ver,
-      page_size = page_size,
       verbose = verbose,
       totals = totals,
       labels = labels
@@ -657,11 +668,12 @@ unicefData_raw <- function(
 
   # If all candidates were 404 (indicator not found in any attempted flow), return empty
   if (last_not_found) {
-    # Always show which dataflows were tried (not just when verbose)
-    warning(sprintf(
-      "Not Found (404): Indicator '%s' not found in any dataflow.\n  Tried dataflows: %s\n  Browse available indicators at: https://data.unicef.org/",
-      indicator[1], paste(flows, collapse = ", ")
-    ), call. = FALSE)
+    if (isTRUE(verbose)) {
+      message(sprintf(
+        "Not Found (404): Indicator '%s' not found in any dataflow.\n  Tried dataflows: %s\n  Browse available indicators at: https://data.unicef.org/",
+        indicator[1], paste(flows, collapse = ", ")
+      ))
+    }
     return(dplyr::tibble())
   }
 
@@ -686,7 +698,7 @@ unicefData_raw <- function(
 #   page <- 0L
 #
 #   repeat {
-#     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
+#     page_url <- full_url
 #     if (verbose) message(sprintf("Fetching page %d...", page + 1))
 #     # this NULL here masks 404, let's fix and make fallback possible:
 #     df <- tryCatch(
@@ -768,12 +780,13 @@ clean_unicef_data <- function(df) {
 
   # Add geo_type: 1 for aggregates (ISO3 in YAML regions list), 0 otherwise (numeric)
   if ("iso3" %in% names(df_clean)) {
-    if (length(.get_region_codes()) == 0) {
+    region_codes <- .YAML_CACHE_ENV$region_codes %||% character(0)
+    if (length(region_codes) == 0) {
       warning("geo_type classification: region codes not loaded; treating all as country (0).")
     }
     df_clean <- df_clean %>%
       dplyr::mutate(
-        geo_type = dplyr::if_else(iso3 %in% .get_region_codes(), 1L, 0L)
+        geo_type = dplyr::if_else(iso3 %in% region_codes, 1L, 0L)
       )
   }
 
@@ -809,9 +822,10 @@ filter_unicef_data <- function(df, sex = NULL, age = NULL, wealth = NULL, reside
 
   # Get indicator metadata for smart filtering (disaggregations_with_totals)
   dims_with_totals <- c()
-  if (!is.null(indicator_code) && !is.null(.get_indicators_metadata()) &&
-      indicator_code %in% names(.get_indicators_metadata())) {
-    meta <- .get_indicators_metadata()[[indicator_code]]
+  indicators_meta <- .YAML_CACHE_ENV$indicators_metadata
+  if (!is.null(indicator_code) && !is.null(indicators_meta) &&
+      indicator_code %in% names(indicators_meta)) {
+    meta <- indicators_meta[[indicator_code]]
     if (!is.null(meta$disaggregations_with_totals)) {
       dims_with_totals <- meta$disaggregations_with_totals
       if (verbose) {
