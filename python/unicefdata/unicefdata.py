@@ -813,18 +813,29 @@ def unicefData(
         print(f"Warning: Metadata sync failed ({e}). Proceeding without cached metadata.")
 
     # Handle single indicator or list
+    # Skip None values and empty strings; raise if nothing valid remains
     if isinstance(indicator, str):
         indicator_clean = indicator.strip()
         indicators = [indicator_clean] if indicator_clean else None
     elif indicator is None:
         indicators = None
     else:
-        indicators = [str(ind).strip() for ind in indicator if str(ind).strip()]
+        # Explicitly filter out None values before converting to str
+        indicators = []
+        for ind in indicator:
+            if ind is None:
+                continue
+            code = str(ind).strip()
+            if code:
+                indicators.append(code)
         if len(indicators) == 0:
             indicators = None
-
+    
+    # Validate that we have at least one valid indicator or dataflow
     if indicators is None and dataflow is None:
-        raise ValueError("Either 'indicator' or 'dataflow' must be specified.")
+        raise ValueError(
+            "No valid indicator codes provided (all values were None or empty/whitespace)."
+        )
     
     # Parse the year parameter
     year_spec = parse_year(year)
