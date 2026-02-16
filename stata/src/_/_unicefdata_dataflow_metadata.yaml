@@ -1,7 +1,7 @@
 _metadata:
   platform: Stata
   version: '2.0.0'
-  synced_at: '2026-02-09T23:15:40Z'
+  synced_at: '2026-02-16T02:58:55Z'
   source: SDMX API /data/ endpoint (serieskeysonly)
   agency: UNICEF
   content_type: dataflow_schemas
