@@ -15,7 +15,7 @@ unicefData_raw(
   version = NULL,
   verbose = TRUE,
   totals = FALSE,
-  labels = "id"
+  labels = "both"
 )
 
 unicefdata_raw(
@@ -28,7 +28,7 @@ unicefdata_raw(
   version = NULL,
   verbose = TRUE,
   totals = FALSE,
-  labels = "id"
+  labels = "both"
 )
 }
 \arguments{
@@ -50,10 +50,7 @@ unicefdata_raw(
 
 \item{totals}{Logical, include total aggregations.}
 
-\item{labels}{Character, label format ("id" or "name").}
-}
-\value{
-A tibble of raw SDMX data, or an empty tibble if no data found.
+\item{labels}{Character, label format ("id", "name", or "both").}
 }
 \description{
 Low-level fetcher for UNICEF SDMX API.
