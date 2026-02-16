@@ -1,0 +1,106 @@
+{
+  "generated": "2026-01-12T12:54:57.536707",
+  "total_tests": 10,
+  "results": [
+    {
+      "indicator_code": "CME",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 1.0226709842681885,
+      "timestamp": "2026-01-12T12:54:56.203040",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_ARR_10T19",
+      "language": "python",
+      "status": "failed",
+      "error_message": "CACHED",
+      "rows_returned": 0,
+      "execution_time_sec": 0.0,
+      "timestamp": "2026-01-12T12:54:56.215360",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_ARR_SBR",
+      "language": "python",
+      "status": "failed",
+      "error_message": "CACHED",
+      "rows_returned": 0,
+      "execution_time_sec": 0.0,
+      "timestamp": "2026-01-12T12:54:56.241195",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_ARR_U5MR",
+      "language": "python",
+      "status": "failed",
+      "error_message": "CACHED",
+      "rows_returned": 0,
+      "execution_time_sec": 0.0,
+      "timestamp": "2026-01-12T12:54:56.264713",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_CASES",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.24802064895629883,
+      "timestamp": "2026-01-12T12:54:56.514734",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_CASES_SHARE",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.25963616371154785,
+      "timestamp": "2026-01-12T12:54:56.776371",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_DEATHS",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.2530796527862549,
+      "timestamp": "2026-01-12T12:54:57.032474",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_COVID_DEATHS_SHARE",
+      "language": "python",
+      "status": "not_found",
+      "error_message": null,
+      "rows_returned": 0,
+      "execution_time_sec": 0.24204397201538086,
+      "timestamp": "2026-01-12T12:54:57.279525",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_MRM0",
+      "language": "python",
+      "status": "failed",
+      "error_message": "CACHED",
+      "rows_returned": 0,
+      "execution_time_sec": 0.0,
+      "timestamp": "2026-01-12T12:54:57.402009",
+      "output_file": null
+    },
+    {
+      "indicator_code": "CME_MRM1T11",
+      "language": "python",
+      "status": "failed",
+      "error_message": "CACHED",
+      "rows_returned": 0,
+      "execution_time_sec": 0.0,
+      "timestamp": "2026-01-12T12:54:57.531706",
+      "output_file": null
+    }
+  ]
+}

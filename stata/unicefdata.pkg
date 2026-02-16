@@ -73,7 +73,7 @@ f src/_/_query_indicators.ado
 f src/_/_unicef_build_schema_key.ado
 f src/_/_unicef_list_dataflows.ado
 f src/_/_unicef_list_indicators.ado
-f src/_/_unicef_search_indicators.ado
+f src/_/-_unicef_search_indicators.ado
 f src/_/_unicef_indicator_info.ado
 f src/_/_unicef_dataflow_info.ado
 
@@ -92,15 +92,15 @@ f src/_/__unicef_get_indicator_filters.ado
 
 * Sync helper programs
 f src/_/_unicefdata_sync_dataflow_index.ado
-f src/_/_unicefdata_sync_df_schema.ado
+f src/_/-_unicefdata_sync_df_schema.ado
 f src/_/_unicefdata_sync_ind_meta.ado
-f src/_/_unicefdata_update_sync_history.ado
+f src/_/-_unicefdata_update_sync_history.ado
 
 * XML parsing helper programs
 f src/_/_xmltoyaml_get_schema.ado
-f src/_/_xmltoyaml_parse.ado
+f src/_/-_xmltoyaml_parse.ado
 f src/_/_xmltoyaml_parse_lines.ado
-f src/_/_xmltoyaml_parse_python.ado
+f src/_/-_xmltoyaml_parse_python.ado
 f src/_/_xmltoyaml_parse_stata.ado
 
 * YAML indicator parser

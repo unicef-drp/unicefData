@@ -1,0 +1,16 @@
+{
+  "generated": "2026-01-12T12:39:37.160541",
+  "total_tests": 1,
+  "results": [
+    {
+      "indicator_code": "CME_MRY0T4",
+      "language": "python",
+      "status": "success",
+      "error_message": null,
+      "rows_returned": 15194,
+      "execution_time_sec": 2.246811866760254,
+      "timestamp": "2026-01-12T12:39:37.157540",
+      "output_file": "results\\test_validation_simple\\indicator_validation_20260112_123933\\python\\success\\CME_MRY0T4.csv"
+    }
+  ]
+}

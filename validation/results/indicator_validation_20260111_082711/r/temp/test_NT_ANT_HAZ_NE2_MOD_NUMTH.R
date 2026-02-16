@@ -1,0 +1,19 @@
+
+library(unicefData)
+tryCatch({
+    df <- unicefData(
+        indicator = "NT_ANT_HAZ_NE2_MOD_NUMTH",
+        
+        
+    )
+    
+    if (nrow(df) > 0) {
+        write.csv(df, "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260111_082711/r/success/NT_ANT_HAZ_NE2_MOD_NUMTH.csv", row.names = FALSE)
+        cat(nrow(df))
+    } else {
+        cat("0")
+    }
+}, error = function(e) {
+    writeLines(as.character(e$message), "C:/GitHub/myados/unicefData/validation/results/indicator_validation_20260111_082711/r/failed/NT_ANT_HAZ_NE2_MOD_NUMTH.error")
+    cat("ERROR")
+})

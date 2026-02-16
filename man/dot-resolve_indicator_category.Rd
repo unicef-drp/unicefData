@@ -2,20 +2,19 @@
 % Please edit documentation in R/indicator_registry.R
 \name{.resolve_indicator_category}
 \alias{.resolve_indicator_category}
-\title{Resolve indicator category through multiple fallback strategies}
+\title{Resolve category for one indicator record}
 \usage{
 .resolve_indicator_category(indicator_code, info)
 }
 \arguments{
-\item{indicator_code}{Character. The indicator code}
+\item{indicator_code}{Character. UNICEF indicator code}
 
-\item{info}{Named list. The indicator metadata from cache}
+\item{info}{Named list. Indicator metadata}
 }
 \value{
-Character. Resolved category name
+Character. Resolved category/dataflow
 }
 \description{
-Tries: explicit category field -> parent code -> prefix-based inference.
-Used by list_categories() for accurate category counts.
+Resolve category for one indicator record
 }
 \keyword{internal}
