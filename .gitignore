@@ -66,17 +66,23 @@ nul
 # Misc
 *.csv
 !python/examples/*.csv
-!tests/fixtures/api_responses/*.csv
-!tests/fixtures/expected/*.csv
 
 # ============================================
 # Test fixtures — ZIP is the authoritative source
 # ============================================
-# The ZIP is tracked; unpacked directories are gitignored.
-# Run: python scripts/unpack_fixtures.py (or hooks handle it)
+# The ZIP is tracked; data files are gitignored, but docs (*.md) are tracked.
+# Run: ./scripts/setup-hooks.ps1 (Windows) or ./scripts/setup-hooks.sh (Unix)
 tests/fixtures/deterministic/
 tests/fixtures/xml_full/
 tests/fixtures/_staging/
+tests/fixtures/api_responses/*
+!tests/fixtures/api_responses/*.md
+tests/fixtures/expected/*
+!tests/fixtures/expected/*.md
+tests/fixtures/mock_design/*
+!tests/fixtures/mock_design/*.md
+tests/fixtures/xml/
+tests/fixtures/yaml/
 tests/fixtures/.unpack_stamp
 
 # Test and Example Outputs

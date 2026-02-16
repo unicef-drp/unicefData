@@ -7,14 +7,15 @@
 .resolve_indicator_category(indicator_code, info)
 }
 \arguments{
-\item{indicator_code}{Character. UNICEF indicator code}
+\item{indicator_code}{Character. The indicator code}
 
-\item{info}{Named list. Indicator metadata}
+\item{info}{Named list. The indicator metadata from cache}
 }
 \value{
-Character. Resolved category/dataflow
+Character. Resolved category name
 }
 \description{
-Resolve category for one indicator record
+Tries: explicit category field -> parent code -> prefix-based inference.
+Used by list_categories() for accurate category counts.
 }
 \keyword{internal}
