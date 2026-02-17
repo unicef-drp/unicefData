@@ -1,0 +1,38 @@
+# Minimal indicator cache fixture for test_get_indicator_info
+# Format matches indicator_registry._load_cache() expectations
+metadata:
+  version: '1.0'
+  source: test fixture
+  last_updated: '2026-02-17T00:00:00'
+  indicator_count: 5
+indicators:
+  CME_MRY0T4:
+    code: CME_MRY0T4
+    name: Under-five mortality rate
+    description: Probability of dying between birth and age 5 per 1000 live births
+    category: CME
+    parent: CME
+  CME_MRY0:
+    code: CME_MRY0
+    name: Neonatal mortality rate
+    description: Probability of dying within the first 28 days of life per 1000 live births
+    category: CME
+    parent: CME
+  NT_ANT_HAZ_NE2:
+    code: NT_ANT_HAZ_NE2
+    name: Stunting prevalence
+    description: Percentage of children under 5 who are stunted
+    category: NUTRITION
+    parent: NUTRITION
+  IM_MCV1:
+    code: IM_MCV1
+    name: Measles vaccination coverage (MCV1)
+    description: Percentage of children who received first dose of measles vaccine
+    category: IMMUNISATION
+    parent: IMMUNISATION
+  IM_DTP3:
+    code: IM_DTP3
+    name: DTP3 vaccination coverage
+    description: Percentage of children who received three doses of DTP vaccine
+    category: IMMUNISATION
+    parent: IMMUNISATION
