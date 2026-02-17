@@ -1,6 +1,6 @@
 # unicefData Changelog
 
-## 2.2.0 (2026-02-15)
+## 2.2.0 (2026-02-17)
 
 ### Cross-Platform Testing Infrastructure
 
