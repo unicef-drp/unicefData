@@ -37,6 +37,7 @@
 
 #' Set metadata cache directory
 #' @param path Path to cache directory
+#' @return Invisibly returns the path to the cache directory.
 #' @export
 set_metadata_cache <- function(path = NULL) {
 

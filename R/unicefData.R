@@ -32,25 +32,23 @@
 #' @importFrom magrittr %>%
 NULL
 
-# Ensure required packages are loaded when sourcing directly
-if (!requireNamespace("magrittr", quietly = TRUE)) {
-  stop("Package 'magrittr' is required but not available.")
+# Guards for standalone sourcing only (skipped when loaded as a package)
+if (!isNamespace(topenv(environment()))) {
+  if (!requireNamespace("magrittr", quietly = TRUE)) {
+    stop("Package 'magrittr' is required but not available.")
+  }
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    stop("Package 'dplyr' is required but not available.")
+  }
+  if (!requireNamespace("purrr", quietly = TRUE)) {
+    stop("Package 'purrr' is required but not available.")
+  }
+  if (!requireNamespace("httr", quietly = TRUE)) {
+    stop("Package 'httr' is required but not available.")
+  }
+  `%>%` <- magrittr::`%>%`
+  `%||%` <- function(x, y) if (is.null(x)) y else x
 }
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required but not available.")
-}
-if (!requireNamespace("purrr", quietly = TRUE)) {
-  stop("Package 'purrr' is required but not available.")
-}
-if (!requireNamespace("httr", quietly = TRUE)) {
-  stop("Package 'httr' is required but not available.")
-}
-
-# Import pipe operator for direct sourcing
-`%>%` <- magrittr::`%>%`
-
-# Null coalescing operator
-`%||%` <- function(x, y) if (is.null(x)) y else x
 
 
 # =============================================================================
@@ -304,7 +302,7 @@ list_unicef_codelist <- memoise::memoise(
 #' @param max_retries Number of retry attempts on failure (default: 3).
 #'   Previously called 'retry'. Both parameter names are supported.
 #' @param cache Logical; if TRUE, memoises results.
-#' @param page_size Integer rows per page (default: 1000000).
+#' @param page_size Integer rows per page (default: 100000).
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
 #' @param labels Label format for SDMX requests: "id" (codes only, default),
@@ -414,7 +412,7 @@ unicefData <- function(
     country_names = TRUE,
     max_retries   = 3,
     cache         = FALSE,
-    page_size     = 1000000,
+    page_size     = 100000,
     detail        = c("data", "structure"),
     version       = NULL,
     labels        = "id",
@@ -439,6 +437,16 @@ unicefData <- function(
 
   format <- match.arg(format)
   detail <- match.arg(detail)
+
+  # Validate indicator input
+  if (!is.null(indicator)) {
+    indicator <- trimws(as.character(indicator))
+    indicator <- indicator[nzchar(indicator)]
+    if (length(indicator) == 0) {
+      stop("No valid indicator codes provided (all empty or whitespace). ",
+           "Use search_indicators() to find valid codes.")
+    }
+  }
 
   # Validate metadata parameter
   if (!metadata %in% c("light", "full")) {
@@ -533,14 +541,17 @@ unicefData <- function(
     message("")
   }
 
-  # 3. Validate Schema (before cleaning to check raw column names)
-  if (!is.null(dataflow) && exists("validate_unicef_schema", mode = "function")) {
-    result <- validate_unicef_schema(result, dataflow[1])
-  }
-
-  # 4. Clean/Tidy Data
+  # 3. Clean/Tidy Data
   if (tidy && !raw) {
     result <- clean_unicef_data(result)
+
+    # Validate Schema
+    if (!is.null(dataflow)) {
+      # We might have multiple dataflows, just validate against the first one
+      if (exists("validate_unicef_schema", mode = "function")) {
+         result <- validate_unicef_schema(result, dataflow[1])
+      }
+    }
   } else if (raw) {
     # Minimal processing for raw (rename core cols)
      result <- result %>%

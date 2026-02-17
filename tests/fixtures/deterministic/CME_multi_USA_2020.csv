@@ -1,0 +1,12 @@
+REF_AREA,Geographic area,INDICATOR,Indicator,SEX,Sex,WEALTH_QUINTILE,Wealth Quintile,DATA_SOURCE,COUNTRY_NOTES,UNIT_MEASURE,Unit of measure,TIME_PERIOD,OBS_VALUE,REF_PERIOD,LOWER_BOUND,UPPER_BOUND,OBS_STATUS,Observation Status
+USA,United States,CME_MRM0,Neonatal mortality rate,_T,Total,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,3.63811577117753,,3.54086166687861,3.73349658907312,A,Normal value
+USA,United States,CME_MRY0,Infant mortality rate,F,Female,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,5.01242357883589,,4.91406473552833,5.11206877271771,A,Normal value
+USA,United States,CME_MRY0,Infant mortality rate,M,Male,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,5.95844971532448,,5.84683982344359,6.06836900916443,A,Normal value
+USA,United States,CME_MRY0,Infant mortality rate,_T,Total,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,5.4977093963284,,5.40139062387797,5.5923056625921,A,Normal value
+USA,United States,CME_MRY0T4,Under-five mortality rate,F,Female,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,5.87195259413863,,5.75957645227195,5.98592215708259,A,Normal value
+USA,United States,CME_MRY0T4,Under-five mortality rate,M,Male,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,7.03562040903009,,6.90668510860231,7.16285688984591,A,Normal value
+USA,United States,CME_MRY0T4,Under-five mortality rate,_T,Total,_T,Total,UN_IGME,,D_PER_1000_B,"Deaths per 1,000 live births",2020,6.46878461763762,,6.35545280092989,6.5800896772505,A,Normal value
+USA,United States,CME_TMM0,Neonatal deaths,_T,Total,_T,Total,UN_IGME,,D,Number of deaths,2020,13263,,12909,13611,A,Normal value
+USA,United States,CME_TMY0T4,Under-five deaths,F,Female,_T,Total,UN_IGME,,D,Number of deaths,2020,10699,,10492,10904,A,Normal value
+USA,United States,CME_TMY0T4,Under-five deaths,M,Male,_T,Total,UN_IGME,,D,Number of deaths,2020,13423,,13174,13662,A,Normal value
+USA,United States,CME_TMY0T4,Under-five deaths,_T,Total,_T,Total,UN_IGME,,D,Number of deaths,2020,24122,,23700,24537,A,Normal value

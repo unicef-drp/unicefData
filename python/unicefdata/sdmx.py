@@ -1,6 +1,9 @@
 from typing import List, Optional, Union
+import time
 import pandas as pd
 import logging
+import requests
+from io import StringIO
 from unicefdata.sdmx_client import UNICEFSDMXClient
 
 _logger = logging.getLogger(__name__)
@@ -135,15 +138,60 @@ def get_sdmx(
                 if not df.empty:
                     dfs.append(df)
         else:
-            # Fetch entire dataflow - use a placeholder key pattern
-            # This would need enhancement to support full dataflow fetch
+            # Fetch entire dataflow (no key filter)
+            if detail != "data":
+                raise ValueError(
+                    f"detail='{detail}' is not supported for full-dataflow fetches "
+                    f"(key=None). Only detail='data' is supported."
+                )
             _logger.warning(
                 f"Fetching entire dataflow '{fl}' without key filter. "
-                f"Consider specifying 'key' for better performance."
+                f"This may return a large dataset."
             )
-            # For now, we can't fetch without a key - the API requires it
-            # Return empty with warning
-            continue
+            url = f"{_client.base_url}/data/{agency},{fl},{_client.version}/"
+            params = {"format": "csv", "labels": labels}
+            if start_period:
+                params["startPeriod"] = str(start_period)
+            if end_period:
+                params["endPeriod"] = str(end_period)
+
+            # Retry loop with exponential backoff (matching fetch_indicator)
+            df = pd.DataFrame()
+            for attempt in range(retry):
+                try:
+                    _logger.info(
+                        f"Full-dataflow request attempt {attempt + 1}/{retry}: {fl}"
+                    )
+                    response = _client.session.get(
+                        url, params=params, timeout=_client.timeout
+                    )
+                    response.raise_for_status()
+                    df = pd.read_csv(StringIO(response.text))
+                    break
+                except (requests.exceptions.HTTPError,
+                        requests.exceptions.Timeout,
+                        requests.exceptions.ConnectionError) as e:
+                    _logger.warning(
+                        f"Attempt {attempt + 1}/{retry} failed for dataflow "
+                        f"'{fl}': {e}"
+                    )
+                    if attempt < retry - 1:
+                        time.sleep(2 ** attempt)
+                    else:
+                        _logger.error(
+                            f"Failed to fetch dataflow '{fl}' after {retry} attempts."
+                        )
+
+            # Apply sex filter post-fetch (not handled by key construction)
+            if not df.empty and sex is not None:
+                sex_col = next(
+                    (c for c in df.columns if c.upper() == "SEX"), None
+                )
+                if sex_col:
+                    df = df[df[sex_col] == sex]
+
+            if not df.empty:
+                dfs.append(df)
     
     # Combine results
     if not dfs:

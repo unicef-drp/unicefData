@@ -39,7 +39,7 @@ get_config_path <- function() {
     file.path(getwd(), "..", "config", "indicators.yaml"),
     file.path(getwd(), "..", "..", "config", "indicators.yaml"),
     # Common installation paths
-    system.file("config", "indicators.yaml", package = "unicefData"),
+    system.file("config", "indicators.yaml", package = "unicefdata"),
     file.path(tools::R_user_dir("unicefData", "config"), "indicators.yaml")
   )
   
@@ -228,14 +228,6 @@ get_indicator_codes <- function(
 }
 
 # ============================================================================
-# Null-coalescing operator (for R < 4.4)
-# ============================================================================
-
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
-
-# ============================================================================
 # Cached Config
 # ============================================================================
 
@@ -254,6 +246,7 @@ get_cached_config <- function(config_path = NULL) {
 }
 
 #' Clear the cached configuration
+#' @return Invisible NULL.
 #' @export
 clear_config_cache <- function() {
   .config_cache$config <- NULL

@@ -7,7 +7,7 @@
 # Get script directory for proper path resolution
 get_script_dir <- function() {
   # Try multiple methods to find script directory
-
+  
   # Method 1: sys.frame - works in source()
   tryCatch({
     for (i in seq_len(sys.nframe())) {
@@ -17,14 +17,14 @@ get_script_dir <- function() {
       }
     }
   }, error = function(e) NULL)
-
+  
   # Method 2: commandArgs - works in Rscript
   args <- commandArgs(trailingOnly = FALSE)
   file_arg <- grep("^--file=", args, value = TRUE)
   if (length(file_arg) > 0) {
     return(dirname(normalizePath(sub("^--file=", "", file_arg[1]))))
   }
-
+  
   # Method 3: Current working directory
   return(getwd())
 }
@@ -44,7 +44,6 @@ if (file.exists(core_file)) {
 source_file <- file.path(.r_pkg_dir, "unicefData.R")
 if (file.exists(source_file)) {
   source(source_file)
-
 } else if (file.exists("../unicefData.R")) {
   source("../unicefData.R")
 } else if (file.exists("R/unicefData.R")) {

@@ -5,8 +5,6 @@
 \title{Validate Data Against Schema}
 \usage{
 validate_unicef_schema(df, dataflow_id)
-
-validate_unicef_schema(df, dataflow_id)
 }
 \arguments{
 \item{df}{Data frame to validate}
@@ -17,7 +15,5 @@ validate_unicef_schema(df, dataflow_id)
 Validated data frame (warnings issued if mismatch)
 }
 \description{
-Checks if dataframe matches expected schema. Warns on mismatch.
-
 Checks if the data matches the expected schema for the dataflow.
 }

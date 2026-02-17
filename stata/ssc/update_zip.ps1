@@ -5,7 +5,7 @@ $pkgFile = "c:\GitHub\myados\unicefData-dev\stata\ssc\unicefdata.pkg"
 $srcFolder = "c:\GitHub\myados\unicefData-dev\stata\src"
 $zipFolder = "c:\GitHub\myados\unicefData-dev\stata\ssc"
 $tempFolder = "$zipFolder\temp_unzip"
-$zipFile = "$zipFolder\unicefData_204.zip"
+$zipFile = "$zipFolder\unicefData_210.zip"
 
 # Ensure temp folder exists
 if (Test-Path $tempFolder) {

@@ -53,7 +53,7 @@ Rscript tests/test_mock_data.R
 - Check time series ordering
 - Cross-country comparisons
 
-See [Mock API documentation](../../tests/fixtures/mock_design/) for details.
+See [Mock API documentation](../../internal/mock_design/) for details.
 
 ## `run_tests.R`
 

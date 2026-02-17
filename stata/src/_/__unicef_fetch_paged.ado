@@ -1,4 +1,4 @@
-*! v 0.1.0  21Jan2026               by Joao Pedro Azevedo (UNICEF)
+*! v 0.1.1  13Feb2026               by Joao Pedro Azevedo (UNICEF)
 program define __unicef_fetch_paged, rclass
     version 11
     /*
@@ -20,8 +20,12 @@ program define __unicef_fetch_paged, rclass
     local ver = cond("`version'"=="", "1.0", "`version'")
 
     /* Build indicator path: if user passed raw segment starting with '.' keep it; else prepend and suffix dots */
+    /* Special case: "all" means bulk download — pass through as-is (SDMX REST standard: /all) */
     local indicator_seg ""
-    if (substr("`indicator'",1,1) == ".") {
+    if (lower("`indicator'") == "all") {
+        local indicator_seg "all"
+    }
+    else if (substr("`indicator'",1,1) == ".") {
         local indicator_seg "`indicator'"
     }
     else {

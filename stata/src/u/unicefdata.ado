@@ -1,4 +1,4 @@
-*! v 2.0.4  01Feb2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.2.0  10Feb2026               by Joao Pedro Azevedo (UNICEF)
 * =============================================================================
 * unicefdata.ado - Stata interface to UNICEF SDMX Data API
 * =============================================================================
@@ -23,7 +23,7 @@
 *  12. Output & Return Values - Display results and set r()
 *  13. Helper Programs - _linewrap, etc.
 *
-* Version: 2.0.4 (2026-02-01)
+* Version: 2.2.0 (2026-02-10)
 * Author: João Pedro Azevedo (UNICEF)
 * License: MIT
 * =============================================================================
@@ -78,16 +78,16 @@ version 11
 
     * Check for FLOWS/DATAFLOWS subcommand (list available dataflows with counts)
     * Accept both "flows" and "dataflows" for user convenience
-    if (strpos("`0'", "flows") > 0 | strpos("`0'", "dataflows") > 0) {
+    if (strpos(`"`0'"', "flows") > 0 | strpos(`"`0'"', "dataflows") > 0) {
         * Don't match "dataflow(" which is the filter option
-        if (strpos("`0'", "dataflow(") == 0) {
-            local has_detail = (strpos("`0'", "detail") > 0)
-            local has_verbose = (strpos("`0'", "verbose") > 0)
-            local has_dups = (strpos("`0'", "dups") > 0)
-            local has_showtier2 = (strpos(lower("`0'"), "showtier2") > 0)
-            local has_showtier3 = (strpos(lower("`0'"), "showtier3") > 0)
-            local has_showall = (strpos(lower("`0'"), "showall") > 0)
-            local has_showlegacy = (strpos(lower("`0'"), "showlegacy") > 0)
+        if (strpos(`"`0'"', "dataflow(") == 0) {
+            local has_detail = (strpos(`"`0'"', "detail") > 0)
+            local has_verbose = (strpos(`"`0'"', "verbose") > 0)
+            local has_dups = (strpos(`"`0'"', "dups") > 0)
+            local has_showtier2 = (strpos(lower(`"`0'"'), "showtier2") > 0)
+            local has_showtier3 = (strpos(lower(`"`0'"'), "showtier3") > 0)
+            local has_showall = (strpos(lower(`"`0'"'), "showall") > 0)
+            local has_showlegacy = (strpos(lower(`"`0'"'), "showlegacy") > 0)
             local opts ""
             if (`has_detail') local opts "`opts' detail"
             if (`has_verbose') local opts "`opts' verbose"
@@ -107,9 +107,9 @@ version 11
     }
     
     * Check for SEARCH subcommand
-    if (strpos("`0'", "search(") > 0) {
+    if (strpos(`"`0'"', "search(") > 0) {
         * Extract search keyword
-        local search_start = strpos("`0'", "search(") + 7
+        local search_start = strpos(`"`0'"', "search(") + 7
         local search_end = strpos(substr("`0'", `search_start', .), ")") + `search_start' - 2
         local search_keyword = substr("`0'", `search_start', `search_end' - `search_start' + 1)
         
@@ -182,21 +182,21 @@ version 11
     }
     
     * Check for INDICATORS subcommand (list indicators in a dataflow)
-    if (strpos("`0'", "indicators(") > 0) {
+    if (strpos(`"`0'"', "indicators(") > 0) {
         * Extract dataflow
-        local ind_start = strpos("`0'", "indicators(") + 11
+        local ind_start = strpos(`"`0'"', "indicators(") + 11
         local ind_end = strpos(substr("`0'", `ind_start', .), ")") + `ind_start' - 2
         local ind_dataflow = substr("`0'", `ind_start', `ind_end' - `ind_start' + 1)
         
         * Check for verbose option
-        local has_verbose = (strpos("`0'", "verbose") > 0)
+        local has_verbose = (strpos(`"`0'"', "verbose") > 0)
         
         * Check for tier filter options
-        local has_showtier2 = (strpos(lower("`0'"), "showtier2") > 0)
-        local has_showtier3 = (strpos(lower("`0'"), "showtier3") > 0)
-        local has_showall = (strpos(lower("`0'"), "showall") > 0)
-        local has_showorphans = (strpos(lower("`0'"), "showorphan") > 0)
-        local has_showlegacy = (strpos(lower("`0'"), "showlegacy") > 0)
+        local has_showtier2 = (strpos(lower(`"`0'"'), "showtier2") > 0)
+        local has_showtier3 = (strpos(lower(`"`0'"'), "showtier3") > 0)
+        local has_showall = (strpos(lower(`"`0'"'), "showall") > 0)
+        local has_showorphans = (strpos(lower(`"`0'"'), "showorphan") > 0)
+        local has_showlegacy = (strpos(lower(`"`0'"'), "showlegacy") > 0)
         
         * Build options string
         local ind_opts = ""
@@ -220,15 +220,15 @@ version 11
     }
     
     * Check for INFO subcommand (get indicator details)
-    if (strpos("`0'", "info(") > 0) {
+    if (strpos(`"`0'"', "info(") > 0) {
         * Extract indicator code
-        local info_start = strpos("`0'", "info(") + 5
+        local info_start = strpos(`"`0'"', "info(") + 5
         local info_end = strpos(substr("`0'", `info_start', .), ")") + `info_start' - 2
         local info_indicator = substr("`0'", `info_start', `info_end' - `info_start' + 1)
         
         * Check if verbose option was specified
         local verbose_opt ""
-        if (strpos(lower("`0'"), "verbose") > 0) {
+        if (strpos(lower(`"`0'"'), "verbose") > 0) {
             local verbose_opt "verbose"
         }
         
@@ -238,23 +238,23 @@ version 11
     
     * Check for DATAFLOW INFO subcommand (get dataflow schema details)
     * Accept both "dataflow(X)" and "dataflows(X)" syntax
-    local has_df_param = (strpos("`0'", ", dataflow(") > 0 | strpos("`0'", ", dataflows(") > 0)
-    if (`has_df_param' & strpos("`0'", "indicator") == 0 & strpos("`0'", "search") == 0) {
+    local has_df_param = (strpos(`"`0'"', ", dataflow(") > 0 | strpos(`"`0'"', ", dataflows(") > 0)
+    if (`has_df_param' & strpos(`"`0'"', "indicator") == 0 & strpos(`"`0'"', "search") == 0) {
         * Extract dataflow code - this is for "unicefdata, dataflow(X)" without indicator()
         * Handle both dataflow( and dataflows( syntax
-        local df_start = strpos("`0'", "dataflow(") + 9
-        if (strpos("`0'", "dataflows(") > 0) {
-            local df_start = strpos("`0'", "dataflows(") + 10
+        local df_start = strpos(`"`0'"', "dataflow(") + 9
+        if (strpos(`"`0'"', "dataflows(") > 0) {
+            local df_start = strpos(`"`0'"', "dataflows(") + 10
         }
         local df_end = strpos(substr("`0'", `df_start', .), ")") + `df_start' - 2
         local df_code = substr("`0'", `df_start', `df_end' - `df_start' + 1)
         
         * Check if this looks like a discovery command (no countries, no indicator)
         * If countries are present, it's a data retrieval command, not discovery
-        if (strpos("`0'", "countr") == 0) {
+        if (strpos(`"`0'"', "countr") == 0) {
             * Check if verbose option was specified
             local verbose_opt ""
-            if (strpos(lower("`0'"), "verbose") > 0) {
+            if (strpos(lower(`"`0'"'), "verbose") > 0) {
                 local verbose_opt "verbose"
             }
             
@@ -267,7 +267,7 @@ version 11
     }
     
     * Check for CLEARCACHE subcommand (drop in-memory cached frames)
-    if (strpos(lower("`0'"), "clearcache") > 0) {
+    if (strpos(lower(`"`0'"'), "clearcache") > 0) {
         local cleared 0
 
         * 1. Drop indicator-to-dataflow metadata frame (from _get_dataflow_direct.ado)
@@ -301,20 +301,20 @@ version 11
     }
 
     * Check for SYNC subcommand (route to unicefdata_sync)
-    if (strpos("`0'", "sync") > 0) {
+    if (strpos(`"`0'"', "sync") > 0) {
         * Parse sync options: sync(all), sync(indicators), sync(dataflows), etc.
         local sync_target = "all"  // default
-        if (strpos("`0'", "sync(") > 0) {
-            local sync_start = strpos("`0'", "sync(") + 5
+        if (strpos(`"`0'"', "sync(") > 0) {
+            local sync_start = strpos(`"`0'"', "sync(") + 5
             local sync_end = strpos(substr("`0'", `sync_start', .), ")") + `sync_start' - 2
             local sync_target = substr("`0'", `sync_start', `sync_end' - `sync_start' + 1)
         }
         
         * Check for other options
-        local has_verbose = (strpos("`0'", "verbose") > 0)
-        local has_force = (strpos("`0'", "force") > 0)
-        local has_forcepython = (strpos("`0'", "forcepython") > 0)
-        local has_forcestata = (strpos("`0'", "forcestata") > 0)
+        local has_verbose = (strpos(`"`0'"', "verbose") > 0)
+        local has_force = (strpos(`"`0'"', "force") > 0)
+        local has_forcepython = (strpos(`"`0'"', "forcepython") > 0)
+        local has_forcestata = (strpos(`"`0'"', "forcestata") > 0)
         
         * Build option string
         local sync_opts ""
@@ -383,6 +383,7 @@ version 11
                         SHOWALL                     /// Include all tiers (1-3)
                         SHOWORphans                 /// Include orphan indicators (not mapped to dataflows)
                         SHOWLEGacy                  /// Alias for showtier3
+                        noCHAR                      /// Suppress char metadata on dataset/variables
                         *                           /// Legacy options
                  ]
 
@@ -804,6 +805,18 @@ version 11
             }
         }
         
+        * Validate: circa requires year()
+        if ("`circa'" != "" & "`year'" == "") {
+            noi di ""
+            noi di as error "Error: circa requires year() to be specified."
+            noi di as text "  The circa option finds the closest available year to your target."
+            noi di as text "  You must specify a target year for circa to work."
+            noi di as text ""
+            noi di as text "  Example: unicefdata, indicator(CME_MRY0T4) countries(USA) year(2015) circa clear"
+            noi di ""
+            error 198
+        }
+
         *-----------------------------------------------------------------------
         * Locate metadata directory (YAML files in src/_/ alongside helper ado)
         * NOTE: metadata_path should already be set from lines 429-443
@@ -2322,6 +2335,18 @@ version 11
             noi di as text ""
         }
         
+        * Validate: attributes() requires wide_attributes or wide_indicators
+        if ("`attributes'" != "" & "`wide_attributes'" == "" & "`wide_indicators'" == "") {
+            noi di ""
+            noi di as error "Error: attributes() requires wide_attributes or wide_indicators."
+            noi di as text "  The attributes() option specifies which attribute values to keep"
+            noi di as text "  when reshaping data, and only applies with wide_attributes or wide_indicators."
+            noi di as text ""
+            noi di as text "  Example: unicefdata, indicator(CME_MRY0T4 CME_MRY0) wide_attributes attributes(_T _M) clear"
+            noi di ""
+            error 198
+        }
+
         * Apply attribute filtering FIRST (if specified with wide_attributes or wide_indicators)
         local pre_filter_n = _N
         if (("`wide_attributes'" != "" | "`wide_indicators'" != "") & "`attributes'" != "") {
@@ -2411,12 +2436,14 @@ version 11
         if ("`wide_indicators'" != "") {
             * Reshape with indicators as columns (like Python wide_indicators)
             
-            * Warn if only one indicator (matches R/Python behavior)
+            * Reject if only one indicator
             if (`n_indicators' <= 1) {
                 noi di ""
-                noi di as error "Warning: 'wide_indicators' format is designed for multiple indicators."
-                noi di as text "  Consider using 'wide' format instead for a single indicator."
+                noi di as error "Error: 'wide_indicators' format requires multiple indicators."
+                noi di as text "  You specified only `n_indicators' indicator(s)."
+                noi di as text "  Use 'wide' format instead for a single indicator."
                 noi di ""
+                error 198
             }
             
             capture confirm variable iso3
@@ -3188,6 +3215,57 @@ version 11
             order `present_standard' `remaining'
         }
 
+        * =================================================================
+        * #### 12b. Characteristic metadata (char) ####
+        * =================================================================
+        * Embed provenance and indicator metadata in the .dta file using
+        * Stata's char mechanism, following freduse (Drukker 2006) and
+        * wbopendata v18.1.  Default: on.  Suppress with nochar option.
+
+        if ("`char'" != "nochar") {
+
+            * --- Dataset-level characteristics (_dta) ---
+            * Session provenance: version, timestamp, exact syntax
+            char _dta[unicefdata_version]   "2.2.0"
+            char _dta[unicefdata_timestamp] "`c(current_date)' `c(current_time)'"
+            char _dta[unicefdata_syntax]    `"unicefdata, `0'"'
+            char _dta[unicefdata_indicator] "`indicator'"
+            char _dta[unicefdata_dataflow]  "`dataflow'"
+            if ("`countries'" != "") {
+                char _dta[unicefdata_countries] "`countries'"
+            }
+            if ("`start_year'" != "" | "`end_year'" != "") {
+                char _dta[unicefdata_year] "`start_year':`end_year'"
+            }
+
+            * --- Variable-level characteristics ---
+            * Attach indicator code, dataflow, and name to the value column
+            * For single-indicator queries, also attach description if available
+            capture confirm variable value
+            if (_rc == 0 & `n_indicators' == 1) {
+                char value[indicator]   "`indicator'"
+                char value[dataflow]    "`dataflow'"
+                * Use return locals captured earlier to avoid r() macro overwrite
+                local _ind_name `"`return(indicator_name)'"'
+                local _ind_desc `"`return(indicator_description)'"'
+                if (`"`_ind_name'"' != "") {
+                    char value[name] `"`_ind_name'"'
+                }
+                if (`"`_ind_desc'"' != "" & `"`_ind_desc'"' != ".") {
+                    char value[description] `"`_ind_desc'"'
+                }
+            }
+
+            * For multi-indicator queries in long format, annotate the indicator variable
+            if (`n_indicators' > 1) {
+                capture confirm variable indicator
+                if (_rc == 0) {
+                    char indicator[note] "Multiple indicators: `indicator'"
+                    char indicator[dataflow] "`dataflow'"
+                }
+            }
+        }
+
     }
 
 end
@@ -3549,6 +3627,14 @@ end
 *******************************************************************************
 * Version history
 *******************************************************************************
+* in v2.2.0:
+* - FEATURE: Dataset-level char metadata (_dta[]) records version, timestamp,
+*   user, syntax, indicator, dataflow, countries, and year range
+* - FEATURE: Variable-level char metadata on value column (single-indicator)
+*   and indicator column (multi-indicator) for self-documenting .dta files
+* - FEATURE: nochar option suppresses char writes for minimal overhead
+* - DOCS: Follows freduse (Drukker 2006) and wbopendata v18.1 char precedent
+*
 * in v2.0.4:
 * - FEATURE: NUTRITION dataflow now defaults age to Y0T4 (0-4 years) instead of _T
 *   because the AGE dimension in NUTRITION has no _T total value
