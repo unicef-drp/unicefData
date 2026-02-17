@@ -17,6 +17,7 @@ get_sdmx(
   labels = c("id", "both", "none"),
   tidy = TRUE,
   country_names = TRUE,
+  page_size = 100000L,
   retry = 3L,
   cache = FALSE,
   sleep = 0.2,
@@ -49,6 +50,8 @@ if FALSE (default), use efficient pre-fetch filtering (totals only per schema).}
 
 \item{country_names}{Logical; if TRUE, join ISO3 to country names; default TRUE.}
 
+\item{page_size}{Rows per page for CSV; default 100000L.}
+
 \item{retry}{Number of retries; default 3L.}
 
 \item{cache}{Logical; if TRUE, cache per flow on disk; default FALSE.}
@@ -62,7 +65,7 @@ A tibble (or list of tibbles) for data, or xml_document(s) for structure.
 }
 \description{
 Download one or more SDMX flows from a specified agency,
-with retries, caching, format & labels options, and post-processing.
+with paging, retries, caching, format & labels options, and post-processing.
 
 Schemas are cached in memory per session for performance: subsequent indicators
 from the same dataflow load 8-17x faster (2.2s --> 0.13s).

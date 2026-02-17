@@ -261,7 +261,7 @@ list_unicef_codelist <- memoise::memoise(
 #' @title Fetch UNICEF SDMX data or structure
 #' @description
 #' Download UNICEF indicator data from the SDMX data warehouse.
-#' Supports retrying on transient failure, memoisation, and tidy-up.
+#' Supports automatic paging, retrying on transient failure, memoisation, and tidy-up.
 #'
 #' This function uses unified parameter names consistent with the Python package.
 #'
@@ -302,6 +302,7 @@ list_unicef_codelist <- memoise::memoise(
 #' @param max_retries Number of retry attempts on failure (default: 3).
 #'   Previously called 'retry'. Both parameter names are supported.
 #' @param cache Logical; if TRUE, memoises results.
+#' @param page_size Integer rows per page (default: 100000).
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
 #' @param labels Label format for SDMX requests: "id" (codes only, default),
@@ -411,6 +412,7 @@ unicefData <- function(
     country_names = TRUE,
     max_retries   = 3,
     cache         = FALSE,
+    page_size     = 100000,
     detail        = c("data", "structure"),
     version       = NULL,
     labels        = "id",
@@ -427,26 +429,6 @@ unicefData <- function(
     raw           = FALSE,
     ignore_duplicates = FALSE
 ) {
-  # Validate indicator input early to avoid opaque HTTP 400 errors.
-  if (!is.null(indicator)) {
-    indicator <- as.character(indicator)
-    indicator <- trimws(indicator)
-
-    if (length(indicator) == 0 || all(!nzchar(indicator))) {
-      stop(
-        "`indicator` cannot be empty. Provide a valid indicator code (e.g., 'CME_MRY0T4').\n",
-        "Use search_indicators() to find available indicator codes."
-      )
-    }
-
-    if (any(!nzchar(indicator))) {
-      stop(
-        "`indicator` contains empty value(s). Remove blank entries and try again.\n",
-        "Use search_indicators() to find available indicator codes."
-      )
-    }
-  }
-
   # Parse the year parameter
   year_spec <- parse_year(year)
   start_year <- year_spec$start_year
@@ -512,6 +494,7 @@ unicefData <- function(
         end_year = end_year,
         max_retries = max_retries,
         version = version,
+        page_size = page_size,
         verbose = FALSE
       )
     })
@@ -525,6 +508,7 @@ unicefData <- function(
       end_year = end_year,
       max_retries = max_retries,
       version = version,
+      page_size = page_size,
       verbose = TRUE,
       totals = totals,
       labels = labels
@@ -557,14 +541,17 @@ unicefData <- function(
     message("")
   }
 
-  # 3. Validate Schema (before cleaning to check raw column names)
-  if (!is.null(dataflow) && exists("validate_unicef_schema", mode = "function")) {
-    result <- validate_unicef_schema(result, dataflow[1])
-  }
-
-  # 4. Clean/Tidy Data
+  # 3. Clean/Tidy Data
   if (tidy && !raw) {
     result <- clean_unicef_data(result)
+
+    # Validate Schema
+    if (!is.null(dataflow)) {
+      # We might have multiple dataflows, just validate against the first one
+      if (exists("validate_unicef_schema", mode = "function")) {
+         result <- validate_unicef_schema(result, dataflow[1])
+      }
+    }
   } else if (raw) {
     # Minimal processing for raw (rename core cols)
      result <- result %>%
@@ -743,14 +730,6 @@ add_country_metadata <- function(df, metadata_list) {
 add_indicator_metadata <- function(df, metadata_list) {
   if (!"indicator" %in% names(df)) return(df)
 
-  if ("indicator_name" %in% metadata_list && !"indicator_name" %in% names(df)) {
-    df <- df %>% dplyr::mutate(indicator_name = NA_character_)
-  }
-
-  if ("indicator_category" %in% metadata_list && !"indicator_category" %in% names(df)) {
-    df <- df %>% dplyr::mutate(indicator_category = NA_character_)
-  }
-
   if ("indicator_name" %in% metadata_list || "indicator_category" %in% metadata_list) {
     unique_inds <- unique(df$indicator)
 
@@ -759,12 +738,12 @@ add_indicator_metadata <- function(df, metadata_list) {
       if (!is.null(info)) {
         if ("indicator_name" %in% metadata_list) {
           df <- df %>% dplyr::mutate(
-            indicator_name = dplyr::if_else(indicator == ind, info$name %||% NA_character_, indicator_name)
+            indicator_name = dplyr::if_else(indicator == ind, info$name, indicator_name)
           )
         }
         if ("indicator_category" %in% metadata_list) {
           df <- df %>% dplyr::mutate(
-            indicator_category = dplyr::if_else(indicator == ind, info$category %||% NA_character_, indicator_category)
+            indicator_category = dplyr::if_else(indicator == ind, info$category, indicator_category)
           )
         }
       }

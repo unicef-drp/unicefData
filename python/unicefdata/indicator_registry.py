@@ -47,35 +47,6 @@ CACHE_FILENAME = "unicef_indicators_metadata.yaml"
 CACHE_MAX_AGE_DAYS = 30  # Refresh cache if older than this
 
 
-def _resolve_indicator_category(indicator_code: str, info: dict) -> str:
-    """Resolve category/dataflow for a single indicator record."""
-    explicit_category = (info.get('category') or '').strip()
-    if explicit_category:
-        return explicit_category
-
-    parent_category = (info.get('parent') or '').strip()
-    if parent_category:
-        return parent_category
-
-    # Top-level codelist nodes (e.g., CME, NT, WS) should classify as themselves.
-    if '_' not in indicator_code:
-        return indicator_code
-
-    inferred = _infer_category(indicator_code)
-    return inferred if inferred else 'GLOBAL_DATAFLOW'
-
-
-def _normalize_indicator_categories(indicators: Dict[str, dict]) -> Dict[str, dict]:
-    """Ensure each indicator record contains a normalized category."""
-    if not indicators:
-        return indicators
-
-    for code, info in indicators.items():
-        info['category'] = _resolve_indicator_category(code, info)
-
-    return indicators
-
-
 def _get_cache_path() -> Path:
     """Get path to the indicator cache file.
     
@@ -165,9 +136,6 @@ def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
         # Add parent only if present
         if parent_id:
             indicator_data['parent'] = parent_id
-            indicator_data['category'] = parent_id
-        elif '_' not in code_id:
-            indicator_data['category'] = code_id
         
         indicators[code_id] = indicator_data
     
@@ -397,7 +365,6 @@ def _ensure_cache_loaded(force_refresh: bool = False) -> Dict[str, dict]:
     
     # Return memory cache if already loaded
     if _cache_loaded and _indicator_cache and not force_refresh:
-        _indicator_cache = _normalize_indicator_categories(_indicator_cache)
         return _indicator_cache
     
     # Try to load from file cache
@@ -405,7 +372,7 @@ def _ensure_cache_loaded(force_refresh: bool = False) -> Dict[str, dict]:
     
     # Use file cache if valid and not stale
     if cached_indicators and not _is_cache_stale(last_updated) and not force_refresh:
-        _indicator_cache = _normalize_indicator_categories(cached_indicators)
+        _indicator_cache = cached_indicators
         _cache_loaded = True
         logger.debug(f"Loaded {len(cached_indicators)} indicators from cache")
         return _indicator_cache
@@ -413,7 +380,6 @@ def _ensure_cache_loaded(force_refresh: bool = False) -> Dict[str, dict]:
     # Fetch fresh data from API
     try:
         fresh_indicators = _fetch_codelist()
-        fresh_indicators = _normalize_indicator_categories(fresh_indicators)
         _save_cache(fresh_indicators)
         _indicator_cache = fresh_indicators
         _cache_loaded = True
@@ -423,7 +389,7 @@ def _ensure_cache_loaded(force_refresh: bool = False) -> Dict[str, dict]:
         # If fetch fails but we have stale cache, use it
         if cached_indicators:
             logger.warning(f"Using stale cache (fetch failed): {e}")
-            _indicator_cache = _normalize_indicator_categories(cached_indicators)
+            _indicator_cache = cached_indicators
             _cache_loaded = True
             return _indicator_cache
         
@@ -508,7 +474,7 @@ def get_dataflow_for_indicator(indicator_code: str, default: str = "GLOBAL_DATAF
     indicators = _ensure_cache_loaded()
     
     if indicator_code in indicators:
-        return _resolve_indicator_category(indicator_code, indicators[indicator_code])
+        return indicators[indicator_code].get('category', default)
     
     # THIRD: Use prefix-based inference
     inferred = _infer_category(indicator_code)
@@ -560,11 +526,8 @@ def list_indicators(
     
     result = {}
     for code, info in indicators.items():
-        category = _resolve_indicator_category(code, info)
-        info['category'] = category
-
         # Apply dataflow filter
-        if dataflow and category != dataflow:
+        if dataflow and info.get('category') != dataflow:
             continue
         
         # Apply name filter
@@ -625,10 +588,8 @@ def search_indicators(
     query_lower = query.lower() if query else None
     
     for code, info in indicators.items():
-        category_value = _resolve_indicator_category(code, info)
-
         # Apply category filter
-        if category and category_value.upper() != category.upper():
+        if category and info.get('category', '').upper() != category.upper():
             continue
         
         # Apply query filter (search in code, name, and description)
@@ -643,7 +604,7 @@ def search_indicators(
         matches.append({
             'code': code,
             'name': info.get('name', ''),
-            'category': category_value,
+            'category': info.get('category', ''),
             'description': info.get('description', '') or ''
         })
     
@@ -744,7 +705,7 @@ def list_categories() -> None:
     # Count indicators per category
     category_counts = {}
     for code, info in indicators.items():
-        cat = _resolve_indicator_category(code, info)
+        cat = info.get('category', 'UNKNOWN')
         category_counts[cat] = category_counts.get(cat, 0) + 1
     
     # Sort by count (descending)

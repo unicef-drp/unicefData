@@ -66,8 +66,6 @@
 
 # Python artifacts
 ^\.pytest_cache$
-^\.venv$
-^\.venv/.*$
 
 # Log files and temp outputs
 ^check_output\.txt$
@@ -108,5 +106,13 @@
 ^R/scripts/.*$
 ^CRAN-SUBMISSION$
 ^nul$
+
+# Fixture extraction artifacts (created by scripts/unpack_fixtures.py)
+^tests/fixtures/_staging$
+^tests/fixtures/\.unpack_stamp$
+
+# Git hooks
+^\.githooks$
+
+# Doc build artifacts
 ^doc$
-^doc/.*$

@@ -1,0 +1,10 @@
+# Test fixture: regions codelist for discovery tests
+UNDEV_002:
+  name: Africa
+  parent: UNDEV_LD
+UNDEV_019:
+  name: Americas
+  parent: UNDEV_LD
+UNDEV_142:
+  name: Asia
+  parent: UNDEV_LD

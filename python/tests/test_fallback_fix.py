@@ -9,7 +9,6 @@ Tests:
 Uses golden indicators from validation/xval/golden_indicators.yaml
 """
 
-import os
 import sys
 import logging
 from pathlib import Path
@@ -30,11 +29,6 @@ from unicefdata import unicefData
 from unicefdata.sdmx_client import SDMXForbiddenError
 
 
-# Skip network-dependent tests in CI environment
-IN_CI = os.environ.get("CI", "").lower() == "true" or os.environ.get("GITHUB_ACTIONS", "") != ""
-
-
-@pytest.mark.skipif(IN_CI, reason="Skipping network-dependent tests in CI")
 def test_cod_alcohol_use_disorders_fallback():
     """
     COD_ALCOHOL_USE_DISORDERS should successfully retrieve data using the
@@ -62,7 +56,6 @@ def test_cod_alcohol_use_disorders_fallback():
     )
 
 
-@pytest.mark.skipif(IN_CI, reason="Skipping network-dependent tests in CI")
 def test_hva_pmtct_mtct_fallback():
     """
     HVA_PMTCT_MTCT (Mother-to-child HIV transmission rate) should successfully

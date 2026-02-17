@@ -12,6 +12,7 @@
   end_year_str = NULL,
   max_retries = 3,
   version = "1.0",
+  page_size = 1e+05,
   verbose = TRUE,
   totals = FALSE,
   labels = "id"
@@ -31,6 +32,8 @@
 \item{max_retries}{Integer number of retry attempts}
 
 \item{version}{SDMX version string (default "1.0")}
+
+\item{page_size}{Integer number of rows per page}
 
 \item{verbose}{Logical for progress messages}
 

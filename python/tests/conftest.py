@@ -10,8 +10,10 @@ import responses
 import json
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+
 # Path to shared fixture files
-FIXTURES_DIR = Path(__file__).parent.parent.parent / "tests" / "fixtures" / "api_responses"
+FIXTURES_DIR = REPO_ROOT / "tests" / "fixtures" / "api_responses"
 
 
 def _safe_read_fixture(filepath: Path, default: str = "") -> str:

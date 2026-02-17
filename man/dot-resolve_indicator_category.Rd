@@ -2,7 +2,7 @@
 % Please edit documentation in R/indicator_registry.R
 \name{.resolve_indicator_category}
 \alias{.resolve_indicator_category}
-\title{Resolve category for one indicator record}
+\title{Resolve indicator category through multiple fallback strategies}
 \usage{
 .resolve_indicator_category(indicator_code, info)
 }

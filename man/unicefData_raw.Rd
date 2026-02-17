@@ -13,9 +13,10 @@ unicefData_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
+  page_size = 1e+05,
   verbose = TRUE,
   totals = FALSE,
-  labels = "both"
+  labels = "id"
 )
 
 unicefdata_raw(
@@ -26,9 +27,10 @@ unicefdata_raw(
   end_year = NULL,
   max_retries = 3,
   version = NULL,
+  page_size = 1e+05,
   verbose = TRUE,
   totals = FALSE,
-  labels = "both"
+  labels = "id"
 )
 }
 \arguments{
@@ -46,11 +48,16 @@ unicefdata_raw(
 
 \item{version}{Character string of SDMX version (e.g. "1.0").}
 
+\item{page_size}{Integer, number of rows per page.}
+
 \item{verbose}{Logical, print progress messages.}
 
 \item{totals}{Logical, include total aggregations.}
 
-\item{labels}{Character, label format ("id", "name", or "both").}
+\item{labels}{Character, label format ("id" or "name").}
+}
+\value{
+A tibble of raw SDMX data, or an empty tibble if no data found.
 }
 \description{
 Low-level fetcher for UNICEF SDMX API.

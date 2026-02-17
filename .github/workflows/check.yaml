@@ -19,7 +19,6 @@ on:
       - 'inst/**'
       - 'tests/**'
       - 'vignettes/**'
-      - 'scripts/unpack_fixtures.py'
       - 'DESCRIPTION'
       - 'NAMESPACE'
       - 'LICENSE'
@@ -33,7 +32,6 @@ on:
       - 'inst/**'
       - 'tests/**'
       - 'vignettes/**'
-      - 'scripts/unpack_fixtures.py'
       - 'DESCRIPTION'
       - 'NAMESPACE'
       - 'LICENSE'
@@ -70,19 +68,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python for fixture extraction
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Unpack test fixtures
-        run: |
-          python scripts/unpack_fixtures.py --force
-          echo "--- Verifying fixture extraction ---"
-          ls -la tests/fixtures/ || true
-          ls -la tests/fixtures/deterministic/ || true
-          ls -la tests/fixtures/api_responses/ || true
 
       - uses: r-lib/actions/setup-pandoc@v2
 

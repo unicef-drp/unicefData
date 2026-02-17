@@ -21,6 +21,7 @@ unicefData(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
+  page_size = 1e+05,
   detail = c("data", "structure"),
   version = NULL,
   labels = "id",
@@ -54,6 +55,7 @@ unicefdata(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
+  page_size = 1e+05,
   detail = c("data", "structure"),
   version = NULL,
   labels = "id",
@@ -112,6 +114,8 @@ Previously called 'retry'. Both parameter names are supported.}
 
 \item{cache}{Logical; if TRUE, memoises results.}
 
+\item{page_size}{Integer rows per page (default: 100000).}
+
 \item{detail}{"data" (default) or "structure" for metadata.}
 
 \item{version}{Optional SDMX version; if NULL, auto-detected.}
@@ -158,7 +162,7 @@ The 'period' column contains decimal years (see Time Period Handling section).
 }
 \description{
 Download UNICEF indicator data from the SDMX data warehouse.
-Supports retrying on transient failure, memoisation, and tidy-up.
+Supports automatic paging, retrying on transient failure, memoisation, and tidy-up.
 
 This function uses unified parameter names consistent with the Python package.
 }

@@ -5,18 +5,12 @@ after implementing the 3-tier fallback logic and simpler .INDICATOR. key pattern
 Uses golden indicators from validation/xval/golden_indicators.yaml
 """
 
-import os
 import pytest
 
 from unicefdata import unicefData
 from unicefdata.sdmx_client import SDMXForbiddenError
 
 
-# Skip network-dependent tests in CI environment
-IN_CI = os.environ.get("CI", "").lower() == "true" or os.environ.get("GITHUB_ACTIONS", "") != ""
-
-
-@pytest.mark.skipif(IN_CI, reason="Skipping network-dependent tests in CI")
 @pytest.mark.parametrize(
     "indicator, year",
     [

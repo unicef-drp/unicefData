@@ -165,6 +165,7 @@ When adding new fixtures:
 ## Questions?
 
 See also:
-- [Mock API Design](../../tests/fixtures/mock_design/API_MOCK_DESIGN.md)
+- [Mock API Design](../../internal/mock_design/API_MOCK_DESIGN.md)
 - [Python conftest.py](../../python/tests/conftest.py)
 - [Fixture README](../../tests/fixtures/api_responses/README.md)
+- [Cross-Language Test Strategy](../../internal/TEST_STRATEGY.md)

@@ -3,12 +3,13 @@
 #
 # Place this file in tests/testthat/ and source it from tests that need fixtures.
 # Uses testthat::test_path() which works correctly during R CMD check.
+#
+# Fixture files are tracked directly in git — no ZIP extraction needed.
 # =============================================================================
 
 #' Get the path to the deterministic fixtures directory
 #'
 #' Tries multiple locations to handle both interactive use and R CMD check.
-#' During R CMD check, test_path() resolves paths relative to tests/testthat/.
 #'
 #' @return Character string path to fixtures directory
 get_fixtures_dir <- function() {
@@ -21,7 +22,6 @@ get_fixtures_dir <- function() {
   for (path in candidates) {
     if (dir.exists(path)) return(path)
   }
-  # Return first candidate (will produce informative error if missing)
   candidates[1]
 }
 
