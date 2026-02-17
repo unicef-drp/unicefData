@@ -9,11 +9,13 @@ _apply_format, and related pipeline functions on fixture data.
 """
 
 import pytest
+import yaml
 import pandas as pd
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 FIXTURES = REPO_ROOT / "tests" / "fixtures" / "deterministic"
+METADATA_FIXTURES = REPO_ROOT / "tests" / "fixtures" / "python_metadata"
 
 
 def load_fixture(name: str) -> pd.DataFrame:
@@ -270,8 +272,18 @@ class TestDiscovery:
 
     def test_get_indicator_info(self):
         """get_indicator_info should return metadata dict."""
-        from unicefdata.indicator_registry import get_indicator_info
-        info = get_indicator_info("CME_MRY0T4")
+        import unicefdata.indicator_registry as reg
+
+        # Pre-seed the module cache from fixture so no API call is needed
+        if not reg._cache_loaded or not reg._indicator_cache:
+            cache_file = METADATA_FIXTURES / "unicef_indicators_metadata.yaml"
+            if cache_file.exists():
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+                reg._indicator_cache = data.get('indicators', {})
+                reg._cache_loaded = True
+
+        info = reg.get_indicator_info("CME_MRY0T4")
         assert info is not None
         assert isinstance(info, dict)
 
