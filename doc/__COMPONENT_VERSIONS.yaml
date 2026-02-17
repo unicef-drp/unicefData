@@ -1,0 +1,62 @@
+# Auto-generated component versions for unicefData
+# Generated: 2026-02-14
+# Generator: scripts/update_component_versions.py
+
+# ---- Package-level versions ----
+package:
+  DESCRIPTION: 2.1.0
+  python/pyproject.toml: 2.1.1
+  python/unicefdata/__init__.py: 2.1.1
+
+# ---- STATA components ----
+stata:
+  stata/src/_/__unicef_fetch_paged.ado: 0.1.1
+  stata/src/_/__unicef_get_indicator_dataflow.ado: 0.2.0
+  stata/src/_/__unicef_get_indicator_filters.ado: 0.5.0
+  stata/src/_/__unicef_parse_indicator_yaml.ado: 1.0.0
+  stata/src/_/_get_dataflow_direct.ado: 1.3.0
+  stata/src/_/_get_sdmx_rename_year_columns.ado: 2.0.0
+  stata/src/_/_linewrap.ado: 2.1.0
+  stata/src/_/_metadata_linewrap.ado: 1.1.0
+  stata/src/_/_query_indicators.ado: 16.3.0
+  stata/src/_/_query_metadata.ado: 16.3.0
+  stata/src/_/_set_default_dataflows.ado: 1.0.0
+  stata/src/_/_unicef_build_schema_key.ado: 2.0.1
+  stata/src/_/_unicef_dataflow_info.ado: 1.0.2
+  stata/src/_/_unicef_get_disagg_totals.ado: 1.0.0
+  stata/src/_/_unicef_indicator_info.ado: 1.10.0
+  stata/src/_/_unicef_list_dataflows.ado: 1.6.0
+  stata/src/_/_unicef_list_indicators.ado: 1.7.1
+  stata/src/_/_unicef_search_indicators.ado: 1.8.0
+  stata/src/_/_unicefdata_sync_dataflow_index.ado: 1.0.1
+  stata/src/_/_unicefdata_sync_df_schema.ado: 1.0.0
+  stata/src/_/_unicefdata_sync_ind_meta.ado: 1.2.0
+  stata/src/_/_unicefdata_update_sync_history.ado: 2.0.0
+  stata/src/_/_xmltoyaml_get_schema.ado: 1.1.0
+  stata/src/_/_xmltoyaml_parse.ado: 1.1.0
+  stata/src/_/_xmltoyaml_parse_lines.ado: 1.2.0
+  stata/src/_/_xmltoyaml_parse_python.ado: 1.2.0
+  stata/src/_/_xmltoyaml_parse_stata.ado: 1.1.0
+  stata/src/g/get_sdmx.ado: 1.3.3
+  stata/src/u/unicefdata.ado: 2.2.0
+  stata/src/u/unicefdata_examples.ado: 1.7.1
+  stata/src/u/unicefdata_refresh_all.ado: 1.0.0
+  stata/src/u/unicefdata_setup.ado: 2.2.0
+  stata/src/u/unicefdata_sync.ado: 2.0.0
+  stata/src/u/unicefdata_xmltoyaml.ado: 2.0.0
+  stata/src/u/unicefdata_xmltoyaml_py.ado: 1.2.0
+  stata/src/y/yaml.ado: 1.3.1
+
+# ---- PYTHON components ----
+python:
+  python/unicefdata/__init__.py: 2.1.1
+  python/unicefdata/unicefdata.py: 2.0.0
+  python/unicefdata/utils.py: 2.0.0
+
+# ---- R components ----
+r:
+  R/metadata_sync.R: 1.6.0
+  R/scripts/generate_metadata.R: 2.0.0
+  R/unicefData.R: 2.0.0
+  R/unicef_core.R: 1.6.1
+

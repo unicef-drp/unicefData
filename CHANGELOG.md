@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-02-10 (Stata)
+
+### Added
+
+- **Input validation**: `wide_indicators` with single indicator now raises error 198 (previously warning)
+- **Input validation**: `attributes()` without `wide_attributes`/`wide_indicators` now raises error 198 (previously silently ignored)
+- **Input validation**: `circa` without `year()` now raises error 198 (previously silently ignored)
+- **Dataset metadata**: `_dta[]` char records version, timestamp, syntax, indicator, dataflow
+- **Variable metadata**: Variable-level chars on value and indicator columns
+- **`nochar` option**: Suppress char metadata writes
+- **4 new test families**: DATA (1), MULTI (2), PERF (1), REGR (1)
+- **5 new DET tests**: multi-country, time series, vaccination, nofilter, long series fixtures
+
+### Fixed
+
+- **Compound quoting**: All `strpos()` and `lower()` calls on `0` macro use compound quotes for `fromfile()` paths
+- **Block comment bug**: `/*.csv` in comment parsed as block comment, swallowing DET test section
+- **Windows backslash paths**: `c(pwd)` causing escape char errors in DET fixtures
+- **XPLAT-01/04**: Cross-platform metadata paths corrected (Root/R/Stata instead of Python/R/Stata)
+- **EXT-05**: Replaced unavailable CCRI dataflow with ECD; accepts graceful API error
+
+### Tested
+
+- Stata: 63/63 tests passing (100%) across 16 families
+
 ## [2.1.0] - 2026-02-07 (All Platforms)
 
 ### Added

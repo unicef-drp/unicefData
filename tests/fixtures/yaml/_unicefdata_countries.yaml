@@ -1,0 +1,11 @@
+# Test fixture: country codelist for discovery tests
+USA:
+  name: United States of America
+BRA:
+  name: Brazil
+ALB:
+  name: Albania
+IND:
+  name: India
+ETH:
+  name: Ethiopia
