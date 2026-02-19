@@ -10,6 +10,16 @@ import responses
 import json
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Exclude debug/validation scripts that aren't proper pytest tests
+# ---------------------------------------------------------------------------
+collect_ignore = [
+    "test_python_integration.py",  # Debug script with broken imports
+    "test_quick_python.py",        # Debug script with module-level execution
+    "test_direct_metadata.py",     # Debug script, not pytest format
+    "test_hardcoded_removal_validation.py",  # Validation script, not pytest format
+]
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Path to shared fixture files

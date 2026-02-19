@@ -1,43 +1,12 @@
-# unicefData Multi-Language Changelog
+# Changelog
 
-**Overall changelog for the unicefData trilingual project (R, Python, Stata).**
+All notable changes to this project will be documented in this file.
 
-See language-specific detailed changelogs:
-- **R Package**: [r/NEWS.md](r/NEWS.md) — R-specific changes, CRAN submissions
-- **Python Package**: [python/CHANGELOG.md](python/CHANGELOG.md) — Python API updates
-- **Stata Package**: [stata/CHANGELOG.md](stata/CHANGELOG.md) — Stata programming changes
+## [2.3.0] - 2026-02-18 (Stata)
 
----
+### Added
 
-## [2.3.0] - 2026-02-19
-
-### Multi-Language Updates
-
-- **Repository Reorganized**: Clean separation of language-specific packages
-  - `r/` — R package (CRAN-ready)
-  - `python/` — Python package (PyPI)
-  - `stata/` — Stata package (SSC)
-  - `paper/` — Academic documentation
-- **R CRAN Compliance**: Cache directory moved to `tempdir()` (Benjamin Altmann review)
-- **Paper Enhanced**: Added reproducibility and AI motivation section
-- **All CI/CD**: Tests passing across platforms (R, Python, Stata)
-
-### R (v2.3.0) - CRAN Ready
-
-- ✅ Cache directory compliance (CRAN Policy 1.1.3.1)
-- ✅ All reviewer feedback addressed (Uwe Ligges, Benjamin Altmann)
-- ✅ 0 errors | 0 warnings | 2 notes
-- See [r/NEWS.md](r/NEWS.md) for details
-
-### Python (v2.1.0)
-
-- Cross-language test suite verified (14/14 tests)
-- Cache management at 30-day staleness threshold
-- See [python/CHANGELOG.md](python/CHANGELOG.md) for details
-
-### Stata (v2.3.0)
-
-- Discovery Caching: Frame-based session caching (Stata 16+). YAML metadata parsed once, subsequent `search()` calls near-instantaneous
+- **Discovery caching**: Frame-based session caching for indicator search (Stata 16+). YAML metadata parsed once, subsequent `search()` calls near-instantaneous
 - **`__unicef_parse_indicators_yaml`**: Bulk YAML parser reads full indicators metadata into one-row-per-indicator dataset
 - **`_unicef_load_indicators_cache`**: Frame cache manager with parser-version-based invalidation
 - **`nocache` option**: Forces re-parsing of the YAML metadata file

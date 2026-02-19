@@ -26,8 +26,8 @@ di as txt "===================================="
 di as txt ""
 
 * Reference directories (R and Python test outputs)
-local r_output "../../R/tests/output"
-local py_output "../../python/tests/output"
+local r_output "../../../r/tests/output"
+local py_output "../../../python/tests/output"
 
 * ============================================================================
 * Test 1: Compare Mortality Data Row Counts

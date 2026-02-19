@@ -1,0 +1,479 @@
+---
+title: "Introduction to unicefData"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to unicefData}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Motivation: Data Provenance in the Age of AI
+
+This package is motivated by a fundamental principle: **data acquisition should be treated as code, not as an external preparatory step**. This is increasingly important in the age of AI-assisted research.
+
+As AI tools accelerate analytical workflows while enabling plausible fabrication of statistics and citations, anchoring research to **authoritative, version-controlled data sources** becomes essential infrastructure for scientific credibility. The unicefData package operationalizes this principle by making data provenance an integral component of your analytical script.
+
+When you specify:
+```r
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("ALB", "USA", "BRA"),
+  year = "2015:2023"
+)
+```
+
+You are not downloading a spreadsheet from a portal and applying undocumented filters. Instead, you are executing an explicit, reproducible specification of provenance: a command line that documents *what data* were requested, *from which source*, and *under what constraints*. This ensures:
+
+- **Traceability**: Others can inspect your code and verify exactly which data were used
+- **Transparency**: Data selection decisions are parametrized and visible
+- **Sustainability**: If upstream data are revised, the same command yields systematically updated results
+- **Reproducibility**: Your analysis remains verifiable and replicable over time
+
+### Design Principles from wbopendata
+
+The unicefData package adopts three design principles from wbopendata (Azevedo, 2026), a similar package for World Bank data:
+
+1. **Data acquisition as code**: Indicator selection, country coverage, and time ranges are explicit parameters in your analytical script
+2. **Backward compatibility as trust infrastructure**: The package prioritizes stable syntax so analyses remain reproducible even as APIs evolve
+3. **Domain-specific syntax as error prevention**: Rather than exposing HTTP requests and JSON, the interface uses familiar concepts (indicators, countries, years) that constrain input to meaningful values
+
+Together, these principles treat data acquisition as **infrastructure for reproducibility**, not mere convenience.
+
+## The UNICEF Data Warehouse
+
+The United Nations Children's Fund (UNICEF) maintains one of the world's most
+comprehensive databases on child welfare, covering health, nutrition, education,
+protection, HIV/AIDS, and water, sanitation and hygiene (WASH). The
+[UNICEF Data Warehouse](https://sdmx.data.unicef.org/) uses the Statistical
+Data and Metadata eXchange (SDMX) standard, an ISO-certified framework for
+exchanging statistical information.
+
+The warehouse currently maintains **733+ indicators** organized across thematic
+dataflows:
+
+| Dataflow | Domain | Indicators |
+|----------|--------|------------|
+| CME | Child Mortality Estimates | 39 |
+| NUTRITION | Stunting, wasting, underweight | 112 |
+| IMMUNISATION | Immunization coverage | 18 |
+| WASH_HOUSEHOLDS | Water and sanitation | 57 |
+| EDUCATION | Education access and quality | 38 |
+| HIV_AIDS | HIV-related indicators | 38 |
+| MNCH | Maternal, newborn, child health | varies |
+| PT | Child protection | varies |
+| CHLD_PVTY | Child poverty | varies |
+| GENDER | Gender equality | varies |
+
+## What is SDMX?
+
+SDMX (Statistical Data and Metadata eXchange) is an international standard for
+structuring and exchanging statistical data. Within SDMX:
+
+- An **indicator** is a time-series measure of a specific phenomenon (e.g.,
+  under-5 mortality rate, stunting prevalence, DTP3 coverage).
+- Each indicator is identified by a unique code (e.g., `CME_MRY0T4`) and
+  belongs to a **dataflow**, which groups related indicators.
+- Observations are disaggregated along **dimensions**: sex, age, wealth
+  quintile, residence (urban/rural), and maternal education.
+- Each observation also carries **attributes** (data source, confidence
+  intervals, observation status) that contextualize the value.
+
+While powerful, direct SDMX API interaction requires knowledge of dataflow
+structures, dimension codes, and RESTful query syntax. The `unicefData` package
+removes these barriers.
+
+## Why unicefData?
+
+The `unicefData` package provides a simple R interface to the UNICEF Data
+Warehouse. It is part of a trilingual ecosystem with identical implementations
+in R, Python (`unicef_api`), and Stata (`unicefdata`), sharing the same function
+names and parameter structures for cross-team collaboration.
+
+Key features:
+
+- **Automatic dataflow detection**: specify only the indicator code; the package
+  finds the correct dataflow automatically.
+- **Discovery commands**: search indicators by keyword, list dataflows, display
+  metadata---no prior SDMX knowledge required.
+- **Flexible filtering**: countries, years, sex, age, wealth quintiles,
+  residence, maternal education.
+- **Multiple output formats**: long (default), wide (years as columns),
+  wide_indicators (indicators as columns).
+- **Caching with memoisation**: repeated queries are fast.
+
+## Installation
+
+Install from GitHub:
+
+```{r install}
+# install.packages("devtools")
+devtools::install_github("unicef-drp/unicefData")
+```
+
+## Quick start
+
+```{r library}
+library(unicefData)
+```
+
+### Discovering indicators
+
+Before downloading data, explore what is available:
+
+```{r discovery}
+# Browse indicator categories (thematic dataflows)
+list_categories()
+
+# Search for indicators by keyword
+search_indicators("mortality")
+
+# List all indicators in the Child Mortality Estimates dataflow
+list_indicators("CME")
+
+# Get detailed information about a specific indicator
+get_indicator_info("CME_MRY0T4")
+```
+
+These discovery commands mirror the paper's Examples 1--4 and the Stata
+equivalents:
+
+```
+. unicefdata, categories
+. unicefdata, search(mortality)
+. unicefdata, indicators(CME)
+. unicefdata, info(CME_MRY0T4)
+```
+
+### Basic data retrieval
+
+Fetch under-5 mortality rate for three countries over a year range:
+
+```{r basic-retrieval}
+# Example 5 (paper): Basic data retrieval
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BRA", "IND", "CHN"),
+  year = "2015:2023"
+)
+head(df)
+```
+
+The equivalent Stata command is:
+
+```
+. unicefdata, indicator(CME_MRY0T4) countries(BRA IND CHN) year(2015:2023) clear
+```
+
+### Geographic filtering
+
+Fetch data for East African countries for a single year:
+
+```{r geographic}
+# Example 6 (paper): Geographic filtering
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("KEN", "TZA", "UGA", "ETH", "RWA"),
+  year = 2020
+)
+```
+
+### Latest values and most recent values
+
+```{r latest-mrv}
+# Example 7 (paper): Get the latest available value per country
+df_latest <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BGD", "IND", "PAK"),
+  latest = TRUE
+)
+
+# Get the 3 most recent values per country
+df_mrv <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("BGD", "IND", "PAK"),
+  mrv = 3
+)
+```
+
+### Year specifications
+
+The `year` parameter supports multiple formats:
+
+```{r year-formats}
+# Single year
+df <- unicefData(indicator = "CME_MRY0T4", year = 2020)
+
+# Year range
+df <- unicefData(indicator = "CME_MRY0T4", year = "2015:2023")
+
+# Non-contiguous years
+df <- unicefData(indicator = "CME_MRY0T4", year = "2015,2018,2020")
+
+# Circa mode: find closest available year
+df <- unicefData(indicator = "CME_MRY0T4", year = 2015, circa = TRUE)
+```
+
+## Disaggregations
+
+UNICEF data supports rich disaggregation along multiple dimensions. Not all
+dimensions are available for all indicators---availability depends on the
+dataflow (see the disaggregation matrix in the package paper).
+
+### By sex
+
+```{r sex}
+# Total only (default)
+df <- unicefData(indicator = "CME_MRY0T4", sex = "_T")
+
+# Female only
+df <- unicefData(indicator = "CME_MRY0T4", sex = "F")
+
+# All sex categories (total, male, female)
+df <- unicefData(indicator = "CME_MRY0T4", sex = "ALL")
+```
+
+### By wealth quintile
+
+```{r wealth}
+# Example 8 (paper): Stunting by wealth and sex
+df <- unicefData(
+  indicator = "NT_ANT_WHZ_NE2",
+  countries = "IND",
+  sex = "ALL",
+  wealth = "ALL"
+)
+```
+
+### By residence
+
+```{r residence}
+# Urban only
+df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "U")
+
+# Rural only
+df <- unicefData(indicator = "NT_ANT_HAZ_NE2", residence = "R")
+```
+
+## Output formats
+
+### Wide format (years as columns)
+
+Useful for time-series analysis:
+
+```{r wide}
+# Example 9 (paper): Wide format
+df_wide <- unicefData(
+  indicator = "CME_MRY0T4",
+  countries = c("USA", "GBR", "DEU", "FRA"),
+  year = "2000,2010,2020,2023",
+  format = "wide"
+)
+```
+
+### Multiple indicators
+
+Fetch and merge multiple indicators automatically:
+
+```{r multi-indicator}
+# Example 10 (paper): Multiple indicators
+df <- unicefData(
+  indicator = c("CME_MRM0", "CME_MRY0T4"),
+  countries = c("KEN", "TZA", "UGA"),
+  year = 2020
+)
+
+# Wide indicators format: one column per indicator
+df_wide <- unicefData(
+  indicator = c("CME_MRY0T4", "CME_MRY0", "IM_DTP3", "IM_MCV1"),
+  countries = c("AFG", "ETH", "PAK", "NGA"),
+  latest = TRUE,
+  format = "wide_indicators"
+)
+```
+
+## Metadata enrichment
+
+Add regional and income group classifications:
+
+```{r metadata}
+# Example 12 (paper): Regional classifications
+df <- unicefData(
+  indicator = "CME_MRY0T4",
+  add_metadata = c("region", "income_group"),
+  latest = TRUE
+)
+```
+
+## Data cleaning and filtering
+
+Post-processing utilities for downloaded data:
+
+```{r clean-filter}
+# Clean raw SDMX column names to user-friendly names
+df_raw <- unicefData_raw(indicator = "CME_MRY0T4", countries = "BRA")
+df_clean <- clean_unicef_data(df_raw)
+
+# Filter to specific disaggregations
+df_filtered <- filter_unicef_data(df_clean, sex = "F", wealth = "Q1")
+```
+
+## Cache management
+
+The package caches metadata and API responses for performance. To clear and
+refresh all caches:
+
+```{r cache}
+# Clear all caches and reload metadata
+clear_unicef_cache()
+
+# Clear without reloading (lazy reload on next use)
+clear_unicef_cache(reload = FALSE)
+
+# View cache status
+get_cache_info()
+```
+
+## Dataflow schemas
+
+Inspect the structure of any dataflow:
+
+```{r schema}
+# View the dimensions and attributes of a dataflow
+schema <- dataflow_schema("CME")
+print(schema)
+```
+
+## Cross-language parity
+
+The `unicefData` ecosystem provides identical functionality across R, Python,
+and Stata. The same analytical workflow translates directly:
+
+| Operation | R | Python | Stata |
+|-----------|---|--------|-------|
+| Search | `search_indicators("mortality")` | `search_indicators("mortality")` | `unicefdata, search(mortality)` |
+| Fetch | `unicefData(indicator="CME_MRY0T4")` | `unicefData(indicator="CME_MRY0T4")` | `unicefdata, indicator(CME_MRY0T4) clear` |
+| Latest | `unicefData(..., latest=TRUE)` | `unicefData(..., latest=True)` | `unicefdata, ... latest clear` |
+| Wide | `unicefData(..., format="wide")` | `unicefData(..., format="wide")` | `unicefdata, ... wide clear` |
+| Cache | `clear_unicef_cache()` | `clear_cache()` | `unicefdata, clearcache` |
+| Sync | `sync_metadata()` | `sync_metadata()` | `unicefdata_sync, all` |
+
+This parity enables cross-team collaboration: an analyst can prototype in R and
+a colleague can reproduce the workflow in Stata or Python with minimal
+translation.
+
+## Design Principles and Reproducibility
+
+The unicefData package embodies three design principles that make reproducibility the default rather than the exception:
+
+### 1. Data acquisition as code
+
+When you write:
+```r
+df <- unicefData(indicator = "CME_MRY0T4", countries = c("ALB", "USA", "BRA"), year = "2015:2023")
+```
+
+You are not performing manual steps that will be forgotten or become undocumented. Every data selection decision—indicator, countries, years, disaggregations—is explicitly specified in your script. This ensures that:
+
+- Others can **audit** your data selection
+- You can **reproduce** results exactly
+- **Revisions** to upstream data are transparent
+- Your analysis is **sustainable** across time
+
+### 2. Backward compatibility as trust infrastructure
+
+The package prioritizes stable syntax and predictable behavior. This matters because:
+
+- Historical analyses remain reproducible even as the UNICEF SDMX API evolves
+- Your scripts from 2026 will still work in 2030
+- Backward compatibility reduces the risk that methodology becomes irreproducible due to infrastructure drift
+
+### 3. Domain-specific syntax as error prevention
+
+Rather than exposing HTTP requests and JSON parsing, the interface uses concepts familiar to development researchers: indicators, countries, years. This constrains input to meaningful values and reduces opportunities for error.
+
+### Why This Matters for AI-Assisted Research
+
+In an era where AI tools accelerate analytical workflows, these principles become more important, not less. As generative tools lower the cost of producing plausible analyses and narratives, **anchoring empirical work to authoritative and verifiable data sources** is essential infrastructure for scientific credibility. The unicefData package provides this foundation by making data provenance explicit and executable.
+
+## Further reading
+
+- [UNICEF Data Warehouse](https://sdmx.data.unicef.org/)
+- [SDMX standard documentation](https://sdmx.org/)
+- [Package source on GitHub](https://github.com/unicef-drp/unicefData)
+- **Azevedo, J.P. (2026).** "Data Provenance in the Age of Automation: Lessons from Fifteen Years of Programmatic Access to World Bank Open Data." *Stata Journal* (forthcoming) — foundational paper on design principles for data acquisition tools
+
+---
+
+## Acknowledgments
+
+This package was developed at the UNICEF Data and Analytics Section. The author gratefully acknowledges the collaboration of **Lucas Rodrigues**, **Yang Liu**, and **Karen Avanesian**, whose technical contributions and feedback were instrumental in the development of this R package.
+
+Special thanks to **Yves Jaques**, **Alberto Sibileau**, and **Daniele Olivotti** for designing and maintaining the UNICEF SDMX data warehouse infrastructure that makes this package possible.
+
+The author also acknowledges the **UNICEF database managers** and technical teams who ensure data quality, as well as the country office staff and National Statistical Offices whose data collection efforts make this work possible.
+
+Development of this package was supported by UNICEF institutional funding for data infrastructure and statistical capacity building. The author also acknowledges UNICEF colleagues who provided testing and feedback during development, as well as the broader open-source R community.
+
+Development was assisted by AI coding tools (GitHub Copilot, Claude). All code has been reviewed, tested, and validated by the package maintainers.
+
+## Disclaimer
+
+**This package is provided for research and analytical purposes.**
+
+The `unicefData` package provides programmatic access to UNICEF's public data warehouse. While the author is affiliated with UNICEF, **this package is not an official UNICEF product and the statements in this documentation are the views of the author and do not necessarily reflect the policies or views of UNICEF**.
+
+Data accessed through this package comes from the [UNICEF Data Warehouse](https://sdmx.data.unicef.org/). Users should verify critical data points against official UNICEF publications at [data.unicef.org](https://data.unicef.org/).
+
+This software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or UNICEF be liable for any claim, damages or other liability arising from the use of this software.
+
+The designations employed and the presentation of material in this package do not imply the expression of any opinion whatsoever on the part of UNICEF concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.
+
+## Data Citation and Provenance
+
+**Important Note on Data Vintages**
+
+Official statistics are subject to revisions as new information becomes available and estimation methodologies improve. UNICEF indicators are regularly updated based on new surveys, censuses, and improved modeling techniques. Historical values may be revised retroactively to reflect better information or methodological improvements.
+
+**For reproducible research and proper data attribution, users should:**
+
+1. **Document the indicator code** - Specify the exact SDMX indicator code(s) used (e.g., `CME_MRY0T4`)
+2. **Record the download date** - Note when data was accessed (e.g., "Data downloaded: 2026-02-09")
+3. **Cite the data source** - Reference both the package and the UNICEF Data Warehouse
+4. **Archive your dataset** - Save a copy of the exact data used in your analysis
+
+**Example citation for data used in research:**
+
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData R package (v2.1.0) on 2026-02-09. Data available at: https://sdmx.data.unicef.org/
+
+This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
+
+## Citation
+
+If you use this package in your research, please cite:
+
+```
+Azevedo, J.P. (2026). unicefData: Trilingual R, Python, and Stata Interface
+  to UNICEF SDMX Data Warehouse. R package version 2.1.0.
+  https://github.com/unicef-drp/unicefData
+```
+
+For data citations, please refer to the specific UNICEF datasets accessed through the warehouse and cite them according to UNICEF's data citation guidelines.
+
+## License
+
+This package is released under the MIT License. See the LICENSE file for full details.
+
+## Contact & Support
+
+- **Package Maintainer**: Joao Pedro Azevedo (jpazevedo@unicef.org)
+- **Report Issues**: https://github.com/unicef-drp/unicefData/issues
+- **UNICEF Data Portal**: https://data.unicef.org/
+- **SDMX API Documentation**: https://data.unicef.org/sdmx-api-documentation/
