@@ -1,4 +1,5 @@
 *! -unicefdata_examples-: Auxiliary program for -unicefdata-
+*! Version 1.8.0 - 18 February 2026  - Added example12 (discovery caching)
 *! Version 1.7.1 - 01 February 2026  - Fixed examples 07, 09, 10, 11 for robustness
 *! Version 1.7.0 - 01 February 2026  - Added verbose option for debugging
 *! Version 1.6.0 - 01 February 2026
@@ -712,4 +713,58 @@ program example11
     di as text "Use wealth(ALL) with reshape for equity analysis"
 
     _verbose_msg "Example 11 completed successfully"
+end
+
+
+*  ----------------------------------------------------------------------------
+*  Example 12: Discovery caching performance (Stata 16+)
+*  Link: help unicefdata > Discovery
+*  Demonstrates frame-based caching speedup for search() calls.
+*  On Stata 14-15 both calls use line-by-line parsing (no caching).
+*  ----------------------------------------------------------------------------
+
+capture program drop example12
+program example12
+    _verbose_msg "Starting Example 12: Discovery caching performance"
+
+    * First search: parses YAML and populates cache
+    _verbose_msg "First search (cold cache — will parse YAML)"
+    timer clear 1
+    timer on 1
+    unicefdata, search(mortality) limit(5)
+    timer off 1
+
+    * Second search: uses cached frame (Stata 16+)
+    _verbose_msg "Second search (warm cache — should be faster)"
+    timer clear 2
+    timer on 2
+    unicefdata, search(stunting) limit(5)
+    timer off 2
+
+    * Display timing comparison
+    di as text ""
+    di as text "{hline 50}"
+    di as result "Discovery caching timing comparison"
+    di as text "{hline 50}"
+    timer list 1
+    timer list 2
+    di as text ""
+
+    if (c(stata_version) >= 16) {
+        di as text "Stata 16+: second search used cached frame"
+    }
+    else {
+        di as text "Stata " as result c(stata_version) as text ///
+            ": both searches used line-by-line parsing (no caching)"
+    }
+
+    * Demonstrate nocache option
+    _verbose_msg "Third search with nocache (forces re-parse)"
+    unicefdata, search(nutrition) limit(3) nocache
+
+    di as text ""
+    di as text "Use {bf:nocache} to force re-parsing after manual YAML edits"
+    di as text "Use {bf:unicefdata, clearcache} to drop all cached frames"
+
+    _verbose_msg "Example 12 completed successfully"
 end

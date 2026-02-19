@@ -1,4 +1,4 @@
-v 2.2.0
+v 2.3.0
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -27,12 +27,13 @@ d     * Validation: Dimension extraction for filter validation
 d   - Metadata-driven filtering using disaggregations_with_totals
 d     * Matches Python/R filtering for cross-platform consistency
 d     * DISABILITY_STATUS special handling (PD baseline when no _T)
-d   - Offline/deterministic testing via fromfile() (NEW in 2.2.0)
+d   - Offline/deterministic testing via fromfile()
+d   - Frame-based discovery caching for fast search (NEW in 2.3.0)
 d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260210
+d Distribution-Date: 20260218
 d
 d Quality Assurance:
 d   - 16 test families (63 tests): ENV, DL, DISC, SYNC, TRANS, EDGE, XPLAT, ERR, EXT, DET, DATA, MULTI, PERF, REGR, DOC, TIDY
@@ -65,9 +66,9 @@ f src/u/unicefdata_xmltoyaml_py.sthlp
 f src/y/yaml.ado
 f src/y/yaml.sthlp
 
-* Query helper programs
-f src/_/_query_metadata.ado
-f src/_/_query_indicators.ado
+* Discovery helper programs (caching infrastructure)
+f src/_/__unicef_parse_indicators_yaml.ado
+f src/_/_unicef_load_indicators_cache.ado
 
 * Discovery helper programs
 f src/_/_unicef_build_schema_key.ado
@@ -78,7 +79,7 @@ f src/_/_unicef_indicator_info.ado
 f src/_/_unicef_dataflow_info.ado
 
 * Dataflow resolution helper programs
-f src/_/_unicef_fetch_with_fallback.ado
+
 f src/_/_set_default_dataflows.ado
 f src/_/_get_dataflow_direct.ado
 f src/_/_get_sdmx_rename_year_columns.ado
@@ -123,8 +124,7 @@ f src/_/_unicefdata_regions.yaml
 f src/_/_unicefdata_sync_history.yaml
 f src/_/_dataflow_index.yaml
 
-* Dataflow indicators list and fallback sequences
-f src/_/_dataflow_indicators_list.txt
+* Dataflow fallback sequences
 f src/_/_dataflow_fallback_sequences.yaml
 
 * Comprehensive indicators metadata (748+ indicators with tier and dataflow mappings)

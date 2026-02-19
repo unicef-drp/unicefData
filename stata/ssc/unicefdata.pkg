@@ -20,7 +20,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260210
+d Distribution-Date: 20260218
 d
 * Main command and help
 f src/u/unicefdata.ado
@@ -58,7 +58,6 @@ f src/_/_unicef_list_indicators.ado
 f src/_/_unicef_search_indicators.ado
 f src/_/_unicef_indicator_info.ado
 f src/_/_unicef_dataflow_info.ado
-f src/_/_unicef_fetch_with_fallback.ado
 f src/_/_unicef_build_schema_key.ado
 f src/_/_unicef_get_disagg_totals.ado
 
@@ -76,13 +75,15 @@ f src/_/_xmltoyaml_parse_python.ado
 f src/_/_xmltoyaml_parse_stata.ado
 
 * Core metadata query helpers
-f src/_/_query_metadata.ado
-f src/_/_query_indicators.ado
 f src/_/_metadata_linewrap.ado
 f src/_/_linewrap.ado
 f src/_/_get_sdmx_rename_year_columns.ado
 f src/_/_get_dataflow_direct.ado
 f src/_/_set_default_dataflows.ado
+
+* Discovery caching infrastructure
+f src/_/__unicef_parse_indicators_yaml.ado
+f src/_/_unicef_load_indicators_cache.ado
 
 * Private helper programs (internal use)
 f src/_/__unicef_fetch_paged.ado
@@ -97,7 +98,6 @@ f src/_/_unicefdata_indicators_metadata.yaml
 f src/_/_unicefdata_dataflow_metadata.yaml
 f src/_/_unicefdata_codelists.yaml
 f src/_/_unicefdata_countries.yaml
-f src/_/_unicefdata_countries.dta
 f src/_/_unicefdata_regions.yaml
 f src/_/_unicefdata_sync_history.yaml
 f src/_/_dataflow_index.yaml

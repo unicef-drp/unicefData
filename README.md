@@ -18,7 +18,7 @@ The **unicefData** package provides lightweight, consistent interfaces to the [U
 |----------|--------|---------|
 | **R** | [R/README.md](R/README.md) | 2.2.0 |
 | **Python** | [python/README.md](python/README.md) | 2.2.0 |
-| **Stata** | [stata/README.md](stata/README.md) | 2.2.0 |
+| **Stata** | [stata/README.md](stata/README.md) | 2.3.0 |
 
 | Document | Purpose |
 |----------|---------|
@@ -211,6 +211,13 @@ unicefData/
 ---
 
 ## Version History
+
+### v2.3.0 (2026-02-18) — Stata only
+
+- Frame-based discovery caching: indicator search parsed once per session, subsequent `search()` calls near-instantaneous (Stata 16+)
+- New `nocache` option and automatic cache invalidation on `unicefdata_sync`
+- Archived vestigial wbopendata helper programs
+- Bug fixes from v2.2.1 code review (4 high-priority fixes, 7 cleanup items)
 
 ### v2.2.0 (2026-02-15)
 
@@ -451,7 +458,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 - **R**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData R package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/`
 - **Python**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/`
-- **Stata**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/`
+- **Stata**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.3.0) on 2026-02-18. Data available at: https://sdmx.data.unicef.org/`
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

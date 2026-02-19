@@ -1,5 +1,43 @@
 # unicefData Changelog
 
+## 2.3.0 (2026-02-18) — Stata
+
+### Discovery Caching
+
+* **Frame-based session caching** (Stata 16+): YAML metadata parsed once per session, subsequent `search()` calls near-instantaneous
+* **`__unicef_parse_indicators_yaml`**: Bulk YAML parser reads full indicators metadata into one-row-per-indicator dataset
+* **`_unicef_load_indicators_cache`**: Frame cache manager with parser-version-based invalidation
+* **`nocache` option**: Forces re-parsing of the YAML metadata file
+* **`clear` option for search**: Clears data in memory before displaying search results
+* `clearcache` now also drops the `_unicef_indicators` frame cache
+* `unicefdata_sync` automatically invalidates cached frame after metadata refresh
+* Archived vestigial `_query_indicators.ado` and `_query_metadata.ado` (inherited from wbopendata)
+* New EDUCATION_LG dataflow definition
+
+### Tested
+
+* Stata: 63/63 tests passing (100%) across 16 families
+
+## 2.2.1 (2026-02-18) — Stata
+
+### Bug Fixes (Code Review)
+
+* **Multi-indicator fallback overwrite**: Primary HTTP import no longer clobbers valid fallback data
+* **Search tier-filter bypass**: First match block now applies tier/orphan filtering
+* **`latest`/`mrv` filter**: All required variables checked individually (not just last `_rc`)
+* **São Tomé country match**: Broad `strpos` replaced with `iso3 == "STP"`
+* **Label loop count**: Dynamically computed instead of hardcoded (44)
+
+### Removed
+
+* Corrupt `_unicef_fetch_with_fallback.ado` (3-byte file, no callers)
+* Dead `_get_sdmx_fetch` and `_get_sdmx_parse_structure` programs (-74 lines)
+* Non-existent file references from pkg manifests
+
+### Verified
+
+* Stata: 63/63 tests passing (100%) across 16 families
+
 ## 2.2.0 (2026-02-17)
 
 ### Cross-Platform Testing Infrastructure

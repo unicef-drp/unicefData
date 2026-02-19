@@ -2,7 +2,7 @@
 
 [![Stata 14+](https://img.shields.io/badge/Stata-14%2B-blue)](https://www.stata.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.2.0-green)](https://github.com/unicef-drp/unicefData)
+[![Version](https://img.shields.io/badge/version-2.3.0-green)](https://github.com/unicef-drp/unicefData)
 [![Tests](https://img.shields.io/badge/tests-63%2F63%20passing-brightgreen)](stata/qa/)
 
 **Stata component of the trilingual unicefData library for downloading UNICEF SDG indicators via SDMX API**
@@ -304,7 +304,7 @@ If metadata is >30 days old, you'll see a warning:
 The Stata package includes a comprehensive test suite:
 
 - **63 tests** across 16 families
-- **100% pass rate** as of v2.2.0
+- **100% pass rate** as of v2.3.0
 - Test families: ENV, DL, DATA, DISC, TIER, SYNC, TRANS, META, MULTI, EDGE, PERF, REGR, XPLAT, ERR, EXT, DET
 
 ### Run Tests
@@ -375,6 +375,25 @@ which yaml
 ---
 
 ## Version History
+
+### v2.3.0 (2026-02-18)
+
+- Frame-based discovery caching: indicator search parsed once per session, subsequent `search()` calls near-instantaneous (Stata 16+)
+- New `__unicef_parse_indicators_yaml` bulk YAML parser and `_unicef_load_indicators_cache` frame cache manager
+- `nocache` option to force re-parsing of metadata
+- `clearcache` now also drops the indicators frame cache
+- `unicefdata_sync` automatically invalidates cached frame after metadata refresh
+- Archived vestigial `_query_indicators.ado` and `_query_metadata.ado` (inherited from wbopendata)
+
+### v2.2.1 (2026-02-18)
+
+- Fixed multi-indicator fallback overwrite bug
+- Fixed search tier-filter bypass in first match block
+- Fixed `latest`/`mrv` filter checking all required variables individually
+- Removed corrupt `_unicef_fetch_with_fallback.ado`
+- Removed dead code in get_sdmx.ado (-74 lines)
+- Fixed Sao Tome country name match
+- Dynamic label loop count replaces hardcoded value
 
 ### v2.2.0 (2026-02-10)
 
@@ -451,7 +470,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citation for data used in research:**
 
-> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.2.0) on 2026-02-15. Data available at: https://sdmx.data.unicef.org/
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.3.0) on 2026-02-18. Data available at: https://sdmx.data.unicef.org/
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

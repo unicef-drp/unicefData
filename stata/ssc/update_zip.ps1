@@ -16,13 +16,18 @@ New-Item -ItemType Directory -Path $tempFolder
 # Read files from pkg
 $files = Get-Content $pkgFile | Where-Object { $_ -match '^f ' } | ForEach-Object { ($_ -split ' ')[1] }
 
-# Copy files to temp folder
+# Copy files to temp folder preserving subdirectory structure
 foreach ($file in $files) {
     # Remove 'src/' prefix if present since srcFolder already points to src/
     $relativePath = $file -replace '^src/', ''
     $sourcePath = Join-Path -Path $srcFolder -ChildPath $relativePath
+    $destPath = Join-Path -Path $tempFolder -ChildPath $relativePath
     if (Test-Path $sourcePath) {
-        Copy-Item -Path $sourcePath -Destination $tempFolder -Force
+        $destDir = Split-Path -Parent $destPath
+        if (-not (Test-Path $destDir)) {
+            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+        }
+        Copy-Item -Path $sourcePath -Destination $destPath -Force
     } else {
         Write-Host "Warning: File not found - $sourcePath"
     }

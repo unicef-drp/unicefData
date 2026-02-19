@@ -1,8 +1,10 @@
 {smcl}
-{* *! version 2.2.0  10Feb2026}{...}
+{* *! version 2.3.0  18Feb2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v2.3.0" "unicefdata_whatsnew##v230"}{...}
+{viewerjumpto "v2.2.1" "unicefdata_whatsnew##v221"}{...}
 {viewerjumpto "v2.2.0" "unicefdata_whatsnew##v220"}{...}
 {viewerjumpto "v2.1.0" "unicefdata_whatsnew##v210"}{...}
 {viewerjumpto "v2.0.0" "unicefdata_whatsnew##v200"}{...}
@@ -22,6 +24,68 @@
 {pstd}
 {it:Return to {help unicefdata:main help file}}
 {p_end}
+
+
+{marker v230}{...}
+{title:What's New in v2.3.0 (18Feb2026)}
+
+{pstd}
+{bf:Discovery Caching (Stata 16+):} Indicator search now uses frame-based session caching.
+The YAML metadata is parsed once per session and stored in a Stata frame, making subsequent
+{cmd:search()} calls near-instantaneous.
+{p_end}
+
+{pstd}
+{bf:New infrastructure:}
+{p_end}
+{phang2}• {cmd:__unicef_parse_indicators_yaml}: Bulk YAML parser that reads the full indicators
+metadata file into a one-row-per-indicator dataset{p_end}
+{phang2}• {cmd:_unicef_load_indicators_cache}: Frame cache manager with parser-version-based
+invalidation — automatically re-parses when the parser is updated{p_end}
+
+{pstd}
+{bf:Search improvements ({cmd:_unicef_search_indicators} v2.0.0):}
+{p_end}
+{phang2}• Stata 16+: dataset-based search on cached metadata (code, name, description, dataflows){p_end}
+{phang2}• Stata 14–15: unchanged line-by-line YAML parsing (full backward compatibility){p_end}
+{phang2}• New {cmd:nocache} option forces re-parsing of the YAML file{p_end}
+
+{pstd}
+{bf:Cache management:}
+{p_end}
+{phang2}• {cmd:unicefdata, clearcache} now also drops the {cmd:_unicef_indicators} frame{p_end}
+{phang2}• {cmd:unicefdata_sync} automatically invalidates the cached frame after metadata refresh{p_end}
+
+{pstd}
+{bf:Code cleanup:}
+{p_end}
+{phang2}• Archived vestigial {cmd:_query_indicators.ado} and {cmd:_query_metadata.ado}
+(inherited from wbopendata, zero live call sites){p_end}
+
+
+{marker v221}{...}
+{title:What's New in v2.2.1 (18Feb2026)}
+
+{pstd}
+{bf:Bug Fixes (Code Review):} Systematic review of v2.2.0 addressing 4 high-priority bugs
+and 7 medium/low improvements.
+{p_end}
+
+{pstd}
+{bf:Critical fixes:}
+{p_end}
+{phang2}• Multi-indicator fallback overwrite: primary HTTP import no longer clobbers valid fallback data{p_end}
+{phang2}• Search tier-filter bypass: first match block now applies tier/orphan filtering{p_end}
+{phang2}• {cmd:latest}/{cmd:mrv} filter: all required variables checked individually (not just last {cmd:_rc}){p_end}
+{phang2}• Removed corrupt {cmd:_unicef_fetch_with_fallback.ado} (3-byte file, no callers){p_end}
+
+{pstd}
+{bf:Cleanup:}
+{p_end}
+{phang2}• Removed dead {cmd:_get_sdmx_fetch} and {cmd:_get_sdmx_parse_structure} programs (-74 lines){p_end}
+{phang2}• Fixed São Tomé country match (broad strpos replaced with iso3 == "STP"){p_end}
+{phang2}• Label loop count now computed dynamically instead of hardcoded{p_end}
+{phang2}• Removed non-existent files from pkg manifests{p_end}
 
 
 {marker v220}{...}

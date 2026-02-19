@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.7.1  01Feb2026}{...}
+{* *! version 1.8.0  18Feb2026}{...}
 {vieweralsosee "[D] unicefdata" "help unicefdata"}{...}
 {vieweralsosee "[D] get_sdmx" "help get_sdmx"}{...}
 {viewerjumpto "Syntax" "unicefdata_examples##syntax"}{...}
@@ -17,7 +17,7 @@
 {synoptset 20 tabbed}{...}
 {synopthdr}
 {synoptline}
-{synopt:{it:example_name}}Name of example to run: {cmd:example01} through {cmd:example11}{p_end}
+{synopt:{it:example_name}}Name of example to run: {cmd:example01} through {cmd:example12}{p_end}
 {synopt:{opt v:erbose}}Enable step-by-step debugging output{p_end}
 {synoptline}
 
@@ -78,6 +78,10 @@ to see each step executed:
 {p 4 8 2}
 {cmd:example11} — Wealth equity gap analysis{p_end}
 {p 8 8 2}Uses {cmd:wealth(ALL)}, reshapes to wide, calculates Q1-Q5 stunting gap.{p_end}
+
+{p 4 8 2}
+{cmd:example12} — Discovery caching performance (Stata 16+){p_end}
+{p 8 8 2}Runs {cmd:search()} twice to demonstrate frame-based caching speedup. Uses {cmd:nocache} to force re-parse.{p_end}
 
 {dlgtab:Verbose Option}
 
@@ -285,6 +289,15 @@ Bypass auto-detection for known dataflow (faster for batch operations).
 
 {p 4 4 2}
 • Use {cmd:unicefdata, info(indicator_code)} to see metadata{p_end}
+
+{p 4 4 2}
+• Stata 16+: search results are cached in memory; repeat searches are near-instant{p_end}
+
+{p 4 4 2}
+• Use {cmd:nocache} to force re-parsing (e.g., after manual YAML edits){p_end}
+
+{p 4 4 2}
+• Use {cmd:unicefdata, clearcache} to drop all cached frames{p_end}
 
 {p 4 4 2}
 {hline}
