@@ -1,9 +1,15 @@
 *******************************************************************************
 * _unicef_search_indicators.ado
-*! v 1.8.0   01Feb2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.1.0   18Feb2026               by Joao Pedro Azevedo (UNICEF)
 * Search UNICEF indicators by keyword using YAML metadata
-* Uses direct file parsing for robust, yaml.ado-independent operation
-*
+* v2.1.0: Three-channel output (screen, r-class, dataset+char)
+*         - New clear option: leaves results dataset in memory
+*         - Dataset chars record search parameters and timestamp
+*         - Enhanced r-class returns (cmd, cache_method, names)
+* v2.0.0: Frame-based session caching for Stata 16+
+*         - Parses YAML once per session, reuses cached frame
+*         - Stata 14-15 falls back to direct file parsing
+*         - Added nocache option to force re-parse
 * v1.8.0: ENHANCEMENT - Grouped search results by dataflow
 *         - Added byflow option to organize results by dataflow
 *         - Default: flat table display (original behavior)
@@ -49,370 +55,501 @@
 program define _unicef_search_indicators, rclass
     version 11.0
     
-    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) CATEGORY VERBOSE METApath(string) SHOWTIER2 SHOWTIER3 SHOWALL SHOWORphans BYFLOW]
+    syntax , Keyword(string) [Limit(integer 20) DATAFLOW(string) CATEGORY VERBOSE METApath(string) SHOWTIER2 SHOWTIER3 SHOWALL SHOWORphans BYFLOW NOCACHE CLEAR]
     
     quietly {
-    
+
         *-----------------------------------------------------------------------
-        * Locate metadata directory (YAML files in src/_/ alongside this ado)
+        * Tier filtering setup (shared by both code paths)
         *-----------------------------------------------------------------------
-        
-        if ("`metapath'" == "") {
-            * Find the helper program location (src/_/)
-            capture findfile _unicef_search_indicators.ado
-            if (_rc == 0) {
-                local ado_path "`r(fn)'"
-                * Extract directory containing this ado file
-                local ado_dir = subinstr("`ado_path'", "\", "/", .)
-                local ado_dir = subinstr("`ado_dir'", "_unicef_search_indicators.ado", "", .)
-                local metapath "`ado_dir'"
-            }
-            
-            * Fallback to PLUS directory _/
-            if ("`metapath'" == "") | (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
-                local metapath "`c(sysdir_plus)'_/"
-            }
-        }
-        
-        * Use full indicator catalog (733 indicators)
-        local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
-        
-        *-----------------------------------------------------------------------
-        * Check YAML file exists
-        *-----------------------------------------------------------------------
-        
-        capture confirm file "`yaml_file'"
-        if (_rc != 0) {
-            noi di as err "Indicators metadata not found at: `yaml_file'"
-            noi di as err "Run 'unicefdata_sync' to download metadata."
-            exit 601
-        }
-        
-        if ("`verbose'" != "") {
-            noi di as text "Searching indicators in: " as result "`yaml_file'"
-        }
-        
-        *-----------------------------------------------------------------------
-        * Search using direct file parsing
-        * Scans YAML line-by-line to find matching indicators
-        *-----------------------------------------------------------------------
-        
+
         local keyword_lower = lower("`keyword'")
         local df_filter_upper = upper("`dataflow'")
         local matches ""
-        * Use numbered locals for names (avoids issues with parens in names)
-        * match_name1, match_name2, ... will be set during processing
         local match_dataflows ""
         local n_matches = 0
-        local n_collected = 0        
-        * Determine tier filtering mode
-        local tier_mode = 1  // Default: Tier 1 only
+        local n_collected = 0
+
+        local tier_mode = 1
         if ("`showall'" != "") {
-            local tier_mode = 999  // Show all tiers
+            local tier_mode = 999
         }
         else if ("`showtier3'" != "") {
-            local tier_mode = 3  // Show tiers 1-3
+            local tier_mode = 3
         }
         else if ("`showtier2'" != "") {
-            local tier_mode = 2  // Show tiers 1-2
+            local tier_mode = 2
         }
-        local show_orphans = ("`showorphans'" != "" | `tier_mode' >= 999)        
+        local show_orphans = ("`showorphans'" != "" | `tier_mode' >= 999)
+
         *-----------------------------------------------------------------------
-        * Parse YAML file directly
+        * Version-gated routing: Stata 16+ uses cached frame, else line-by-line
         *-----------------------------------------------------------------------
-        
-        tempname fh
-        file open `fh' using "`yaml_file'", read text
-        
-        * State tracking
-        local in_indicators = 0
-        local current_ind = ""
-        local current_name = ""
-        local current_parent = ""
-        local current_dataflows = ""
-        local current_tier = 1
-        local current_tier_reason = ""
-        local in_dataflows_list = 0
-        
-        file read `fh' line
-        
-        while r(eof) == 0 {
-            local trimmed = strtrim(`"`macval(line)'"')
-            
-            * Check for indicators: section start
-            if ("`trimmed'" == "indicators:") {
-                local in_indicators = 1
-                file read `fh' line
-                continue
+
+        local use_cache = 0
+        if (c(stata_version) >= 16) {
+            preserve
+            capture _unicef_load_indicators_cache, ///
+                metapath("`metapath'") `nocache' `verbose'
+            if (_rc == 0) {
+                local use_cache = 1
             }
-            
-            * Only process if in indicators section
-            if (`in_indicators' == 1) {
-                
-                * Detect end of indicators section (new top-level key without indent)
-                local orig_line `"`macval(line)'"'
-                if (substr("`orig_line'", 1, 1) != " " & "`trimmed'" != "" & !regexm("`trimmed'", "^#")) {
-                    if (!regexm("`trimmed'", "^-")) {
-                        * Process final indicator if pending
+            else {
+                restore
+                if ("`verbose'" != "") {
+                    noi di as text "(Cache load failed, falling back to line-by-line)"
+                }
+            }
+        }
+
+        if (`use_cache') {
+            *-------------------------------------------------------------------
+            * CACHED PATH (Stata 16+): dataset-based search
+            *-------------------------------------------------------------------
+
+            * Normalize dataflows: replace semicolons with spaces for display
+            replace field_dataflows = subinstr(field_dataflows, ";", " ", .)
+
+            * Apply tier filtering
+            gen _tier_num = real(field_tier)
+            replace _tier_num = 3 if _tier_num == .
+            if (`tier_mode' < 999) {
+                drop if _tier_num > `tier_mode'
+            }
+
+            * Apply orphan filtering
+            gen byte _is_orphan = (strtrim(field_dataflows) == "" | ///
+                strpos(field_dataflows, "nodata") > 0)
+            if (!`show_orphans') {
+                drop if _is_orphan == 1
+            }
+
+            * Apply keyword matching
+            gen byte _match = 0
+            replace _match = 1 if strpos(lower(ind_code), "`keyword_lower'") > 0
+            replace _match = 1 if strpos(lower(field_name), "`keyword_lower'") > 0
+            if ("`category'" != "") {
+                replace _match = 1 if strpos(lower(field_parent), "`keyword_lower'") > 0
+            }
+            else if ("`df_filter_upper'" == "") {
+                replace _match = 1 if strpos(lower(field_dataflows), "`keyword_lower'") > 0
+            }
+            keep if _match == 1
+
+            * Apply dataflow filter if specified
+            if ("`df_filter_upper'" != "") {
+                keep if strpos(upper(field_dataflows), "`df_filter_upper'") > 0
+            }
+
+            * Count total matches
+            local n_matches = _N
+
+            * Collect results into locals (up to limit)
+            local n_to_show = min(`n_matches', `limit')
+            forvalues i = 1/`n_to_show' {
+                local n_collected = `n_collected' + 1
+                local ind_i = ind_code[`i']
+                local matches "`matches' `ind_i'"
+
+                * Use scalar to safely extract strL name
+                scalar _s_nm = field_name[`i']
+                local match_name`n_collected' = _s_nm
+                scalar drop _s_nm
+
+                local df_i = strtrim(field_dataflows[`i'])
+                if ("`df_i'" == "") local df_i = "N/A"
+                local match_dataflows "`match_dataflows' `df_i'"
+            }
+
+            if ("`clear'" != "") {
+                * Keep results dataset: rename columns for user-friendly output
+                keep ind_code field_name field_dataflows field_tier ///
+                    field_tier_reason field_desc field_urn field_parent
+                rename ind_code indicator_code
+                rename field_name indicator_name
+                rename field_dataflows dataflows
+                rename field_tier tier
+                rename field_tier_reason tier_reason
+                rename field_desc description
+                rename field_urn urn
+                rename field_parent parent
+
+                * Label dataset
+                label data "unicefdata search results: `keyword'"
+                label variable indicator_code "Indicator code"
+                label variable indicator_name "Indicator name"
+                label variable dataflows "Dataflow(s)"
+                label variable tier "Tier classification"
+                label variable tier_reason "Tier reason"
+                label variable description "Indicator description"
+                label variable urn "SDMX URN"
+                label variable parent "Parent category"
+
+                * Store dataset characteristics
+                char _dta[unicefdata_version]         "2.3.0"
+                char _dta[unicefdata_command]          "search"
+                char _dta[unicefdata_search_keyword]   "`keyword'"
+                char _dta[unicefdata_search_n_matches] "`n_matches'"
+                char _dta[unicefdata_search_limit]     "`limit'"
+                char _dta[unicefdata_timestamp]         ///
+                    "`c(current_date)' `c(current_time)'"
+                if ("`dataflow'" != "") {
+                    char _dta[unicefdata_search_dataflow] "`dataflow'"
+                }
+                char _dta[unicefdata_search_tier_filter] ///
+                    "`tier_mode'"
+                char _dta[unicefdata_cache_method] "frames"
+
+                * Drop internal working variables
+                capture drop _tier_num
+                capture drop _is_orphan
+                capture drop _match
+
+                * Sort by indicator code
+                sort indicator_code
+                compress
+            }
+            else {
+                restore
+            }
+            local matches = strtrim("`matches'")
+        }
+        else {
+            *-------------------------------------------------------------------
+            * LEGACY PATH (Stata 14-15): direct file parsing
+            *-------------------------------------------------------------------
+
+            * Locate metadata directory
+            if ("`metapath'" == "") {
+                capture findfile _unicef_search_indicators.ado
+                if (_rc == 0) {
+                    local ado_path "`r(fn)'"
+                    local ado_dir = subinstr("`ado_path'", "\", "/", .)
+                    local ado_dir = subinstr("`ado_dir'", ///
+                        "_unicef_search_indicators.ado", "", .)
+                    local metapath "`ado_dir'"
+                }
+                if ("`metapath'" == "") | ///
+                    (!fileexists("`metapath'_unicefdata_indicators_metadata.yaml")) {
+                    local metapath "`c(sysdir_plus)'_/"
+                }
+            }
+
+            local yaml_file "`metapath'_unicefdata_indicators_metadata.yaml"
+
+            capture confirm file "`yaml_file'"
+            if (_rc != 0) {
+                noi di as err "Indicators metadata not found at: `yaml_file'"
+                noi di as err "Run 'unicefdata_sync' to download metadata."
+                exit 601
+            }
+
+            if ("`verbose'" != "") {
+                noi di as text "Searching indicators in: " as result "`yaml_file'"
+            }
+
+            * Parse YAML file directly (existing state-machine parser)
+            tempname fh
+            file open `fh' using "`yaml_file'", read text
+
+            local in_indicators = 0
+            local current_ind = ""
+            local current_name = ""
+            local current_parent = ""
+            local current_dataflows = ""
+            local current_tier = 1
+            local current_tier_reason = ""
+            local in_dataflows_list = 0
+
+            file read `fh' line
+
+            while r(eof) == 0 {
+                local trimmed = strtrim(`"`macval(line)'"')
+
+                if ("`trimmed'" == "indicators:") {
+                    local in_indicators = 1
+                    file read `fh' line
+                    continue
+                }
+
+                if (`in_indicators' == 1) {
+
+                    local orig_line `"`macval(line)'"'
+                    if (substr("`orig_line'", 1, 1) != " " & "`trimmed'" != "" & !regexm("`trimmed'", "^#")) {
+                        if (!regexm("`trimmed'", "^-")) {
+                            if ("`current_ind'" != "" & `n_collected' < `limit') {
+                                local code_lower = lower("`current_ind'")
+                                local name_lower = lower(`"`current_name'"')
+                                local parent_lower = lower("`current_parent'")
+
+                                local is_match = 0
+                                if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
+                                if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
+                                if ("`category'" != "") {
+                                    if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
+                                }
+                                else if ("`df_filter_upper'" == "") {
+                                    local df_lower = lower("`current_dataflows'")
+                                    if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
+                                }
+
+                                if (`is_match' == 1 & "`df_filter_upper'" != "") {
+                                    local df_upper = upper("`current_dataflows'")
+                                    if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
+                                        local is_match = 0
+                                    }
+                                }
+
+                                if (`is_match' == 1) {
+                                    local n_matches = `n_matches' + 1
+                                    local n_collected = `n_collected' + 1
+                                    local matches "`matches' `current_ind'"
+                                    local match_name`n_collected' "`current_name'"
+                                    local df_display = strtrim("`current_dataflows'")
+                                    if ("`df_display'" == "") local df_display = "N/A"
+                                    local match_dataflows "`match_dataflows' `df_display'"
+                                }
+                            }
+                            local in_indicators = 0
+                            file read `fh' line
+                            continue
+                        }
+                    }
+
+                    local is_indicator_key = regexm(`"`orig_line'"', "^  [A-Za-z][A-Za-z0-9_-]*:[ ]*$")
+                    if (`is_indicator_key') {
+
                         if ("`current_ind'" != "" & `n_collected' < `limit') {
-                            * Check if keyword matches
                             local code_lower = lower("`current_ind'")
                             local name_lower = lower(`"`current_name'"')
                             local parent_lower = lower("`current_parent'")
-                            
+
                             local is_match = 0
                             if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
                             if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
-                            * Search in category or dataflow (unless dataflow filter specified)
                             if ("`category'" != "") {
                                 if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
                             }
                             else if ("`df_filter_upper'" == "") {
-                                * Only search in dataflows if no dataflow filter specified
                                 local df_lower = lower("`current_dataflows'")
                                 if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
                             }
-                            
-                            * Apply dataflow filter if specified (check dataflows list)
+
                             if (`is_match' == 1 & "`df_filter_upper'" != "") {
                                 local df_upper = upper("`current_dataflows'")
                                 if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
                                     local is_match = 0
                                 }
                             }
-                            
+
                             if (`is_match' == 1) {
                                 local n_matches = `n_matches' + 1
-                                local n_collected = `n_collected' + 1
-                                local matches "`matches' `current_ind'"
-                                local match_name`n_collected' "`current_name'"
-                                local df_display = strtrim("`current_dataflows'")
-                                if ("`df_display'" == "") local df_display = "N/A"
-                                local match_dataflows "`match_dataflows' `df_display'"
+
+                                * Check tier filter (v2.2.1: was missing here)
+                                local tier_ok = 0
+                                if (`tier_mode' >= 999) {
+                                    local tier_ok = 1
+                                }
+                                else if (`current_tier' <= `tier_mode') {
+                                    local tier_ok = 1
+                                }
+
+                                * Check orphan status
+                                local is_orphan = 0
+                                if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
+                                    local is_orphan = 1
+                                    if (!`show_orphans') local tier_ok = 0
+                                }
+
+                                if (`tier_ok' == 1) {
+                                    local n_collected = `n_collected' + 1
+                                    local matches "`matches' `current_ind'"
+                                    local match_name`n_collected' `"`current_name'"'
+                                    local df_display = strtrim("`current_dataflows'")
+                                    if ("`df_display'" == "") local df_display = "N/A"
+                                    local match_dataflows "`match_dataflows' `df_display'"
+                                }
                             }
                         }
-                        local in_indicators = 0
-                        file read `fh' line
-                        continue
-                    }
-                }
-                
-                * Detect new indicator entry (2-space indent, ends with :)
-                * Note: Stata regex doesn't support {2}, use literal two spaces
-                local is_indicator_key = regexm(`"`orig_line'"', "^  [A-Za-z][A-Za-z0-9_-]*:[ ]*$")
-                if (`is_indicator_key') {
-                    
-                    * Process previous indicator if exists
-                    if ("`current_ind'" != "" & `n_collected' < `limit') {
-                        local code_lower = lower("`current_ind'")
-                        local name_lower = lower(`"`current_name'"')
-                        local parent_lower = lower("`current_parent'")
-                        
-                        local is_match = 0
-                        if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
-                        if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
-                        * Search in category or dataflow (unless dataflow filter specified)
-                        if ("`category'" != "") {
-                            if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
-                        }
-                        else if ("`df_filter_upper'" == "") {
-                            * Only search in dataflows if no dataflow filter specified
-                            local df_lower = lower("`current_dataflows'")
-                            if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
-                        }
-                        
-                        * Apply dataflow filter if specified (check dataflows list)
-                        if (`is_match' == 1 & "`df_filter_upper'" != "") {
-                            local df_upper = upper("`current_dataflows'")
-                            if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
-                                local is_match = 0
-                            }
-                        }
-                        
-                        if (`is_match' == 1) {
-                            local n_matches = `n_matches' + 1
-                            
-                            * Check tier filter
-                            local tier_ok = 0
-                            if (`tier_mode' >= 999) {
-                                local tier_ok = 1
-                            }
-                            else if (`current_tier' <= `tier_mode') {
-                                local tier_ok = 1
-                            }
-                            
-                            * Check orphan status
-                            local is_orphan = 0
-                            if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
-                                local is_orphan = 1
-                                if (!`show_orphans') local tier_ok = 0
-                            }
-                            
-                            if (`tier_ok' == 1) {
-                                local n_collected = `n_collected' + 1
-                                local matches "`matches' `current_ind'"
-                                local match_name`n_collected' `"`current_name'"'
-                                local df_display = strtrim("`current_dataflows'")
-                                if ("`df_display'" == "") local df_display = "N/A"
-                                local match_dataflows "`match_dataflows' `df_display'"
-                            }
-                        }
-                    }
-                    
-                    * Start new indicator
-                    local current_ind = subinstr("`trimmed'", ":", "", .)
-                    local current_name = ""
-                    local current_parent = ""
-                    local current_dataflows = ""
-                    local current_tier = 1
-                    local current_tier_reason = ""
-                    local in_dataflows_list = 0
-                    
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse name field (format: name: 'text' or name: text)
-                if (regexm(`"`trimmed'"', `"^name:[ ]*['"](.*)['"]$"')) {
-                    local current_name = regexs(1)
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                * Handle unquoted names
-                if (regexm(`"`trimmed'"', `"^name:[ ]*([^']+)$"')) {
-                    local current_name = regexs(1)
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse parent field (this is the category)
-                if (regexm("`trimmed'", "^parent:[ ]*(.+)$")) {
-                    local current_parent = regexs(1)
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse tier field
-                if (regexm("`trimmed'", "^tier:[ ]*([0-9]+)$")) {
-                    local current_tier = regexs(1)
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse tier_reason field
-                if (regexm("`trimmed'", "^tier_reason:[ ]*(.+)$")) {
-                    local current_tier_reason = regexs(1)
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse dataflows field (may be list or inline)
-                if (regexm("`trimmed'", "^dataflows:[ ]*\[(.+)\]$")) {
-                    * Inline list: dataflows: [CME, GLOBAL_DATAFLOW]
-                    local dflist = regexs(1)
-                    local dflist = subinstr("`dflist'", ",", " ", .)
-                    local dflist = subinstr("`dflist'", "'", "", .)
-                    local dflist = subinstr("`dflist'", `"""', "", .)
-                    local current_dataflows = strtrim("`dflist'")
-                    local in_dataflows_list = 0
-                    file read `fh' line
-                    continue
-                }
-                
-                if (regexm("`trimmed'", "^dataflows:[ ]*$")) {
-                    * Block list starting - set flag
-                    local in_dataflows_list = 1
-                    local current_dataflows = ""
-                    file read `fh' line
-                    continue
-                }
-                
-                * Parse dataflows list items
-                if (`in_dataflows_list' == 1) {
-                    if (regexm("`trimmed'", "^- (.+)$")) {
-                        local df_item = regexs(1)
-                        local df_item = strtrim("`df_item'")
-                        local current_dataflows "`current_dataflows' `df_item'"
-                        file read `fh' line
-                        continue
-                    }
-                    else if (!regexm("`trimmed'", "^-")) {
-                        * End of dataflows list - continue to re-process this line
+
+                        local current_ind = subinstr("`trimmed'", ":", "", .)
+                        local current_name = ""
+                        local current_parent = ""
+                        local current_dataflows = ""
+                        local current_tier = 1
+                        local current_tier_reason = ""
                         local in_dataflows_list = 0
+
+                        file read `fh' line
                         continue
+                    }
+
+                    if (regexm(`"`trimmed'"', `"^name:[ ]*['"](.*)['"]$"')) {
+                        local current_name = regexs(1)
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+                    if (regexm(`"`trimmed'"', `"^name:[ ]*([^']+)$"')) {
+                        local current_name = regexs(1)
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (regexm("`trimmed'", "^parent:[ ]*(.+)$")) {
+                        local current_parent = regexs(1)
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (regexm("`trimmed'", "^tier:[ ]*([0-9]+)$")) {
+                        local current_tier = regexs(1)
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (regexm("`trimmed'", "^tier_reason:[ ]*(.+)$")) {
+                        local current_tier_reason = regexs(1)
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (regexm("`trimmed'", "^dataflows:[ ]*\[(.+)\]$")) {
+                        local dflist = regexs(1)
+                        local dflist = subinstr("`dflist'", ",", " ", .)
+                        local dflist = subinstr("`dflist'", "'", "", .)
+                        local dflist = subinstr("`dflist'", `"""', "", .)
+                        local current_dataflows = strtrim("`dflist'")
+                        local in_dataflows_list = 0
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (regexm("`trimmed'", "^dataflows:[ ]*$")) {
+                        local in_dataflows_list = 1
+                        local current_dataflows = ""
+                        file read `fh' line
+                        continue
+                    }
+
+                    if (`in_dataflows_list' == 1) {
+                        if (regexm("`trimmed'", "^- (.+)$")) {
+                            local df_item = regexs(1)
+                            local df_item = strtrim("`df_item'")
+                            local current_dataflows "`current_dataflows' `df_item'"
+                            file read `fh' line
+                            continue
+                        }
+                        else if (!regexm("`trimmed'", "^-")) {
+                            local in_dataflows_list = 0
+                            continue
+                        }
+                    }
+                }
+
+                file read `fh' line
+            }
+
+            * Process final indicator
+            if ("`current_ind'" != "" & `n_collected' < `limit' & `in_indicators' == 1) {
+                local code_lower = lower("`current_ind'")
+                local name_lower = lower(`"`current_name'"')
+                local parent_lower = lower("`current_parent'")
+
+                local is_match = 0
+                if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
+                if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
+                if ("`category'" != "") {
+                    if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
+                }
+                else if ("`df_filter_upper'" == "") {
+                    local df_lower = lower("`current_dataflows'")
+                    if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
+                }
+
+                if (`is_match' == 1 & "`df_filter_upper'" != "") {
+                    local df_upper = upper("`current_dataflows'")
+                    if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
+                        local is_match = 0
+                    }
+                }
+
+                if (`is_match' == 1) {
+                    local n_matches = `n_matches' + 1
+
+                    local tier_ok = 0
+                    if (`tier_mode' >= 999) {
+                        local tier_ok = 1
+                    }
+                    else if (`current_tier' <= `tier_mode') {
+                        local tier_ok = 1
+                    }
+
+                    local is_orphan = 0
+                    if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
+                        local is_orphan = 1
+                        if (!`show_orphans') local tier_ok = 0
+                    }
+
+                    if (`tier_ok' == 1) {
+                        local n_collected = `n_collected' + 1
+                        local matches "`matches' `current_ind'"
+                        local match_name`n_collected' `"`current_name'"'
+                        local df_display = strtrim("`current_dataflows'")
+                        if ("`df_display'" == "") local df_display = "N/A"
+                        local match_dataflows "`match_dataflows' `df_display'"
                     }
                 }
             }
-            
-            file read `fh' line
-        }
-        
-        * Process final indicator if exists
-        if ("`current_ind'" != "" & `n_collected' < `limit' & `in_indicators' == 1) {
-            local code_lower = lower("`current_ind'")
-            local name_lower = lower(`"`current_name'"')
-            local parent_lower = lower("`current_parent'")
-            
-            local is_match = 0
-            if (strpos("`code_lower'", "`keyword_lower'") > 0) local is_match = 1
-            if (strpos(`"`name_lower'"', "`keyword_lower'") > 0) local is_match = 1
-            * Search in category or dataflow (unless dataflow filter specified)
-            if ("`category'" != "") {
-                if (strpos("`parent_lower'", "`keyword_lower'") > 0) local is_match = 1
-            }
-            else if ("`df_filter_upper'" == "") {
-                * Only search in dataflows if no dataflow filter specified
-                local df_lower = lower("`current_dataflows'")
-                if (strpos("`df_lower'", "`keyword_lower'") > 0) local is_match = 1
-            }
-            
-            * Apply dataflow filter if specified (check dataflows list)
-            if (`is_match' == 1 & "`df_filter_upper'" != "") {
-                local df_upper = upper("`current_dataflows'")
-                if (strpos("`df_upper'", "`df_filter_upper'") == 0) {
-                    local is_match = 0
+
+            file close `fh'
+            local matches = strtrim("`matches'")
+
+            * Build results dataset if clear specified (legacy path)
+            if ("`clear'" != "" & `n_collected' > 0) {
+                clear
+                set obs `n_collected'
+                gen str100 indicator_code = ""
+                gen strL indicator_name = ""
+                gen str244 dataflows = ""
+
+                forvalues i = 1/`n_collected' {
+                    local ind_i : word `i' of `matches'
+                    replace indicator_code = "`ind_i'" in `i'
+                    local nm_i `"`match_name`i''"'
+                    replace indicator_name = `"`nm_i'"' in `i'
+                    local df_i : word `i' of `match_dataflows'
+                    replace dataflows = "`df_i'" in `i'
                 }
-            }
-            
-            if (`is_match' == 1) {
-                local n_matches = `n_matches' + 1
-                
-                * Check tier filter
-                local tier_ok = 0
-                if (`tier_mode' >= 999) {
-                    local tier_ok = 1
+
+                label data "unicefdata search results: `keyword'"
+                label variable indicator_code "Indicator code"
+                label variable indicator_name "Indicator name"
+                label variable dataflows "Dataflow(s)"
+
+                char _dta[unicefdata_version]         "2.3.0"
+                char _dta[unicefdata_command]          "search"
+                char _dta[unicefdata_search_keyword]   "`keyword'"
+                char _dta[unicefdata_search_n_matches] "`n_matches'"
+                char _dta[unicefdata_search_limit]     "`limit'"
+                char _dta[unicefdata_timestamp]         ///
+                    "`c(current_date)' `c(current_time)'"
+                if ("`dataflow'" != "") {
+                    char _dta[unicefdata_search_dataflow] "`dataflow'"
                 }
-                else if (`current_tier' <= `tier_mode') {
-                    local tier_ok = 1
-                }
-                
-                * Check orphan status
-                local is_orphan = 0
-                if (strtrim("`current_dataflows'") == "" | strpos("`current_dataflows'", "nodata") > 0) {
-                    local is_orphan = 1
-                    if (!`show_orphans') local tier_ok = 0
-                }
-                
-                if (`tier_ok' == 1) {
-                    local n_collected = `n_collected' + 1
-                    local matches "`matches' `current_ind'"
-                    local match_name`n_collected' `"`current_name'"'
-                    local df_display = strtrim("`current_dataflows'")
-                    if ("`df_display'" == "") local df_display = "N/A"
-                    local match_dataflows "`match_dataflows' `df_display'"
-                }
+                char _dta[unicefdata_search_tier_filter] ///
+                    "`tier_mode'"
+                char _dta[unicefdata_cache_method] "none"
+
+                sort indicator_code
+                compress
             }
         }
-        
-        file close `fh'
-        
-        local matches = strtrim("`matches'")
-        
+
     } // end quietly
     
     *---------------------------------------------------------------------------
@@ -559,14 +696,26 @@ program define _unicef_search_indicators, rclass
     *---------------------------------------------------------------------------
     * Return values
     *---------------------------------------------------------------------------
-    
+
     return scalar n_matches = `n_matches'
+    return scalar n_displayed = `n_collected'
     return local indicators "`matches'"
     return local keyword "`keyword'"
     if ("`dataflow'" != "") {
         return local dataflow "`dataflow'"
     }
-    
+
+    * Return individual indicator names
+    forvalues i = 1/`n_collected' {
+        return local name`i' `"`match_name`i''"'
+    }
+
+    * Return first match for convenience
+    if (`n_collected' > 0) {
+        local first_code : word 1 of `matches'
+        return local first_code "`first_code'"
+    }
+
     * Return tier filtering metadata
     return scalar tier_mode = `tier_mode'
     if (`tier_mode' == 1) {
@@ -582,7 +731,16 @@ program define _unicef_search_indicators, rclass
         return local tier_filter "all_tiers"
     }
     return scalar show_orphans = `show_orphans'
-    
+
+    * Return cache and command metadata
+    if (`use_cache') {
+        return local cache_method "frames"
+    }
+    else {
+        return local cache_method "none"
+    }
+    return local cmd `"unicefdata, search(`keyword') limit(`limit')"'
+
 end
 
 *******************************************************************************

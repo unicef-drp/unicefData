@@ -1146,3 +1146,31 @@ Skipped:  0
 Result:   ALL TESTS PASSED
 Log:      run_tests.log
 ======================================================================
+
+======================================================================
+Test Run: 18 Feb 2026
+Started:  17:28:12
+Ended:    17:55:48
+Duration: 27m 36s
+Branch:   fix/v2.2.1-code-review
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 63 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================
+
+======================================================================
+Test Run: 18 Feb 2026
+Started:  18:33:22
+Ended:    19:12:02
+Duration: 38m 40s
+Branch:   feat/discovery-caching
+Version:  2.2.0
+Stata:    17
+Tests:    63 run, 63 passed, 0 failed
+Skipped:  0
+Result:   ALL TESTS PASSED
+Log:      run_tests.log
+======================================================================

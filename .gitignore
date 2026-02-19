@@ -152,6 +152,8 @@ stata/qa/fixtures/*
 *.fls
 *.out
 *.synctex.gz
+paper/*.pdf
+!paper/*-v[0-9]*.pdf
 
 # Paper sjlogs - keep only cleaned .log.tex files
 paper/sjlogs/*.tex
