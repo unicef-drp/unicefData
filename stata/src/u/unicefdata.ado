@@ -57,13 +57,13 @@ version 14
         di as text ""
         di as text "{hline 70}"
         di as text "{bf:First-time setup}: Metadata files not found."
-        di as text "Running {cmd:unicefdata_setup} to install required YAML files..."
+        di as text "Installing required YAML files..."
         di as text "{hline 70}"
-        
-        cap noi unicefdata_setup, replace
+
+        cap noi _unicefdata_setup, replace quiet
         if _rc != 0 {
             di as error ""
-            di as error "Setup failed. Please run {cmd:unicefdata_setup} manually."
+            di as error "Metadata setup failed. Check network connection and try again."
             di as error "Or download metadata files from GitHub:"
             di as error "  https://github.com/jpazvd/unicefData"
             error 601

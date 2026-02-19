@@ -49,18 +49,18 @@ if (IN_CI) {
 if (file.exists("metadata/current")) {
   # Running from repo root (CI/standard case)
   METADATA_DIR <- "metadata/current"
-  OUTPUT_DIR <- "R/tests/output"
-  R_DIR <- "R"
-} else if (file.exists("R/metadata/current")) {
-  # Running with R/metadata symlink
-  METADATA_DIR <- "R/metadata/current"
-  OUTPUT_DIR <- "R/tests/output"
-  R_DIR <- "R"
+  OUTPUT_DIR <- "r/tests/output"
+  R_DIR <- "r/R"  # R package source code is in r/R/
+} else if (file.exists("r/metadata/current")) {
+  # Running with r/metadata symlink
+  METADATA_DIR <- "r/metadata/current"
+  OUTPUT_DIR <- "r/tests/output"
+  R_DIR <- "r/R"
 } else if (file.exists("../metadata/current")) {
-  # Running from R/tests subdirectory
-  METADATA_DIR <- "../metadata/current"
+  # Running from r/tests subdirectory
+  METADATA_DIR <- "../../metadata/current"
   OUTPUT_DIR <- "output"
-  R_DIR <- ".."
+  R_DIR <- "../R"  # From r/tests/, go up to r/, then into R/
 } else {
   stop("Could not find metadata directory - run from unicefData root")
 }

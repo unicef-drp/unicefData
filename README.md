@@ -12,20 +12,45 @@ The **unicefData** package provides lightweight, consistent interfaces to the [U
 
 ---
 
+## Repository Structure
+
+```
+unicefData-dev/
+├── r/                  # R package (CRAN) - branch here for devtools::release()
+│   ├── R/              # 16 source files
+│   ├── tests/          # R package tests
+│   ├── NEWS.md         # R-specific changelog
+│   ├── DESCRIPTION     # Package metadata
+│   └── ...other R package files
+├── python/             # Python package (PyPI)
+│   ├── CHANGELOG.md    # Python-specific changelog
+│   └── ...Python package files
+├── stata/              # Stata package (SSC)
+│   ├── CHANGELOG.md    # Stata-specific changelog
+│   └── ...Stata package files
+├── paper/              # Academic documentation (LaTeX)
+├── tests/              # Cross-language validation tests
+├── metadata/           # Shared YAML/CSV metadata
+├── docs/               # Technical documentation
+├── README.md           # This file (repository overview)
+├── CHANGELOG.md        # Multi-language changelog (overview)
+└── CONTRIBUTING.md     # Developer guidelines
+```
+
 ## Platform Documentation
 
-| Platform | README | Version |
-|----------|--------|---------|
-| **R** | [R/README.md](R/README.md) | 2.2.0 |
-| **Python** | [python/README.md](python/README.md) | 2.2.0 |
-| **Stata** | [stata/README.md](stata/README.md) | 2.3.0 |
+| Platform | README | Changelog | Version |
+|----------|--------|-----------|---------|
+| **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.3.0 (CRAN) |
+| **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.1.0 |
+| **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.3.0 |
+
+## Repository Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
-| [CHANGELOG.md](CHANGELOG.md) | Recent version history |
-| [NEWS.md](NEWS.md) | Complete changelog |
-| [CITATION.cff](CITATION.cff) | Citation metadata for academic use |
+| [CHANGELOG.md](CHANGELOG.md) | Multi-language changelog overview |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (all languages) |
 | [docs/](docs/INDEX.md) | Technical documentation index |
 
 ---
@@ -210,7 +235,58 @@ unicefData/
 
 ---
 
-## Version History
+## CRAN Submission (R)
+
+The R package is in the `r/` directory and ready for CRAN submission:
+
+```r
+# Navigate to R package
+setwd("C:/GitHub/myados/unicefData-dev/r")
+
+# Final validation
+devtools::check(args = "--as-cran")
+# Expected: 0 errors | 0 warnings | 2 notes (acceptable for new submission)
+
+# Test on R-hub builders (Windows/macOS/Linux)
+devtools::check_win_devel()
+devtools::check_win_release()
+
+# Build package
+devtools::build()
+
+# Submit to CRAN (interactive)
+devtools::release()
+```
+
+See [r/cran-comments.md](r/cran-comments.md) for current submission status and reviewer responses.
+
+---
+
+## Project Structure Old
+
+```
+unicefData/
+├── R/                      # R package source
+├── python/                 # Python package source
+├── stata/                  # Stata package source
+│   └── qa/                 # Stata QA test suite (63 tests)
+├── tests/
+│   ├── fixtures.zip        # Authoritative test fixtures (single source)
+│   ├── fixtures/           # Unpacked fixtures (auto-extracted)
+│   └── testthat/           # R unit tests (105 tests)
+├── scripts/
+│   ├── generate_fixtures.py  # Download + pack fixtures from API
+│   └── unpack_fixtures.py    # Extract ZIP to all platform dirs
+├── .githooks/              # Auto-unpack on clone/pull
+├── validation/             # Cross-platform validation
+├── internal/docs/          # Dev-only documentation
+│   ├── TEST_REFERENCE.md   # Full cross-platform test map
+│   ├── QA_SETUP.md         # Environment setup guide
+│   └── FIXTURE_INFRASTRUCTURE.md  # ZIP fixture system
+├── DESCRIPTION             # R package metadata
+├── NEWS.md                 # Changelog
+└── README.md               # This file
+```
 
 ### v2.3.0 (2026-02-18) — Stata only
 

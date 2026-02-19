@@ -56,10 +56,6 @@ f u/unicefdata_whatsnew.sthlp
 f u/unicefdata_sync.ado
 f u/unicefdata_sync.sthlp
 
-* Setup command for metadata installation (post net install)
-f u/unicefdata_setup.ado
-f u/unicefdata_setup.sthlp
-
 * XML to YAML conversion
 f u/unicefdata_xmltoyaml.ado
 f u/unicefdata_xmltoyaml.sthlp
@@ -69,6 +65,9 @@ f u/unicefdata_xmltoyaml_py.sthlp
 * YAML command and help
 f y/yaml.ado
 f y/yaml.sthlp
+
+* Metadata setup (auto-triggered on first use)
+f _/_unicefdata_setup.ado
 
 * Discovery caching infrastructure
 f _/__unicef_parse_indicators_yaml.ado
@@ -139,10 +138,9 @@ f _/_indicator_dataflow_map.yaml
 * Dataflow metadata (dimensions and attributes for all dataflows - used in enrichment)
 f _/_unicefdata_dataflow_metadata.yaml
 
-* NOTE: Individual dataflow schema files (_dataflows/*.yaml, 70 files) are installed
-* separately via: unicefdata_setup, replace
+* NOTE: Individual dataflow schema files (_dataflows/*.yaml, 70 files) are
+* installed automatically on first use via _unicefdata_setup.
 * This is required because Stata's pkg format has a line limit.
-* After net install, run: unicefdata_setup, replace
 
 * Python enrichment and validation scripts
 f py/unicefdata_xml2yaml.py

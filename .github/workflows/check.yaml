@@ -14,28 +14,26 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'R/**'
-      - 'man/**'
-      - 'inst/**'
+      - 'r/**'
+      - 'r/man/**'
+      - 'r/inst/**'
       - 'tests/**'
-      - 'vignettes/**'
-      - 'DESCRIPTION'
-      - 'NAMESPACE'
-      - 'LICENSE'
-      - '.Rbuildignore'
+      - 'r/DESCRIPTION'
+      - 'r/NAMESPACE'
+      - 'r/LICENSE'
+      - 'r/.Rbuildignore'
       - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'R/**'
-      - 'man/**'
-      - 'inst/**'
+      - 'r/**'
+      - 'r/man/**'
+      - 'r/inst/**'
       - 'tests/**'
-      - 'vignettes/**'
-      - 'DESCRIPTION'
-      - 'NAMESPACE'
-      - 'LICENSE'
-      - '.Rbuildignore'
+      - 'r/DESCRIPTION'
+      - 'r/NAMESPACE'
+      - 'r/LICENSE'
+      - 'r/.Rbuildignore'
       - '.github/workflows/check.yaml'
   workflow_dispatch:
 
@@ -81,12 +79,14 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          working-directory: 'R'
           cache-version: 8
           upgrade: 'TRUE'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+          working-directory: 'R'
           build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
           # Changed from "warning" to "error" to allow non-critical warnings
           # Warnings are still visible in logs but don't fail the build

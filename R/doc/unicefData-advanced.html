@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Advanced Usage: Equity Analysis and Visualization</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Advanced Usage: Equity Analysis and
+Visualization</h1>
+
+
+
+<p>This vignette demonstrates advanced analytical workflows using
+<code>unicefData</code>, aligned with the examples in the package
+documentation paper (Azevedo, 2026). All examples use the same
+indicators, countries, and parameters as the paper and the Stata help
+file, enabling cross-language reproducibility.</p>
+<div id="data-acquisition-as-infrastructure" class="section level2">
+<h2>Data Acquisition as Infrastructure</h2>
+<p>The examples in this vignette demonstrate the principle of
+<strong>treating data acquisition as code</strong>. Notice how each
+example explicitly specifies:</p>
+<ul>
+<li>Which indicators are requested (e.g., <code>CME_MRY0T4</code> for
+under-5 mortality)</li>
+<li>Which countries or regions are included</li>
+<li>How data are filtered (by sex, wealth, time period)</li>
+<li>What output format is needed (long, wide, or indicators as
+columns)</li>
+</ul>
+<p>This approach contrasts with workflows where researchers: 1. Manually
+download data from a web portal 2. Apply undocumented filters in Excel
+or R 3. Manually clean and reshape the data</p>
+<p>With unicefData, all these decisions are explicit and
+version-controlled in your script. This makes your analysis:</p>
+<ul>
+<li><strong>Auditable</strong>: Anyone can inspect your code and verify
+exactly what data you used</li>
+<li><strong>Defensible</strong>: Your data selection decisions are
+clearly documented</li>
+<li><strong>Maintainable</strong>: If upstream data change, you can
+simply re-run your script</li>
+<li><strong>Reproducible</strong>: Your entire pipeline—from data
+retrieval to visualization—is in one place</li>
+</ul>
+<p>This is especially important in research assisted by AI tools, where
+automated analysis must rest on transparent and verifiable data
+foundations.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(unicefData)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+</div>
+<div id="u5mr-trends-in-south-asia" class="section level2">
+<h2>U5MR trends in South Asia</h2>
+<p>Reproduce the paper’s South Asia mortality trend analysis (paper
+Example 5+6):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Fetch under-5 mortality for South Asian countries</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;AFG&quot;</span>, <span class="st">&quot;BGD&quot;</span>, <span class="st">&quot;BTN&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;MDV&quot;</span>, <span class="st">&quot;NPL&quot;</span>, <span class="st">&quot;PAK&quot;</span>, <span class="st">&quot;LKA&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Filter to total (both sexes)</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>df_total <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">&quot;_T&quot;</span> <span class="sc">|</span> <span class="fu">is.na</span>(sex))</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Plot trends</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  value <span class="sc">~</span> period,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">data =</span> df_total[df_total<span class="sc">$</span>iso3 <span class="sc">==</span> <span class="st">&quot;AFG&quot;</span>, ],</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">ylim =</span> <span class="fu">range</span>(df_total<span class="sc">$</span>value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Under-5 mortality rate (per 1,000)&quot;</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">&quot;U5MR Trends in South Asia&quot;</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="fu">lines</span>(value <span class="sc">~</span> period, <span class="at">data =</span> df_total[df_total<span class="sc">$</span>iso3 <span class="sc">==</span> <span class="st">&quot;BGD&quot;</span>, ], <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="fu">lines</span>(value <span class="sc">~</span> period, <span class="at">data =</span> df_total[df_total<span class="sc">$</span>iso3 <span class="sc">==</span> <span class="st">&quot;IND&quot;</span>, ], <span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="fu">lines</span>(value <span class="sc">~</span> period, <span class="at">data =</span> df_total[df_total<span class="sc">$</span>iso3 <span class="sc">==</span> <span class="st">&quot;PAK&quot;</span>, ], <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Afghanistan&quot;</span>, <span class="st">&quot;Bangladesh&quot;</span>, <span class="st">&quot;India&quot;</span>, <span class="st">&quot;Pakistan&quot;</span>),</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>)</span></code></pre></div>
+<p>The equivalent Stata code from the paper:</p>
+<pre><code>. unicefdata, indicator(CME_MRY0T4) countries(AFG BGD BTN IND MDV NPL PAK LKA) clear
+. keep if sex == &quot;_T&quot;
+. graph twoway ///
+    (connected value period if iso3 == &quot;AFG&quot;, lcolor(red)) ///
+    (connected value period if iso3 == &quot;BGD&quot;, lcolor(blue)) ///
+    (connected value period if iso3 == &quot;IND&quot;, lcolor(green)) ///
+    (connected value period if iso3 == &quot;PAK&quot;, lcolor(orange)), ///
+        legend(order(1 &quot;Afghanistan&quot; 2 &quot;Bangladesh&quot; 3 &quot;India&quot; 4 &quot;Pakistan&quot;))</code></pre>
+</div>
+<div id="stunting-by-wealth-quintile" class="section level2">
+<h2>Stunting by wealth quintile</h2>
+<p>Equity analysis using wealth disaggregation (paper Example 8):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Fetch stunting data with all wealth quintiles</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">sex =</span> <span class="st">&quot;ALL&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">wealth =</span> <span class="st">&quot;ALL&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Filter to wealth quintiles only</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>df_wealth <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">filter</span>(wealth_quintile <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Q1&quot;</span>, <span class="st">&quot;Q2&quot;</span>, <span class="st">&quot;Q3&quot;</span>, <span class="st">&quot;Q4&quot;</span>, <span class="st">&quot;Q5&quot;</span>))</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co"># Average stunting by wealth quintile (global)</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>summary_wealth <span class="ot">&lt;-</span> df_wealth <span class="sc">%&gt;%</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="fu">group_by</span>(wealth_quintile) <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_stunting =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">arrange</span>(wealth_quintile)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">print</span>(summary_wealth)</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co"># Visualize the wealth gradient</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="fu">barplot</span>(</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  summary_wealth<span class="sc">$</span>mean_stunting,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  <span class="at">names.arg =</span> summary_wealth<span class="sc">$</span>wealth_quintile,</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">&quot;Stunting prevalence (%)&quot;</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">&quot;Child Stunting by Wealth Quintile&quot;</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;#d73027&quot;</span>, <span class="st">&quot;#fc8d59&quot;</span>, <span class="st">&quot;#fee090&quot;</span>, <span class="st">&quot;#91bfdb&quot;</span>, <span class="st">&quot;#4575b4&quot;</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="wealth-gap-analysis" class="section level2">
+<h2>Wealth gap analysis</h2>
+<p>Quantify the equity gap between poorest and richest quintiles:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Fetch stunting for specific countries with Q1 and Q5</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;IND&quot;</span>, <span class="st">&quot;PAK&quot;</span>, <span class="st">&quot;BGD&quot;</span>, <span class="st">&quot;ETH&quot;</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">wealth =</span> <span class="st">&quot;ALL&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># Compute wealth gap (Q1 - Q5 = poorest minus richest)</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>df_gap <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">filter</span>(wealth_quintile <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Q1&quot;</span>, <span class="st">&quot;Q5&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="fu">c</span>(iso3, country),</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">names_from =</span> wealth_quintile,</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">values_from =</span> value</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wealth_gap =</span> Q1 <span class="sc">-</span> Q5) <span class="sc">%&gt;%</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(wealth_gap))</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="fu">print</span>(df_gap)</span></code></pre></div>
+</div>
+<div id="multiple-mortality-indicators-comparison" class="section level2">
+<h2>Multiple mortality indicators comparison</h2>
+<p>Compare neonatal and under-5 mortality across countries (paper
+Example 10):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Fetch multiple mortality indicators</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">&quot;CME_MRM0&quot;</span>, <span class="st">&quot;CME_MRY0T4&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;BRA&quot;</span>, <span class="st">&quot;MEX&quot;</span>, <span class="st">&quot;ARG&quot;</span>, <span class="st">&quot;COL&quot;</span>, <span class="st">&quot;PER&quot;</span>, <span class="st">&quot;CHL&quot;</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2020:2023&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># Keep latest year per country-indicator</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>df_latest <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">&quot;_T&quot;</span> <span class="sc">|</span> <span class="fu">is.na</span>(sex)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="fu">group_by</span>(iso3, indicator) <span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">slice_max</span>(period, <span class="at">n =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Reshape wide for comparison</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> df_latest <span class="sc">%&gt;%</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="fu">select</span>(iso3, country, indicator, value) <span class="sc">%&gt;%</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> indicator, <span class="at">values_from =</span> value)</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="fu">print</span>(df_wide)</span></code></pre></div>
+</div>
+<div id="global-immunization-coverage-trends" class="section level2">
+<h2>Global immunization coverage trends</h2>
+<p>Track DTP3 and MCV1 coverage over time (paper immunization
+example):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Fetch immunization indicators</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">&quot;IM_DTP3&quot;</span>, <span class="st">&quot;IM_MCV1&quot;</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2000:2023&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># Global average by year and indicator</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>trends <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">group_by</span>(period, indicator) <span class="sc">%&gt;%</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">coverage =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>dtp3 <span class="ot">&lt;-</span> trends[trends<span class="sc">$</span>indicator <span class="sc">==</span> <span class="st">&quot;IM_DTP3&quot;</span>, ]</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>mcv1 <span class="ot">&lt;-</span> trends[trends<span class="sc">$</span>indicator <span class="sc">==</span> <span class="st">&quot;IM_MCV1&quot;</span>, ]</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">plot</span>(coverage <span class="sc">~</span> period, <span class="at">data =</span> dtp3, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">95</span>), <span class="at">xlab =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Coverage (%)&quot;</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Global Immunization Coverage Trends&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">lines</span>(coverage <span class="sc">~</span> period, <span class="at">data =</span> mcv1, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;DTP3&quot;</span>, <span class="st">&quot;MCV1&quot;</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="regional-comparison-with-metadata" class="section level2">
+<h2>Regional comparison with metadata</h2>
+<p>Analyze U5MR by UNICEF region using metadata enrichment (paper
+Example 12):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Fetch with regional classifications</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">add_metadata =</span> <span class="fu">c</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;income_group&quot;</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co"># Filter to countries only (exclude regional aggregates)</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>df_countries <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="fu">filter</span>(geo_type <span class="sc">==</span> <span class="dv">0</span>, sex <span class="sc">==</span> <span class="st">&quot;_T&quot;</span> <span class="sc">|</span> <span class="fu">is.na</span>(sex))</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co"># Average U5MR by region</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>by_region <span class="ot">&lt;-</span> df_countries <span class="sc">%&gt;%</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_u5mr =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_u5mr))</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="fu">print</span>(by_region)</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co"># Average U5MR by income group</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>by_income <span class="ot">&lt;-</span> df_countries <span class="sc">%&gt;%</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>  <span class="fu">group_by</span>(income_group) <span class="sc">%&gt;%</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_u5mr =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_u5mr))</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="fu">print</span>(by_income)</span></code></pre></div>
+</div>
+<div id="wide-format-for-time-series-analysis" class="section level2">
+<h2>Wide format for time-series analysis</h2>
+<p>Create panel datasets for econometric analysis (paper Example 9):</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Wide format: years as columns</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;BRA&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;CHN&quot;</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;wide&quot;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># Compute change over time</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># Columns will be named yr2015, yr2016, ..., yr2023</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># (exact names depend on available data)</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="fu">print</span>(df_wide)</span></code></pre></div>
+</div>
+<div id="wide-indicators-for-cross-domain-analysis" class="section level2">
+<h2>Wide indicators for cross-domain analysis</h2>
+<p>Compare indicators from different domains side-by-side:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># One column per indicator</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>df_cross <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="st">&quot;CME_MRY0&quot;</span>, <span class="st">&quot;IM_DTP3&quot;</span>, <span class="st">&quot;IM_MCV1&quot;</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;AFG&quot;</span>, <span class="st">&quot;ETH&quot;</span>, <span class="st">&quot;PAK&quot;</span>, <span class="st">&quot;NGA&quot;</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;wide_indicators&quot;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="fu">print</span>(df_cross)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># Correlation between mortality and immunization</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">all</span>(<span class="fu">c</span>(<span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="st">&quot;IM_DTP3&quot;</span>) <span class="sc">%in%</span> <span class="fu">names</span>(df_cross))) {</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  cor_val <span class="ot">&lt;-</span> <span class="fu">cor</span>(df_cross<span class="sc">$</span>CME_MRY0T4, df_cross<span class="sc">$</span>IM_DTP3, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Correlation between U5MR and DTP3: &quot;</span>, <span class="fu">round</span>(cor_val, <span class="dv">3</span>))</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="sex-disaggregation-analysis" class="section level2">
+<h2>Sex disaggregation analysis</h2>
+<p>Examine male-female mortality gaps (paper disaggregation
+example):</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Fetch all sex categories</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;IND&quot;</span>, <span class="st">&quot;PAK&quot;</span>, <span class="st">&quot;BGD&quot;</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2020</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">sex =</span> <span class="st">&quot;ALL&quot;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co"># Compute male-female gap (biological pattern: male &gt; female)</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>df_gap <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="fu">filter</span>(sex <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;M&quot;</span>, <span class="st">&quot;F&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="fu">c</span>(iso3, country, period),</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    <span class="at">names_from =</span> sex,</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>    <span class="at">values_from =</span> value</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mf_gap =</span> M <span class="sc">-</span> F)</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="fu">print</span>(df_gap)</span></code></pre></div>
+</div>
+<div id="domain-specific-examples" class="section level2">
+<h2>Domain-specific examples</h2>
+<div id="nutrition-indicators" class="section level3">
+<h3>Nutrition indicators</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Stunting prevalence</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>df_stunting <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Stunting by wealth (poorest quintile only)</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>df_q1 <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">wealth =</span> <span class="st">&quot;Q1&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co"># Stunting by residence (rural only)</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>df_rural <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="at">residence =</span> <span class="st">&quot;R&quot;</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="wash-indicators" class="section level3">
+<h3>WASH indicators</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Basic drinking water services</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>df_water <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;WS_PPL_W-B&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Basic sanitation services</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>df_sanitation <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;WS_PPL_S-B&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="education-indicators" class="section level3">
+<h3>Education indicators</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Out-of-school rate (primary)</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>df_oos <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;ED_ROFST_L1&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># Net attendance rate (primary)</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>df_nar <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;ED_ANAR_L1&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="defensive-programming" class="section level2">
+<h2>Defensive programming</h2>
+<p>Handle errors gracefully when processing multiple indicators:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Process multiple indicators, some of which may not exist</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>indicators <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="st">&quot;IM_DTP3&quot;</span>, <span class="st">&quot;INVALID_CODE_XYZ&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="cf">for</span> (ind <span class="cf">in</span> indicators) {</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="fu">tryCatch</span>({</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    results[[ind]] <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> ind, <span class="at">countries =</span> <span class="st">&quot;BRA&quot;</span>, <span class="at">latest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">&quot;OK: &quot;</span>, ind, <span class="st">&quot; (&quot;</span>, <span class="fu">nrow</span>(results[[ind]]), <span class="st">&quot; rows)&quot;</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>  }, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>    <span class="fu">message</span>(<span class="st">&quot;FAIL: &quot;</span>, ind, <span class="st">&quot; - &quot;</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>  })</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>}</span></code></pre></div>
+<p>The Stata equivalent uses <code>capture noisily</code> (paper Example
+16):</p>
+<pre><code>. foreach ind in CME_MRY0T4 IM_DTP3 INVALID {
+    . capture noisily unicefdata, indicator(`ind&#39;) clear
+    . if _rc == 0 {
+        . summarize value
+    }
+. }</code></pre>
+</div>
+<div id="exporting-data" class="section level2">
+<h2>Exporting data</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Fetch and export to CSV</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;ALB&quot;</span>, <span class="st">&quot;USA&quot;</span>, <span class="st">&quot;BRA&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;CHN&quot;</span>, <span class="st">&quot;NGA&quot;</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>  <span class="at">add_metadata =</span> <span class="fu">c</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;income_group&quot;</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>)</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co"># Export</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="fu">write.csv</span>(df, <span class="st">&quot;unicef_mortality_data.csv&quot;</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="metadata-synchronization" class="section level2">
+<h2>Metadata synchronization</h2>
+<p>Keep local metadata up to date with the UNICEF Data Warehouse:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Sync all metadata</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">sync_metadata</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># Or sync specific components</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">sync_dataflows</span>()</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">sync_indicators</span>()</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="fu">sync_codelists</span>()</span></code></pre></div>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<ul>
+<li><code>vignette(&quot;unicefData-introduction&quot;)</code> — Getting started
+guide</li>
+<li>The package documentation paper: Azevedo, J.P. (2026). “unicefData:
+Trilingual Library for UNICEF SDMX Indicators.”</li>
+<li><code>?unicefData</code> — Main function documentation</li>
+<li><code>?search_indicators</code> — Indicator discovery</li>
+<li><code>?filter_unicef_data</code> — Post-processing filters</li>
+</ul>
+<hr />
+</div>
+<div id="acknowledgments" class="section level2">
+<h2>Acknowledgments</h2>
+<p>This package was developed at the UNICEF Data and Analytics Section.
+The author gratefully acknowledges the collaboration of <strong>Lucas
+Rodrigues</strong>, <strong>Yang Liu</strong>, and <strong>Karen
+Avanesian</strong>, whose technical contributions and feedback were
+instrumental in the development of this R package.</p>
+<p>Special thanks to <strong>Yves Jaques</strong>, <strong>Alberto
+Sibileau</strong>, and <strong>Daniele Olivotti</strong> for designing
+and maintaining the UNICEF SDMX data warehouse infrastructure that makes
+this package possible.</p>
+<p>The author also acknowledges the <strong>UNICEF database
+managers</strong> and technical teams who ensure data quality, as well
+as the country office staff and National Statistical Offices whose data
+collection efforts make this work possible.</p>
+<p>Development of this package was supported by UNICEF institutional
+funding for data infrastructure and statistical capacity building. The
+author also acknowledges UNICEF colleagues who provided testing and
+feedback during development, as well as the broader open-source R
+community.</p>
+<p>Development was assisted by AI coding tools (GitHub Copilot, Claude).
+All code has been reviewed, tested, and validated by the package
+maintainers.</p>
+</div>
+<div id="disclaimer" class="section level2">
+<h2>Disclaimer</h2>
+<p><strong>This package is provided for research and analytical
+purposes.</strong></p>
+<p>The <code>unicefData</code> package provides programmatic access to
+UNICEF’s public data warehouse. While the author is affiliated with
+UNICEF, <strong>this package is not an official UNICEF product and the
+statements in this documentation are the views of the author and do not
+necessarily reflect the policies or views of UNICEF</strong>.</p>
+<p>Data accessed through this package comes from the <a href="https://sdmx.data.unicef.org/">UNICEF Data Warehouse</a>. Users
+should verify critical data points against official UNICEF publications
+at <a href="https://data.unicef.org/">data.unicef.org</a>.</p>
+<p>This software is provided “as is”, without warranty of any kind,
+express or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall the authors or UNICEF be liable for any claim, damages
+or other liability arising from the use of this software.</p>
+<p>The designations employed and the presentation of material in this
+package do not imply the expression of any opinion whatsoever on the
+part of UNICEF concerning the legal status of any country, territory,
+city or area or of its authorities, or concerning the delimitation of
+its frontiers or boundaries.</p>
+</div>
+<div id="data-citation-and-provenance" class="section level2">
+<h2>Data Citation and Provenance</h2>
+<p><strong>Important Note on Data Vintages</strong></p>
+<p>Official statistics are subject to revisions as new information
+becomes available and estimation methodologies improve. UNICEF
+indicators are regularly updated based on new surveys, censuses, and
+improved modeling techniques. Historical values may be revised
+retroactively to reflect better information or methodological
+improvements.</p>
+<p><strong>For reproducible research and proper data attribution, users
+should:</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Document the indicator code</strong> - Specify the exact
+SDMX indicator code(s) used (e.g., <code>CME_MRY0T4</code>)</li>
+<li><strong>Record the download date</strong> - Note when data was
+accessed (e.g., “Data downloaded: 2026-02-09”)</li>
+<li><strong>Cite the data source</strong> - Reference both the package
+and the UNICEF Data Warehouse</li>
+<li><strong>Archive your dataset</strong> - Save a copy of the exact
+data used in your analysis</li>
+</ol>
+<p><strong>Example citation for data used in research:</strong></p>
+<blockquote>
+<p>Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF
+Data Warehouse via unicefData R package (v2.1.0) on 2026-02-09. Data
+available at: <a href="https://sdmx.data.unicef.org/" class="uri">https://sdmx.data.unicef.org/</a></p>
+</blockquote>
+<p>This practice ensures that others can verify your results and
+understand any differences that may arise from data updates. For
+official UNICEF statistics in publications, always cross-reference with
+the current version at <a href="https://data.unicef.org/">data.unicef.org</a>.</p>
+</div>
+<div id="citation" class="section level2">
+<h2>Citation</h2>
+<p>If you use this package in your research, please cite:</p>
+<pre><code>Azevedo, J.P. (2026). unicefData: Trilingual R, Python, and Stata Interface
+  to UNICEF SDMX Data Warehouse. R package version 2.1.0.
+  https://github.com/unicef-drp/unicefData</code></pre>
+<p>For data citations, please refer to the specific UNICEF datasets
+accessed through the warehouse and cite them according to UNICEF’s data
+citation guidelines.</p>
+</div>
+<div id="license" class="section level2">
+<h2>License</h2>
+<p>This package is released under the MIT License. See the LICENSE file
+for full details.</p>
+</div>
+<div id="contact-support" class="section level2">
+<h2>Contact &amp; Support</h2>
+<ul>
+<li><strong>Package Maintainer</strong>: Joao Pedro Azevedo (<a href="mailto:jpazevedo@unicef.org" class="email">jpazevedo@unicef.org</a>)</li>
+<li><strong>Report Issues</strong>: <a href="https://github.com/unicef-drp/unicefData/issues" class="uri">https://github.com/unicef-drp/unicefData/issues</a></li>
+<li><strong>UNICEF Data Portal</strong>: <a href="https://data.unicef.org/" class="uri">https://data.unicef.org/</a></li>
+<li><strong>SDMX API Documentation</strong>: <a href="https://data.unicef.org/sdmx-api-documentation/" class="uri">https://data.unicef.org/sdmx-api-documentation/</a></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

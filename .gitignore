@@ -159,6 +159,7 @@ paper/*.pdf
 paper/sjlogs/*.tex
 !paper/sjlogs/*.log.tex
 *.toc
+!**/stata.toc
 *.lof
 *.lot
 *.tag
@@ -203,3 +204,5 @@ drafts/
 benchmarks/
 eb1a/
 _drafts/
+/doc/
+/Meta/

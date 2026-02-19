@@ -10,18 +10,18 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'R/**'
+      - 'r/**'
       - 'tests/**'
-      - 'DESCRIPTION'
-      - 'NAMESPACE'
+      - 'r/DESCRIPTION'
+      - 'r/NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'R/**'
+      - 'r/**'
       - 'tests/**'
-      - 'DESCRIPTION'
-      - 'NAMESPACE'
+      - 'r/DESCRIPTION'
+      - 'r/NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
   workflow_dispatch:
 
@@ -70,16 +70,16 @@ jobs:
           CI: true
           UNICEF_API_TIMEOUT: 30
         run: |
-          Rscript -e "setwd('.'); source('R/tests/run_tests.R')"
+          Rscript -e "source('${{ github.workspace }}/R/tests/run_tests.R')"
 
       - name: Run pipeline fixture tests (clean/filter)
         run: |
-          Rscript R/tests/test_pipeline_fixtures.R
+          Rscript "${{ github.workspace }}/R/tests/test_pipeline_fixtures.R"
 
       - name: Run mocked pipeline tests (full unicefData flow)
         run: |
-          Rscript R/tests/test_pipeline_mocked.R
+          Rscript "${{ github.workspace }}/R/tests/test_pipeline_mocked.R"
 
       - name: Run cross-language fixture tests
         run: |
-          Rscript tests/test_cross_language_output.R
+          Rscript "${{ github.workspace }}/tests/test_cross_language_output.R"
