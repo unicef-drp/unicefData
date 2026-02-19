@@ -1,6 +1,6 @@
 /*******************************************************************************
 * unicefdata Automated Test Suite
-* Version: 2.2.0
+* Version: 2.3.0
 * Date: February 2026
 *
 * Usage:
@@ -272,7 +272,7 @@ if _rc == 0 {
     }
 }
 
-di as text "  Test Suite:   1.5.2"
+di as text "  Test Suite:   2.3.0"
 di as text "  Ado Version:  " as result "`ado_version'"
 di as text "  Date:          `c(current_date)' `c(current_time)'"
 di as text "  Stata:         `c(stata_version)'"

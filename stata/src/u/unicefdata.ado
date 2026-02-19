@@ -1,4 +1,4 @@
-*! v 2.2.0  10Feb2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.3.0  18Feb2026               by Joao Pedro Azevedo (UNICEF)
 * =============================================================================
 * unicefdata.ado - Stata interface to UNICEF SDMX Data API
 * =============================================================================
@@ -23,7 +23,7 @@
 *  12. Output & Return Values - Display results and set r()
 *  13. Helper Programs - _linewrap, etc.
 *
-* Version: 2.2.0 (2026-02-10)
+* Version: 2.3.0 (2026-02-18)
 * Author: João Pedro Azevedo (UNICEF)
 * License: MIT
 * =============================================================================
@@ -44,7 +44,7 @@
 *
 cap program drop unicefdata
 program define unicefdata, rclass
-version 11
+version 14
 
     * =========================================================================
     * #### 1. Auto-setup ####
@@ -57,13 +57,13 @@ version 11
         di as text ""
         di as text "{hline 70}"
         di as text "{bf:First-time setup}: Metadata files not found."
-        di as text "Running {cmd:unicefdata_setup} to install required YAML files..."
+        di as text "Installing required YAML files..."
         di as text "{hline 70}"
-        
-        cap noi unicefdata_setup, replace
+
+        cap noi _unicefdata_setup, replace quiet
         if _rc != 0 {
             di as error ""
-            di as error "Setup failed. Please run {cmd:unicefdata_setup} manually."
+            di as error "Metadata setup failed. Check network connection and try again."
             di as error "Or download metadata files from GitHub:"
             di as error "  https://github.com/jpazvd/unicefData"
             error 601
@@ -143,7 +143,9 @@ version 11
         local has_showorphans = (strpos(lower("`remaining'"), "showorphan") > 0)
         local has_showlegacy = (strpos(lower("`remaining'"), "showlegacy") > 0)
         local has_byflow = (strpos(lower("`remaining'"), "byflow") > 0)
-        
+        local has_nocache = (strpos(lower("`remaining'"), "nocache") > 0)
+        local has_clear = (strpos(lower("`remaining'"), "clear") > 0)
+
         * Build options string
         local search_opts = ""
         if ("`dataflow_filter'" != "") {
@@ -166,6 +168,12 @@ version 11
         }
         if (`has_byflow') {
             local search_opts "`search_opts' byflow"
+        }
+        if (`has_nocache') {
+            local search_opts "`search_opts' nocache"
+        }
+        if (`has_clear') {
+            local search_opts "`search_opts' clear"
         }
         local search_opts = strtrim("`search_opts'")
         
@@ -277,7 +285,14 @@ version 11
             noi di as text "  Cleared: _unicef_meta_cache (indicator-to-dataflow mappings)"
         }
 
-        * 2. Drop any yaml_* frames (from yaml.ado)
+        * 2. Drop discovery indicators cache frame
+        capture frame drop _unicef_indicators
+        if _rc == 0 {
+            local ++cleared
+            noi di as text "  Cleared: _unicef_indicators (discovery search cache)"
+        }
+
+        * 3. Drop any yaml_* frames (from yaml.ado)
         capture quietly frames dir
         local all_frames `r(frames)'
         foreach fr of local all_frames {
@@ -290,7 +305,7 @@ version 11
             }
         }
 
-        * 3. Summary
+        * 4. Summary
         if (`cleared' > 0) {
             noi di as result "  Cleared `cleared' cached frame(s)"
         }
@@ -922,6 +937,7 @@ version 11
                 * Try to fetch this indicator
                 tempfile ind_tempdata
                 local ind_success 0
+                local ind_success_via_fallback 0
                 local last_rc 0
                 forvalues attempt = 1/`max_retries' {
                     capture copy "`ind_url'" "`ind_tempdata'", replace public
@@ -1001,6 +1017,7 @@ version 11
                         
                         if (_rc == 0 & _N > 0) {
                             local ind_success = 1
+                            local ind_success_via_fallback = 1
                             if ("`verbose'" != "") {
                                 noi di as text "✓ Successfully fetched `ind' from fallback dataflow: " as result "`ind_fallback_df'"
                             }
@@ -1040,8 +1057,8 @@ version 11
                     }
                 }
                 
-                if (`ind_success' == 1) {
-                    * Import the data
+                if (`ind_success' == 1 & `ind_success_via_fallback' == 0) {
+                    * Import from primary HTTP fetch tempfile (skip if fallback already saved data)
                     preserve
                     import delimited using "`ind_tempdata'", clear varnames(1) encoding("utf-8")
                     
@@ -1610,9 +1627,10 @@ version 11
                 local varlabels `"`varlabels' "refper" "Reference period""'
                 local varlabels `"`varlabels' "notes" "Country notes""'
                 
-                * Apply labels only if variable exists (22 pairs = 44 words)
+                * Apply labels only if variable exists
+                local _nlabwords : word count `varlabels'
                 local i = 1
-                while (`i' <= 44) {
+                while (`i' <= `_nlabwords') {
                     local varname : word `i' of `varlabels'
                     local ++i
                     local varlbl : word `i' of `varlabels'
@@ -2112,10 +2130,14 @@ version 11
         * Most recent value selection (latest, mrv, dropna)
 
         if ("`latest'" != "") {
+            local _latest_ok 1
             capture confirm variable iso3
+            if (_rc != 0) local _latest_ok 0
             capture confirm variable period
+            if (_rc != 0) local _latest_ok 0
             capture confirm variable value
-            if (_rc == 0) {
+            if (_rc != 0) local _latest_ok 0
+            if (`_latest_ok' == 1) {
                 * Keep only non-missing values
                 drop if missing(value)
 
@@ -2156,9 +2178,12 @@ version 11
         *-----------------------------------------------------------------------
 
         if (`mrv' > 0) {
+            local _mrv_ok 1
             capture confirm variable iso3
+            if (_rc != 0) local _mrv_ok 0
             capture confirm variable period
-            if (_rc == 0) {
+            if (_rc != 0) local _mrv_ok 0
+            if (`_mrv_ok' == 1) {
                 * Build grouping variables: start with iso3
                 local mrv_group_vars "iso3"
 
@@ -2927,7 +2952,7 @@ version 11
             replace country = "Réunion" if strpos(country, "Réunion") > 0 | iso3 == "REU"
             
             // São Tomé and Príncipe: mojibake variations
-            replace country = "São Tomé and Príncipe" if strpos(country, "S") > 0 & strpos(country, "Tom") > 0 | iso3 == "STP"
+            replace country = "São Tomé and Príncipe" if iso3 == "STP"
         }
 
         *-----------------------------------------------------------------------
@@ -3226,7 +3251,7 @@ version 11
 
             * --- Dataset-level characteristics (_dta) ---
             * Session provenance: version, timestamp, exact syntax
-            char _dta[unicefdata_version]   "2.2.0"
+            char _dta[unicefdata_version]   "2.3.0"
             char _dta[unicefdata_timestamp] "`c(current_date)' `c(current_time)'"
             char _dta[unicefdata_syntax]    `"unicefdata, `0'"'
             char _dta[unicefdata_indicator] "`indicator'"

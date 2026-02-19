@@ -730,9 +730,17 @@ program define unicefdata_sync, rclass
     }
     
     *---------------------------------------------------------------------------
+    * Invalidate discovery cache (frame may hold stale metadata)
+    *---------------------------------------------------------------------------
+
+    if (c(stata_version) >= 16) {
+        capture frame drop _unicef_indicators
+    }
+
+    *---------------------------------------------------------------------------
     * Return values
     *---------------------------------------------------------------------------
-    
+
     return scalar dataflows = `n_dataflows'
     return scalar indicators = `n_indicators'
     return scalar codelists = `n_codelists'

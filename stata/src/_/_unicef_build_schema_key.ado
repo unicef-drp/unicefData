@@ -32,7 +32,7 @@ program define _unicef_build_schema_key, rclass
   
   local indicator_code : word 1 of `anything'
   local dataflow : word 2 of `anything'
-  local metadata_path : word 3 of `anything'
+  local metadata_path : word 3 of `anything'  // accepted for API compat, currently unused
   
   local nofilter = cond(!missing("`nofilter'"), 1, 0)
   local bulk = cond(!missing("`bulk'"), 1, 0)

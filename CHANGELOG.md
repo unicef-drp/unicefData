@@ -1,8 +1,88 @@
-# Changelog
+# unicefData Multi-Language Changelog
 
-All notable changes to this project will be documented in this file.
+**Overall changelog for the unicefData trilingual project (R, Python, Stata).**
 
-## [2.2.0] - 2026-02-10 (Stata)
+See language-specific detailed changelogs:
+- **R Package**: [r/NEWS.md](r/NEWS.md) — R-specific changes, CRAN submissions
+- **Python Package**: [python/CHANGELOG.md](python/CHANGELOG.md) — Python API updates
+- **Stata Package**: [stata/CHANGELOG.md](stata/CHANGELOG.md) — Stata programming changes
+
+---
+
+## [2.3.0] - 2026-02-19
+
+### Multi-Language Updates
+
+- **Repository Reorganized**: Clean separation of language-specific packages
+  - `r/` — R package (CRAN-ready)
+  - `python/` — Python package (PyPI)
+  - `stata/` — Stata package (SSC)
+  - `paper/` — Academic documentation
+- **R CRAN Compliance**: Cache directory moved to `tempdir()` (Benjamin Altmann review)
+- **Paper Enhanced**: Added reproducibility and AI motivation section
+- **All CI/CD**: Tests passing across platforms (R, Python, Stata)
+
+### R (v2.3.0) - CRAN Ready
+
+- ✅ Cache directory compliance (CRAN Policy 1.1.3.1)
+- ✅ All reviewer feedback addressed (Uwe Ligges, Benjamin Altmann)
+- ✅ 0 errors | 0 warnings | 2 notes
+- See [r/NEWS.md](r/NEWS.md) for details
+
+### Python (v2.1.0)
+
+- Cross-language test suite verified (14/14 tests)
+- Cache management at 30-day staleness threshold
+- See [python/CHANGELOG.md](python/CHANGELOG.md) for details
+
+### Stata (v2.3.0)
+
+- Discovery Caching: Frame-based session caching (Stata 16+). YAML metadata parsed once, subsequent `search()` calls near-instantaneous
+- **`__unicef_parse_indicators_yaml`**: Bulk YAML parser reads full indicators metadata into one-row-per-indicator dataset
+- **`_unicef_load_indicators_cache`**: Frame cache manager with parser-version-based invalidation
+- **`nocache` option**: Forces re-parsing of the YAML metadata file
+- **`clear` option for search**: Clears data in memory before displaying search results
+- **EDUCATION_LG dataflow**: New dataflow definition added
+
+### Changed
+
+- `clearcache` now also drops the `_unicef_indicators` frame cache
+- `unicefdata_sync` automatically invalidates cached frame after metadata refresh
+- `_unicef_search_indicators` v2.0.0: dataset-based search on cached metadata (Stata 16+); unchanged line-by-line parsing for Stata 14-15
+
+### Removed
+
+- Archived vestigial `_query_indicators.ado` and `_query_metadata.ado` (inherited from wbopendata, zero live callers) to `_archive/vestigial_wbopendata/`
+
+### Tested
+
+- Stata: 63/63 tests passing (100%) across 16 families
+
+## [2.2.1] - 2026-02-18 (Stata)
+
+### Fixed
+
+- **Multi-indicator fallback overwrite**: Primary HTTP import no longer clobbers valid fallback data (added `ind_success_via_fallback` guard)
+- **Search tier-filter bypass**: First match block in `_unicef_search_indicators` now applies tier/orphan filtering (was missing, allowing unfiltered indicators to leak)
+- **`latest`/`mrv` filter**: All required variables (`iso3`, `period`, `value`) checked individually instead of only last `_rc`
+- **São Tomé country match**: Broad `strpos` replaced with `iso3 == "STP"`
+- **Label loop count**: Dynamically computed word count replaces hardcoded value (44)
+
+### Removed
+
+- Corrupt `_unicef_fetch_with_fallback.ado` (3-byte file, no callers) and references from all pkg manifests
+- Dead `_get_sdmx_fetch` and `_get_sdmx_parse_structure` programs from get_sdmx.ado (-74 lines)
+- Non-existent file references from pkg manifests (`_dataflow_indicators_list.txt`, `_unicefdata_countries.dta`)
+
+### Changed
+
+- `version` declaration updated from 11 to 14 (matching Requires: Stata 14.0+)
+
+### Tested
+
+- Stata: 63/63 tests passing (100%) across 16 families
+
+## [2.2.0] - 2026-02-17 (Stata)
 
 ### Added
 

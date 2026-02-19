@@ -152,11 +152,14 @@ stata/qa/fixtures/*
 *.fls
 *.out
 *.synctex.gz
+paper/*.pdf
+!paper/*-v[0-9]*.pdf
 
 # Paper sjlogs - keep only cleaned .log.tex files
 paper/sjlogs/*.tex
 !paper/sjlogs/*.log.tex
 *.toc
+!**/stata.toc
 *.lof
 *.lot
 *.tag
@@ -201,3 +204,5 @@ drafts/
 benchmarks/
 eb1a/
 _drafts/
+/doc/
+/Meta/

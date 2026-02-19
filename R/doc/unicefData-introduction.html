@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to unicefData</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to unicefData</h1>
+
+
+
+<div id="motivation-data-provenance-in-the-age-of-ai" class="section level2">
+<h2>Motivation: Data Provenance in the Age of AI</h2>
+<p>This package is motivated by a fundamental principle: <strong>data
+acquisition should be treated as code, not as an external preparatory
+step</strong>. This is increasingly important in the age of AI-assisted
+research.</p>
+<p>As AI tools accelerate analytical workflows while enabling plausible
+fabrication of statistics and citations, anchoring research to
+<strong>authoritative, version-controlled data sources</strong> becomes
+essential infrastructure for scientific credibility. The unicefData
+package operationalizes this principle by making data provenance an
+integral component of your analytical script.</p>
+<p>When you specify:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;ALB&quot;</span>, <span class="st">&quot;USA&quot;</span>, <span class="st">&quot;BRA&quot;</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>)</span></code></pre></div>
+<p>You are not downloading a spreadsheet from a portal and applying
+undocumented filters. Instead, you are executing an explicit,
+reproducible specification of provenance: a command line that documents
+<em>what data</em> were requested, <em>from which source</em>, and
+<em>under what constraints</em>. This ensures:</p>
+<ul>
+<li><strong>Traceability</strong>: Others can inspect your code and
+verify exactly which data were used</li>
+<li><strong>Transparency</strong>: Data selection decisions are
+parametrized and visible</li>
+<li><strong>Sustainability</strong>: If upstream data are revised, the
+same command yields systematically updated results</li>
+<li><strong>Reproducibility</strong>: Your analysis remains verifiable
+and replicable over time</li>
+</ul>
+<div id="design-principles-from-wbopendata" class="section level3">
+<h3>Design Principles from wbopendata</h3>
+<p>The unicefData package adopts three design principles from wbopendata
+(Azevedo, 2026), a similar package for World Bank data:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Data acquisition as code</strong>: Indicator selection,
+country coverage, and time ranges are explicit parameters in your
+analytical script</li>
+<li><strong>Backward compatibility as trust infrastructure</strong>: The
+package prioritizes stable syntax so analyses remain reproducible even
+as APIs evolve</li>
+<li><strong>Domain-specific syntax as error prevention</strong>: Rather
+than exposing HTTP requests and JSON, the interface uses familiar
+concepts (indicators, countries, years) that constrain input to
+meaningful values</li>
+</ol>
+<p>Together, these principles treat data acquisition as
+<strong>infrastructure for reproducibility</strong>, not mere
+convenience.</p>
+</div>
+</div>
+<div id="the-unicef-data-warehouse" class="section level2">
+<h2>The UNICEF Data Warehouse</h2>
+<p>The United Nations Children’s Fund (UNICEF) maintains one of the
+world’s most comprehensive databases on child welfare, covering health,
+nutrition, education, protection, HIV/AIDS, and water, sanitation and
+hygiene (WASH). The <a href="https://sdmx.data.unicef.org/">UNICEF Data
+Warehouse</a> uses the Statistical Data and Metadata eXchange (SDMX)
+standard, an ISO-certified framework for exchanging statistical
+information.</p>
+<p>The warehouse currently maintains <strong>733+ indicators</strong>
+organized across thematic dataflows:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Dataflow</th>
+<th>Domain</th>
+<th>Indicators</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CME</td>
+<td>Child Mortality Estimates</td>
+<td>39</td>
+</tr>
+<tr class="even">
+<td>NUTRITION</td>
+<td>Stunting, wasting, underweight</td>
+<td>112</td>
+</tr>
+<tr class="odd">
+<td>IMMUNISATION</td>
+<td>Immunization coverage</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td>WASH_HOUSEHOLDS</td>
+<td>Water and sanitation</td>
+<td>57</td>
+</tr>
+<tr class="odd">
+<td>EDUCATION</td>
+<td>Education access and quality</td>
+<td>38</td>
+</tr>
+<tr class="even">
+<td>HIV_AIDS</td>
+<td>HIV-related indicators</td>
+<td>38</td>
+</tr>
+<tr class="odd">
+<td>MNCH</td>
+<td>Maternal, newborn, child health</td>
+<td>varies</td>
+</tr>
+<tr class="even">
+<td>PT</td>
+<td>Child protection</td>
+<td>varies</td>
+</tr>
+<tr class="odd">
+<td>CHLD_PVTY</td>
+<td>Child poverty</td>
+<td>varies</td>
+</tr>
+<tr class="even">
+<td>GENDER</td>
+<td>Gender equality</td>
+<td>varies</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="what-is-sdmx" class="section level2">
+<h2>What is SDMX?</h2>
+<p>SDMX (Statistical Data and Metadata eXchange) is an international
+standard for structuring and exchanging statistical data. Within
+SDMX:</p>
+<ul>
+<li>An <strong>indicator</strong> is a time-series measure of a specific
+phenomenon (e.g., under-5 mortality rate, stunting prevalence, DTP3
+coverage).</li>
+<li>Each indicator is identified by a unique code (e.g.,
+<code>CME_MRY0T4</code>) and belongs to a <strong>dataflow</strong>,
+which groups related indicators.</li>
+<li>Observations are disaggregated along <strong>dimensions</strong>:
+sex, age, wealth quintile, residence (urban/rural), and maternal
+education.</li>
+<li>Each observation also carries <strong>attributes</strong> (data
+source, confidence intervals, observation status) that contextualize the
+value.</li>
+</ul>
+<p>While powerful, direct SDMX API interaction requires knowledge of
+dataflow structures, dimension codes, and RESTful query syntax. The
+<code>unicefData</code> package removes these barriers.</p>
+</div>
+<div id="why-unicefdata" class="section level2">
+<h2>Why unicefData?</h2>
+<p>The <code>unicefData</code> package provides a simple R interface to
+the UNICEF Data Warehouse. It is part of a trilingual ecosystem with
+identical implementations in R, Python (<code>unicef_api</code>), and
+Stata (<code>unicefdata</code>), sharing the same function names and
+parameter structures for cross-team collaboration.</p>
+<p>Key features:</p>
+<ul>
+<li><strong>Automatic dataflow detection</strong>: specify only the
+indicator code; the package finds the correct dataflow
+automatically.</li>
+<li><strong>Discovery commands</strong>: search indicators by keyword,
+list dataflows, display metadata—no prior SDMX knowledge required.</li>
+<li><strong>Flexible filtering</strong>: countries, years, sex, age,
+wealth quintiles, residence, maternal education.</li>
+<li><strong>Multiple output formats</strong>: long (default), wide
+(years as columns), wide_indicators (indicators as columns).</li>
+<li><strong>Caching with memoisation</strong>: repeated queries are
+fast.</li>
+</ul>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>Install from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;unicef-drp/unicefData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="quick-start" class="section level2">
+<h2>Quick start</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(unicefData)</span></code></pre></div>
+<div id="discovering-indicators" class="section level3">
+<h3>Discovering indicators</h3>
+<p>Before downloading data, explore what is available:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Browse indicator categories (thematic dataflows)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">list_categories</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Search for indicators by keyword</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">search_indicators</span>(<span class="st">&quot;mortality&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># List all indicators in the Child Mortality Estimates dataflow</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">list_indicators</span>(<span class="st">&quot;CME&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Get detailed information about a specific indicator</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">get_indicator_info</span>(<span class="st">&quot;CME_MRY0T4&quot;</span>)</span></code></pre></div>
+<p>These discovery commands mirror the paper’s Examples 1–4 and the
+Stata equivalents:</p>
+<pre><code>. unicefdata, categories
+. unicefdata, search(mortality)
+. unicefdata, indicators(CME)
+. unicefdata, info(CME_MRY0T4)</code></pre>
+</div>
+<div id="basic-data-retrieval" class="section level3">
+<h3>Basic data retrieval</h3>
+<p>Fetch under-5 mortality rate for three countries over a year
+range:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Example 5 (paper): Basic data retrieval</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;BRA&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;CHN&quot;</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div>
+<p>The equivalent Stata command is:</p>
+<pre><code>. unicefdata, indicator(CME_MRY0T4) countries(BRA IND CHN) year(2015:2023) clear</code></pre>
+</div>
+<div id="geographic-filtering" class="section level3">
+<h3>Geographic filtering</h3>
+<p>Fetch data for East African countries for a single year:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Example 6 (paper): Geographic filtering</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;KEN&quot;</span>, <span class="st">&quot;TZA&quot;</span>, <span class="st">&quot;UGA&quot;</span>, <span class="st">&quot;ETH&quot;</span>, <span class="st">&quot;RWA&quot;</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2020</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="latest-values-and-most-recent-values" class="section level3">
+<h3>Latest values and most recent values</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Example 7 (paper): Get the latest available value per country</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>df_latest <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;BGD&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;PAK&quot;</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>)</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># Get the 3 most recent values per country</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>df_mrv <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;BGD&quot;</span>, <span class="st">&quot;IND&quot;</span>, <span class="st">&quot;PAK&quot;</span>),</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  <span class="at">mrv =</span> <span class="dv">3</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="year-specifications" class="section level3">
+<h3>Year specifications</h3>
+<p>The <code>year</code> parameter supports multiple formats:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Single year</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Year range</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># Non-contiguous years</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">year =</span> <span class="st">&quot;2015,2018,2020&quot;</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co"># Circa mode: find closest available year</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">year =</span> <span class="dv">2015</span>, <span class="at">circa =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="disaggregations" class="section level2">
+<h2>Disaggregations</h2>
+<p>UNICEF data supports rich disaggregation along multiple dimensions.
+Not all dimensions are available for all indicators—availability depends
+on the dataflow (see the disaggregation matrix in the package
+paper).</p>
+<div id="by-sex" class="section level3">
+<h3>By sex</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Total only (default)</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">sex =</span> <span class="st">&quot;_T&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Female only</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">sex =</span> <span class="st">&quot;F&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co"># All sex categories (total, male, female)</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">sex =</span> <span class="st">&quot;ALL&quot;</span>)</span></code></pre></div>
+</div>
+<div id="by-wealth-quintile" class="section level3">
+<h3>By wealth quintile</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Example 8 (paper): Stunting by wealth and sex</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;NT_ANT_WHZ_NE2&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="st">&quot;IND&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">sex =</span> <span class="st">&quot;ALL&quot;</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">wealth =</span> <span class="st">&quot;ALL&quot;</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="by-residence" class="section level3">
+<h3>By residence</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Urban only</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>, <span class="at">residence =</span> <span class="st">&quot;U&quot;</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Rural only</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;NT_ANT_HAZ_NE2&quot;</span>, <span class="at">residence =</span> <span class="st">&quot;R&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="output-formats" class="section level2">
+<h2>Output formats</h2>
+<div id="wide-format-years-as-columns" class="section level3">
+<h3>Wide format (years as columns)</h3>
+<p>Useful for time-series analysis:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Example 9 (paper): Wide format</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;GBR&quot;</span>, <span class="st">&quot;DEU&quot;</span>, <span class="st">&quot;FRA&quot;</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">&quot;2000,2010,2020,2023&quot;</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;wide&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="multiple-indicators" class="section level3">
+<h3>Multiple indicators</h3>
+<p>Fetch and merge multiple indicators automatically:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Example 10 (paper): Multiple indicators</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">&quot;CME_MRM0&quot;</span>, <span class="st">&quot;CME_MRY0T4&quot;</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;KEN&quot;</span>, <span class="st">&quot;TZA&quot;</span>, <span class="st">&quot;UGA&quot;</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2020</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>)</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co"># Wide indicators format: one column per indicator</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="st">&quot;CME_MRY0&quot;</span>, <span class="st">&quot;IM_DTP3&quot;</span>, <span class="st">&quot;IM_MCV1&quot;</span>),</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;AFG&quot;</span>, <span class="st">&quot;ETH&quot;</span>, <span class="st">&quot;PAK&quot;</span>, <span class="st">&quot;NGA&quot;</span>),</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;wide_indicators&quot;</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="metadata-enrichment" class="section level2">
+<h2>Metadata enrichment</h2>
+<p>Add regional and income group classifications:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Example 12 (paper): Regional classifications</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">add_metadata =</span> <span class="fu">c</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;income_group&quot;</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="at">latest =</span> <span class="cn">TRUE</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="data-cleaning-and-filtering" class="section level2">
+<h2>Data cleaning and filtering</h2>
+<p>Post-processing utilities for downloaded data:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Clean raw SDMX column names to user-friendly names</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>df_raw <span class="ot">&lt;-</span> <span class="fu">unicefData_raw</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">countries =</span> <span class="st">&quot;BRA&quot;</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>df_clean <span class="ot">&lt;-</span> <span class="fu">clean_unicef_data</span>(df_raw)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co"># Filter to specific disaggregations</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> <span class="fu">filter_unicef_data</span>(df_clean, <span class="at">sex =</span> <span class="st">&quot;F&quot;</span>, <span class="at">wealth =</span> <span class="st">&quot;Q1&quot;</span>)</span></code></pre></div>
+</div>
+<div id="cache-management" class="section level2">
+<h2>Cache management</h2>
+<p>The package caches metadata and API responses for performance. To
+clear and refresh all caches:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Clear all caches and reload metadata</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">clear_unicef_cache</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># Clear without reloading (lazy reload on next use)</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">clear_unicef_cache</span>(<span class="at">reload =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co"># View cache status</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="fu">get_cache_info</span>()</span></code></pre></div>
+</div>
+<div id="dataflow-schemas" class="section level2">
+<h2>Dataflow schemas</h2>
+<p>Inspect the structure of any dataflow:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># View the dimensions and attributes of a dataflow</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>schema <span class="ot">&lt;-</span> <span class="fu">dataflow_schema</span>(<span class="st">&quot;CME&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="fu">print</span>(schema)</span></code></pre></div>
+</div>
+<div id="cross-language-parity" class="section level2">
+<h2>Cross-language parity</h2>
+<p>The <code>unicefData</code> ecosystem provides identical
+functionality across R, Python, and Stata. The same analytical workflow
+translates directly:</p>
+<table>
+<colgroup>
+<col width="37%" />
+<col width="10%" />
+<col width="27%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operation</th>
+<th>R</th>
+<th>Python</th>
+<th>Stata</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Search</td>
+<td><code>search_indicators(&quot;mortality&quot;)</code></td>
+<td><code>search_indicators(&quot;mortality&quot;)</code></td>
+<td><code>unicefdata, search(mortality)</code></td>
+</tr>
+<tr class="even">
+<td>Fetch</td>
+<td><code>unicefData(indicator=&quot;CME_MRY0T4&quot;)</code></td>
+<td><code>unicefData(indicator=&quot;CME_MRY0T4&quot;)</code></td>
+<td><code>unicefdata, indicator(CME_MRY0T4) clear</code></td>
+</tr>
+<tr class="odd">
+<td>Latest</td>
+<td><code>unicefData(..., latest=TRUE)</code></td>
+<td><code>unicefData(..., latest=True)</code></td>
+<td><code>unicefdata, ... latest clear</code></td>
+</tr>
+<tr class="even">
+<td>Wide</td>
+<td><code>unicefData(..., format=&quot;wide&quot;)</code></td>
+<td><code>unicefData(..., format=&quot;wide&quot;)</code></td>
+<td><code>unicefdata, ... wide clear</code></td>
+</tr>
+<tr class="odd">
+<td>Cache</td>
+<td><code>clear_unicef_cache()</code></td>
+<td><code>clear_cache()</code></td>
+<td><code>unicefdata, clearcache</code></td>
+</tr>
+<tr class="even">
+<td>Sync</td>
+<td><code>sync_metadata()</code></td>
+<td><code>sync_metadata()</code></td>
+<td><code>unicefdata_sync, all</code></td>
+</tr>
+</tbody>
+</table>
+<p>This parity enables cross-team collaboration: an analyst can
+prototype in R and a colleague can reproduce the workflow in Stata or
+Python with minimal translation.</p>
+</div>
+<div id="design-principles-and-reproducibility" class="section level2">
+<h2>Design Principles and Reproducibility</h2>
+<p>The unicefData package embodies three design principles that make
+reproducibility the default rather than the exception:</p>
+<div id="data-acquisition-as-code" class="section level3">
+<h3>1. Data acquisition as code</h3>
+<p>When you write:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">unicefData</span>(<span class="at">indicator =</span> <span class="st">&quot;CME_MRY0T4&quot;</span>, <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;ALB&quot;</span>, <span class="st">&quot;USA&quot;</span>, <span class="st">&quot;BRA&quot;</span>), <span class="at">year =</span> <span class="st">&quot;2015:2023&quot;</span>)</span></code></pre></div>
+<p>You are not performing manual steps that will be forgotten or become
+undocumented. Every data selection decision—indicator, countries, years,
+disaggregations—is explicitly specified in your script. This ensures
+that:</p>
+<ul>
+<li>Others can <strong>audit</strong> your data selection</li>
+<li>You can <strong>reproduce</strong> results exactly</li>
+<li><strong>Revisions</strong> to upstream data are transparent</li>
+<li>Your analysis is <strong>sustainable</strong> across time</li>
+</ul>
+</div>
+<div id="backward-compatibility-as-trust-infrastructure" class="section level3">
+<h3>2. Backward compatibility as trust infrastructure</h3>
+<p>The package prioritizes stable syntax and predictable behavior. This
+matters because:</p>
+<ul>
+<li>Historical analyses remain reproducible even as the UNICEF SDMX API
+evolves</li>
+<li>Your scripts from 2026 will still work in 2030</li>
+<li>Backward compatibility reduces the risk that methodology becomes
+irreproducible due to infrastructure drift</li>
+</ul>
+</div>
+<div id="domain-specific-syntax-as-error-prevention" class="section level3">
+<h3>3. Domain-specific syntax as error prevention</h3>
+<p>Rather than exposing HTTP requests and JSON parsing, the interface
+uses concepts familiar to development researchers: indicators,
+countries, years. This constrains input to meaningful values and reduces
+opportunities for error.</p>
+</div>
+<div id="why-this-matters-for-ai-assisted-research" class="section level3">
+<h3>Why This Matters for AI-Assisted Research</h3>
+<p>In an era where AI tools accelerate analytical workflows, these
+principles become more important, not less. As generative tools lower
+the cost of producing plausible analyses and narratives,
+<strong>anchoring empirical work to authoritative and verifiable data
+sources</strong> is essential infrastructure for scientific credibility.
+The unicefData package provides this foundation by making data
+provenance explicit and executable.</p>
+</div>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<ul>
+<li><a href="https://sdmx.data.unicef.org/">UNICEF Data
+Warehouse</a></li>
+<li><a href="https://sdmx.org/">SDMX standard documentation</a></li>
+<li><a href="https://github.com/unicef-drp/unicefData">Package source on
+GitHub</a></li>
+<li><strong>Azevedo, J.P. (2026).</strong> “Data Provenance in the Age
+of Automation: Lessons from Fifteen Years of Programmatic Access to
+World Bank Open Data.” <em>Stata Journal</em> (forthcoming) —
+foundational paper on design principles for data acquisition tools</li>
+</ul>
+<hr />
+</div>
+<div id="acknowledgments" class="section level2">
+<h2>Acknowledgments</h2>
+<p>This package was developed at the UNICEF Data and Analytics Section.
+The author gratefully acknowledges the collaboration of <strong>Lucas
+Rodrigues</strong>, <strong>Yang Liu</strong>, and <strong>Karen
+Avanesian</strong>, whose technical contributions and feedback were
+instrumental in the development of this R package.</p>
+<p>Special thanks to <strong>Yves Jaques</strong>, <strong>Alberto
+Sibileau</strong>, and <strong>Daniele Olivotti</strong> for designing
+and maintaining the UNICEF SDMX data warehouse infrastructure that makes
+this package possible.</p>
+<p>The author also acknowledges the <strong>UNICEF database
+managers</strong> and technical teams who ensure data quality, as well
+as the country office staff and National Statistical Offices whose data
+collection efforts make this work possible.</p>
+<p>Development of this package was supported by UNICEF institutional
+funding for data infrastructure and statistical capacity building. The
+author also acknowledges UNICEF colleagues who provided testing and
+feedback during development, as well as the broader open-source R
+community.</p>
+<p>Development was assisted by AI coding tools (GitHub Copilot, Claude).
+All code has been reviewed, tested, and validated by the package
+maintainers.</p>
+</div>
+<div id="disclaimer" class="section level2">
+<h2>Disclaimer</h2>
+<p><strong>This package is provided for research and analytical
+purposes.</strong></p>
+<p>The <code>unicefData</code> package provides programmatic access to
+UNICEF’s public data warehouse. While the author is affiliated with
+UNICEF, <strong>this package is not an official UNICEF product and the
+statements in this documentation are the views of the author and do not
+necessarily reflect the policies or views of UNICEF</strong>.</p>
+<p>Data accessed through this package comes from the <a href="https://sdmx.data.unicef.org/">UNICEF Data Warehouse</a>. Users
+should verify critical data points against official UNICEF publications
+at <a href="https://data.unicef.org/">data.unicef.org</a>.</p>
+<p>This software is provided “as is”, without warranty of any kind,
+express or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall the authors or UNICEF be liable for any claim, damages
+or other liability arising from the use of this software.</p>
+<p>The designations employed and the presentation of material in this
+package do not imply the expression of any opinion whatsoever on the
+part of UNICEF concerning the legal status of any country, territory,
+city or area or of its authorities, or concerning the delimitation of
+its frontiers or boundaries.</p>
+</div>
+<div id="data-citation-and-provenance" class="section level2">
+<h2>Data Citation and Provenance</h2>
+<p><strong>Important Note on Data Vintages</strong></p>
+<p>Official statistics are subject to revisions as new information
+becomes available and estimation methodologies improve. UNICEF
+indicators are regularly updated based on new surveys, censuses, and
+improved modeling techniques. Historical values may be revised
+retroactively to reflect better information or methodological
+improvements.</p>
+<p><strong>For reproducible research and proper data attribution, users
+should:</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Document the indicator code</strong> - Specify the exact
+SDMX indicator code(s) used (e.g., <code>CME_MRY0T4</code>)</li>
+<li><strong>Record the download date</strong> - Note when data was
+accessed (e.g., “Data downloaded: 2026-02-09”)</li>
+<li><strong>Cite the data source</strong> - Reference both the package
+and the UNICEF Data Warehouse</li>
+<li><strong>Archive your dataset</strong> - Save a copy of the exact
+data used in your analysis</li>
+</ol>
+<p><strong>Example citation for data used in research:</strong></p>
+<blockquote>
+<p>Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF
+Data Warehouse via unicefData R package (v2.1.0) on 2026-02-09. Data
+available at: <a href="https://sdmx.data.unicef.org/" class="uri">https://sdmx.data.unicef.org/</a></p>
+</blockquote>
+<p>This practice ensures that others can verify your results and
+understand any differences that may arise from data updates. For
+official UNICEF statistics in publications, always cross-reference with
+the current version at <a href="https://data.unicef.org/">data.unicef.org</a>.</p>
+</div>
+<div id="citation" class="section level2">
+<h2>Citation</h2>
+<p>If you use this package in your research, please cite:</p>
+<pre><code>Azevedo, J.P. (2026). unicefData: Trilingual R, Python, and Stata Interface
+  to UNICEF SDMX Data Warehouse. R package version 2.1.0.
+  https://github.com/unicef-drp/unicefData</code></pre>
+<p>For data citations, please refer to the specific UNICEF datasets
+accessed through the warehouse and cite them according to UNICEF’s data
+citation guidelines.</p>
+</div>
+<div id="license" class="section level2">
+<h2>License</h2>
+<p>This package is released under the MIT License. See the LICENSE file
+for full details.</p>
+</div>
+<div id="contact-support" class="section level2">
+<h2>Contact &amp; Support</h2>
+<ul>
+<li><strong>Package Maintainer</strong>: Joao Pedro Azevedo (<a href="mailto:jpazevedo@unicef.org" class="email">jpazevedo@unicef.org</a>)</li>
+<li><strong>Report Issues</strong>: <a href="https://github.com/unicef-drp/unicefData/issues" class="uri">https://github.com/unicef-drp/unicefData/issues</a></li>
+<li><strong>UNICEF Data Portal</strong>: <a href="https://data.unicef.org/" class="uri">https://data.unicef.org/</a></li>
+<li><strong>SDMX API Documentation</strong>: <a href="https://data.unicef.org/sdmx-api-documentation/" class="uri">https://data.unicef.org/sdmx-api-documentation/</a></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
