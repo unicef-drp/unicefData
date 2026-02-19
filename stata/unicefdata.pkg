@@ -52,6 +52,10 @@ f src/u/unicefdata_examples.ado
 f src/u/unicefdata_examples.sthlp
 f src/u/unicefdata_whatsnew.sthlp
 
+* Setup command (installs dataflow schemas)
+f src/u/unicefdata_setup.ado
+f src/u/unicefdata_setup.sthlp
+
 * Sync command and help
 f src/u/unicefdata_sync.ado
 f src/u/unicefdata_sync.sthlp
