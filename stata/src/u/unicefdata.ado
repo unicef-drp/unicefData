@@ -1,4 +1,4 @@
-*! v 2.3.0  18Feb2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.3.1  22Feb2026               by Joao Pedro Azevedo (UNICEF)
 * =============================================================================
 * unicefdata.ado - Stata interface to UNICEF SDMX Data API
 * =============================================================================
@@ -23,7 +23,7 @@
 *  12. Output & Return Values - Display results and set r()
 *  13. Helper Programs - _linewrap, etc.
 *
-* Version: 2.3.0 (2026-02-18)
+* Version: 2.3.1 (2026-02-22)
 * Author: João Pedro Azevedo (UNICEF)
 * License: MIT
 * =============================================================================
@@ -3251,7 +3251,7 @@ version 14
 
             * --- Dataset-level characteristics (_dta) ---
             * Session provenance: version, timestamp, exact syntax
-            char _dta[unicefdata_version]   "2.3.0"
+            char _dta[unicefdata_version]   "2.3.1"
             char _dta[unicefdata_timestamp] "`c(current_date)' `c(current_time)'"
             char _dta[unicefdata_syntax]    `"unicefdata, `0'"'
             char _dta[unicefdata_indicator] "`indicator'"

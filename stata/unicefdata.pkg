@@ -1,4 +1,4 @@
-v 2.3.0
+v 2.3.1
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -33,7 +33,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260218
+d Distribution-Date: 20260222
 d
 d Quality Assurance:
 d   - 16 test families (63 tests): ENV, DL, DISC, SYNC, TRANS, EDGE, XPLAT, ERR, EXT, DET, DATA, MULTI, PERF, REGR, DOC, TIDY
@@ -69,6 +69,17 @@ f src/u/unicefdata_xmltoyaml_py.sthlp
 * YAML command and help
 f src/y/yaml.ado
 f src/y/yaml.sthlp
+f src/y/yaml_read.ado
+f src/y/yaml_get.ado
+f src/y/yaml_write.ado
+f src/y/yaml_list.ado
+f src/y/yaml_describe.ado
+f src/y/yaml_dir.ado
+f src/y/yaml_clear.ado
+f src/y/yaml_validate.ado
+f src/y/yaml_frames.ado
+f src/y/yaml_examples.sthlp
+f src/y/yaml_whatsnew.sthlp
 
 * Metadata setup (auto-triggered on first use)
 f src/_/_unicefdata_setup.ado
@@ -113,7 +124,18 @@ f src/_/_xmltoyaml_parse_stata.ado
 
 * YAML indicator parser
 f src/_/__unicef_parse_indicator_yaml.ado
+f src/_/__unicef_parse_ind_yaml_v2.ado
 f src/_/__unicef_get_indicator_dataflow.ado
+
+* YAML parser internals
+f src/_/_yaml_collapse.ado
+f src/_/_yaml_fastread.ado
+f src/_/_yaml_mataread.ado
+f src/_/_yaml_tokenize_line.ado
+f src/_/_unicefdata_check_yaml.ado
+
+* Country metadata
+f src/_/_unicefdata_countries.dta
 
 * Metadata display helper
 f src/_/_metadata_linewrap.ado

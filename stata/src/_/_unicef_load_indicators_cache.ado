@@ -1,5 +1,5 @@
 *******************************************************************************
-*! _unicef_load_indicators_cache v1.0.0  18Feb2026
+*! _unicef_load_indicators_cache v1.0.2  21Feb2026
 *! Load indicators metadata into current dataset from frame cache.
 *! Creates/refreshes the _unicef_indicators frame if needed.
 *! Requires Stata 16+ (frames). Caller must preserve/restore.
@@ -10,7 +10,7 @@ program define _unicef_load_indicators_cache
     syntax [, METApath(string) NOCACHE VERBOSE]
 
     quietly {
-        local parser_ver "1.0.0"
+        local parser_ver "1.0.2"
         local frame_name "_unicef_indicators"
 
         * -------------------------------------------------------------------
@@ -68,7 +68,7 @@ program define _unicef_load_indicators_cache
             if ("`verbose'" != "") {
                 noi di as text "(Parsing indicators metadata YAML...)"
             }
-            __unicef_parse_indicators_yaml "`yaml_file'"
+            __unicef_parse_ind_yaml_v2 "`yaml_file'"
 
             * Store in frame for future calls (unless nocache)
             if ("`nocache'" == "") {
