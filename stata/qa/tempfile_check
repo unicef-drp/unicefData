@@ -1,8 +1,8 @@
 metadata_version: '1.0'
-synced_at: '2026-02-18T18:34:02Z'
+synced_at: '2026-02-22T15:13:15Z'
 source: SDMX API Data Structure Definitions
 agency: UNICEF
-total_dataflows: 72
+total_dataflows: 71
 dataflows:
 - id: CAUSE_OF_DEATH
   name: 'Cause of death'
@@ -242,9 +242,8 @@ dataflows:
 - id: EDUCATION_FLS
   name: 'EDU - Learning and Skills'
   version: '1.0'
-  dimensions_count: null
-  attributes_count: null
-  error: 'Failed to fetch DSD'
+  dimensions_count: 3
+  attributes_count: 3
 - id: EDUCATION_LG
   name: 'Education - Learning Gradient (MICS FLS)'
   version: '1.0'
@@ -320,11 +319,6 @@ dataflows:
   version: '1.0'
   dimensions_count: 13
   attributes_count: 19
-- id: SDG_PROG_ASSESSMENT
-  name: 'SDG Progress assessment'
-  version: '1.0'
-  dimensions_count: 2
-  attributes_count: 7
 - id: SDG_PROG_ASSESSMENT
   name: 'SDG Progress assessment'
   version: '1.1'
