@@ -3272,10 +3272,10 @@ if $run_xplat == 1 | "`target_test'" == "XPLAT-01" {
     *==========================================================================
     test_start, id("XPLAT-01") desc("Compare metadata YAML files (Root/R/Stata)")
 
-    * Define paths (Root = shared repo metadata, R = inst/metadata, Stata = src/_/)
-    local root_yaml  "C:/GitHub/myados/unicefData/metadata/current/_unicefdata_countries.yaml"
-    local r_yaml     "C:/GitHub/myados/unicefData/inst/metadata/current/_unicefdata_countries.yaml"
-    local stata_yaml "C:/GitHub/myados/unicefData/stata/src/_/_unicefdata_countries.yaml"
+    * Derive paths relative to qa/ directory (fixtures for Root/R, src for Stata)
+    local root_yaml  "`thisdir'/fixtures/xplat/_unicefdata_countries_root.yaml"
+    local r_yaml     "`thisdir'/fixtures/xplat/_unicefdata_countries_r.yaml"
+    local stata_yaml "`statadir'/src/_/_unicefdata_countries.yaml"
 
     * Check all files exist
     local all_exist = 1
@@ -3609,10 +3609,10 @@ if $run_xplat == 1 | "`target_test'" == "XPLAT-04" {
     local test_countries "USA BRA IND GBR DEU"
     local all_found = 1
 
-    * Load country key lists once per platform (Root = shared repo, R = inst/, Stata = src/_/)
-    local root_yaml  "C:/GitHub/myados/unicefData/metadata/current/_unicefdata_countries.yaml"
-    local r_yaml     "C:/GitHub/myados/unicefData/inst/metadata/current/_unicefdata_countries.yaml"
-    local stata_yaml "C:/GitHub/myados/unicefData/stata/src/_/_unicefdata_countries.yaml"
+    * Derive paths relative to qa/ directory (fixtures for Root/R, src for Stata)
+    local root_yaml  "`thisdir'/fixtures/xplat/_unicefdata_countries_root.yaml"
+    local r_yaml     "`thisdir'/fixtures/xplat/_unicefdata_countries_r.yaml"
+    local stata_yaml "`statadir'/src/_/_unicefdata_countries.yaml"
 
     local root_keys ""
     local r_keys ""
@@ -3657,7 +3657,7 @@ if $run_xplat == 1 | "`target_test'" == "XPLAT-04" {
     foreach country of local test_countries {
         local found_root = 0
         foreach k of local root_keys {
-            if "`k'" == "`country'" local found_root = 1
+            if "`k'" == "countries_`country'" local found_root = 1
         }
         if !`found_root' {
             di as err "  Country `country' not found in Root YAML"
@@ -3666,7 +3666,7 @@ if $run_xplat == 1 | "`target_test'" == "XPLAT-04" {
 
         local found_r = 0
         foreach k of local r_keys {
-            if "`k'" == "`country'" local found_r = 1
+            if "`k'" == "countries_`country'" local found_r = 1
         }
         if !`found_r' {
             di as err "  Country `country' not found in R YAML"
@@ -3675,7 +3675,7 @@ if $run_xplat == 1 | "`target_test'" == "XPLAT-04" {
 
         local found_st = 0
         foreach k of local stata_keys {
-            if "`k'" == "`country'" local found_st = 1
+            if "`k'" == "countries_`country'" local found_st = 1
         }
         if !`found_st' {
             di as err "  Country `country' not found in Stata YAML"

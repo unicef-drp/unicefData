@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.3.0  18Feb2026}{...}
+{* *! version 2.3.1  22Feb2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -13,7 +13,7 @@
 {viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {hline}
-{cmd:help unicefdata}{right:{bf:version 2.3.0}}
+{cmd:help unicefdata}{right:{bf:version 2.3.1}}
 {hline}
 
 {title:Title}
@@ -62,6 +62,16 @@
 {synopt :{opt tofile(filename)}}save API response to CSV for test fixtures{p_end}
 {synopt :{opt noerror}}suppress printed error messages (programmatic use){p_end}
 {synopt :{opt clearcache}}drop all in-memory cached frames and exit{p_end}
+{synoptline}
+
+{synoptset 27 tabbed}{...}
+{synopthdr:Metadata Sync}
+{synoptline}
+{synopt :{opt sync}}sync all metadata from UNICEF API{p_end}
+{synopt :{opt sync(target)}}sync specific metadata: {it:all}, {it:dataflows}, {it:indicators}, {it:countries}, {it:codelists}, {it:regions}{p_end}
+{synopt :{opt force}}bypass 30-day cache freshness check{p_end}
+{synopt :{opt forcepython}}use Python XML parser{p_end}
+{synopt :{opt forcestata}}use pure Stata XML parser{p_end}
 {synoptline}
 {p 4 6 2}
 {cmd:unicefdata} requires an internet connection. See {help unicefdata_whatsnew:What's New} for version history.{p_end}
@@ -566,7 +576,7 @@ country, indicator, and disaggregation dimensions.
 {phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
 {phang2}• Automatic proxy detection and handling{p_end}
 {phang2}• Automatic retry logic for temporary network failures{p_end}
-{phang2}• User-Agent header: "unicefdata/2.3.0 (Stata)"{p_end}
+{phang2}• User-Agent header: "unicefdata/2.3.1 (Stata)"{p_end}
 {phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
 
 {pstd}
@@ -611,6 +621,49 @@ Use this option to skip the metadata display.
 
 {phang}
 {opt verbose} displays progress messages during data download.
+{p_end}
+
+{dlgtab:Metadata Sync (v2.3.0)}
+
+{phang}
+{opt sync} synchronizes all local YAML metadata files from the UNICEF SDMX API.
+This is equivalent to running {cmd:unicefdata_sync, all}.
+Metadata files are stored alongside the package source in the {cmd:_/} directory
+and are used for discovery, dataflow detection, and filter validation.
+{p_end}
+
+{phang}
+{opt sync(target)} synchronizes a specific metadata type. Valid targets:
+{p_end}
+{phang2}{cmd:all} - all metadata types (default){p_end}
+{phang2}{cmd:dataflows} - dataflow definitions (69-71 dataflows){p_end}
+{phang2}{cmd:indicators} - indicator catalog (733 indicators){p_end}
+{phang2}{cmd:countries} - country ISO3 codes (453 countries){p_end}
+{phang2}{cmd:codelists} - dimension codelists (age, wealth, residence, etc.){p_end}
+{phang2}{cmd:regions} - regional aggregate codes (111 regions){p_end}
+
+{phang}
+{opt force} bypasses the 30-day cache freshness check.  By default,
+{cmd:sync} skips metadata that was updated within the last 30 days.
+Use {opt force} to re-download regardless of cache age.
+{p_end}
+
+{phang}
+{opt forcepython} forces use of the Python XML parser.  Python is faster
+and handles large files without Stata macro length limits.  Requires
+Python 3.6+ in PATH.
+{p_end}
+
+{phang}
+{opt forcestata} forces use of the pure Stata XML parser.  No Python
+dependency, but may truncate very large metadata files (e.g., the full
+indicator catalog).
+{p_end}
+
+{pstd}
+{bf:Note:} For advanced sync options ({opt enrichdataflows}, {opt fallbacksequences},
+{opt path()}, {opt suffix()}, {opt history}), use the standalone
+{helpb unicefdata_sync} command directly.
 {p_end}
 
 {dlgtab:Offline/CI Testing (v2.2.0)}
@@ -1066,11 +1119,23 @@ Using {opt attributes()} filter - Targeted disaggregation (requires NUTRITION da
 
 {pstd}
 Sync all metadata from UNICEF API:{p_end}
-{p 8 12}{stata "unicefdata_sync, all" :. unicefdata_sync, all}{p_end}
+{p 8 12}{stata "unicefdata, sync verbose" :. unicefdata, sync verbose}{p_end}
 
 {pstd}
 Sync indicators only:{p_end}
-{p 8 12}{stata "unicefdata_sync, indicators" :. unicefdata_sync, indicators}{p_end}
+{p 8 12}{stata "unicefdata, sync(indicators) verbose" :. unicefdata, sync(indicators) verbose}{p_end}
+
+{pstd}
+Force refresh all metadata (bypass 30-day cache):{p_end}
+{p 8 12}{stata "unicefdata, sync force verbose" :. unicefdata, sync force verbose}{p_end}
+
+{pstd}
+Force refresh dataflows only:{p_end}
+{p 8 12}{stata "unicefdata, sync(dataflows) force verbose" :. unicefdata, sync(dataflows) force verbose}{p_end}
+
+{pstd}
+For advanced options, use the standalone command ({helpb unicefdata_sync}):{p_end}
+{p 8 12}{stata "unicefdata_sync, all enrichdataflows fallbacksequences verbose" :. unicefdata_sync, all enrichdataflows fallbacksequences verbose}{p_end}
 
 
 {marker results}{...}

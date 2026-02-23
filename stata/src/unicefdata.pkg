@@ -1,4 +1,4 @@
-v 2.3.0
+v 2.3.1
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -33,7 +33,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260218
+d Distribution-Date: 20260222
 d
 d Quality Assurance:
 d   - 16 test families (63 tests): ENV, DL, DISC, SYNC, TRANS, EDGE, XPLAT, ERR, EXT, DET, DATA, MULTI, PERF, REGR, DOC, TIDY
@@ -65,6 +65,17 @@ f u/unicefdata_xmltoyaml_py.sthlp
 * YAML command and help
 f y/yaml.ado
 f y/yaml.sthlp
+f y/yaml_read.ado
+f y/yaml_get.ado
+f y/yaml_write.ado
+f y/yaml_list.ado
+f y/yaml_describe.ado
+f y/yaml_dir.ado
+f y/yaml_clear.ado
+f y/yaml_validate.ado
+f y/yaml_frames.ado
+f y/yaml_examples.sthlp
+f y/yaml_whatsnew.sthlp
 
 * Metadata setup (auto-triggered on first use)
 f _/_unicefdata_setup.ado
@@ -108,7 +119,18 @@ f _/_xmltoyaml_parse_stata.ado
 
 * YAML indicator parser
 f _/__unicef_parse_indicator_yaml.ado
+f _/__unicef_parse_ind_yaml_v2.ado
 f _/__unicef_get_indicator_dataflow.ado
+
+* YAML parser internals
+f _/_yaml_collapse.ado
+f _/_yaml_fastread.ado
+f _/_yaml_mataread.ado
+f _/_yaml_tokenize_line.ado
+f _/_unicefdata_check_yaml.ado
+
+* Country metadata
+f _/_unicefdata_countries.dta
 
 * Metadata display helper
 f _/_metadata_linewrap.ado
