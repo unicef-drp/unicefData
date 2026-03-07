@@ -41,7 +41,7 @@
 #' @return Invisibly returns the path to the cache directory.
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Use temporary cache (default, no files created in home directory)
 #' set_metadata_cache()
 #'
@@ -799,7 +799,7 @@ get_vintage_path <- function(vintage = NULL, cache_dir = NULL) {
 #' \dontrun{
 #' # Load current metadata
 #' meta <- load_vintage()
-#' 
+#'
 #' # Load from specific vintage
 #' meta <- load_vintage("2025-11-15")
 #' }
@@ -827,7 +827,7 @@ load_vintage <- function(vintage = NULL, cache_dir = NULL) {
 #' \dontrun{
 #' # Compare historical vintage to current
 #' changes <- compare_vintages("2025-11-15")
-#' 
+#'
 #' # Compare two historical vintages
 #' changes <- compare_vintages("2025-10-01", "2025-11-15")
 #' 
@@ -890,7 +890,7 @@ compare_vintages <- function(vintage1, vintage2 = NULL, cache_dir = NULL) {
 #' @return Logical indicating if sync was performed
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Check every 30 days (default)
 #' ensure_metadata()
 #' 

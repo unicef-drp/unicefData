@@ -13,7 +13,7 @@ Named list with cache metadata
 Get information about the current cache state.
 }
 \examples{
-\dontrun{
+\donttest{
 info <- get_cache_info()
 print(info$cache_path)
 print(info$indicator_count)

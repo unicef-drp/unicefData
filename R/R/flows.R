@@ -71,7 +71,7 @@ list_sdmx_flows <- local({
 #' @return A list with components: id, name, version, agency, dimensions, attributes.
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Get schema for Child Mortality dataflow
 #' schema <- dataflow_schema("CME")
 #' print(schema$dimensions)

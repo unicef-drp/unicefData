@@ -13,7 +13,7 @@ Invisibly returns NULL. Prints confirmation message.
 Remove all cached schemas from memory to free resources or refresh data.
 }
 \examples{
-\dontrun{
+\donttest{
   clear_schema_cache()
   # Cache: 0 items (0 MB)
 }

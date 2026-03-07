@@ -13,7 +13,7 @@ Integer. Number of indicators in the refreshed cache
 Force refresh of the indicator cache from UNICEF SDMX API.
 }
 \examples{
-\dontrun{
+\donttest{
 n <- refresh_indicator_cache()
 message(sprintf("Refreshed cache with \%d indicators", n))
 }

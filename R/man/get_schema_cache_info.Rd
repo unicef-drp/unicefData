@@ -13,7 +13,7 @@ Invisible data.frame with cache statistics
 Display current cache contents and statistics.
 }
 \examples{
-\dontrun{
+\donttest{
   get_schema_cache_info()
 }
 }

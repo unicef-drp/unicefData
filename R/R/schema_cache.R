@@ -13,11 +13,11 @@
 #' @examples
 #' \dontrun{
 #'   # Cache is managed automatically when get_sdmx() is called with cache=TRUE
-#'   
+#'
 #'   # Manual cache operations:
 #'   get_schema_cache_info()
 #'   clear_schema_cache()
-#'   
+#'
 #'   # Multiple calls within session use cached schema
 #'   df1 <- get_sdmx(indicator = "SP.POP.TOTL", cache = TRUE)
 #'   df2 <- get_sdmx(indicator = "NY.GDP.MKTP.CD", cache = TRUE)
@@ -37,7 +37,7 @@ NULL
 #' @return Invisibly returns NULL. Prints confirmation message.
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   clear_schema_cache()
 #'   # Cache: 0 items (0 MB)
 #' }
@@ -54,7 +54,7 @@ clear_schema_cache <- function() {
 #' @return Invisible data.frame with cache statistics
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   get_schema_cache_info()
 #' }
 get_schema_cache_info <- function() {

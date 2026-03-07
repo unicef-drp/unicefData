@@ -21,8 +21,8 @@ keywords:
   - Stata
   - "data warehouse"
 license: MIT
-version: 2.2.0
-date-released: "2026-02-15"
+version: 2.3.0
+date-released: "2026-02-19"
 date-created: "2024"
 contact:
   - family-names: Azevedo

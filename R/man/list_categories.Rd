@@ -15,7 +15,7 @@ Prints a formatted table of categories showing how many indicators
 are in each category.
 }
 \examples{
-\dontrun{
+\donttest{
 list_categories()
 }
 
