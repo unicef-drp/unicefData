@@ -10,18 +10,18 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'r/**'
+      - 'R/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
+      - 'R/DESCRIPTION'
+      - 'R/NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'r/**'
+      - 'R/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
+      - 'R/DESCRIPTION'
+      - 'R/NAMESPACE'
       - '.github/workflows/r-scripted-tests.yaml'
   workflow_dispatch:
 

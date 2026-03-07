@@ -14,26 +14,26 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'r/**'
-      - 'r/man/**'
-      - 'r/inst/**'
+      - 'R/**'
+      - 'R/man/**'
+      - 'R/inst/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
-      - 'r/LICENSE'
-      - 'r/.Rbuildignore'
+      - 'R/DESCRIPTION'
+      - 'R/NAMESPACE'
+      - 'R/LICENSE'
+      - 'R/.Rbuildignore'
       - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'r/**'
-      - 'r/man/**'
-      - 'r/inst/**'
+      - 'R/**'
+      - 'R/man/**'
+      - 'R/inst/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
-      - 'r/LICENSE'
-      - 'r/.Rbuildignore'
+      - 'R/DESCRIPTION'
+      - 'R/NAMESPACE'
+      - 'R/LICENSE'
+      - 'R/.Rbuildignore'
       - '.github/workflows/check.yaml'
   workflow_dispatch:
 

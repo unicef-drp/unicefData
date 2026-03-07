@@ -12,7 +12,7 @@ on:
     paths:
       - 'stata/src/_/*.yaml'
       - 'python/metadata/current/*.yaml'
-      - 'R/metadata/current/*.yaml'
+      - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
       - 'validation/scripts/validate_yaml_schema.py'
       - '.github/workflows/validate-schemas.yml'
@@ -21,7 +21,7 @@ on:
     paths:
       - 'stata/src/_/*.yaml'
       - 'python/metadata/current/*.yaml'
-      - 'R/metadata/current/*.yaml'
+      - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
       - 'validation/scripts/validate_yaml_schema.py'
       - '.github/workflows/validate-schemas.yml'

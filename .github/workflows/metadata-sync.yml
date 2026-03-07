@@ -6,6 +6,11 @@ on:
     - cron: '0 2 * * 1'
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   refresh-metadata:
     runs-on: ubuntu-latest
@@ -109,15 +114,24 @@ jobs:
       - name: Commit and push to metadata-sync branch
         if: steps.git-check.outputs.changed == 'true'
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           BRANCH="metadata-sync"
+          BASE_BRANCH="develop"
+
+          git fetch origin "$BASE_BRANCH"
           git checkout -B "$BRANCH"
 
           git add stata/src/_/_unicefdata_dataflow_metadata.yaml
           git add stata/src/_/_unicefdata_indicators_metadata.yaml
           git add stata/src/_/_unicefdata_sync_history.yaml
+
+          if git diff --cached --quiet; then
+            echo "No staged changes after add; skipping commit/push."
+            exit 0
+          fi
 
           git commit -m "chore: weekly metadata refresh $(date -u +%Y-%m-%d)
 
@@ -128,7 +142,7 @@ jobs:
           Workflow: .github/workflows/metadata-sync.yml
           Triggered: ${{ github.event_name }}"
 
-          git push --force-with-lease origin "$BRANCH"
+          git push --force origin "$BRANCH"
         id: push-branch
 
       - name: Create or update pull request
