@@ -20,6 +20,7 @@
 # Documentation
 ^README\.Rmd$
 ^README\.md$
+^R/README\.md$
 ^LICENSE\.md$
 ^docs$
 ^_pkgdown\.yml$

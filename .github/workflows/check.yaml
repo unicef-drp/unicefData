@@ -15,25 +15,27 @@ on:
     branches: [main, develop]
     paths:
       - 'r/**'
-      - 'r/man/**'
-      - 'r/inst/**'
+      - 'R/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
-      - 'r/LICENSE'
-      - 'r/.Rbuildignore'
+      - 'scripts/enforce_r_dir_policy.py'
+      - 'scripts/prepare_r_test_fixtures.py'
+      - '.githooks/pre-commit'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-r-check.yml'
       - '.github/workflows/check.yaml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'r/**'
-      - 'r/man/**'
-      - 'r/inst/**'
+      - 'R/**'
       - 'tests/**'
-      - 'r/DESCRIPTION'
-      - 'r/NAMESPACE'
-      - 'r/LICENSE'
-      - 'r/.Rbuildignore'
+      - 'scripts/enforce_r_dir_policy.py'
+      - 'scripts/prepare_r_test_fixtures.py'
+      - '.githooks/pre-commit'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-r-check.yml'
       - '.github/workflows/check.yaml'
   workflow_dispatch:
 
@@ -44,50 +46,42 @@ concurrency:
 permissions: read-all
 
 jobs:
-  R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {os: macos-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          # Pinned to ubuntu-22.04 for pandoc-citeproc availability
-          - {os: ubuntu-22.04,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-22.04,   r: 'release'}
-          - {os: ubuntu-22.04,   r: 'oldrel-1'}
-
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_KEEP_PKG_SOURCE: yes
-
+  enforce-r-dir-policy:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
-      - uses: r-lib/actions/setup-r@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+          python-version: '3.11'
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
-          working-directory: 'R'
-          cache-version: 8
-          upgrade: 'TRUE'
+      - name: Enforce canonical r directory policy
+        run: |
+          python scripts/enforce_r_dir_policy.py
 
-      - uses: r-lib/actions/check-r-package@v2
+  load-config:
+    runs-on: ubuntu-22.04
+    outputs:
+      r_pkg_dir: ${{ steps.workflow_config.outputs.r_pkg_dir }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python (workflow config loader)
+        uses: actions/setup-python@v5
         with:
-          upload-snapshots: true
-          working-directory: 'R'
-          build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
-          # Changed from "warning" to "error" to allow non-critical warnings
-          # Warnings are still visible in logs but don't fail the build
-          error-on: '"error"'
+          python-version: '3.11'
+
+      - name: Load workflow config
+        id: workflow_config
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          python .github/scripts/load_workflow_config.py
+
+  R-CMD-check:
+    needs: [enforce-r-dir-policy, load-config]
+    uses: ./.github/workflows/_reusable-r-check.yml
+    with:
+      r_pkg_dir: ${{ needs.load-config.outputs.r_pkg_dir }}
+    secrets: inherit
