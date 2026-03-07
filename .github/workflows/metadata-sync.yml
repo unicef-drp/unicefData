@@ -122,7 +122,7 @@ jobs:
           BASE_BRANCH="develop"
 
           git fetch origin "$BASE_BRANCH"
-          git checkout -B "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BASE_BRANCH"
 
           git add stata/src/_/_unicefdata_dataflow_metadata.yaml
           git add stata/src/_/_unicefdata_indicators_metadata.yaml
@@ -142,7 +142,7 @@ jobs:
           Workflow: .github/workflows/metadata-sync.yml
           Triggered: ${{ github.event_name }}"
 
-          git push --force origin "$BRANCH"
+          git push --force-with-lease origin "$BRANCH"
         id: push-branch
 
       - name: Create or update pull request
