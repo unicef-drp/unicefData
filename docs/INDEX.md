@@ -63,6 +63,7 @@ unicefData-dev/
 | Document | Description |
 |----------|-------------|
 | [governance_overview.md](governance_overview.md) | Data governance framework and decision-making |
+| [CI_POLICY_PUBLIC.md](CI_POLICY_PUBLIC.md) | Public CI/CD reliability guarantees and escalation expectations |
 
 ## Release History
 
