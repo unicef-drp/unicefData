@@ -13,7 +13,6 @@ on:
       - 'stata/src/_/*.yaml'
       - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
-      - 'validation/scripts/validate_yaml_schema.py'
       - '.github/workflows/validate-schemas.yml'
   pull_request:
     branches: [main, develop]
@@ -21,7 +20,6 @@ on:
       - 'stata/src/_/*.yaml'
       - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
-      - 'validation/scripts/validate_yaml_schema.py'
       - '.github/workflows/validate-schemas.yml'
   workflow_dispatch:
 
@@ -99,7 +97,8 @@ jobs:
         id: validate-cross-platform
         run: |
           echo "::group::Cross-Platform Schema Validation"
-          python validation/scripts/validate_yaml_schema.py --strict
+          python stata/src/py/validate_yaml_schema.py indicators stata/src/_/_unicefdata_indicators_metadata.yaml
+          python stata/src/py/validate_yaml_schema.py dataflow_index stata/src/_/_dataflow_index.yaml
           echo "::endgroup::"
 
       - name: Summary
