@@ -130,7 +130,7 @@ f _/_yaml_tokenize_line.ado
 f _/_unicefdata_check_yaml.ado
 
 * Country metadata
-f _/_unicefdata_countries.dta
+F _/_unicefdata_countries.dta
 
 * Metadata display helper
 f _/_metadata_linewrap.ado
@@ -140,25 +140,25 @@ f _/_linewrap.ado
 f u/unicefdata_refresh_all.ado
 
 * YAML metadata files (Core API metadata)
-f _/_unicefdata_dataflows.yaml
-f _/_unicefdata_indicators.yaml
-f _/_unicefdata_codelists.yaml
-f _/_unicefdata_countries.yaml
-f _/_unicefdata_regions.yaml
-f _/_unicefdata_sync_history.yaml
-f _/_dataflow_index.yaml
+F _/_unicefdata_dataflows.yaml
+F _/_unicefdata_indicators.yaml
+F _/_unicefdata_codelists.yaml
+F _/_unicefdata_countries.yaml
+F _/_unicefdata_regions.yaml
+F _/_unicefdata_sync_history.yaml
+F _/_dataflow_index.yaml
 
 * Dataflow fallback sequences
-f _/_dataflow_fallback_sequences.yaml
+F _/_dataflow_fallback_sequences.yaml
 
 * Comprehensive indicators metadata (748+ indicators with tier and dataflow mappings)
-f _/_unicefdata_indicators_metadata.yaml
+F _/_unicefdata_indicators_metadata.yaml
 
 * Indicator to dataflow mapping (NEW in 1.9.1 - 748 indicators across 69 dataflows)
-f _/_indicator_dataflow_map.yaml
+F _/_indicator_dataflow_map.yaml
 
 * Dataflow metadata (dimensions and attributes for all dataflows - used in enrichment)
-f _/_unicefdata_dataflow_metadata.yaml
+F _/_unicefdata_dataflow_metadata.yaml
 
 * NOTE: Individual dataflow schema files (_dataflows/*.yaml, 70 files) are
 * installed automatically on first use via _unicefdata_setup.
