@@ -62,7 +62,7 @@ All three platforms use **the same functions** with nearly identical parameters.
 ### Python
 
 ```python
-from unicef_api import unicefData, search_indicators, list_categories
+from unicefdata import unicefData, search_indicators, list_categories
 
 # Search for indicators
 search_indicators("mortality")
