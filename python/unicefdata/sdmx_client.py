@@ -563,8 +563,8 @@ class UNICEFSDMXClient:
                 If None, fetches ALL countries.
             start_year: Starting year for data (e.g., 2015). If None, fetches from earliest available.
             end_year: Ending year for data (e.g., 2023). If None, fetches up to latest available.
-            dataflow: SDMX dataflow name (e.g., 'CME', 'NUTRITION'). 
-                If None, uses GLOBAL_DATAFLOW (recommended).
+            dataflow: SDMX dataflow name (e.g., 'CME', 'NUTRITION').
+                If None, auto-detected from indicators metadata then prefix sequences.
             sex_disaggregation: Sex filter for data ('_T' for total, 'F' for female, 'M' for male)
                 Default: '_T' (total population). Ignored if nofilter=True.
             nofilter: If True, fetches ALL disaggregations (50-100x more data).
@@ -621,8 +621,19 @@ class UNICEFSDMXClient:
         # Validate inputs
         self._validate_inputs(indicator_code, countries, start_year, end_year)
         
-        # Use provided dataflow or fall back to default
-        current_dataflow = dataflow if dataflow else self.default_dataflow
+        # Use provided dataflow or auto-detect from metadata/prefix sequences
+        if dataflow:
+            current_dataflow = dataflow
+        elif indicator_code in self._indicators_metadata:
+            meta = self._indicators_metadata[indicator_code]
+            meta_df = meta.get('dataflow') or meta.get('dataflows')
+            if isinstance(meta_df, list):
+                meta_df = meta_df[0] if meta_df else None
+            current_dataflow = meta_df if meta_df else self.default_dataflow
+        else:
+            prefix = indicator_code.split('_')[0].upper() if '_' in indicator_code else indicator_code[:2].upper()
+            seq = self._fallback_sequences.get(prefix, self._fallback_sequences.get('DEFAULT', [self.default_dataflow]))
+            current_dataflow = seq[0] if seq else self.default_dataflow
         # Special-case mapping for indicators requiring specific dataflows
         # WS_HCF_H-L should use the WASH_HEALTHCARE_FACILITY dataflow to expose service_type/hcf_type
         if indicator_code.upper() == "WS_HCF_H-L" and (not dataflow or dataflow == self.default_dataflow):

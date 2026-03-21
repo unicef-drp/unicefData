@@ -196,7 +196,7 @@ class MetadataSync:
         metadata_dict = {
             'platform': 'python',
             'version': self.METADATA_VERSION,
-            'synced_at': datetime.utcnow().isoformat() + 'Z',
+            'synced_at': datetime.now(timezone.utc).isoformat(),
             'source': source_url,
             'agency': self.agency,
             'content_type': content_type,
@@ -269,10 +269,10 @@ class MetadataSync:
         Returns:
             Dictionary with sync summary including counts and timestamps
         """
-        vintage_date = datetime.utcnow().strftime('%Y-%m-%d')
-        
+        vintage_date = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+
         results = {
-            'synced_at': datetime.utcnow().isoformat() + 'Z',
+            'synced_at': datetime.now(timezone.utc).isoformat(),
             'vintage_date': vintage_date,
             'dataflows': 0,
             'codelists': 0,

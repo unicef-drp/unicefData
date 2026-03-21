@@ -42,7 +42,7 @@ unicefData-dev/
 | Platform | README | Changelog | Version |
 |----------|--------|-----------|---------|
 | **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.3.0 (CRAN) |
-| **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.1.0 |
+| **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.2.2 |
 | **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.3.0 |
 
 ## Repository Documentation

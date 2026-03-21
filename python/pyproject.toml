@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unicefdata"
-version = "2.2.0"
+version = "2.2.2"
 description = "Python library for downloading UNICEF indicators via SDMX API"
 readme = "README.md"
 license = {text = "MIT"}
@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["unicef", "sdmx", "indicators", "data", "api", "statistics", "sdg", "development"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
@@ -44,7 +44,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://jpazvd.github.io/"
+Homepage = "https://github.com/unicef-drp/unicefData"
 Documentation = "https://github.com/unicef-drp/unicefData/tree/main/python"
 Repository = "https://github.com/unicef-drp/unicefData"
 Changelog = "https://github.com/unicef-drp/unicefData/blob/main/python/CHANGELOG.md"

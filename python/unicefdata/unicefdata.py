@@ -217,7 +217,7 @@ def _load_fallback_sequences() -> Dict[str, List[str]]:
     
     # Fallback to package bundled version
     if not fallback_file:
-        pkg_path = Path(__file__).parent / 'metadata/_dataflow_fallback_sequences.yaml'
+        pkg_path = Path(__file__).parent / 'metadata/current/_dataflow_fallback_sequences.yaml'
         if pkg_path.exists():
             fallback_file = pkg_path
     
@@ -254,10 +254,12 @@ def _load_indicators_metadata() -> Dict[str, dict]:
     This provides O(1) direct lookup of the correct dataflow for each indicator,
     matching R's .INDICATORS_METADATA_YAML functionality.
     
-    Tries multiple locations (same as R's search order):
-    1. metadata/current/_unicefdata_indicators_metadata.yaml
-    2. stata/src/__unicefdata_indicators_metadata.yaml (canonical source)
-    3. Package bundled version
+    Tries multiple locations (in priority order):
+    1. Package bundled metadata (installed package: unicefdata/metadata/current/)
+    2. Dev repo: python/metadata/current/
+    3. Dev repo: R/metadata/current/
+    4. Dev repo: stata/src/_/
+    5. Dev repo: metadata/current/
     
     Returns:
         Dict mapping indicator code -> {dataflow: str, ...metadata}
@@ -281,26 +283,21 @@ def _load_indicators_metadata() -> Dict[str, dict]:
     # python/unicefdata/core.py -> python/ -> repo_root/
     repo_root = Path(__file__).parent.parent.parent
 
-    # Priority 1: R metadata (canonical cross-language location)
-    # This ensures Python and R use the same source of truth
-    r_meta = repo_root / 'R' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    # Priority 1: Python package bundled metadata (installed package location)
+    # Path(__file__).parent = python/unicefdata/
+    pkg_meta = Path(__file__).parent / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    if pkg_meta.exists():
+        candidates.append(pkg_meta)
+
+    # Priority 2 (dev repo): r/inst/metadata/current/ — canonical cross-language source
+    r_meta = repo_root / 'r' / 'inst' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
     if r_meta.exists():
         candidates.append(r_meta)
 
-    # Priority 2: Python package bundled metadata
-    python_meta = repo_root / 'python' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
-    if python_meta.exists():
-        candidates.append(python_meta)
-
-    # Priority 3: stata/src/_/_unicefdata_indicators_metadata.yaml (canonical source in -dev repo)
+    # Priority 3 (dev repo): stata/src/_/ — Stata-side copy
     stata_path = repo_root / 'stata' / 'src' / '_' / '_unicefdata_indicators_metadata.yaml'
     if stata_path.exists():
         candidates.append(stata_path)
-
-    # Priority 4: metadata/current/ (if it exists)
-    canonical_path = repo_root / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
-    if canonical_path.exists():
-        candidates.append(canonical_path)
     
     # Try each candidate
     for candidate in candidates:

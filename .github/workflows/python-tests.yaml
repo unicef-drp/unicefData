@@ -1,8 +1,6 @@
 # Python Tests Workflow
-# Runs pytest suite for the unicef_api Python package
-#
-# Pinned to ubuntu-22.04 for pandoc/citation tooling compatibility
-# See: https://github.com/r-lib/actions/issues/994
+# Runs pytest suite for the unicefdata Python package
+# Cross-platform matrix: Ubuntu / macOS / Windows × Python 3.9–3.12
 
 name: Python Tests
 
@@ -27,13 +25,13 @@ concurrency:
 
 jobs:
   test:
-    name: Python ${{ matrix.python-version }}
-    # Pinned to ubuntu-22.04 for consistency across workflows
-    runs-on: ubuntu-22.04
+    name: Python ${{ matrix.python-version }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -63,5 +61,5 @@ jobs:
       with:
         file: ./coverage.xml
         flags: python
-        name: python-${{ matrix.python-version }}
+        name: python-${{ matrix.python-version }}-${{ matrix.os }}
         fail_ci_if_error: false
