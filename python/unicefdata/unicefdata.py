@@ -256,10 +256,8 @@ def _load_indicators_metadata() -> Dict[str, dict]:
     
     Tries multiple locations (in priority order):
     1. Package bundled metadata (installed package: unicefdata/metadata/current/)
-    2. Dev repo: python/metadata/current/
-    3. Dev repo: R/metadata/current/
-    4. Dev repo: stata/src/_/
-    5. Dev repo: metadata/current/
+    2. Dev repo: r/inst/metadata/current/
+    3. Dev repo: stata/src/_/
     
     Returns:
         Dict mapping indicator code -> {dataflow: str, ...metadata}
