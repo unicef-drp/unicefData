@@ -1,8 +1,6 @@
 # Python Tests Workflow
-# Runs pytest suite for the unicef_api Python package
-#
-# Pinned to ubuntu-22.04 for pandoc/citation tooling compatibility
-# See: https://github.com/r-lib/actions/issues/994
+# Runs pytest suite for the unicefdata Python package
+# Cross-platform matrix: Ubuntu / macOS / Windows × Python 3.9–3.12
 
 name: Python Tests
 
@@ -12,12 +10,18 @@ on:
     paths:
       - 'python/**'
       - 'tests/**'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-python-tests.yml'
       - '.github/workflows/python-tests.yaml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'python/**'
       - 'tests/**'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-python-tests.yml'
       - '.github/workflows/python-tests.yaml'
   workflow_dispatch:
 
@@ -25,43 +29,36 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: read-all
+
 jobs:
-  test:
-    name: Python ${{ matrix.python-version }}
-    # Pinned to ubuntu-22.04 for consistency across workflows
+  load-config:
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+    outputs:
+      py_pkg_dir: ${{ steps.workflow_config.outputs.py_pkg_dir }}
+      require_cross_language_tests: ${{ steps.workflow_config.outputs.require_cross_language_tests }}
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov responses
-        cd python
-        pip install -e .
+        pip install pyyaml
 
-    - name: Run Python unit tests
+    - name: Load workflow config
+      id: workflow_config
       run: |
-        pytest python/tests/ --cov=unicefdata --cov-report=xml -v
+        python .github/scripts/load_workflow_config.py
 
-    - name: Run cross-language fixture tests
-      run: |
-        pytest tests/test_cross_language_output.py -v
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: python
-        name: python-${{ matrix.python-version }}
-        fail_ci_if_error: false
+  test:
+    needs: load-config
+    uses: ./.github/workflows/_reusable-python-tests.yml
+    with:
+      py_pkg_dir: ${{ needs.load-config.outputs.py_pkg_dir }}
+      require_cross_language_tests: ${{ needs.load-config.outputs.require_cross_language_tests == 'true' }}

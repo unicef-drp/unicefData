@@ -9,6 +9,24 @@ See language-specific detailed changelogs:
 
 ---
 
+## [python-2.2.2] - 2026-03-20
+
+### Python (v2.2.2) - Bug Fix Release
+
+- **`UNICEFSDMXClient.fetch_indicator()` dataflow resolution**: Auto-detects correct dataflow from metadata/prefix sequences instead of always using `GLOBAL_DATAFLOW`
+- See [python/CHANGELOG.md](python/CHANGELOG.md) for full details
+
+## [python-2.2.1] - 2026-03-20
+
+### Python (v2.2.1) - Bug Fix Release
+
+- **Bundled metadata paths corrected**: Resolved startup warnings for missing fallback sequences and indicators metadata files
+- **Codelists filename fixed**: `MetadataManager` now correctly loads `_unicefdata_codelists.yaml`
+- **Category lookup fixed**: `list_categories()` and `search_indicators(category=...)` now return correct results instead of all `UNKNOWN`
+- See [python/CHANGELOG.md](python/CHANGELOG.md) for full details
+
+---
+
 ## [2.3.0] - 2026-02-19
 
 ### Multi-Language Updates
@@ -58,7 +76,7 @@ See language-specific detailed changelogs:
 
 - Stata: 63/63 tests passing (100%) across 16 families
 
-## [2.2.1] - 2026-02-18 (Stata)
+## [stata-2.2.1] - 2026-02-18
 
 ### Fixed
 

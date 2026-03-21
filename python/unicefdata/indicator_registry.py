@@ -589,22 +589,23 @@ def search_indicators(
     
     for code, info in indicators.items():
         # Apply category filter
-        if category and info.get('category', '').upper() != category.upper():
+        indicator_category = info.get('category') or _infer_category(code)
+        if category and indicator_category.upper() != category.upper():
             continue
-        
+
         # Apply query filter (search in code, name, and description)
         if query_lower:
             code_match = query_lower in code.lower()
             name_match = query_lower in info.get('name', '').lower()
             desc_match = query_lower in info.get('description', '').lower()
-            
+
             if not (code_match or name_match or desc_match):
                 continue
-        
+
         matches.append({
             'code': code,
             'name': info.get('name', ''),
-            'category': info.get('category', ''),
+            'category': indicator_category,
             'description': info.get('description', '') or ''
         })
     
@@ -705,7 +706,7 @@ def list_categories() -> None:
     # Count indicators per category
     category_counts = {}
     for code, info in indicators.items():
-        cat = info.get('category', 'UNKNOWN')
+        cat = info.get('category') or _infer_category(code)
         category_counts[cat] = category_counts.get(cat, 0) + 1
     
     # Sort by count (descending)

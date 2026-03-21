@@ -1,0 +1,190 @@
+{
+  "generated_at": "2026-02-14T16:46:41Z",
+  "generator": "scripts/generate_fixtures.py",
+  "snapshot_date": "2026-02-14",
+  "sdmx_base_url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+  "files": {
+    "api_responses/README.md": {
+      "size_bytes": 3269
+    },
+    "api_responses/cme_albania_valid.csv": {
+      "size_bytes": 337
+    },
+    "api_responses/cme_disaggregated_sex.csv": {
+      "size_bytes": 495
+    },
+    "api_responses/cme_usa_valid.csv": {
+      "size_bytes": 203
+    },
+    "api_responses/dataflows.xml": {
+      "size_bytes": 1079
+    },
+    "api_responses/empty_response.csv": {
+      "size_bytes": 79
+    },
+    "api_responses/nutrition_multi_country.csv": {
+      "size_bytes": 563
+    },
+    "api_responses/vaccination_multi_indicator.csv": {
+      "size_bytes": 571
+    },
+    "data/CME_MRY0T4_BRA_1990_2023.csv": {
+      "size_bytes": 19613,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/BRA.CME_MRY0T4.._T._T._T?format=csv&startPeriod=1990&endPeriod=2023",
+      "description": "DET-09: Long time series, BRA, 1990-2023"
+    },
+    "data/CME_MRY0T4_BRA_sex_2020.csv": {
+      "size_bytes": 1757,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/BRA.CME_MRY0T4..._T._T?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-05: Sex disaggregation, BRA, 2020"
+    },
+    "data/CME_MRY0T4_USA_2015_2023.csv": {
+      "size_bytes": 5544,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA.CME_MRY0T4.._T._T._T?format=csv&startPeriod=2015&endPeriod=2023",
+      "description": "DET-04: Time series, USA, 2015-2023"
+    },
+    "data/CME_MRY0T4_USA_2020_pinning.csv": {
+      "size_bytes": 818,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA.CME_MRY0T4.._T._T._T?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-02: Value pinning, USA U5MR 2020"
+    },
+    "data/CME_MRY0T4_USA_BRA_2020.csv": {
+      "size_bytes": 1388,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA+BRA.CME_MRY0T4.._T._T._T?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-01/03: Under-5 mortality, USA+BRA, 2020"
+    },
+    "data/CME_MRY0T4_USA_nofilter_2020.csv": {
+      "size_bytes": 818,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA.CME_MRY0T4?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-08: Nofilter (all disaggregations), USA, 2020"
+    },
+    "data/CME_MRY0T4_all_2020.csv": {
+      "size_bytes": 158143,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/.CME_MRY0T4.._T._T._T?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-01/EXT-03: Under-5 mortality, all countries, 2020"
+    },
+    "data/CME_MRY0T4_multi_2018_2023.csv": {
+      "size_bytes": 20625,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA+BRA+IND+NGA+ETH.CME_MRY0T4.._T._T._T?format=csv&startPeriod=2018&endPeriod=2023",
+      "description": "DET-10: Multi-country time series, 5 countries, 2018-2023"
+    },
+    "data/CME_multi_USA_2020.csv": {
+      "size_bytes": 2106,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/USA.CME_MRY0T4+CME_MRM0+CME_MRY0+CME_TMY0T4+CME_TMM0.._T._T._T?format=csv&startPeriod=2020&endPeriod=2020",
+      "description": "DET-07: Multiple CME indicators, USA, 2020"
+    },
+    "data/IM_MCV1_USA_BRA_2015_2023.csv": {
+      "size_bytes": 5653,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,IMMUNISATION,1.0/USA+BRA.IM_MCV1?format=csv&startPeriod=2015&endPeriod=2023",
+      "description": "DET-11: MCV1 vaccination, USA+BRA, 2015-2023 (cross-dataflow)"
+    },
+    "data/snap_mortality_baseline.csv": {
+      "size_bytes": 122
+    },
+    "data/snap_vaccination_baseline.csv": {
+      "size_bytes": 86
+    },
+    "xml/codelist_CL_AGE.xml": {
+      "size_bytes": 71123,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_AGE/latest",
+      "description": "Age group codelist"
+    },
+    "xml/codelist_CL_COUNTRY.xml": {
+      "size_bytes": 148461,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest",
+      "description": "Country codelist (264 countries)"
+    },
+    "xml/codelist_CL_OBS_STATUS.xml": {
+      "size_bytes": 12248,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_OBS_STATUS/latest",
+      "description": "Observation status codelist"
+    },
+    "xml/codelist_CL_RESIDENCE.xml": {
+      "size_bytes": 4376,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_RESIDENCE/latest",
+      "description": "Residence type codelist"
+    },
+    "xml/codelist_CL_UNICEF_INDICATOR.xml": {
+      "size_bytes": 603844,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNICEF_INDICATOR/latest",
+      "description": "Indicator codelist (730+ indicators)"
+    },
+    "xml/codelist_CL_UNIT_MEASURE.xml": {
+      "size_bytes": 19423,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_UNIT_MEASURE/latest",
+      "description": "Unit of measure codelist"
+    },
+    "xml/codelist_CL_WEALTH_QUINTILE.xml": {
+      "size_bytes": 4522,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_WEALTH_QUINTILE/latest",
+      "description": "Wealth quintile codelist"
+    },
+    "xml/codelist_CL_WORLD_REGIONS.xml": {
+      "size_bytes": 26790,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_WORLD_REGIONS/latest",
+      "description": "World regions codelist"
+    },
+    "xml/dataflow_CME_dsd.xml": {
+      "size_bytes": 987071,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF/CME/1.0?references=all",
+      "description": "CME data structure definition"
+    },
+    "xml/dataflows.xml": {
+      "size_bytes": 28408,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/dataflow/UNICEF?references=none&detail=full",
+      "description": "Dataflow catalog (69 dataflows)"
+    },
+    "xml/enrichment/_indicator_dataflow_map.yaml": {
+      "size_bytes": 70125
+    },
+    "xml/enrichment/_unicefdata_dataflow_metadata.yaml": {
+      "size_bytes": 413870
+    },
+    "xml/enrichment/serieskeys/CME.xml": {
+      "size_bytes": 1615658,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,CME,1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly",
+      "description": "CME serieskeys (34 indicators)"
+    },
+    "xml/enrichment/serieskeys/ECD.xml": {
+      "size_bytes": 2029214,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,ECD,1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly",
+      "description": "ECD serieskeys (6 indicators)"
+    },
+    "xml/enrichment/serieskeys/EDUCATION.xml": {
+      "size_bytes": 2150049,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,EDUCATION,1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly",
+      "description": "EDUCATION serieskeys (21 indicators)"
+    },
+    "xml/enrichment/serieskeys/HIV_AIDS.xml": {
+      "size_bytes": 5192061,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,HIV_AIDS,1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly",
+      "description": "HIV_AIDS serieskeys (25 indicators)"
+    },
+    "xml/enrichment/serieskeys/IMMUNISATION.xml": {
+      "size_bytes": 365709,
+      "url": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/UNICEF,IMMUNISATION,1.0/all?format=sdmx-compact-2.1&detail=serieskeysonly",
+      "description": "IMMUNISATION serieskeys (18 indicators)"
+    },
+    "xml_subset/codelist_countries.xml": {
+      "size_bytes": 1426
+    },
+    "xml_subset/codelist_indicators.xml": {
+      "size_bytes": 2543
+    },
+    "xml_subset/codelist_regions.xml": {
+      "size_bytes": 1382
+    },
+    "yaml/_unicefdata_countries.yaml": {
+      "size_bytes": 173
+    },
+    "yaml/_unicefdata_dataflows.yaml": {
+      "size_bytes": 281
+    },
+    "yaml/_unicefdata_regions.yaml": {
+      "size_bytes": 188
+    },
+    "yaml/unicef_indicators_metadata.yaml": {
+      "size_bytes": 996
+    }
+  }
+}

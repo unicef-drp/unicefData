@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:s="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <s:Structures>
+        <s:Dataflows>
+            <s:Dataflow id="CME" agencyID="UNICEF" version="1.0">
+                <common:Name>Child Mortality Estimates</common:Name>
+            </s:Dataflow>
+            <s:Dataflow id="NUTRITION" agencyID="UNICEF" version="1.0">
+                <common:Name>Nutrition</common:Name>
+            </s:Dataflow>
+            <s:Dataflow id="MNCH" agencyID="UNICEF" version="1.0">
+                <common:Name>Maternal and Newborn Health</common:Name>
+            </s:Dataflow>
+            <s:Dataflow id="GLOBAL_DATAFLOW" agencyID="UNICEF" version="1.0">
+                <common:Name>Global Data Flow</common:Name>
+            </s:Dataflow>
+        </s:Dataflows>
+    </s:Structures>
+</message:Structure>
