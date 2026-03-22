@@ -1,0 +1,20 @@
+name: Versioning checks
+
+on:
+  pull_request:
+    branches: [ main, develop, '**' ]
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run version bump checks
+        run: |
+          python scripts/check_versions.py origin/${{ github.base_ref }} --check-consistency
