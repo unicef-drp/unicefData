@@ -37,7 +37,7 @@ NULL
 #' @return Invisibly returns NULL. Prints confirmation message.
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   clear_schema_cache()
 #'   # Cache: 0 items (0 MB)
 #' }
@@ -54,7 +54,7 @@ clear_schema_cache <- function() {
 #' @return Invisible data.frame with cache statistics
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   get_schema_cache_info()
 #' }
 get_schema_cache_info <- function() {

@@ -23,7 +23,7 @@ After clearing, the next API call will reload all metadata from
 YAML files (or fetch fresh from the API if file cache is stale).
 }
 \examples{
-\donttest{
+\dontrun{
   # Clear everything and reload
   clear_unicef_cache()
 

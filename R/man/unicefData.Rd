@@ -198,7 +198,7 @@ This ensures column/row counts align across R, Python, and Stata by default.
 }
 
 \examples{
-\donttest{
+\dontrun{
 # Fetch under-5 mortality for year range
 df <- unicefData(
   indicator = "CME_MRY0T4",
