@@ -1,13 +1,14 @@
-# Auto-generated component versions for unicefData
-# Generated: 2026-03-22
+# Auto-generated component versions for unicefData (public)
+# Generated: 2026-03-23
 # Generator: scripts/update_component_versions.py
 
 # ---- Package-level versions ----
 package:
+  DESCRIPTION: 2.3.0
   python/pyproject.toml: 2.3.2
   python/unicefdata/__init__.py: 2.3.2
-  r/CITATION.cff: 2.3.2
-  r/DESCRIPTION: 2.3.0
+  R/CITATION.cff: 2.3.2
+  R/DESCRIPTION: 2.3.0
   stata/src/stata.toc: 2.3.1
   stata/src/unicefdata.pkg: 2.3.1
   stata/stata.toc: 2.3.1
@@ -83,8 +84,8 @@ stata:
 
 # ---- R components ----
 r:
-  r/R/metadata_sync.R: 1.6.0
-  r/R/unicef_core.R: 1.6.1
-  r/R/unicefData.R: 2.0.0
-  r/scripts/generate_metadata.R: 2.0.0
+  R/R/metadata_sync.R: 1.6.0
+  R/R/unicef_core.R: 1.6.1
+  R/R/unicefData.R: 2.0.0
+  R/scripts/generate_metadata.R: 2.0.0
 
