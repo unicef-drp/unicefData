@@ -227,7 +227,7 @@ SDMX_NS <- c(
 sync_dataflows <- function(verbose = TRUE, output_dir = NULL) {
   if (is.null(output_dir)) output_dir <- .get_metadata_dir()
   
-  if (verbose) cat("  Fetching dataflows...\n")
+  if (verbose) message("  Fetching dataflows...")
   
   url <- paste0(SDMX_BASE_URL, "/dataflow/", AGENCY, "?references=none&detail=full")
   xml_content <- .fetch_with_retry(url)
@@ -278,7 +278,7 @@ sync_dataflows <- function(verbose = TRUE, output_dir = NULL) {
   )
   .save_yaml(FILE_DATAFLOWS, data, output_dir)
   
-  if (verbose) cat(sprintf("    Found %d dataflows\n", length(dataflows)))
+  if (verbose) message(sprintf("    Found %d dataflows", length(dataflows)))
   
   dataflows
 }
@@ -342,7 +342,7 @@ sync_codelists <- function(codelist_ids = NULL, verbose = TRUE, output_dir = NUL
     )
   }
   
-  if (verbose) cat("  Fetching codelists...\n")
+  if (verbose) message("  Fetching codelists...")
   
   codelists <- list()
   codes_per_list <- list()
@@ -355,7 +355,7 @@ sync_codelists <- function(codelist_ids = NULL, verbose = TRUE, output_dir = NUL
         codes_per_list[[cl_id]] <- length(cl$codes)
       }
     }, error = function(e) {
-      if (verbose) cat(sprintf("    Warning: Could not fetch %s: %s\n", cl_id, e$message))
+      if (verbose) message(sprintf("    Warning: Could not fetch %s: %s", cl_id, e$message))
     })
   }
   
@@ -371,7 +371,8 @@ sync_codelists <- function(codelist_ids = NULL, verbose = TRUE, output_dir = NUL
   )
   .save_yaml(FILE_CODELISTS, data, output_dir)
   
-  if (verbose) cat(sprintf("    Found %d codelists\n", length(codelists)))
+
+  if (verbose) message(sprintf("    Found %d codelists", length(codelists)))
   
   codelists
 }
@@ -384,7 +385,7 @@ sync_codelists <- function(codelist_ids = NULL, verbose = TRUE, output_dir = NUL
 sync_countries <- function(verbose = TRUE, output_dir = NULL) {
   if (is.null(output_dir)) output_dir <- .get_metadata_dir()
   
-  if (verbose) cat("  Fetching country codes...\n")
+  if (verbose) message("  Fetching country codes...")
   
   cl <- .fetch_codelist("CL_COUNTRY")
   
@@ -405,7 +406,7 @@ sync_countries <- function(verbose = TRUE, output_dir = NULL) {
   )
   .save_yaml(FILE_COUNTRIES, data, output_dir)
   
-  if (verbose) cat(sprintf("    Found %d country codes\n", length(countries)))
+  if (verbose) message(sprintf("    Found %d country codes", length(countries)))
   
   countries
 }
@@ -418,7 +419,7 @@ sync_countries <- function(verbose = TRUE, output_dir = NULL) {
 sync_regions <- function(verbose = TRUE, output_dir = NULL) {
   if (is.null(output_dir)) output_dir <- .get_metadata_dir()
   
-  if (verbose) cat("  Fetching regional codes...\n")
+  if (verbose) message("  Fetching regional codes...")
   
   cl <- .fetch_codelist("CL_WORLD_REGIONS")
   
@@ -439,7 +440,7 @@ sync_regions <- function(verbose = TRUE, output_dir = NULL) {
   )
   .save_yaml(FILE_REGIONS, data, output_dir)
   
-  if (verbose) cat(sprintf("    Found %d regional codes\n", length(regions)))
+  if (verbose) message(sprintf("    Found %d regional codes", length(regions)))
   
   regions
 }
@@ -457,7 +458,7 @@ sync_regions <- function(verbose = TRUE, output_dir = NULL) {
 sync_indicators <- function(dataflows = NULL, verbose = TRUE, output_dir = NULL) {
   if (is.null(output_dir)) output_dir <- .get_metadata_dir()
   
-  if (verbose) cat("  Building indicator catalog from shared config...\n")
+  if (verbose) message("  Building indicator catalog from shared config...")
   
   # Try to load from shared config file (same as Python)
   COMMON_INDICATORS <- .load_shared_indicators()
@@ -509,8 +510,8 @@ sync_indicators <- function(dataflows = NULL, verbose = TRUE, output_dir = NULL)
   )
   .save_yaml(FILE_INDICATORS, data, output_dir)
   
-  if (verbose) cat(sprintf("    Mapped %d indicators to %d dataflows\n", 
-                           length(indicators), length(indicators_by_dataflow)))
+  if (verbose) message(sprintf("    Mapped %d indicators to %d dataflows",
+                              length(indicators), length(indicators_by_dataflow)))
   
   list(indicators = indicators, indicators_by_dataflow = indicators_by_dataflow)
 }
@@ -537,10 +538,10 @@ sync_indicators <- function(dataflows = NULL, verbose = TRUE, output_dir = NULL)
 #' \dontrun{
 #' # Sync all metadata including schemas
 #' results <- sync_all_metadata()
-#' 
+#'
 #' # Sync without schemas (faster)
 #' results <- sync_all_metadata(include_schemas = FALSE)
-#' 
+#'
 #' # Sync with custom output directory
 #' results <- sync_all_metadata(output_dir = "./my_metadata/")
 #' }
@@ -563,12 +564,12 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
   )
   
   if (verbose) {
-    cat(strrep("=", 80), "\n")
-    cat("UNICEF Metadata Sync (R)\n")
-    cat(strrep("=", 80), "\n")
-    cat(sprintf("Output location: %s\n", output_dir))
-    cat(sprintf("Timestamp: %s\n", results$synced_at))
-    cat(strrep("-", 80), "\n")
+    message(strrep("=", 80))
+    message("UNICEF Metadata Sync (R)")
+    message(strrep("=", 80))
+    message(sprintf("Output location: %s", output_dir))
+    message(sprintf("Timestamp: %s", results$synced_at))
+    message(strrep("-", 80))
   }
   
   # 1. Sync dataflows
@@ -578,9 +579,9 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
     results$files_created <- c(results$files_created, FILE_DATAFLOWS)
   }, error = function(e) {
     results$errors <<- c(results$errors, paste("Dataflows:", e$message))
-    if (verbose) cat(sprintf("    Error: %s\n", e$message))
+    if (verbose) message(sprintf("    Error: %s", e$message))
   })
-  
+
   # 2. Sync codelists
   tryCatch({
     codelists <- sync_codelists(verbose = verbose, output_dir = output_dir)
@@ -588,9 +589,9 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
     results$files_created <- c(results$files_created, FILE_CODELISTS)
   }, error = function(e) {
     results$errors <<- c(results$errors, paste("Codelists:", e$message))
-    if (verbose) cat(sprintf("    Error: %s\n", e$message))
+    if (verbose) message(sprintf("    Error: %s", e$message))
   })
-  
+
   # 3. Sync countries
   tryCatch({
     countries <- sync_countries(verbose = verbose, output_dir = output_dir)
@@ -598,9 +599,9 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
     results$files_created <- c(results$files_created, FILE_COUNTRIES)
   }, error = function(e) {
     results$errors <<- c(results$errors, paste("Countries:", e$message))
-    if (verbose) cat(sprintf("    Error: %s\n", e$message))
+    if (verbose) message(sprintf("    Error: %s", e$message))
   })
-  
+
   # 4. Sync regions
   tryCatch({
     regions <- sync_regions(verbose = verbose, output_dir = output_dir)
@@ -608,9 +609,9 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
     results$files_created <- c(results$files_created, FILE_REGIONS)
   }, error = function(e) {
     results$errors <<- c(results$errors, paste("Regions:", e$message))
-    if (verbose) cat(sprintf("    Error: %s\n", e$message))
+    if (verbose) message(sprintf("    Error: %s", e$message))
   })
-  
+
   # 5. Sync indicators
   tryCatch({
     ind_result <- sync_indicators(verbose = verbose, output_dir = output_dir)
@@ -618,9 +619,9 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
     results$files_created <- c(results$files_created, FILE_INDICATORS)
   }, error = function(e) {
     results$errors <<- c(results$errors, paste("Indicators:", e$message))
-    if (verbose) cat(sprintf("    Error: %s\n", e$message))
+    if (verbose) message(sprintf("    Error: %s", e$message))
   })
-  
+
   # 6. Sync dataflow schemas (if requested)
   if (include_schemas) {
     tryCatch({
@@ -637,55 +638,55 @@ sync_all_metadata <- function(verbose = TRUE, output_dir = NULL,
       if (!file.exists(schema_sync_path)) {
         schema_sync_path <- file.path(getwd(), "R", "schema_sync.R")
       }
-      
+
       if (file.exists(schema_sync_path)) {
         source(schema_sync_path, local = FALSE)
       }
-      
+
       if (exists("sync_dataflow_schemas")) {
-        if (verbose) cat("  Syncing dataflow schemas...\n")
+        if (verbose) message("  Syncing dataflow schemas...")
         schema_result <- sync_dataflow_schemas(
-          output_dir = output_dir, 
-          verbose = verbose, 
+          output_dir = output_dir,
+          verbose = verbose,
           include_sample_values = include_sample_values
         )
         results$schemas <- schema_result$success
         results$schemas_failed <- schema_result$failed
         results$files_created <- c(results$files_created, "dataflow_index.yaml", "dataflows/")
       } else {
-        if (verbose) cat("  Warning: sync_dataflow_schemas not available\n")
+        if (verbose) message("  Warning: sync_dataflow_schemas not available")
       }
     }, error = function(e) {
       results$errors <<- c(results$errors, paste("Schemas:", e$message))
-      if (verbose) cat(sprintf("    Error syncing schemas: %s\n", e$message))
+      if (verbose) message(sprintf("    Error syncing schemas: %s", e$message))
     })
   }
-  
+
   # Summary
   if (verbose) {
-    cat(strrep("-", 80), "\n")
-    cat("Sync Complete:\n")
-    cat(sprintf("  - %s - %d dataflows\n", FILE_DATAFLOWS, results$dataflows))
-    cat(sprintf("  - %s - %d codelists\n", FILE_CODELISTS, results$codelists))
-    cat(sprintf("  - %s - %d countries\n", FILE_COUNTRIES, results$countries))
-    cat(sprintf("  - %s - %d regions\n", FILE_REGIONS, results$regions))
-    cat(sprintf("  - %s - %d indicators\n", FILE_INDICATORS, results$indicators))
+    message(strrep("-", 80))
+    message("Sync Complete:")
+    message(sprintf("  - %s - %d dataflows", FILE_DATAFLOWS, results$dataflows))
+    message(sprintf("  - %s - %d codelists", FILE_CODELISTS, results$codelists))
+    message(sprintf("  - %s - %d countries", FILE_COUNTRIES, results$countries))
+    message(sprintf("  - %s - %d regions", FILE_REGIONS, results$regions))
+    message(sprintf("  - %s - %d indicators", FILE_INDICATORS, results$indicators))
     if (!is.null(results$schemas)) {
-      cat(sprintf("  - dataflow_index.yaml + dataflows/ - %d schemas", results$schemas))
+      schema_msg <- sprintf("  - dataflow_index.yaml + dataflows/ - %d schemas", results$schemas)
       if (!is.null(results$schemas_failed) && results$schemas_failed > 0) {
-        cat(sprintf(" (%d failed)", results$schemas_failed))
+        schema_msg <- paste0(schema_msg, sprintf(" (%d failed)", results$schemas_failed))
       }
-      cat("\n")
+      message(schema_msg)
     }
     if (length(results$errors) > 0) {
-      cat(sprintf("  Errors: %d\n", length(results$errors)))
+      message(sprintf("  Errors: %d", length(results$errors)))
       for (err in results$errors) {
-        cat(sprintf("    - %s\n", err))
+        message(sprintf("    - %s", err))
       }
     }
-    cat(strrep("=", 80), "\n")
+    message(strrep("=", 80))
   }
-  
+
   invisible(results)
 }
 

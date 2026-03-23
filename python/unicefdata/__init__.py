@@ -5,14 +5,15 @@ This library provides a simplified interface for fetching child welfare and deve
 indicators from UNICEF's SDMX data repository.
 """
 
-__version__ = "2.2.0"
+__version__ = "2.3.2"
 
-def build_user_agent() -> str:
+def _build_user_agent() -> str:
     """Build a User-Agent string including package version and Python runtime."""
     import platform
     py_ver = platform.python_version()
     system = platform.system()
     return f"unicefData-Python/{__version__} (Python/{py_ver}; {system}) (+https://github.com/unicef-drp/unicefData)"
+
 __author__ = "Joao Pedro Azevedo"
 __email__ = "jpazevedo@unicef.org"
 __url__ = "https://jpazvd.github.io/"

@@ -20,7 +20,6 @@
 # Documentation
 ^README\.Rmd$
 ^README\.md$
-^NEWS\.md$
 ^LICENSE\.md$
 ^docs$
 ^_pkgdown\.yml$
@@ -98,9 +97,23 @@
 ^setup_pandoc_and_build\.ps1$
 ^vignette_footer_template\.md$
 
-# Non-standard subdirectories (CRAN compliance)
-^tests$
-^tests/.*$
+# Integration test scripts (API-dependent, not for CRAN)
+^tests/run_tests\.R$
+^tests/run_sanity\.R$
+^tests/test_fallback\.R$
+^tests/test_git_unicef\.R$
+^tests/test_load_enriched_metadata\.R$
+^tests/test_mock_data\.R$
+^tests/test_pipeline_fixtures\.R$
+^tests/test_pipeline_mocked\.R$
+^tests/test_prod_sdg_indicators\.R$
+^tests/test_r_metadata\.R$
+^tests/output$
+^tests/output/.*$
+^tests/README\.md$
+^tests/testthat/README\.md$
+
+# Non-standard subdirectories
 ^scripts$
 ^CRAN-SUBMISSION$
 ^nul$
@@ -108,6 +121,12 @@
 # Fixture extraction artifacts (created by scripts/unpack_fixtures.py)
 ^tests/fixtures/_staging$
 ^tests/fixtures/\.unpack_stamp$
+^tests/fixtures/xml_full$
+^tests/fixtures/xml_full/.*$
+^tests/fixtures/expected$
+^tests/fixtures/expected/.*$
+^tests/fixtures/python_metadata$
+^tests/fixtures/python_metadata/.*$
 
 # Git hooks
 ^\.githooks$

@@ -257,6 +257,11 @@ def validate_simple_list(filepath: str, expected_sections: List[str], file_type:
 
     # Check expected sections
     for section in expected_sections:
+        if section == 'metadata':
+            if 'metadata' not in data and '_metadata' not in data:
+                errors.append("Missing 'metadata' or '_metadata' section")
+            continue
+
         if section not in data:
             errors.append(f"Missing '{section}' section")
 

@@ -70,15 +70,15 @@ jobs:
           CI: true
           UNICEF_API_TIMEOUT: 30
         run: |
-          Rscript -e "source('${{ github.workspace }}/R/tests/run_tests.R')"
+          Rscript -e "source('${{ github.workspace }}/r/tests/run_tests.R')"
 
       - name: Run pipeline fixture tests (clean/filter)
         run: |
-          Rscript "${{ github.workspace }}/R/tests/test_pipeline_fixtures.R"
+          Rscript "${{ github.workspace }}/r/tests/test_pipeline_fixtures.R"
 
       - name: Run mocked pipeline tests (full unicefData flow)
         run: |
-          Rscript "${{ github.workspace }}/R/tests/test_pipeline_mocked.R"
+          Rscript "${{ github.workspace }}/r/tests/test_pipeline_mocked.R"
 
       - name: Run cross-language fixture tests
         run: |

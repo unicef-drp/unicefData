@@ -11,15 +11,25 @@ on:
     branches: [main, develop]
     paths:
       - 'stata/src/_/*.yaml'
+
       - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
+      - 'validation/scripts/validate_yaml_schema.py'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-schema-validate.yml'
       - '.github/workflows/validate-schemas.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'stata/src/_/*.yaml'
+
       - 'metadata/current/*.yaml'
       - 'stata/src/py/validate_yaml_schema.py'
+      - 'validation/scripts/validate_yaml_schema.py'
+      - '.github/workflow-config.yml'
+      - '.github/scripts/load_workflow_config.py'
+      - '.github/workflows/_reusable-schema-validate.yml'
       - '.github/workflows/validate-schemas.yml'
   workflow_dispatch:
 
@@ -28,10 +38,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-metadata:
-    name: Validate YAML Metadata Files
-    # Pinned to ubuntu-22.04 for consistency across workflows
+  load-config:
     runs-on: ubuntu-22.04
+    outputs:
+      stata_validation_script: ${{ steps.workflow_config.outputs.stata_validation_script }}
+      stata_metadata_dir: ${{ steps.workflow_config.outputs.stata_metadata_dir }}
+      validation_script: ${{ steps.workflow_config.outputs.validation_script }}
+      metadata_dir: ${{ steps.workflow_config.outputs.metadata_dir }}
+      schema_strict: ${{ steps.workflow_config.outputs.schema_strict }}
 
     steps:
       - name: Checkout code
@@ -47,71 +61,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
 
-      - name: Validate Indicator Metadata
-        id: validate-indicators
+      - name: Load workflow config
+        id: workflow_config
         run: |
-          echo "::group::Validating Indicator Metadata"
-          python stata/src/py/validate_yaml_schema.py indicators stata/src/_/_unicefdata_indicators_metadata.yaml
-          echo "::endgroup::"
+          python .github/scripts/load_workflow_config.py
 
-      - name: Validate Dataflow Index
-        id: validate-dataflow-index
-        run: |
-          echo "::group::Validating Dataflow Index"
-          python stata/src/py/validate_yaml_schema.py dataflow_index stata/src/_/_dataflow_index.yaml
-          echo "::endgroup::"
-
-      - name: Validate Dataflows Metadata
-        id: validate-dataflows
-        continue-on-error: true
-        run: |
-          echo "::group::Validating Dataflows Metadata"
-          python stata/src/py/validate_yaml_schema.py dataflows stata/src/_/_unicefdata_dataflows.yaml
-          echo "::endgroup::"
-
-      - name: Validate Codelists
-        id: validate-codelists
-        continue-on-error: true
-        run: |
-          echo "::group::Validating Codelists"
-          python stata/src/py/validate_yaml_schema.py codelists stata/src/_/_unicefdata_codelists.yaml
-          echo "::endgroup::"
-
-      - name: Validate Countries
-        id: validate-countries
-        continue-on-error: true
-        run: |
-          echo "::group::Validating Countries"
-          python stata/src/py/validate_yaml_schema.py countries stata/src/_/_unicefdata_countries.yaml
-          echo "::endgroup::"
-
-      - name: Validate Regions
-        id: validate-regions
-        continue-on-error: true
-        run: |
-          echo "::group::Validating Regions"
-          python stata/src/py/validate_yaml_schema.py regions stata/src/_/_unicefdata_regions.yaml
-          echo "::endgroup::"
-
-      - name: Cross-Platform Schema Validation
-        id: validate-cross-platform
-        run: |
-          echo "::group::Cross-Platform Schema Validation"
-          python stata/src/py/validate_yaml_schema.py indicators stata/src/_/_unicefdata_indicators_metadata.yaml
-          python stata/src/py/validate_yaml_schema.py dataflow_index stata/src/_/_dataflow_index.yaml
-          echo "::endgroup::"
-
-      - name: Summary
-        if: always()
-        run: |
-          echo "## Validation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| File | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Indicators Metadata | ${{ steps.validate-indicators.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Dataflow Index | ${{ steps.validate-dataflow-index.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Dataflows Metadata | ${{ steps.validate-dataflows.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Codelists | ${{ steps.validate-codelists.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Countries | ${{ steps.validate-countries.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Regions | ${{ steps.validate-regions.outcome == 'success' && '✅ Pass' || '⚠️ Skip' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Cross-Platform Sync** | ${{ steps.validate-cross-platform.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+  validate-metadata:
+    needs: load-config
+    uses: ./.github/workflows/_reusable-schema-validate.yml
+    with:
+      stata_validation_script: ${{ needs.load-config.outputs.stata_validation_script }}
+      stata_metadata_dir: ${{ needs.load-config.outputs.stata_metadata_dir }}
+      validation_script: ${{ needs.load-config.outputs.validation_script }}
+      metadata_dir: ${{ needs.load-config.outputs.metadata_dir }}
+      schema_strict: ${{ needs.load-config.outputs.schema_strict }}

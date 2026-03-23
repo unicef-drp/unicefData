@@ -45,7 +45,7 @@ class MetadataManager:
         if self.codelists is not None:
             return
             
-        codelists_path = os.path.join(self.metadata_dir, 'codelists.yaml')
+        codelists_path = os.path.join(self.metadata_dir, '_unicefdata_codelists.yaml')
         if not os.path.exists(codelists_path):
             logger.warning(f"Codelists file not found at {codelists_path}")
             self.codelists = {}

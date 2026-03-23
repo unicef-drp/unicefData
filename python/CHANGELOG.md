@@ -2,6 +2,37 @@
 
 All notable changes to the unicefdata Python library will be documented in this file.
 
+## [2.3.2] - 2026-03-22
+
+### Changed
+
+- **Version aligned to repo release v2.3.2**: Minor bump from 2.2.x to 2.3.x per the Minimum Bump Rule (patches reserved for critical fixes only). Consolidates the v2.2.1 and v2.2.2 bug fixes into a proper minor release.
+
+### Added
+
+- **Version validation CI**: New `versioning-check.yml` workflow validates version bumps and cross-platform consistency on every PR. Backed by `scripts/check_versions.py` (trilingual) and `scripts/update_component_versions.py`.
+
+## [2.2.2] - 2026-03-20
+
+### Fixed
+
+- **`UNICEFSDMXClient.fetch_indicator()` dataflow resolution**: When no `dataflow` is specified, the client now auto-detects the correct dataflow from indicators metadata then prefix-based fallback sequences, matching the behaviour of `unicefData()`. Previously it always defaulted to `GLOBAL_DATAFLOW` regardless of the indicator.
+
+## [2.2.1] - 2026-03-20
+
+### Fixed
+
+- **Bundled metadata path**: `_load_fallback_sequences()` now correctly resolves `metadata/current/_dataflow_fallback_sequences.yaml` (was missing `current/` subdirectory)
+- **Indicators metadata path**: `_load_indicators_metadata()` now searches the installed package location (`unicefdata/metadata/current/_unicefdata_indicators_metadata.yaml`) as first priority, eliminating startup warning
+- **Codelists filename**: `MetadataManager._load_codelists()` now looks for `_unicefdata_codelists.yaml` (was `codelists.yaml`)
+- **Category lookup**: `list_categories()` and `search_indicators(category=...)` now fall back to `_infer_category()` when the `category` field is absent from cached indicator data — fixes all categories showing as `UNKNOWN`
+
+### Tested
+
+- All startup warnings resolved with installed package
+- `list_categories()` now returns 19 populated categories (792 indicators)
+- `search_indicators(category="CME")` returns 39 indicators as expected
+
 ## [2.1.0] - 2026-02-08
 
 ### Added

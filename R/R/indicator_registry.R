@@ -894,35 +894,35 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
   }
   
   # Print header
-  cat("\n")
-  cat(strrep("=", 100), "\n")
+  message("")
+  message(strrep("=", 100))
   if (!is.null(query) && !is.null(category)) {
-    cat(sprintf("  UNICEF Indicators matching '%s' in category '%s'\n", query, category))
+    message(sprintf("  UNICEF Indicators matching '%s' in category '%s'", query, category))
   } else if (!is.null(query)) {
-    cat(sprintf("  UNICEF Indicators matching '%s'\n", query))
+    message(sprintf("  UNICEF Indicators matching '%s'", query))
   } else if (!is.null(category)) {
-    cat(sprintf("  UNICEF Indicators in category '%s'\n", category))
+    message(sprintf("  UNICEF Indicators in category '%s'", category))
   } else {
-    cat("  All UNICEF Indicators\n")
+    message("  All UNICEF Indicators")
   }
-  cat(strrep("=", 100), "\n")
-  
+  message(strrep("=", 100))
+
   if (length(matches) == 0) {
-    cat("\n  No indicators found matching your criteria.\n\n")
-    cat("  Tips:\n")
-    cat("  - Try a different search term\n")
-    cat("  - Use list_categories() to see available categories\n")
-    cat("  - Use search_indicators() with no arguments to see all indicators\n\n")
+    message("\n  No indicators found matching your criteria.\n")
+    message("  Tips:")
+    message("  - Try a different search term")
+    message("  - Use list_categories() to see available categories")
+    message("  - Use search_indicators() with no arguments to see all indicators\n")
     return(invisible(data.frame()))
   }
-  
+
   # Print result count
-  cat(sprintf("\n  Found %d indicator(s)", total_matches))
+  count_msg <- sprintf("\n  Found %d indicator(s)", total_matches)
   if (!is.null(limit) && limit > 0 && total_matches > limit) {
-    cat(sprintf(" (showing first %d)", limit))
+    count_msg <- paste0(count_msg, sprintf(" (showing first %d)", limit))
   }
-  cat("\n")
-  cat(strrep("-", 100), "\n")
+  message(count_msg)
+  message(strrep("-", 100))
   
   # Calculate column widths
   code_width <- max(sapply(matches, function(m) nchar(m$code)))
@@ -943,18 +943,18 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
   if (show_description) {
     header <- paste0(header, sprintf("  %-*s", desc_width, "DESCRIPTION"))
   }
-  cat(header, "\n")
-  cat(strrep("-", 100), "\n")
-  
+  message(header)
+  message(strrep("-", 100))
+
   # Print each indicator
   for (m in matches) {
     name <- m$name
     if (nchar(name) > name_width) {
       name <- paste0(substr(name, 1, name_width - 2), "..")
     }
-    
+
     row <- sprintf("  %-*s  %-*s  %-*s", code_width, m$code, cat_width, m$category, name_width, name)
-    
+
     if (show_description) {
       desc <- m$description
       if (nchar(desc) > desc_width) {
@@ -962,21 +962,21 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
       }
       row <- paste0(row, sprintf("  %s", desc))
     }
-    
-    cat(row, "\n")
+
+    message(row)
   }
-  
-  cat(strrep("-", 100), "\n")
-  
+
+  message(strrep("-", 100))
+
   # Print footer with tips
   if (total_matches > length(matches)) {
-    cat(sprintf("\n  Showing %d of %d results. Use limit = 0 to see all.\n", length(matches), total_matches))
+    message(sprintf("\n  Showing %d of %d results. Use limit = 0 to see all.", length(matches), total_matches))
   }
-  
-  cat("\n  Usage tips:\n")
-  cat("  - unicefData(indicator = 'CODE') to fetch data for an indicator\n")
-  cat("  - get_indicator_info('CODE') to see full metadata for an indicator\n")
-  cat("  - list_categories() to see all available categories\n\n")
+
+  message("\n  Usage tips:")
+  message("  - unicefData(indicator = 'CODE') to fetch data for an indicator")
+  message("  - get_indicator_info('CODE') to see full metadata for an indicator")
+  message("  - list_categories() to see all available categories\n")
   
   # Return data frame invisibly
   df <- do.call(rbind, lapply(matches, function(m) {
@@ -1047,21 +1047,21 @@ list_categories <- function() {
   counts <- unlist(category_counts)
   sorted_cats <- names(sort(counts, decreasing = TRUE))
   
-  cat("\n")
-  cat(strrep("=", 50), "\n")
-  cat("  Available Indicator Categories\n")
-  cat(strrep("=", 50), "\n")
-  cat(sprintf("\n  %-25s %10s\n", "CATEGORY", "COUNT"))
-  cat(strrep("-", 50), "\n")
-  
+  message("")
+  message(strrep("=", 50))
+  message("  Available Indicator Categories")
+  message(strrep("=", 50))
+  message(sprintf("\n  %-25s %10s", "CATEGORY", "COUNT"))
+  message(strrep("-", 50))
+
   for (cat_name in sorted_cats) {
-    cat(sprintf("  %-25s %10d\n", cat_name, counts[cat_name]))
+    message(sprintf("  %-25s %10d", cat_name, counts[cat_name]))
   }
-  
-  cat(strrep("-", 50), "\n")
-  cat(sprintf("  %-25s %10d\n", "TOTAL", sum(counts)))
-  cat("\n")
-  cat("  Use search_indicators(category = 'CATEGORY_NAME') to see indicators\n\n")
+
+  message(strrep("-", 50))
+  message(sprintf("  %-25s %10d", "TOTAL", sum(counts)))
+  message("")
+  message("  Use search_indicators(category = 'CATEGORY_NAME') to see indicators\n")
   
   # Return data frame invisibly
   df <- data.frame(

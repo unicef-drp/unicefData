@@ -13,11 +13,11 @@
 #' @examples
 #' \dontrun{
 #'   # Cache is managed automatically when get_sdmx() is called with cache=TRUE
-#'   
+#'
 #'   # Manual cache operations:
 #'   get_schema_cache_info()
 #'   clear_schema_cache()
-#'   
+#'
 #'   # Multiple calls within session use cached schema
 #'   df1 <- get_sdmx(indicator = "SP.POP.TOTL", cache = TRUE)
 #'   df2 <- get_sdmx(indicator = "NY.GDP.MKTP.CD", cache = TRUE)
