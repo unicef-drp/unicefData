@@ -287,12 +287,10 @@ def _load_indicators_metadata() -> Dict[str, dict]:
     if pkg_meta.exists():
         candidates.append(pkg_meta)
 
-    # Priority 2 (repo): R/inst/metadata/current/ or r/inst/metadata/current/
-    for r_dir in ['R', 'r']:
-        r_meta = repo_root / r_dir / 'inst' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
-        if r_meta.exists():
-            candidates.append(r_meta)
-            break
+    # Priority 2 (dev repo): r/inst/metadata/current/ — canonical cross-language source
+    r_meta = repo_root / 'r' / 'inst' / 'metadata' / 'current' / '_unicefdata_indicators_metadata.yaml'
+    if r_meta.exists():
+        candidates.append(r_meta)
 
     # Priority 3 (dev repo): stata/src/_/ — Stata-side copy
     stata_path = repo_root / 'stata' / 'src' / '_' / '_unicefdata_indicators_metadata.yaml'
