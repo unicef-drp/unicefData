@@ -1,0 +1,22 @@
+repo_mode: public
+
+paths:
+  r_pkg_dir: R
+  py_pkg_dir: python
+  stata_metadata_dir: stata/src/_
+  metadata_dir: metadata/current
+  validation_script: validation/scripts/validate_yaml_schema.py
+  stata_validation_script: stata/src/py/validate_yaml_schema.py
+
+branches:
+  default: main
+  integration: develop
+
+sync:
+  enabled: false
+  target_repo: unicef-drp/unicefData
+  target_branch: stage
+
+quality_gates:
+  schema_strict: true
+  require_cross_language_tests: true
