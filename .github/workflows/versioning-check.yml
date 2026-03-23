@@ -2,7 +2,7 @@ name: Versioning checks
 
 on:
   pull_request:
-    branches: [ main, develop, '**' ]
+    branches: [ main, develop ]
 
 jobs:
   check-versions:
@@ -17,4 +17,5 @@ jobs:
           python-version: '3.x'
       - name: Run version bump checks
         run: |
-          python scripts/check_versions.py origin/${{ github.base_ref }} --check-consistency
+          git fetch origin ${{ github.base_ref }} --depth=1
+          python scripts/check_versions.py ${{ github.event.pull_request.base.sha }} --check-consistency

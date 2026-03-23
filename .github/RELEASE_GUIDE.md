@@ -45,7 +45,7 @@ The GitHub release tag represents the **repository release**, independent of any
 
 | Platform | Version file(s) |
 |---|---|
-| R | `r/DESCRIPTION` (`Version:` field) |
+| R | `R/DESCRIPTION` (`Version:` field) |
 | Python | `python/unicefdata/__init__.py` (`__version__`) and `python/pyproject.toml` |
 | Stata | `stata/src/unicefdata.pkg` (`v` line) and ADO headers (`*! v X.Y.Z  DDMMMYYYY`) |
 
