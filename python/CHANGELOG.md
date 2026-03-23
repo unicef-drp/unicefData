@@ -2,6 +2,16 @@
 
 All notable changes to the unicefdata Python library will be documented in this file.
 
+## [2.3.2] - 2026-03-22
+
+### Changed
+
+- **Version aligned to repo release v2.3.2**: Minor bump from 2.2.x to 2.3.x per the Minimum Bump Rule (patches reserved for critical fixes only). Consolidates the v2.2.1 and v2.2.2 bug fixes into a proper minor release.
+
+### Added
+
+- **Version validation CI**: New `versioning-check.yml` workflow validates version bumps and cross-platform consistency on every PR. Backed by `scripts/check_versions.py` (trilingual) and `scripts/update_component_versions.py`.
+
 ## [2.2.2] - 2026-03-20
 
 ### Fixed

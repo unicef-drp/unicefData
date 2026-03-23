@@ -632,7 +632,7 @@ CACHE_MAX_AGE_DAYS <- 30
 #' @return Character. Dataflow name (e.g., "CME", "NUTRITION", "EDUCATION")
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' get_dataflow_for_indicator("CME_MRY0T4")
 #' # Returns: "CME"
 #'
@@ -736,7 +736,7 @@ get_dataflow_for_indicator <- function(indicator_code, default = "GLOBAL_DATAFLO
 #' @return Named list with indicator metadata or NULL if not found
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' info <- get_indicator_info("CME_MRY0T4")
 #' print(info$name)
 #' # "Under-five mortality rate"
@@ -764,7 +764,7 @@ get_indicator_info <- function(indicator_code) {
 #' @return Named list of matching indicators
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Get all mortality indicators
 #' mortality <- list_indicators(dataflow = "CME")
 #'
@@ -822,7 +822,7 @@ list_indicators <- function(dataflow = NULL, name_contains = NULL) {
 #'   Results are also printed to the screen.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Search for mortality-related indicators
 #' search_indicators("mortality")
 #'
@@ -1027,7 +1027,7 @@ search_indicators <- function(query = NULL, category = NULL, limit = 50, show_de
 #' @return Invisibly returns a data.frame with category counts.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' list_categories()
 #' }
 #'
@@ -1082,7 +1082,7 @@ list_categories <- function() {
 #' @return Integer. Number of indicators in the refreshed cache
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' n <- refresh_indicator_cache()
 #' message(sprintf("Refreshed cache with %d indicators", n))
 #' }
@@ -1101,7 +1101,7 @@ refresh_indicator_cache <- function() {
 #' @return Named list with cache metadata
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' info <- get_cache_info()
 #' print(info$cache_path)
 #' print(info$indicator_count)

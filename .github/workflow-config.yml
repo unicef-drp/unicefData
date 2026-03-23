@@ -10,10 +10,12 @@ paths:
 
 branches:
   default: main
-  integration: stage
+  integration: develop
 
 sync:
   enabled: false
+  target_repo: unicef-drp/unicefData
+  target_branch: stage
 
 quality_gates:
   schema_strict: true

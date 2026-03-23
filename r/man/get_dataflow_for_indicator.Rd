@@ -25,7 +25,7 @@ This ensures problematic indicators (where the API metadata is wrong)
 always get the correct dataflow.
 }
 \examples{
-\donttest{
+\dontrun{
 get_dataflow_for_indicator("CME_MRY0T4")
 # Returns: "CME"
 

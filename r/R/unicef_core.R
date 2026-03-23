@@ -238,7 +238,7 @@ if (!isNamespace(topenv(environment()))) {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # Clear everything and reload
 #'   clear_unicef_cache()
 #'

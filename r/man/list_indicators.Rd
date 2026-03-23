@@ -18,7 +18,7 @@ Named list of matching indicators
 List all known indicators, optionally filtered by dataflow or name.
 }
 \examples{
-\donttest{
+\dontrun{
 # Get all mortality indicators
 mortality <- list_indicators(dataflow = "CME")
 

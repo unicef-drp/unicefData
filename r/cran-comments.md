@@ -8,7 +8,7 @@ This is a resubmission addressing reviewer feedback from:
 
 * Moved cache directory from `.unicef_cache/` to `tempdir()` for CRAN policy compliance (primary issue)
 * Replaced `cat()` with `message()` in user-facing output functions
-* Changed `\dontrun{}` to `\donttest{}` for examples that require network access only; kept `\dontrun{}` for examples requiring local state
+* All examples use `\dontrun{}` to avoid network calls and stateful side effects in automated checks; deterministic behavior is covered by fixture-based unit tests
 * Reworded DESCRIPTION to lead with "An R client..." (trilingual suite mentioned secondarily)
 * Removed `devtools` from Suggests (development-only dependency)
 * Bundled test fixtures for offline deterministic testing

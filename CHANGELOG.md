@@ -9,6 +9,19 @@ See language-specific detailed changelogs:
 
 ---
 
+## [2.3.2] - 2026-03-22
+
+### Repository Release v2.3.2
+
+- **Python bumped to v2.3.2**: Minor version alignment per Minimum Bump Rule. Consolidates v2.2.1/v2.2.2 bug fixes into a proper minor release.
+- **CITATION.cff updated** to v2.3.2
+- **Version validation CI added**: `versioning-check.yml` runs `check_versions.py --check-consistency` on every PR, enforcing version bumps and cross-platform consistency.
+- **`__COMPONENT_VERSIONS.yaml` regenerated** with current versions across all platforms.
+
+Current platform versions: R 2.3.0 | Python 2.3.2 | Stata 2.3.1
+
+---
+
 ## [python-2.2.2] - 2026-03-20
 
 ### Python (v2.2.2) - Bug Fix Release

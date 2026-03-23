@@ -34,7 +34,7 @@ indicator codes they need. Results are printed to the screen in a
 formatted table.
 }
 \examples{
-\donttest{
+\dontrun{
 # Search for mortality-related indicators
 search_indicators("mortality")
 

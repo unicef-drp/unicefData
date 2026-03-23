@@ -17,7 +17,7 @@ Invisibly returns the path to the cache directory.
 Set metadata cache directory
 }
 \examples{
-\donttest{
+\dontrun{
 # Use temporary cache (default, no files created in home directory)
 set_metadata_cache()
 

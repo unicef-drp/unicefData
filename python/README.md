@@ -53,7 +53,7 @@ print(unicefdata.__version__)
 
 See [CHANGELOG.md](CHANGELOG.md) for complete details.
 
-## What's New in 2.2.0
+## What's New in 2.3.2
 
 - **328+ automated tests** across 11 test families with deterministic fixtures
 - **Full CI matrix**: Python 3.9–3.12 on Ubuntu / macOS / Windows

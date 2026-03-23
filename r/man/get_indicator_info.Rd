@@ -16,7 +16,7 @@ Named list with indicator metadata or NULL if not found
 Returns full metadata for an indicator.
 }
 \examples{
-\donttest{
+\dontrun{
 info <- get_indicator_info("CME_MRY0T4")
 print(info$name)
 # "Under-five mortality rate"

@@ -21,7 +21,7 @@ Checks if metadata exists and is within max_age_days.
 If not, performs a sync automatically.
 }
 \examples{
-\donttest{
+\dontrun{
 # Check every 30 days (default)
 ensure_metadata()
 

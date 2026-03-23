@@ -41,7 +41,7 @@
 #' @return Invisibly returns the path to the cache directory.
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Use temporary cache (default, no files created in home directory)
 #' set_metadata_cache()
 #'
@@ -890,7 +890,7 @@ compare_vintages <- function(vintage1, vintage2 = NULL, cache_dir = NULL) {
 #' @return Logical indicating if sync was performed
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Check every 30 days (default)
 #' ensure_metadata()
 #' 

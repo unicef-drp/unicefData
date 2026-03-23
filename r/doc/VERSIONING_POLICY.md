@@ -111,18 +111,22 @@ Two scripts in `scripts/`:
 - Run `update_component_versions.py` in CI and diff against the committed
   `__COMPONENT_VERSIONS.yaml` to catch uncommitted version changes.
 
-## Current State (as of 2026-02-13)
+## Current State (as of 2026-03-22)
 
 | Platform | Package Version | Per-File Coverage |
 |----------|----------------|-------------------|
-| R | 2.1.0 | 0/18 .R files have headers |
-| Python | 2.1.1 | 2/15 .py files have headers |
-| Stata | 2.2.0 | 35+ .ado files have headers |
+| R | 2.3.0 | 4/18 .R files have headers |
+| Python | 2.3.2 | 2/15 .py files have headers |
+| Stata | 2.3.1 | 45+ .ado files have headers |
 
-**Note**: Platform versions are intentionally independent. R=2.1.0 reflects the
-last R release, Python=2.1.1 reflects a Python-only bugfix, Stata=2.2.0 reflects
-Stata-only features. Add headers to R/Python files as they are touched (don't
-mass-rewrite).
+**Note**: Platform versions are intentionally independent. R=2.3.0 reflects the
+last R release (CRAN-ready), Python=2.3.2 reflects the Python minor bump aligning
+with the v2.3.2 repo release, Stata=2.3.1 reflects the latest Stata features.
+Add headers to R/Python files as they are touched (don't mass-rewrite).
+
+**CI enforcement**: `scripts/check_versions.py` runs on every PR via
+`.github/workflows/versioning-check.yml`. It validates that modified files
+have bumped version headers and checks cross-platform consistency.
 
 ## Contact
 
