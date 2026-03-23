@@ -1,7 +1,7 @@
 repo_mode: public
 
 paths:
-  r_pkg_dir: R
+  r_pkg_dir: r
   py_pkg_dir: python
   stata_metadata_dir: stata/src/_
   metadata_dir: metadata/current
