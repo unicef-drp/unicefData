@@ -28,9 +28,7 @@ REQUIRED_DETERMINISTIC_FILES = [
 def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
     zip_path = repo_root / "stata" / "qa" / "fixtures.zip"
-    # Public repo uses R/ (uppercase); dev repo uses r/ (lowercase)
-    r_dir = repo_root / "R" if (repo_root / "R").is_dir() else repo_root / "r"
-    deterministic_dir = r_dir / "tests" / "fixtures" / "deterministic"
+    deterministic_dir = repo_root / "r" / "tests" / "fixtures" / "deterministic"
 
     if not zip_path.exists():
         raise FileNotFoundError(f"Missing fixture archive: {zip_path}")

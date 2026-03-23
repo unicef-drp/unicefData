@@ -25,15 +25,23 @@ def tracked_paths() -> list[str]:
 
 def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
-    # Public repo uses R/ (uppercase); dev repo uses r/ (lowercase).
-    # Accept either as canonical — just ensure one exists.
-    canonical_lower = repo_root / "r"
-    canonical_upper = repo_root / "R"
-    if not canonical_lower.is_dir() and not canonical_upper.is_dir():
-        print("ERROR: Missing R package directory (expected 'r/' or 'R/').")
+    canonical_dir = repo_root / "r"
+    if not canonical_dir.is_dir():
+        print("ERROR: Missing canonical package directory 'r/'.")
         return 1
 
-    print("OK: R package directory policy check passed")
+    offending = [path for path in tracked_paths() if path == "R" or path.startswith("R/")]
+
+    if offending:
+        print("ERROR: Disallowed uppercase root directory 'R/' detected.")
+        for path in offending[:20]:
+            print(f"- Tracked path: {path}")
+        if len(offending) > 20:
+            print(f"- ... and {len(offending) - 20} more")
+        print("Use canonical lowercase directory: r/")
+        return 1
+
+    print("OK: r/R policy check passed (canonical: r/)")
     return 0
 
 
