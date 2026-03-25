@@ -7,9 +7,17 @@ Tests:
 3. Verify that valid, non-empty data are returned for both indicators
 
 Uses golden indicators from validation/xval/golden_indicators.yaml
+
+NOTE: All tests in this module make live HTTP calls to sdmx.data.unicef.org.
+Run with: pytest -m network
+Skip with: pytest -m 'not network'
 """
 
 import sys
+
+import pytest
+
+pytestmark = pytest.mark.network
 import logging
 from pathlib import Path
 

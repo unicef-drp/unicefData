@@ -55,3 +55,21 @@ include = ["unicefdata*"]
 
 [tool.setuptools.package-data]
 unicefdata = ["metadata/**/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "network: tests that make live HTTP calls to external APIs (deselect with -m 'not network')",
+    "slow: tests that take more than 10 seconds",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["unicefdata"]
+omit = ["tests/*", "scripts/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true

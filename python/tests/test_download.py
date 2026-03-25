@@ -3,9 +3,15 @@ Automated tests to verify Python can download indicators from various dataflows
 after implementing the 3-tier fallback logic and simpler .INDICATOR. key pattern.
 
 Uses golden indicators from validation/xval/golden_indicators.yaml
+
+NOTE: All tests in this module make live HTTP calls to sdmx.data.unicef.org.
+Run with: pytest -m network
+Skip with: pytest -m 'not network'
 """
 
 import pytest
+
+pytestmark = pytest.mark.network
 
 from unicefdata import unicefData
 from unicefdata.sdmx_client import SDMXForbiddenError

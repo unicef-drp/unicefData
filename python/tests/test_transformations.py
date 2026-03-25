@@ -270,18 +270,17 @@ class TestDiscovery:
         assert result is not None, "CME_MRY0T4 should resolve to a dataflow"
         assert isinstance(result, str)
 
-    def test_get_indicator_info(self):
+    def test_get_indicator_info(self, monkeypatch):
         """get_indicator_info should return metadata dict."""
         import unicefdata.indicator_registry as reg
 
-        # Pre-seed the module cache from fixture so no API call is needed
-        if not reg._cache_loaded or not reg._indicator_cache:
-            cache_file = METADATA_FIXTURES / "unicef_indicators_metadata.yaml"
-            if cache_file.exists():
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    data = yaml.safe_load(f)
-                reg._indicator_cache = data.get('indicators', {})
-                reg._cache_loaded = True
+        # Pre-seed the module cache from fixture via monkeypatch (safe — auto-reverted)
+        cache_file = METADATA_FIXTURES / "unicef_indicators_metadata.yaml"
+        if cache_file.exists():
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+            monkeypatch.setattr(reg, '_indicator_cache', data.get('indicators', {}))
+            monkeypatch.setattr(reg, '_cache_loaded', True)
 
         info = reg.get_indicator_info("CME_MRY0T4")
         assert info is not None

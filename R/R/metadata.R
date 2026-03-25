@@ -21,7 +21,7 @@
 # Configuration
 # ============================================================================
 
-.metadata_config <- new.env()
+.metadata_config <- new.env(parent = emptyenv())
 .metadata_config$BASE_URL <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
 .metadata_config$AGENCY <- "UNICEF"
 .metadata_config$CACHE_DIR <- NULL
