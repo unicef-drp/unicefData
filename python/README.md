@@ -41,6 +41,24 @@ print(unicefdata.__version__)
 
 ---
 
+## What's New in 2.4.0
+
+- **Query status codes**: Empty results now tell you *why* via `df.attrs["query_status"]`:
+  - `year_not_found` — country has data, but not for the requested year (gap in time series)
+  - `year_beyond_range` — requested year is before the earliest or after the latest data point
+  - `country_not_found` — indicator exists but not for this country (includes `available_countries`)
+  - `indicator_not_found` — indicator doesn't exist in any dataflow
+- **Client-side year filtering**: Fixes 6 survey-based indicators (NUTRITION, MNCH, EDUCATION) that failed with year filters due to an SDMX API quirk
+- **Smarter fallback logic**: No longer wastes API calls trying non-existent fallback dataflows when data simply doesn't exist for the requested country/year
+
+```python
+df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020)
+# len(df) == 0
+print(df.attrs["query_status"])     # "year_not_found"
+print(df.attrs["available_years"])  # [2000, 2001, ..., 2019]
+print(df.attrs["nearest_year"])     # 2019
+```
+
 ## What's New in 2.2.2
 
 - **`UNICEFSDMXClient` dataflow resolution fixed**: `fetch_indicator()` now auto-detects the correct dataflow from metadata instead of always defaulting to `GLOBAL_DATAFLOW`, consistent with `unicefData()`

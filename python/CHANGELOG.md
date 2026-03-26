@@ -2,6 +2,29 @@
 
 All notable changes to the unicefdata Python library will be documented in this file.
 
+## [2.4.0] - 2026-03-25
+
+### Added
+
+- **Query status codes**: When `unicefData()` returns an empty DataFrame, `df.attrs` now contains structured metadata explaining why:
+  - `query_status`: One of `ok`, `indicator_not_found`, `country_not_found`, `year_not_found`, `year_beyond_range`
+  - `available_years`: List of years with data (when `year_not_found` or `year_beyond_range`)
+  - `nearest_year`: Closest available year to the requested year
+  - `available_countries`: Countries with data (when `country_not_found`)
+  - `message`: Human-readable explanation
+- **Cross-language spec**: `docs/QUERY_STATUS_CODES.md` defines the same codes for Python, R, and Stata
+
+### Changed
+
+- **Fetch without year filter**: Primary dataflow queries no longer pass `startPeriod`/`endPeriod` to the SDMX API. Year filtering is applied client-side. This avoids the SDMX API 404 quirk on survey-based dataflows (NUTRITION, MNCH, EDUCATION) where valid country+indicator combinations return 404 when a specific year has no data.
+- **Smarter fallback logic**: Fallback dataflows are only tried on real 404s (dataflow doesn't exist), not on empty results (dataflow exists but data is sparse for this country/year). Previously, querying `MNCH_CSEC` for a year without data would try 4 non-existent fallback dataflows.
+
+### Fixed
+
+- **MNCH_CSEC, MNCH_BIRTH18**: Now return `year_not_found` with `available_years` instead of `SDMXNotFoundError` after exhausting fallbacks
+- **NT_ANT_HAZ_NE2, NT_ANT_WAZ_NE2, NT_ANT_WHZ_NE2**: Same fix for nutrition indicators
+- **ED_CR_L1**: Same fix for education indicators
+
 ## [2.3.2] - 2026-03-22
 
 ### Changed

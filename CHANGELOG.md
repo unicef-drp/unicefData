@@ -9,6 +9,23 @@ See language-specific detailed changelogs:
 
 ---
 
+## [2.4.0] - 2026-03-25
+
+### Python v2.4.0
+
+- **Query status codes**: `unicefData()` now classifies empty results via `df.attrs["query_status"]` — one of `ok`, `indicator_not_found`, `country_not_found`, `year_not_found`, `year_beyond_range`. Includes `available_years`, `nearest_year`, and human-readable `message`.
+- **Client-side year filtering**: Avoids SDMX API 404 quirk on survey-based dataflows (NUTRITION, MNCH, EDUCATION). Fixes 6 of 11 benchmark indicators that failed with year filters.
+- **Smarter fallback logic**: Fallback dataflows only tried on real 404s, not on empty results from valid dataflows.
+- **Cross-language spec**: `docs/QUERY_STATUS_CODES.md` defines status codes for Python, R, and Stata.
+
+### Platform Versions
+
+| Platform | Version |
+|----------|---------|
+| R | 2.3.0 |
+| Python | **2.4.0** |
+| Stata | 2.3.1 |
+
 ## [2.3.2] - 2026-03-22
 
 ### Repository Release v2.3.2
