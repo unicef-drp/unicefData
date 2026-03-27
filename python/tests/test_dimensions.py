@@ -2,9 +2,15 @@
 
 Converts the previous script into proper tests and expands coverage via
 parameterization across common UNICEF dataflows.
+
+NOTE: All tests in this module make live HTTP calls to sdmx.data.unicef.org.
+Run with: pytest -m network
+Skip with: pytest -m 'not network'
 """
 
 import pytest
+
+pytestmark = pytest.mark.network
 import requests
 import xml.etree.ElementTree as ET
 

@@ -395,6 +395,7 @@ def _fetch_indicator_with_fallback(
     max_retries: int = 3,
     tidy: bool = True,
     totals: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch indicator data with automatic dataflow fallback on 404 errors.
@@ -501,29 +502,192 @@ def _fetch_indicator_with_fallback(
         # Log fallback attempts (matching R's verbose output)
         if df_attempt != dataflows_to_try[0]:
             _logger.info(f"Trying fallback dataflow '{df_attempt}'...")
-        
+
         try:
+            # diagnose=True: fetch WITHOUT year filter, filter client-side.
+            #   Avoids SDMX API 404 quirk on survey dataflows and enables
+            #   query_status classification (available_years, nearest_year).
+            # diagnose=False: pass year filters to the API (server-side).
+            #   Faster — downloads only matching data, but no diagnostics.
+            fetch_start = start_year if not diagnose else None
+            fetch_end = end_year if not diagnose else None
             df = client.fetch_indicator(
                 indicator_code=indicator_code,
                 countries=countries,
-                start_year=start_year,
-                end_year=end_year,
+                start_year=fetch_start,
+                end_year=fetch_end,
                 dataflow=df_attempt,
                 sex_disaggregation=sex,
-                totals=False,
+                totals=totals,
                 max_retries=max_retries,
                 return_raw=not tidy,
             )
-            
-            if not df.empty:
-                if df_attempt != dataflows_to_try[0]:
-                    _logger.info(
-                        f"Successfully fetched '{indicator_code}' using fallback "
-                        f"dataflow '{df_attempt}' (primary '{dataflows_to_try[0]}' failed)"
+
+            if df.empty and not diagnose:
+                # Without diagnose: empty result, no classification.
+                # Don't try fallbacks if data was fetched with year filter —
+                # the dataflow may exist but not for this country+year.
+                if not (start_year or end_year):
+                    # No year filter was used, so this is a true empty
+                    continue  # try next dataflow
+                return pd.DataFrame()
+
+            if df.empty and diagnose:
+                # With diagnose: classify why the result is empty.
+                empty = pd.DataFrame()
+                all_countries = set()
+                try:
+                    df_probe = client.fetch_indicator(
+                        indicator_code=indicator_code,
+                        countries=None,
+                        start_year=None,
+                        end_year=None,
+                        dataflow=df_attempt,
+                        sex_disaggregation=sex,
+                        max_retries=1,
+                        return_raw=True,
                     )
-                return df
-                
+                    if not df_probe.empty:
+                        ref_col = 'REF_AREA' if 'REF_AREA' in df_probe.columns else 'iso3'
+                        if ref_col in df_probe.columns:
+                            all_countries = set(df_probe[ref_col].unique())
+                except Exception:
+                    pass
+
+                # Common attrs for all empty statuses
+                empty.attrs["query_indicator"] = indicator_code
+                empty.attrs["query_countries"] = countries or []
+                if start_year or end_year:
+                    empty.attrs["query_year"] = start_year or end_year
+
+                if all_countries:
+                    sample = sorted(all_countries)[:20]
+                    empty.attrs["query_status"] = "country_not_found"
+                    empty.attrs["available_countries"] = sample
+                    empty.attrs["message"] = (
+                        f"No data for {countries} for indicator '{indicator_code}'. "
+                        f"Data exists for {len(all_countries)} countries including: "
+                        f"{', '.join(sample[:5])}..."
+                    )
+                    _logger.info(empty.attrs["message"])
+                else:
+                    empty.attrs["query_status"] = "indicator_not_found"
+                    empty.attrs["message"] = (
+                        f"Indicator '{indicator_code}' returned no data from "
+                        f"dataflow '{df_attempt}'."
+                    )
+                return empty
+
+            # diagnose=True: apply year filter client-side
+            if diagnose and (start_year or end_year):
+                period_col = 'period' if 'period' in df.columns else 'TIME_PERIOD'
+                if period_col in df.columns:
+                    df_pre_filter = df.copy()
+
+                    years = pd.to_numeric(
+                        df[period_col].astype(str).str.slice(0, 4),
+                        errors="coerce",
+                    )
+                    mask = pd.Series(True, index=df.index)
+                    if start_year:
+                        mask &= years >= start_year
+                    if end_year:
+                        mask &= years <= end_year
+                    df = df[mask]
+
+                    if df.empty:
+                        years_pre = pd.to_numeric(
+                            df_pre_filter[period_col].astype(str).str.slice(0, 4),
+                            errors="coerce",
+                        )
+                        avail = sorted(years_pre.dropna().unique())
+                        avail_years = [int(y) for y in avail]
+                        min_year = min(avail_years) if avail_years else None
+                        max_year = max(avail_years) if avail_years else None
+
+                        if start_year and end_year and start_year != end_year:
+                            target = (start_year + end_year) // 2
+                            year_desc = f"{start_year}-{end_year}"
+                        else:
+                            target = start_year or end_year
+                            year_desc = str(target)
+
+                        nearest = min(avail_years, key=lambda y: abs(y - target)) if avail_years else None
+
+                        if avail_years and (target > max_year or target < min_year):
+                            df.attrs["query_status"] = "year_beyond_range"
+                            df.attrs["message"] = (
+                                f"Year {year_desc} is outside the available data range "
+                                f"for {countries}. "
+                                f"Data covers {min_year}-{max_year}. "
+                                f"Nearest available: {nearest}."
+                            )
+                        else:
+                            df.attrs["query_status"] = "year_not_found"
+                            df.attrs["message"] = (
+                                f"No data for {countries} in {year_desc}. "
+                                f"Data exists for other years: {avail_years}. "
+                                f"Nearest available: {nearest}."
+                            )
+
+                        df.attrs["query_indicator"] = indicator_code
+                        df.attrs["query_countries"] = countries or []
+                        df.attrs["query_year"] = target
+                        df.attrs["available_years"] = avail_years
+                        df.attrs["nearest_year"] = nearest
+                        _logger.info(df.attrs["message"])
+                        return df
+
+            if df_attempt != dataflows_to_try[0]:
+                _logger.info(
+                    f"Successfully fetched '{indicator_code}' using fallback "
+                    f"dataflow '{df_attempt}' (primary '{dataflows_to_try[0]}' failed)"
+                )
+            if diagnose:
+                df.attrs["query_status"] = "ok"
+            return df
+
         except SDMXNotFoundError as e:
+            # diagnose=False with year filters: the SDMX API returns 404 for
+            # valid survey-based indicators when the specific country+year has
+            # no data. Retry once without year filters before giving up.
+            if not diagnose and (start_year or end_year) and fetch_start is not None:
+                _logger.info(
+                    f"404 with year filter on '{df_attempt}' — retrying without "
+                    f"period params (survey dataflow quirk)"
+                )
+                try:
+                    df = client.fetch_indicator(
+                        indicator_code=indicator_code,
+                        countries=countries,
+                        start_year=None,
+                        end_year=None,
+                        dataflow=df_attempt,
+                        sex_disaggregation=sex,
+                        totals=totals,
+                        max_retries=1,
+                        return_raw=not tidy,
+                    )
+                    if not df.empty:
+                        # Data exists — year filter was the problem.
+                        # Filter client-side and return.
+                        period_col = 'period' if 'period' in df.columns else 'TIME_PERIOD'
+                        if period_col in df.columns:
+                            years = pd.to_numeric(
+                                df[period_col].astype(str).str.slice(0, 4),
+                                errors="coerce",
+                            )
+                            mask = pd.Series(True, index=df.index)
+                            if start_year:
+                                mask &= years >= start_year
+                            if end_year:
+                                mask &= years <= end_year
+                            df = df[mask]
+                        df.attrs["query_status"] = "ok" if not df.empty else "year_not_found"
+                        return df
+                except Exception:
+                    pass  # Fall through to normal fallback logic
+
             last_error = e
             if df_attempt != dataflows_to_try[-1]:
                 _logger.debug(
@@ -531,24 +695,29 @@ def _fetch_indicator_with_fallback(
                     f"trying next dataflow..."
                 )
             continue
-            
+
         except Exception as e:
             # For non-404 errors, don't try alternatives (fatal errors)
             _logger.error(f"Error fetching '{indicator_code}': {e}")
             raise
-    
-    # All dataflows failed - raise exception with tried dataflows context
+
+    # All dataflows returned 404 — indicator truly not found
+    empty = pd.DataFrame()
+    tried_str = ", ".join(dataflows_to_try)
+    error_msg = (
+        f"Indicator '{indicator_code}' not found in any dataflow.\n"
+        f"  Tried dataflows: {tried_str}\n"
+        f"  Browse available indicators at: https://data.unicef.org/"
+    )
+    empty.attrs["query_status"] = "indicator_not_found"
+    empty.attrs["query_indicator"] = indicator_code
+    empty.attrs["message"] = error_msg
+    _logger.error(error_msg)
+
     if last_error:
-        tried_str = ", ".join(dataflows_to_try)
-        error_msg = (
-            f"Not Found (404): Indicator '{indicator_code}' not found in any dataflow.\n"
-            f"  Tried dataflows: {tried_str}\n"
-            f"  Browse available indicators at: https://data.unicef.org/"
-        )
-        _logger.error(error_msg)
         raise SDMXNotFoundError(error_msg)
 
-    return pd.DataFrame()
+    return empty
 
 
 def _fetch_with_fallback(
@@ -561,6 +730,7 @@ def _fetch_with_fallback(
     max_retries: int = 3,
     tidy: bool = True,
     totals: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch multiple indicators using get_sdmx() with fallback logic.
@@ -588,6 +758,7 @@ def _fetch_with_fallback(
         _client = UNICEFSDMXClient()
     
     dfs = []
+    failed_indicators = {}  # {indicator_code: {status attrs}}
     for ind in indicators:
         df = _fetch_indicator_with_fallback(
             client=_client,
@@ -599,14 +770,33 @@ def _fetch_with_fallback(
             sex=sex,
             max_retries=max_retries,
             tidy=tidy,
+            diagnose=diagnose,
         )
         if not df.empty:
             dfs.append(df)
-    
+        elif df.attrs.get("query_status"):
+            failed_indicators[ind] = df.attrs.copy()
+
     if not dfs:
+        # All indicators failed — return the last empty with status
+        if failed_indicators:
+            last_key = list(failed_indicators.keys())[-1]
+            empty = pd.DataFrame()
+            empty.attrs.update(failed_indicators[last_key])
+            if len(failed_indicators) > 1:
+                empty.attrs["failed_indicators"] = failed_indicators
+            return empty
         return pd.DataFrame()
-    
-    return pd.concat(dfs, ignore_index=True)
+
+    result = pd.concat(dfs, ignore_index=True)
+    if failed_indicators:
+        if diagnose:
+            result.attrs["query_status"] = "partial"
+            result.attrs["failed_indicators"] = failed_indicators
+    else:
+        if diagnose:
+            result.attrs["query_status"] = "ok"
+    return result
 
 
 # =============================================================================
@@ -641,6 +831,7 @@ def unicefData(
     mrv: Optional[int] = None,
     raw: bool = False,
     ignore_duplicates: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch UNICEF indicator data from SDMX API.
@@ -705,9 +896,14 @@ def unicefData(
         mrv: Most Recent Value(s). Keep only the N most recent years per country.
             Example: mrv=1 is equivalent to latest=True, mrv=3 keeps last 3 years.
         ignore_duplicates: If False (default), raises an error when exact duplicate
-            rows are found (all column values identical). Set to True to allow 
+            rows are found (all column values identical). Set to True to allow
             automatic removal of duplicates.
-    
+        diagnose: If True, fetch all data without year filter and classify
+            empty results via df.attrs["query_status"]. Enables available_years,
+            nearest_year, and message metadata. Slower (downloads full dataset).
+            If False (default), pass year filter to API (faster, no diagnostics).
+            MCP tools should set diagnose=True for structured error reporting.
+
     Returns:
         pandas.DataFrame with columns (varies by options):
             - indicator_code: Indicator code
@@ -850,6 +1046,7 @@ def unicefData(
         totals=totals,
         max_retries=max_retries,
         tidy=not raw,
+        diagnose=diagnose,
     )
     
     print("")

@@ -1,0 +1,1409 @@
+{
+  "cran": {
+    "package": "unicefData",
+    "registry": "CRAN",
+    "version": "2.3.0",
+    "published": "2026-03-03 21:20:08 UTC",
+    "last_day": 12,
+    "last_week": 100,
+    "last_month": 324,
+    "daily": [
+      {
+        "date": "2026-03-04",
+        "count": 12
+      },
+      {
+        "date": "2026-03-05",
+        "count": 36
+      },
+      {
+        "date": "2026-03-06",
+        "count": 5
+      },
+      {
+        "date": "2026-03-07",
+        "count": 8
+      },
+      {
+        "date": "2026-03-08",
+        "count": 19
+      },
+      {
+        "date": "2026-03-09",
+        "count": 7
+      },
+      {
+        "date": "2026-03-10",
+        "count": 15
+      },
+      {
+        "date": "2026-03-11",
+        "count": 12
+      },
+      {
+        "date": "2026-03-12",
+        "count": 9
+      },
+      {
+        "date": "2026-03-13",
+        "count": 40
+      },
+      {
+        "date": "2026-03-14",
+        "count": 27
+      },
+      {
+        "date": "2026-03-15",
+        "count": 10
+      },
+      {
+        "date": "2026-03-16",
+        "count": 24
+      },
+      {
+        "date": "2026-03-17",
+        "count": 19
+      },
+      {
+        "date": "2026-03-18",
+        "count": 13
+      },
+      {
+        "date": "2026-03-19",
+        "count": 7
+      },
+      {
+        "date": "2026-03-20",
+        "count": 14
+      },
+      {
+        "date": "2026-03-21",
+        "count": 15
+      },
+      {
+        "date": "2026-03-22",
+        "count": 20
+      },
+      {
+        "date": "2026-03-23",
+        "count": 12
+      }
+    ],
+    "total_period": 324,
+    "daily_avg": 16.2,
+    "total_since_publish": 324,
+    "weekly": [
+      {
+        "week": "2026-W10",
+        "count": 80
+      },
+      {
+        "week": "2026-W11",
+        "count": 120
+      },
+      {
+        "week": "2026-W12",
+        "count": 112
+      },
+      {
+        "week": "2026-W13",
+        "count": 12
+      }
+    ]
+  },
+  "pypi": {
+    "package": "unicefdata",
+    "registry": "PyPI",
+    "version": "2.3.2",
+    "last_day": 50,
+    "last_week": 231,
+    "last_month": 335,
+    "daily": [
+      {
+        "date": "2026-02-23",
+        "count": 17
+      },
+      {
+        "date": "2026-02-24",
+        "count": 5
+      },
+      {
+        "date": "2026-02-25",
+        "count": 6
+      },
+      {
+        "date": "2026-02-26",
+        "count": 12
+      },
+      {
+        "date": "2026-02-27",
+        "count": 11
+      },
+      {
+        "date": "2026-02-28",
+        "count": 15
+      },
+      {
+        "date": "2026-03-01",
+        "count": 2
+      },
+      {
+        "date": "2026-03-02",
+        "count": 4
+      },
+      {
+        "date": "2026-03-03",
+        "count": 8
+      },
+      {
+        "date": "2026-03-04",
+        "count": 14
+      },
+      {
+        "date": "2026-03-05",
+        "count": 14
+      },
+      {
+        "date": "2026-03-06",
+        "count": 1
+      },
+      {
+        "date": "2026-03-07",
+        "count": 19
+      },
+      {
+        "date": "2026-03-08",
+        "count": 8
+      },
+      {
+        "date": "2026-03-09",
+        "count": 15
+      },
+      {
+        "date": "2026-03-10",
+        "count": 18
+      },
+      {
+        "date": "2026-03-11",
+        "count": 2
+      },
+      {
+        "date": "2026-03-12",
+        "count": 6
+      },
+      {
+        "date": "2026-03-13",
+        "count": 10
+      },
+      {
+        "date": "2026-03-14",
+        "count": 7
+      },
+      {
+        "date": "2026-03-15",
+        "count": 4
+      },
+      {
+        "date": "2026-03-16",
+        "count": 12
+      },
+      {
+        "date": "2026-03-17",
+        "count": 12
+      },
+      {
+        "date": "2026-03-18",
+        "count": 5
+      },
+      {
+        "date": "2026-03-19",
+        "count": 1
+      },
+      {
+        "date": "2026-03-20",
+        "count": 41
+      },
+      {
+        "date": "2026-03-21",
+        "count": 25
+      },
+      {
+        "date": "2026-03-22",
+        "count": 21
+      },
+      {
+        "date": "2026-03-23",
+        "count": 256
+      },
+      {
+        "date": "2026-03-24",
+        "count": 74
+      }
+    ],
+    "total_period": 645,
+    "daily_avg": 21.5,
+    "total_all_time": 1286,
+    "by_os": {
+      "unknown": 553
+    },
+    "by_python_version": {
+      "null": 293,
+      "3.11": 159,
+      "3.12": 44,
+      "3.10": 27,
+      "3.13": 22,
+      "3.14": 6,
+      "3.9": 2
+    }
+  },
+  "ssc": {
+    "package": "UNICEFDATA",
+    "registry": "SSC",
+    "version": "2.3.1",
+    "monthly": [],
+    "total_period": 0,
+    "months_fetched": 12,
+    "note": "Monthly hits from RePEc SSC archive (0 months with data, 12 fetched). See http://fmwww.bc.edu/repec/bocode/s/sscstats.html"
+  },
+  "github": {
+    "repo": "unicef-drp/unicefData",
+    "clones_total": 764,
+    "clones_unique": 110,
+    "clones_daily": [
+      {
+        "date": "2026-03-10",
+        "total": 3,
+        "unique": 3
+      },
+      {
+        "date": "2026-03-11",
+        "total": 1,
+        "unique": 1
+      },
+      {
+        "date": "2026-03-12",
+        "total": 1,
+        "unique": 1
+      },
+      {
+        "date": "2026-03-13",
+        "total": 17,
+        "unique": 5
+      },
+      {
+        "date": "2026-03-14",
+        "total": 5,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-15",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-16",
+        "total": 4,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-17",
+        "total": 5,
+        "unique": 5
+      },
+      {
+        "date": "2026-03-18",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-19",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-20",
+        "total": 4,
+        "unique": 3
+      },
+      {
+        "date": "2026-03-21",
+        "total": 234,
+        "unique": 41
+      },
+      {
+        "date": "2026-03-22",
+        "total": 23,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-23",
+        "total": 467,
+        "unique": 51
+      }
+    ],
+    "views_total": 794,
+    "views_unique": 509,
+    "views_daily": [
+      {
+        "date": "2026-03-10",
+        "total": 26,
+        "unique": 18
+      },
+      {
+        "date": "2026-03-11",
+        "total": 8,
+        "unique": 6
+      },
+      {
+        "date": "2026-03-12",
+        "total": 15,
+        "unique": 7
+      },
+      {
+        "date": "2026-03-13",
+        "total": 73,
+        "unique": 48
+      },
+      {
+        "date": "2026-03-14",
+        "total": 45,
+        "unique": 19
+      },
+      {
+        "date": "2026-03-15",
+        "total": 26,
+        "unique": 14
+      },
+      {
+        "date": "2026-03-16",
+        "total": 63,
+        "unique": 29
+      },
+      {
+        "date": "2026-03-17",
+        "total": 309,
+        "unique": 301
+      },
+      {
+        "date": "2026-03-18",
+        "total": 25,
+        "unique": 19
+      },
+      {
+        "date": "2026-03-19",
+        "total": 32,
+        "unique": 11
+      },
+      {
+        "date": "2026-03-20",
+        "total": 21,
+        "unique": 8
+      },
+      {
+        "date": "2026-03-21",
+        "total": 38,
+        "unique": 16
+      },
+      {
+        "date": "2026-03-22",
+        "total": 18,
+        "unique": 10
+      },
+      {
+        "date": "2026-03-23",
+        "total": 95,
+        "unique": 33
+      }
+    ]
+  },
+  "logec": {
+    "unicefdata": {
+      "handle": "repec:boc:bocode:s459598",
+      "monthly": [
+        {
+          "month": "2026-02",
+          "downloads": 0,
+          "views": 6
+        }
+      ],
+      "total_downloads": 0,
+      "total_views": 6
+    },
+    "wbopendata": {
+      "handle": "repec:boc:bocode:s457234",
+      "monthly": [
+        {
+          "month": "2011-02",
+          "downloads": 25,
+          "views": 114
+        },
+        {
+          "month": "2011-03",
+          "downloads": 33,
+          "views": 125
+        },
+        {
+          "month": "2011-04",
+          "downloads": 41,
+          "views": 123
+        },
+        {
+          "month": "2011-05",
+          "downloads": 45,
+          "views": 190
+        },
+        {
+          "month": "2011-06",
+          "downloads": 33,
+          "views": 141
+        },
+        {
+          "month": "2011-07",
+          "downloads": 31,
+          "views": 120
+        },
+        {
+          "month": "2011-08",
+          "downloads": 19,
+          "views": 101
+        },
+        {
+          "month": "2011-09",
+          "downloads": 27,
+          "views": 113
+        },
+        {
+          "month": "2011-10",
+          "downloads": 36,
+          "views": 125
+        },
+        {
+          "month": "2011-11",
+          "downloads": 47,
+          "views": 156
+        },
+        {
+          "month": "2011-12",
+          "downloads": 35,
+          "views": 134
+        },
+        {
+          "month": "2012-01",
+          "downloads": 41,
+          "views": 160
+        },
+        {
+          "month": "2012-02",
+          "downloads": 23,
+          "views": 165
+        },
+        {
+          "month": "2012-03",
+          "downloads": 244,
+          "views": 1195
+        },
+        {
+          "month": "2012-04",
+          "downloads": 165,
+          "views": 509
+        },
+        {
+          "month": "2012-05",
+          "downloads": 133,
+          "views": 402
+        },
+        {
+          "month": "2012-06",
+          "downloads": 76,
+          "views": 252
+        },
+        {
+          "month": "2012-07",
+          "downloads": 37,
+          "views": 159
+        },
+        {
+          "month": "2012-08",
+          "downloads": 30,
+          "views": 158
+        },
+        {
+          "month": "2012-09",
+          "downloads": 32,
+          "views": 143
+        },
+        {
+          "month": "2012-10",
+          "downloads": 70,
+          "views": 244
+        },
+        {
+          "month": "2012-11",
+          "downloads": 53,
+          "views": 191
+        },
+        {
+          "month": "2012-12",
+          "downloads": 55,
+          "views": 196
+        },
+        {
+          "month": "2013-01",
+          "downloads": 39,
+          "views": 205
+        },
+        {
+          "month": "2013-02",
+          "downloads": 70,
+          "views": 274
+        },
+        {
+          "month": "2013-03",
+          "downloads": 37,
+          "views": 210
+        },
+        {
+          "month": "2013-04",
+          "downloads": 58,
+          "views": 238
+        },
+        {
+          "month": "2013-05",
+          "downloads": 49,
+          "views": 198
+        },
+        {
+          "month": "2013-06",
+          "downloads": 21,
+          "views": 122
+        },
+        {
+          "month": "2013-07",
+          "downloads": 33,
+          "views": 148
+        },
+        {
+          "month": "2013-08",
+          "downloads": 23,
+          "views": 109
+        },
+        {
+          "month": "2013-09",
+          "downloads": 30,
+          "views": 127
+        },
+        {
+          "month": "2013-10",
+          "downloads": 31,
+          "views": 167
+        },
+        {
+          "month": "2013-11",
+          "downloads": 45,
+          "views": 174
+        },
+        {
+          "month": "2013-12",
+          "downloads": 42,
+          "views": 180
+        },
+        {
+          "month": "2014-01",
+          "downloads": 42,
+          "views": 214
+        },
+        {
+          "month": "2014-02",
+          "downloads": 35,
+          "views": 149
+        },
+        {
+          "month": "2014-03",
+          "downloads": 53,
+          "views": 225
+        },
+        {
+          "month": "2014-04",
+          "downloads": 55,
+          "views": 210
+        },
+        {
+          "month": "2014-05",
+          "downloads": 34,
+          "views": 216
+        },
+        {
+          "month": "2014-06",
+          "downloads": 26,
+          "views": 145
+        },
+        {
+          "month": "2014-07",
+          "downloads": 31,
+          "views": 185
+        },
+        {
+          "month": "2014-08",
+          "downloads": 14,
+          "views": 123
+        },
+        {
+          "month": "2014-09",
+          "downloads": 23,
+          "views": 127
+        },
+        {
+          "month": "2014-10",
+          "downloads": 25,
+          "views": 134
+        },
+        {
+          "month": "2014-11",
+          "downloads": 34,
+          "views": 173
+        },
+        {
+          "month": "2014-12",
+          "downloads": 23,
+          "views": 139
+        },
+        {
+          "month": "2015-01",
+          "downloads": 40,
+          "views": 145
+        },
+        {
+          "month": "2015-02",
+          "downloads": 37,
+          "views": 136
+        },
+        {
+          "month": "2015-03",
+          "downloads": 49,
+          "views": 194
+        },
+        {
+          "month": "2015-04",
+          "downloads": 48,
+          "views": 165
+        },
+        {
+          "month": "2015-05",
+          "downloads": 33,
+          "views": 151
+        },
+        {
+          "month": "2015-06",
+          "downloads": 34,
+          "views": 129
+        },
+        {
+          "month": "2015-07",
+          "downloads": 25,
+          "views": 99
+        },
+        {
+          "month": "2015-08",
+          "downloads": 17,
+          "views": 96
+        },
+        {
+          "month": "2015-09",
+          "downloads": 44,
+          "views": 128
+        },
+        {
+          "month": "2015-10",
+          "downloads": 29,
+          "views": 133
+        },
+        {
+          "month": "2015-11",
+          "downloads": 48,
+          "views": 171
+        },
+        {
+          "month": "2015-12",
+          "downloads": 30,
+          "views": 130
+        },
+        {
+          "month": "2016-01",
+          "downloads": 29,
+          "views": 131
+        },
+        {
+          "month": "2016-02",
+          "downloads": 49,
+          "views": 150
+        },
+        {
+          "month": "2016-03",
+          "downloads": 56,
+          "views": 188
+        },
+        {
+          "month": "2016-04",
+          "downloads": 56,
+          "views": 193
+        },
+        {
+          "month": "2016-05",
+          "downloads": 37,
+          "views": 130
+        },
+        {
+          "month": "2016-06",
+          "downloads": 27,
+          "views": 109
+        },
+        {
+          "month": "2016-07",
+          "downloads": 23,
+          "views": 105
+        },
+        {
+          "month": "2016-08",
+          "downloads": 23,
+          "views": 109
+        },
+        {
+          "month": "2016-09",
+          "downloads": 21,
+          "views": 91
+        },
+        {
+          "month": "2016-10",
+          "downloads": 18,
+          "views": 112
+        },
+        {
+          "month": "2016-11",
+          "downloads": 27,
+          "views": 127
+        },
+        {
+          "month": "2016-12",
+          "downloads": 21,
+          "views": 99
+        },
+        {
+          "month": "2017-01",
+          "downloads": 22,
+          "views": 110
+        },
+        {
+          "month": "2017-02",
+          "downloads": 32,
+          "views": 122
+        },
+        {
+          "month": "2017-03",
+          "downloads": 48,
+          "views": 366
+        },
+        {
+          "month": "2017-04",
+          "downloads": 36,
+          "views": 144
+        },
+        {
+          "month": "2017-05",
+          "downloads": 24,
+          "views": 105
+        },
+        {
+          "month": "2017-06",
+          "downloads": 23,
+          "views": 111
+        },
+        {
+          "month": "2017-07",
+          "downloads": 14,
+          "views": 102
+        },
+        {
+          "month": "2017-08",
+          "downloads": 18,
+          "views": 68
+        },
+        {
+          "month": "2017-09",
+          "downloads": 21,
+          "views": 82
+        },
+        {
+          "month": "2017-10",
+          "downloads": 26,
+          "views": 123
+        },
+        {
+          "month": "2017-11",
+          "downloads": 26,
+          "views": 124
+        },
+        {
+          "month": "2017-12",
+          "downloads": 18,
+          "views": 92
+        },
+        {
+          "month": "2018-01",
+          "downloads": 19,
+          "views": 80
+        },
+        {
+          "month": "2018-02",
+          "downloads": 25,
+          "views": 123
+        },
+        {
+          "month": "2018-03",
+          "downloads": 24,
+          "views": 138
+        },
+        {
+          "month": "2018-04",
+          "downloads": 24,
+          "views": 111
+        },
+        {
+          "month": "2018-05",
+          "downloads": 22,
+          "views": 127
+        },
+        {
+          "month": "2018-06",
+          "downloads": 14,
+          "views": 80
+        },
+        {
+          "month": "2018-07",
+          "downloads": 8,
+          "views": 68
+        },
+        {
+          "month": "2018-08",
+          "downloads": 15,
+          "views": 74
+        },
+        {
+          "month": "2018-09",
+          "downloads": 18,
+          "views": 91
+        },
+        {
+          "month": "2018-10",
+          "downloads": 18,
+          "views": 89
+        },
+        {
+          "month": "2018-11",
+          "downloads": 29,
+          "views": 143
+        },
+        {
+          "month": "2018-12",
+          "downloads": 19,
+          "views": 112
+        },
+        {
+          "month": "2019-01",
+          "downloads": 21,
+          "views": 98
+        },
+        {
+          "month": "2019-02",
+          "downloads": 22,
+          "views": 114
+        },
+        {
+          "month": "2019-03",
+          "downloads": 14,
+          "views": 126
+        },
+        {
+          "month": "2019-04",
+          "downloads": 27,
+          "views": 152
+        },
+        {
+          "month": "2019-05",
+          "downloads": 14,
+          "views": 101
+        },
+        {
+          "month": "2019-06",
+          "downloads": 7,
+          "views": 84
+        },
+        {
+          "month": "2019-07",
+          "downloads": 22,
+          "views": 112
+        },
+        {
+          "month": "2019-08",
+          "downloads": 11,
+          "views": 113
+        },
+        {
+          "month": "2019-09",
+          "downloads": 12,
+          "views": 98
+        },
+        {
+          "month": "2019-10",
+          "downloads": 20,
+          "views": 135
+        },
+        {
+          "month": "2019-11",
+          "downloads": 34,
+          "views": 167
+        },
+        {
+          "month": "2019-12",
+          "downloads": 22,
+          "views": 100
+        },
+        {
+          "month": "2020-01",
+          "downloads": 20,
+          "views": 114
+        },
+        {
+          "month": "2020-02",
+          "downloads": 18,
+          "views": 142
+        },
+        {
+          "month": "2020-03",
+          "downloads": 16,
+          "views": 142
+        },
+        {
+          "month": "2020-04",
+          "downloads": 38,
+          "views": 267
+        },
+        {
+          "month": "2020-05",
+          "downloads": 15,
+          "views": 167
+        },
+        {
+          "month": "2020-06",
+          "downloads": 17,
+          "views": 116
+        },
+        {
+          "month": "2020-07",
+          "downloads": 25,
+          "views": 139
+        },
+        {
+          "month": "2020-08",
+          "downloads": 19,
+          "views": 132
+        },
+        {
+          "month": "2020-09",
+          "downloads": 19,
+          "views": 155
+        },
+        {
+          "month": "2020-10",
+          "downloads": 17,
+          "views": 188
+        },
+        {
+          "month": "2020-11",
+          "downloads": 22,
+          "views": 147
+        },
+        {
+          "month": "2020-12",
+          "downloads": 23,
+          "views": 169
+        },
+        {
+          "month": "2021-01",
+          "downloads": 24,
+          "views": 164
+        },
+        {
+          "month": "2021-02",
+          "downloads": 21,
+          "views": 176
+        },
+        {
+          "month": "2021-03",
+          "downloads": 27,
+          "views": 245
+        },
+        {
+          "month": "2021-04",
+          "downloads": 27,
+          "views": 240
+        },
+        {
+          "month": "2021-05",
+          "downloads": 49,
+          "views": 227
+        },
+        {
+          "month": "2021-06",
+          "downloads": 22,
+          "views": 181
+        },
+        {
+          "month": "2021-07",
+          "downloads": 17,
+          "views": 168
+        },
+        {
+          "month": "2021-08",
+          "downloads": 19,
+          "views": 170
+        },
+        {
+          "month": "2021-09",
+          "downloads": 29,
+          "views": 141
+        },
+        {
+          "month": "2021-10",
+          "downloads": 39,
+          "views": 165
+        },
+        {
+          "month": "2021-11",
+          "downloads": 23,
+          "views": 152
+        },
+        {
+          "month": "2021-12",
+          "downloads": 19,
+          "views": 113
+        },
+        {
+          "month": "2022-01",
+          "downloads": 18,
+          "views": 97
+        },
+        {
+          "month": "2022-02",
+          "downloads": 12,
+          "views": 105
+        },
+        {
+          "month": "2022-03",
+          "downloads": 19,
+          "views": 123
+        },
+        {
+          "month": "2022-04",
+          "downloads": 23,
+          "views": 108
+        },
+        {
+          "month": "2022-05",
+          "downloads": 16,
+          "views": 107
+        },
+        {
+          "month": "2022-06",
+          "downloads": 14,
+          "views": 88
+        },
+        {
+          "month": "2022-07",
+          "downloads": 15,
+          "views": 71
+        },
+        {
+          "month": "2022-08",
+          "downloads": 7,
+          "views": 61
+        },
+        {
+          "month": "2022-09",
+          "downloads": 14,
+          "views": 84
+        },
+        {
+          "month": "2022-10",
+          "downloads": 19,
+          "views": 90
+        },
+        {
+          "month": "2022-11",
+          "downloads": 18,
+          "views": 90
+        },
+        {
+          "month": "2022-12",
+          "downloads": 9,
+          "views": 82
+        },
+        {
+          "month": "2023-01",
+          "downloads": 11,
+          "views": 86
+        },
+        {
+          "month": "2023-02",
+          "downloads": 17,
+          "views": 85
+        },
+        {
+          "month": "2023-03",
+          "downloads": 26,
+          "views": 122
+        },
+        {
+          "month": "2023-04",
+          "downloads": 16,
+          "views": 71
+        },
+        {
+          "month": "2023-05",
+          "downloads": 20,
+          "views": 89
+        },
+        {
+          "month": "2023-06",
+          "downloads": 14,
+          "views": 55
+        },
+        {
+          "month": "2023-07",
+          "downloads": 3,
+          "views": 51
+        },
+        {
+          "month": "2023-08",
+          "downloads": 12,
+          "views": 52
+        },
+        {
+          "month": "2023-09",
+          "downloads": 12,
+          "views": 68
+        },
+        {
+          "month": "2023-10",
+          "downloads": 30,
+          "views": 155
+        },
+        {
+          "month": "2023-11",
+          "downloads": 12,
+          "views": 78
+        },
+        {
+          "month": "2023-12",
+          "downloads": 11,
+          "views": 56
+        },
+        {
+          "month": "2024-01",
+          "downloads": 9,
+          "views": 66
+        },
+        {
+          "month": "2024-02",
+          "downloads": 15,
+          "views": 76
+        },
+        {
+          "month": "2024-03",
+          "downloads": 17,
+          "views": 70
+        },
+        {
+          "month": "2024-04",
+          "downloads": 18,
+          "views": 82
+        },
+        {
+          "month": "2024-05",
+          "downloads": 14,
+          "views": 70
+        },
+        {
+          "month": "2024-06",
+          "downloads": 6,
+          "views": 52
+        },
+        {
+          "month": "2024-07",
+          "downloads": 7,
+          "views": 45
+        },
+        {
+          "month": "2024-08",
+          "downloads": 8,
+          "views": 53
+        },
+        {
+          "month": "2024-09",
+          "downloads": 14,
+          "views": 75
+        },
+        {
+          "month": "2024-10",
+          "downloads": 19,
+          "views": 69
+        },
+        {
+          "month": "2024-11",
+          "downloads": 15,
+          "views": 78
+        },
+        {
+          "month": "2024-12",
+          "downloads": 7,
+          "views": 53
+        },
+        {
+          "month": "2025-01",
+          "downloads": 15,
+          "views": 73
+        },
+        {
+          "month": "2025-02",
+          "downloads": 7,
+          "views": 62
+        },
+        {
+          "month": "2025-03",
+          "downloads": 11,
+          "views": 74
+        },
+        {
+          "month": "2025-04",
+          "downloads": 9,
+          "views": 60
+        },
+        {
+          "month": "2025-05",
+          "downloads": 12,
+          "views": 57
+        },
+        {
+          "month": "2025-06",
+          "downloads": 6,
+          "views": 33
+        },
+        {
+          "month": "2025-07",
+          "downloads": 8,
+          "views": 39
+        },
+        {
+          "month": "2025-08",
+          "downloads": 9,
+          "views": 49
+        },
+        {
+          "month": "2025-09",
+          "downloads": 6,
+          "views": 47
+        },
+        {
+          "month": "2025-10",
+          "downloads": 9,
+          "views": 53
+        },
+        {
+          "month": "2025-11",
+          "downloads": 12,
+          "views": 67
+        },
+        {
+          "month": "2025-12",
+          "downloads": 5,
+          "views": 34
+        },
+        {
+          "month": "2026-01",
+          "downloads": 8,
+          "views": 74
+        },
+        {
+          "month": "2026-02",
+          "downloads": 8,
+          "views": 71
+        }
+      ],
+      "total_downloads": 5001,
+      "total_views": 24490
+    },
+    "yaml": {
+      "handle": "repec:boc:bocode:s459607",
+      "monthly": [
+        {
+          "month": "2026-02",
+          "downloads": 0,
+          "views": 1
+        }
+      ],
+      "total_downloads": 0,
+      "total_views": 1
+    }
+  },
+  "ssc_related": {
+    "WBOPENDATA": [
+      {
+        "month": "2025-01",
+        "hits": 1468
+      },
+      {
+        "month": "2025-02",
+        "hits": 1458
+      },
+      {
+        "month": "2025-03",
+        "hits": 2300
+      },
+      {
+        "month": "2025-04",
+        "hits": 1516
+      },
+      {
+        "month": "2025-05",
+        "hits": 2499
+      },
+      {
+        "month": "2025-06",
+        "hits": 1495
+      },
+      {
+        "month": "2025-07",
+        "hits": 1519
+      },
+      {
+        "month": "2025-08",
+        "hits": 1047
+      },
+      {
+        "month": "2025-09",
+        "hits": 2170
+      },
+      {
+        "month": "2025-10",
+        "hits": 2503
+      },
+      {
+        "month": "2025-11",
+        "hits": 2960
+      },
+      {
+        "month": "2025-12",
+        "hits": 3193
+      }
+    ]
+  }
+}

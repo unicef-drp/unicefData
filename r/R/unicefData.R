@@ -329,6 +329,12 @@ list_unicef_codelist <- memoise::memoise(
 #' @param ignore_duplicates Logical; if FALSE (default), raises an error when exact
 #'   duplicate rows are found (all column values identical). Set to TRUE to allow
 #'   automatic removal of duplicates.
+#' @param diagnose Logical; if TRUE, fetch all data without year filter and classify
+#'   empty results via attributes on the returned tibble. Enables \code{attr(df, "query_status")},
+#'   \code{attr(df, "available_years")}, \code{attr(df, "nearest_year")}, and
+#'   \code{attr(df, "message")}. Slower (downloads full dataset for year classification).
+#'   If FALSE (default), passes year filter to API (faster, no diagnostics).
+#'   MCP tools should set \code{diagnose = TRUE} for structured error reporting.
 #' @return Tibble with indicator data, or xml_document if detail="structure".
 #'   The 'period' column contains decimal years (see Time Period Handling section).
 #'
@@ -427,7 +433,8 @@ unicefData <- function(
     simplify      = FALSE,
     mrv           = NULL,
     raw           = FALSE,
-    ignore_duplicates = FALSE
+    ignore_duplicates = FALSE,
+    diagnose      = FALSE
 ) {
   # Parse the year parameter
   year_spec <- parse_year(year)
@@ -500,12 +507,16 @@ unicefData <- function(
     })
   } else {
     message("")
+    # diagnose=TRUE: fetch WITHOUT year filter, classify empty results
+    # diagnose=FALSE (default): pass year filter to API (faster)
+    fetch_start <- if (isTRUE(diagnose)) NULL else start_year
+    fetch_end   <- if (isTRUE(diagnose)) NULL else end_year
     result <- fetcher(
       indicator = indicator,
       dataflow = if (!is.null(dataflow)) dataflow[1] else NULL,
       countries = countries,
-      start_year = start_year,
-      end_year = end_year,
+      start_year = fetch_start,
+      end_year = fetch_end,
       max_retries = max_retries,
       version = version,
       page_size = page_size,
@@ -513,6 +524,76 @@ unicefData <- function(
       totals = totals,
       labels = labels
     )
+  }
+
+  # --- Query status classification (diagnose=TRUE) ---
+  if (isTRUE(diagnose)) {
+    if (is.null(result) || nrow(result) == 0) {
+      # Empty result — classify as indicator_not_found or country_not_found
+      empty <- dplyr::tibble()
+      attr(empty, "query_status") <- "indicator_not_found"
+      attr(empty, "query_indicator") <- indicator[1]
+      attr(empty, "query_countries") <- countries
+      if (!is.null(start_year) || !is.null(end_year))
+        attr(empty, "query_year") <- start_year %||% end_year
+      attr(empty, "message") <- sprintf(
+        "Indicator '%s' returned no data.", indicator[1]
+      )
+      return(empty)
+    }
+
+    # Data found — apply year filter client-side
+    if (!is.null(start_year) || !is.null(end_year)) {
+      period_col <- if ("period" %in% names(result)) "period"
+                    else if ("TIME_PERIOD" %in% names(result)) "TIME_PERIOD"
+                    else NULL
+      if (!is.null(period_col)) {
+        result_pre <- result
+        year_vals <- as.integer(substr(as.character(result[[period_col]]), 1, 4))
+        keep <- rep(TRUE, nrow(result))
+        if (!is.null(start_year)) keep <- keep & year_vals >= as.integer(start_year)
+        if (!is.null(end_year))   keep <- keep & year_vals <= as.integer(end_year)
+        result <- result[keep, , drop = FALSE]
+
+        if (nrow(result) == 0) {
+          # Country has data but not for the requested year(s)
+          avail_years <- sort(unique(as.integer(substr(
+            as.character(result_pre[[period_col]]), 1, 4
+          ))))
+          target <- as.integer(start_year %||% end_year)
+          nearest <- if (length(avail_years) > 0)
+            avail_years[which.min(abs(avail_years - target))] else NA_integer_
+          min_yr <- if (length(avail_years) > 0) min(avail_years) else NA_integer_
+          max_yr <- if (length(avail_years) > 0) max(avail_years) else NA_integer_
+
+          empty <- dplyr::tibble()
+          # Distinguish gap vs beyond range
+          if (length(avail_years) > 0 && (target > max_yr || target < min_yr)) {
+            attr(empty, "query_status") <- "year_beyond_range"
+            attr(empty, "message") <- sprintf(
+              "Year %d is outside the available data range for %s. Data covers %d-%d. Nearest available: %d.",
+              target, paste(countries, collapse = ", "), min_yr, max_yr, nearest
+            )
+          } else {
+            attr(empty, "query_status") <- "year_not_found"
+            attr(empty, "message") <- sprintf(
+              "No data for %s in %d. Data exists for other years. Nearest available: %d.",
+              paste(countries, collapse = ", "), target, nearest
+            )
+          }
+          attr(empty, "query_indicator") <- indicator[1]
+          attr(empty, "query_countries") <- countries
+          attr(empty, "query_year") <- target
+          attr(empty, "available_years") <- avail_years
+          attr(empty, "nearest_year") <- nearest
+          message(sprintf("Note: %s", attr(empty, "message")))
+          return(empty)
+        }
+      }
+    }
+
+    # Data returned successfully
+    attr(result, "query_status") <- "ok"
   }
 
   if (is.null(result) || nrow(result) == 0) return(result)

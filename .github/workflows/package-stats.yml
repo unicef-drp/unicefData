@@ -1,0 +1,44 @@
+name: Package Download Statistics
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'  # 1st of each month at 09:00 UTC
+  workflow_dispatch:       # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'develop' || github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate stats report
+        run: |
+          python scripts/package_stats.py -o docs/STATS.md
+          python scripts/package_stats.py --json -o docs/stats.json
+          echo "Report generated:"
+          head -30 docs/STATS.md
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/STATS.md docs/stats.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: refresh package download statistics $(date +%Y-%m-%d)"
+            git push
+          fi

@@ -28,6 +28,7 @@
 #' @param cache Logical; if TRUE, cache per flow on disk; default FALSE.
 #' @param sleep Pause (in seconds) between pages; default 0.2.
 #' @param post_process Optional function to apply to raw tibble before tidy-up.
+#' @param verbose Logical; if TRUE, print the SDMX request URL for debugging; default FALSE.
 #'
 #' @return A tibble (or list of tibbles) for data, or xml_document(s) for structure.
 #' @export
@@ -58,7 +59,8 @@ get_sdmx <- function(
   retry         = 3L,
   cache         = FALSE,
   sleep         = 0.2,
-  post_process  = NULL
+  post_process  = NULL,
+  verbose       = FALSE
 ) {
   detail <- match.arg(detail)
   format <- match.arg(format)

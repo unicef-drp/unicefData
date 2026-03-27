@@ -59,13 +59,41 @@ The GitHub release tag represents the **repository release**, independent of any
 - Run the full suite before tagging:
   - Stata: `do stata/qa/run_tests.do`
 
-## Release Flow (develop → main)
-1. Merge feature PRs into `develop`.
-2. Ensure CI green on P0/P1.
-3. Update versions consistently in all platform version files (see table above).
-4. Build SSC package: `stata/ssc/update_zip.ps1`.
-5. Tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"; git push origin vX.Y.Z`.
-6. Publish GitHub Release with notes documenting each platform's version, changes, and test status.
+## Release Flow
+
+### Branch → Registry Pipeline
+
+```
+feature branch ──PR──▶ develop ──PR──▶ main ──tag──▶ PyPI / CRAN / SSC
+                         │                    │
+                    CI runs here          Version bump
+                    No version bump       Tag created
+                    No registry publish   Registry publish
+                    No tags               Sync to public repo
+```
+
+**Rules:**
+- **Never publish to a registry (PyPI, CRAN, SSC) from `develop`.** Registries are only updated after code reaches `main` and is tagged.
+- **Never bump version numbers on `develop`.** Version bumps happen in the `develop → main` PR, alongside the tag.
+- **Never tag on `develop`.** Tags are only created on `main` after the merge.
+
+### Step-by-Step
+
+1. **Feature work:** Create feature branches from `develop`. PR into `develop`. CI must pass.
+2. **Accumulate on `develop`:** Multiple feature PRs merge to `develop` between releases.
+3. **Release PR (`develop → main`):**
+   - Bump version numbers in all platform version files (see table above).
+   - Update CITATION.cff, changelogs, README.
+   - PR title: `release: vX.Y.Z — description`.
+   - CI must pass on all platforms.
+4. **Merge to `main`:** Merge the release PR.
+5. **Tag:** `git tag -a vX.Y.Z -m "Release vX.Y.Z"; git push origin vX.Y.Z`.
+6. **Publish to registries:**
+   - Python: `cd python && python -m build && twine upload dist/*`
+   - R: Submit to CRAN (when R changes warrant it).
+   - Stata: `stata/ssc/update_zip.ps1` + SSC submission.
+7. **Sync:** Tag push triggers `sync-to-public.yml` → public repo `stage` branch.
+8. **GitHub Release:** Draft release notes on both dev and public repos.
 
 ## Branching & Artifacts
 - Feature branches from `develop`; merge to `develop`; then release to `main`.

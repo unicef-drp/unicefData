@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.3.1  22Feb2026}{...}
+{* *! version 2.4.0  26Mar2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -58,6 +58,7 @@
 {synopt :{opt dropna}} drop missing values{p_end}
 {synopt :{opt subnational}} enable access to subnational dataflows{p_end}
 {synopt :{opt verbose}} display progress messages{p_end}
+{synopt :{opt diagnose}} classify empty results: set r(query_status), r(available_years), r(nearest_year), r(message){p_end}
 {synopt :{opt fromfile(filename)}}load from CSV file instead of API (CI/testing){p_end}
 {synopt :{opt tofile(filename)}}save API response to CSV for test fixtures{p_end}
 {synopt :{opt noerror}}suppress printed error messages (programmatic use){p_end}
@@ -622,6 +623,20 @@ Use this option to skip the metadata display.
 {phang}
 {opt verbose} displays progress messages during data download.
 {p_end}
+
+{phang}
+{opt diagnose} classifies empty results by fetching data without year filters
+and applying year filtering locally. When the result is empty, the following
+return values are set:{p_end}
+{phang2}{cmd:r(query_status)} — one of {cmd:ok}, {cmd:year_not_found},
+{cmd:year_beyond_range}, or {cmd:indicator_not_found}.
+({cmd:country_not_found} probe planned for a future release.){p_end}
+{phang2}{cmd:r(available_years)} — space-separated list of years with data{p_end}
+{phang2}{cmd:r(nearest_year)} — closest available year to the requested year{p_end}
+{phang2}{cmd:r(message)} — human-readable explanation{p_end}
+{phang}Without {opt diagnose}, year filters are sent to the SDMX API server-side
+(faster, but no diagnostic metadata on empty results).
+See {browse "https://github.com/unicef-drp/unicefData/blob/main/docs/QUERY_STATUS_CODES.md":QUERY_STATUS_CODES.md} for the full specification.{p_end}
 
 {dlgtab:Metadata Sync (v2.3.0)}
 

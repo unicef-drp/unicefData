@@ -79,9 +79,6 @@ list_sdmx_flows <- local({
 #' }
 dataflow_schema <- function(dataflow, metadata_dir = NULL) {
 
-  # Null coalescing operator
-  `%||%` <- function(x, y) if (is.null(x)) y else x
-
   # Convert to uppercase
   df_upper <- toupper(dataflow)
 
@@ -216,8 +213,6 @@ print.unicef_dataflow_schema <- function(x, ...) {
 #' Get basic dataflow info from _unicefdata_dataflows.yaml
 #' @keywords internal
 .get_basic_dataflow_info <- function(dataflow, metadata_dir) {
-  `%||%` <- function(x, y) if (is.null(x)) y else x
-
   df_file <- file.path(metadata_dir, "_unicefdata_dataflows.yaml")
   if (!file.exists(df_file)) return(NULL)
 

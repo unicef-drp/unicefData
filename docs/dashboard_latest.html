@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unicefData — Package Download Statistics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #212529;
+    --muted: #6c757d;
+    /* Wong colorblind-safe palette */
+    --cran: #0072B2;
+    --pypi: #E69F00;
+    --stata: #009E73;
+    --github: #CC79A7;
+    --accent: #56B4E9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); padding: 24px; max-width: 1200px; margin: 0 auto;
+  }
+  h1 { font-size: 1.75rem; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; text-align: center;
+  }
+  .card .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .card .value { font-size: 2rem; font-weight: 700; margin: 8px 0 4px; }
+  .card .detail { font-size: 0.85rem; color: var(--muted); }
+  .card.cran { border-top: 3px solid var(--cran); }
+  .card.pypi { border-top: 3px solid var(--pypi); }
+  .card.stata { border-top: 3px solid var(--stata); }
+  .card.github { border-top: 3px solid var(--github); }
+  .card.total { border-top: 3px solid var(--accent); }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .chart-full { margin-bottom: 32px; }
+  .chart-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
+  }
+  .chart-box h2 { font-size: 1.1rem; margin-bottom: 16px; }
+  canvas { max-height: 350px; }
+  .footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .error { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1>unicefData — Download Statistics</h1>
+<p class="subtitle">Trilingual R, Python, and Stata package for UNICEF SDMX data</p>
+
+<div id="app">
+  <div class="error" id="loading">Loading stats.json...</div>
+</div>
+
+<div class="footer">
+  Generated from <code>stats.json</code> by <code>scripts/package_stats.py</code>
+  &middot; <a href="https://github.com/unicef-drp/unicefData">GitHub</a>
+  &middot; <a href="https://pypi.org/project/unicefdata/">PyPI</a>
+  &middot; <a href="https://cran.r-project.org/package=unicefData">CRAN</a>
+</div>
+
+<script>
+// Wong colorblind-safe palette
+const COLORS = { cran: '#0072B2', pypi: '#E69F00', stata: '#009E73', github: '#CC79A7' };
+
+async function loadStats() {
+  // Check for embedded data first (self-contained mode)
+  const embedded = document.getElementById('embedded-data');
+  if (embedded) { try { return JSON.parse(embedded.textContent); } catch {} }
+
+  // Try multiple paths so the dashboard works from docs/ or repo root
+  for (const path of ['stats.json', 'docs/stats.json', '../docs/stats.json']) {
+    try {
+      const r = await fetch(path);
+      if (r.ok) return await r.json();
+    } catch {}
+  }
+  return null;
+}
+
+function fmt(n) {
+  if (n == null) return '—';
+  return n.toLocaleString();
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function render(data) {
+  const { cran, pypi, ssc } = data;
+  const gh = data.github || {};
+  const app = document.getElementById('app');
+
+  const cranTotal = cran.total_since_publish || 0;
+  const pypiTotal = pypi.total_all_time || 0;
+  const sscTotal = ssc.total_period || 0;
+  const ghClones = gh.clones_unique || 0;
+  const combined = cranTotal + pypiTotal + sscTotal;
+
+  app.innerHTML = `
+    <div class="cards">
+      <div class="card total">
+        <div class="label">Combined Downloads</div>
+        <div class="value">${fmt(combined)}</div>
+        <div class="detail">CRAN + PyPI + SSC</div>
+      </div>
+      <div class="card cran">
+        <div class="label">CRAN (R)</div>
+        <div class="value">${fmt(cranTotal)}</div>
+        <div class="detail">v${esc(cran.version || '?')} &middot; ${fmt(cran.last_week)} / week</div>
+      </div>
+      <div class="card pypi">
+        <div class="label">PyPI (Python)</div>
+        <div class="value">${fmt(pypiTotal)}</div>
+        <div class="detail">v${esc(pypi.version || '?')} &middot; ${fmt(pypi.last_week)} / week</div>
+      </div>
+      <div class="card stata">
+        <div class="label">SSC (Stata)</div>
+        <div class="value">${sscTotal ? fmt(sscTotal) : '—'}</div>
+        <div class="detail">v${esc(ssc.version || '?')} &middot; ${ssc.monthly ? ssc.monthly.length + ' months' : 'No data'}</div>
+      </div>
+      <div class="card github">
+        <div class="label">GitHub (14 days)</div>
+        <div class="value">${ghClones ? fmt(ghClones) : '—'}</div>
+        <div class="detail">${fmt(gh.views_unique || 0)} unique visitors &middot; ${fmt(gh.clones_total || 0)} clones</div>
+      </div>
+    </div>
+
+    <div class="chart-full">
+      <div class="chart-box">
+        <h2>Daily Downloads — CRAN vs PyPI</h2>
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Weekly Trend (CRAN)</h2>
+        <canvas id="weeklyChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>GitHub Traffic (14 days)</h2>
+        <canvas id="githubChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Monthly Hits (SSC/Stata)</h2>
+        <canvas id="sscChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>Period Comparison — CRAN vs PyPI</h2>
+        <canvas id="periodChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Platform Share (totals)</h2>
+        <canvas id="shareChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>PyPI — Python Versions</h2>
+        <canvas id="pyverChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>PyPI — By Operating System</h2>
+        <canvas id="osChart"></canvas>
+      </div>
+    </div>
+  `;
+
+  // --- Daily downloads line chart ---
+  const cranDaily = (cran.daily || []).map(d => ({ x: d.date, y: d.count }));
+  const pypiDaily = (pypi.daily || []).map(d => ({ x: d.date, y: d.count }));
+  // Align dates: use union of both date sets
+  const allDates = [...new Set([
+    ...cranDaily.map(d => d.x),
+    ...pypiDaily.map(d => d.x)
+  ])].sort();
+
+  const cranMap = Object.fromEntries(cranDaily.map(d => [d.x, d.y]));
+  const pypiMap = Object.fromEntries(pypiDaily.map(d => [d.x, d.y]));
+
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+      labels: allDates.map(d => d.slice(5)), // MM-DD
+      datasets: [
+        {
+          label: 'CRAN',
+          data: allDates.map(d => cranMap[d] ?? null),
+          borderColor: COLORS.cran, backgroundColor: COLORS.cran + '20',
+          tension: 0.3, fill: true, spanGaps: true,
+        },
+        {
+          label: 'PyPI',
+          data: allDates.map(d => pypiMap[d] ?? null),
+          borderColor: COLORS.pypi, backgroundColor: COLORS.pypi + '20',
+          tension: 0.3, fill: true, spanGaps: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Downloads' } } }
+    }
+  });
+
+  // --- Weekly bar chart ---
+  const weeks = (cran.weekly || []);
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: weeks.map(w => w.week),
+      datasets: [{
+        label: 'CRAN weekly',
+        data: weeks.map(w => w.count),
+        backgroundColor: COLORS.cran + '80',
+        borderColor: COLORS.cran, borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Period comparison grouped bar ---
+  new Chart(document.getElementById('periodChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Last day', 'Last 7 days', 'Last 30 days'],
+      datasets: [
+        {
+          label: 'CRAN', data: [cran.last_day || 0, cran.last_week || 0, cran.last_month || 0],
+          backgroundColor: COLORS.cran + '80', borderColor: COLORS.cran, borderWidth: 1,
+        },
+        {
+          label: 'PyPI', data: [pypi.last_day || 0, pypi.last_week || 0, pypi.last_month || 0],
+          backgroundColor: COLORS.pypi + '80', borderColor: COLORS.pypi, borderWidth: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Python version donut ---
+  const pyVer = pypi.by_python_version || {};
+  const pyLabels = Object.keys(pyVer).filter(k => k !== 'null');
+  const pyData = pyLabels.map(k => pyVer[k]);
+  // Wong-derived palette for multi-category charts
+  const pyColors = ['#0072B2', '#E69F00', '#009E73', '#CC79A7', '#56B4E9', '#D55E00', '#F0E442', '#999999'];
+
+  new Chart(document.getElementById('pyverChart'), {
+    type: 'doughnut',
+    data: {
+      labels: pyLabels.map(v => `Python ${v}`),
+      datasets: [{ data: pyData, backgroundColor: pyColors.slice(0, pyLabels.length) }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+
+  // --- GitHub traffic chart ---
+  const ghViews = (gh.views_daily || []);
+  const ghCloneDaily = (gh.clones_daily || []);
+  const ghDates = [...new Set([
+    ...ghViews.map(d => d.date),
+    ...ghCloneDaily.map(d => d.date)
+  ])].sort();
+  const ghViewMap = Object.fromEntries(ghViews.map(d => [d.date, d.unique]));
+  const ghCloneMap = Object.fromEntries(ghCloneDaily.map(d => [d.date, d.unique]));
+  new Chart(document.getElementById('githubChart'), {
+    type: 'bar',
+    data: {
+      labels: ghDates.map(d => d.slice(5)),
+      datasets: [
+        {
+          label: 'Unique visitors',
+          data: ghDates.map(d => ghViewMap[d] ?? 0),
+          backgroundColor: COLORS.github + '80',
+          borderColor: COLORS.github, borderWidth: 1,
+        },
+        {
+          label: 'Unique clones',
+          data: ghDates.map(d => ghCloneMap[d] ?? 0),
+          backgroundColor: COLORS.github + '40',
+          borderColor: COLORS.github, borderWidth: 1, borderDash: [3,3],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- SSC monthly bar chart ---
+  const sscMonthly = ssc.monthly || [];
+  new Chart(document.getElementById('sscChart'), {
+    type: 'bar',
+    data: {
+      labels: sscMonthly.map(m => m.month),
+      datasets: [{
+        label: 'SSC monthly hits',
+        data: sscMonthly.map(m => m.hits),
+        backgroundColor: COLORS.stata + '80',
+        borderColor: COLORS.stata, borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Platform share donut (totals) ---
+  const shareData = [cranTotal, pypiTotal];
+  const shareLabels = ['CRAN (R)', 'PyPI (Python)'];
+  const shareColors = [COLORS.cran, COLORS.pypi];
+  if (sscTotal > 0) {
+    shareData.push(sscTotal);
+    shareLabels.push('SSC (Stata)');
+    shareColors.push(COLORS.stata);
+  }
+  new Chart(document.getElementById('shareChart'), {
+    type: 'doughnut',
+    data: {
+      labels: shareLabels,
+      datasets: [{ data: shareData, backgroundColor: shareColors }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+
+  // --- PyPI OS donut ---
+  const osData = pypi.by_os || {};
+  const osLabels = Object.keys(osData).filter(k => k !== 'null' && k !== 'unknown');
+  const osValues = osLabels.map(k => osData[k]);
+  const osColors = ['#0072B2', '#E69F00', '#009E73', '#CC79A7'];
+  new Chart(document.getElementById('osChart'), {
+    type: 'doughnut',
+    data: {
+      labels: osLabels,
+      datasets: [{ data: osValues, backgroundColor: osColors.slice(0, osLabels.length) }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+}
+
+loadStats().then(data => {
+  if (data) render(data);
+  else {
+    document.getElementById('loading').innerHTML =
+      '<strong>Could not load stats.json</strong><br><br>' +
+      'Browsers block fetch() on file:// URLs. Use one of:<br><br>' +
+      '<code>cd docs && python -m http.server 8080</code> then open <a href="http://localhost:8080/dashboard.html">localhost:8080/dashboard.html</a><br>' +
+      'or: <code>python scripts/package_stats.py --json -o docs/stats.json</code> to regenerate data';
+  }
+});
+</script>
+
+<script id="embedded-data" type="application/json">
+{
+  "cran": {
+    "package": "unicefData",
+    "registry": "CRAN",
+    "version": "2.3.0",
+    "published": "2026-03-03 21:20:08 UTC",
+    "last_day": 12,
+    "last_week": 100,
+    "last_month": 324,
+    "daily": [
+      {
+        "date": "2026-03-04",
+        "count": 12
+      },
+      {
+        "date": "2026-03-05",
+        "count": 36
+      },
+      {
+        "date": "2026-03-06",
+        "count": 5
+      },
+      {
+        "date": "2026-03-07",
+        "count": 8
+      },
+      {
+        "date": "2026-03-08",
+        "count": 19
+      },
+      {
+        "date": "2026-03-09",
+        "count": 7
+      },
+      {
+        "date": "2026-03-10",
+        "count": 15
+      },
+      {
+        "date": "2026-03-11",
+        "count": 12
+      },
+      {
+        "date": "2026-03-12",
+        "count": 9
+      },
+      {
+        "date": "2026-03-13",
+        "count": 40
+      },
+      {
+        "date": "2026-03-14",
+        "count": 27
+      },
+      {
+        "date": "2026-03-15",
+        "count": 10
+      },
+      {
+        "date": "2026-03-16",
+        "count": 24
+      },
+      {
+        "date": "2026-03-17",
+        "count": 19
+      },
+      {
+        "date": "2026-03-18",
+        "count": 13
+      },
+      {
+        "date": "2026-03-19",
+        "count": 7
+      },
+      {
+        "date": "2026-03-20",
+        "count": 14
+      },
+      {
+        "date": "2026-03-21",
+        "count": 15
+      },
+      {
+        "date": "2026-03-22",
+        "count": 20
+      },
+      {
+        "date": "2026-03-23",
+        "count": 12
+      }
+    ],
+    "total_period": 324,
+    "daily_avg": 16.2,
+    "total_since_publish": 324,
+    "weekly": [
+      {
+        "week": "2026-W10",
+        "count": 80
+      },
+      {
+        "week": "2026-W11",
+        "count": 120
+      },
+      {
+        "week": "2026-W12",
+        "count": 112
+      },
+      {
+        "week": "2026-W13",
+        "count": 12
+      }
+    ]
+  },
+  "pypi": {
+    "package": "unicefdata",
+    "registry": "PyPI",
+    "version": "2.3.2",
+    "daily": [
+      {
+        "date": "2026-02-23",
+        "count": 17
+      },
+      {
+        "date": "2026-02-24",
+        "count": 5
+      },
+      {
+        "date": "2026-02-25",
+        "count": 6
+      },
+      {
+        "date": "2026-02-26",
+        "count": 12
+      },
+      {
+        "date": "2026-02-27",
+        "count": 11
+      },
+      {
+        "date": "2026-02-28",
+        "count": 15
+      },
+      {
+        "date": "2026-03-01",
+        "count": 2
+      },
+      {
+        "date": "2026-03-02",
+        "count": 4
+      },
+      {
+        "date": "2026-03-03",
+        "count": 8
+      },
+      {
+        "date": "2026-03-04",
+        "count": 14
+      },
+      {
+        "date": "2026-03-05",
+        "count": 14
+      },
+      {
+        "date": "2026-03-06",
+        "count": 1
+      },
+      {
+        "date": "2026-03-07",
+        "count": 19
+      },
+      {
+        "date": "2026-03-08",
+        "count": 8
+      },
+      {
+        "date": "2026-03-09",
+        "count": 15
+      },
+      {
+        "date": "2026-03-10",
+        "count": 18
+      },
+      {
+        "date": "2026-03-11",
+        "count": 2
+      },
+      {
+        "date": "2026-03-12",
+        "count": 6
+      },
+      {
+        "date": "2026-03-13",
+        "count": 10
+      },
+      {
+        "date": "2026-03-14",
+        "count": 7
+      },
+      {
+        "date": "2026-03-15",
+        "count": 4
+      },
+      {
+        "date": "2026-03-16",
+        "count": 12
+      },
+      {
+        "date": "2026-03-17",
+        "count": 12
+      },
+      {
+        "date": "2026-03-18",
+        "count": 5
+      },
+      {
+        "date": "2026-03-19",
+        "count": 1
+      },
+      {
+        "date": "2026-03-20",
+        "count": 41
+      },
+      {
+        "date": "2026-03-21",
+        "count": 25
+      },
+      {
+        "date": "2026-03-22",
+        "count": 21
+      },
+      {
+        "date": "2026-03-23",
+        "count": 256
+      },
+      {
+        "date": "2026-03-24",
+        "count": 74
+      }
+    ],
+    "total_period": 645,
+    "daily_avg": 21.5,
+    "total_all_time": 1286,
+    "by_os": {
+      "unknown": 553
+    },
+    "by_python_version": {
+      "null": 293,
+      "3.11": 159,
+      "3.12": 44,
+      "3.10": 27,
+      "3.13": 22,
+      "3.14": 6,
+      "3.9": 2
+    }
+  },
+  "ssc": {
+    "package": "UNICEFDATA",
+    "registry": "SSC",
+    "version": "2.3.1",
+    "monthly": [],
+    "total_period": 0,
+    "months_fetched": 12,
+    "note": "Monthly hits from RePEc SSC archive (0 months with data, 12 fetched). See http://fmwww.bc.edu/repec/bocode/s/sscstats.html"
+  },
+  "github": {
+    "repo": "unicef-drp/unicefData",
+    "clones_total": 764,
+    "clones_unique": 110,
+    "clones_daily": [
+      {
+        "date": "2026-03-10",
+        "total": 3,
+        "unique": 3
+      },
+      {
+        "date": "2026-03-11",
+        "total": 1,
+        "unique": 1
+      },
+      {
+        "date": "2026-03-12",
+        "total": 1,
+        "unique": 1
+      },
+      {
+        "date": "2026-03-13",
+        "total": 17,
+        "unique": 5
+      },
+      {
+        "date": "2026-03-14",
+        "total": 5,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-15",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-16",
+        "total": 4,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-17",
+        "total": 5,
+        "unique": 5
+      },
+      {
+        "date": "2026-03-18",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-19",
+        "total": 0,
+        "unique": 0
+      },
+      {
+        "date": "2026-03-20",
+        "total": 4,
+        "unique": 3
+      },
+      {
+        "date": "2026-03-21",
+        "total": 234,
+        "unique": 41
+      },
+      {
+        "date": "2026-03-22",
+        "total": 23,
+        "unique": 4
+      },
+      {
+        "date": "2026-03-23",
+        "total": 467,
+        "unique": 51
+      }
+    ],
+    "views_total": 794,
+    "views_unique": 509,
+    "views_daily": [
+      {
+        "date": "2026-03-10",
+        "total": 26,
+        "unique": 18
+      },
+      {
+        "date": "2026-03-11",
+        "total": 8,
+        "unique": 6
+      },
+      {
+        "date": "2026-03-12",
+        "total": 15,
+        "unique": 7
+      },
+      {
+        "date": "2026-03-13",
+        "total": 73,
+        "unique": 48
+      },
+      {
+        "date": "2026-03-14",
+        "total": 45,
+        "unique": 19
+      },
+      {
+        "date": "2026-03-15",
+        "total": 26,
+        "unique": 14
+      },
+      {
+        "date": "2026-03-16",
+        "total": 63,
+        "unique": 29
+      },
+      {
+        "date": "2026-03-17",
+        "total": 309,
+        "unique": 301
+      },
+      {
+        "date": "2026-03-18",
+        "total": 25,
+        "unique": 19
+      },
+      {
+        "date": "2026-03-19",
+        "total": 32,
+        "unique": 11
+      },
+      {
+        "date": "2026-03-20",
+        "total": 21,
+        "unique": 8
+      },
+      {
+        "date": "2026-03-21",
+        "total": 38,
+        "unique": 16
+      },
+      {
+        "date": "2026-03-22",
+        "total": 18,
+        "unique": 10
+      },
+      {
+        "date": "2026-03-23",
+        "total": 95,
+        "unique": 33
+      }
+    ]
+  },
+  "logec": {
+    "unicefdata": {
+      "handle": "repec:boc:bocode:s459598",
+      "monthly": [
+        {
+          "month": "2026-02",
+          "downloads": 0,
+          "views": 6
+        }
+      ],
+      "total_downloads": 0,
+      "total_views": 6
+    },
+    "wbopendata": {
+      "handle": "repec:boc:bocode:s457234",
+      "monthly": [
+        {
+          "month": "2011-02",
+          "downloads": 25,
+          "views": 114
+        },
+        {
+          "month": "2011-03",
+          "downloads": 33,
+          "views": 125
+        },
+        {
+          "month": "2011-04",
+          "downloads": 41,
+          "views": 123
+        },
+        {
+          "month": "2011-05",
+          "downloads": 45,
+          "views": 190
+        },
+        {
+          "month": "2011-06",
+          "downloads": 33,
+          "views": 141
+        },
+        {
+          "month": "2011-07",
+          "downloads": 31,
+          "views": 120
+        },
+        {
+          "month": "2011-08",
+          "downloads": 19,
+          "views": 101
+        },
+        {
+          "month": "2011-09",
+          "downloads": 27,
+          "views": 113
+        },
+        {
+          "month": "2011-10",
+          "downloads": 36,
+          "views": 125
+        },
+        {
+          "month": "2011-11",
+          "downloads": 47,
+          "views": 156
+        },
+        {
+          "month": "2011-12",
+          "downloads": 35,
+          "views": 134
+        },
+        {
+          "month": "2012-01",
+          "downloads": 41,
+          "views": 160
+        },
+        {
+          "month": "2012-02",
+          "downloads": 23,
+          "views": 165
+        },
+        {
+          "month": "2012-03",
+          "downloads": 244,
+          "views": 1195
+        },
+        {
+          "month": "2012-04",
+          "downloads": 165,
+          "views": 509
+        },
+        {
+          "month": "2012-05",
+          "downloads": 133,
+          "views": 402
+        },
+        {
+          "month": "2012-06",
+          "downloads": 76,
+          "views": 252
+        },
+        {
+          "month": "2012-07",
+          "downloads": 37,
+          "views": 159
+        },
+        {
+          "month": "2012-08",
+          "downloads": 30,
+          "views": 158
+        },
+        {
+          "month": "2012-09",
+          "downloads": 32,
+          "views": 143
+        },
+        {
+          "month": "2012-10",
+          "downloads": 70,
+          "views": 244
+        },
+        {
+          "month": "2012-11",
+          "downloads": 53,
+          "views": 191
+        },
+        {
+          "month": "2012-12",
+          "downloads": 55,
+          "views": 196
+        },
+        {
+          "month": "2013-01",
+          "downloads": 39,
+          "views": 205
+        },
+        {
+          "month": "2013-02",
+          "downloads": 70,
+          "views": 274
+        },
+        {
+          "month": "2013-03",
+          "downloads": 37,
+          "views": 210
+        },
+        {
+          "month": "2013-04",
+          "downloads": 58,
+          "views": 238
+        },
+        {
+          "month": "2013-05",
+          "downloads": 49,
+          "views": 198
+        },
+        {
+          "month": "2013-06",
+          "downloads": 21,
+          "views": 122
+        },
+        {
+          "month": "2013-07",
+          "downloads": 33,
+          "views": 148
+        },
+        {
+          "month": "2013-08",
+          "downloads": 23,
+          "views": 109
+        },
+        {
+          "month": "2013-09",
+          "downloads": 30,
+          "views": 127
+        },
+        {
+          "month": "2013-10",
+          "downloads": 31,
+          "views": 167
+        },
+        {
+          "month": "2013-11",
+          "downloads": 45,
+          "views": 174
+        },
+        {
+          "month": "2013-12",
+          "downloads": 42,
+          "views": 180
+        },
+        {
+          "month": "2014-01",
+          "downloads": 42,
+          "views": 214
+        },
+        {
+          "month": "2014-02",
+          "downloads": 35,
+          "views": 149
+        },
+        {
+          "month": "2014-03",
+          "downloads": 53,
+          "views": 225
+        },
+        {
+          "month": "2014-04",
+          "downloads": 55,
+          "views": 210
+        },
+        {
+          "month": "2014-05",
+          "downloads": 34,
+          "views": 216
+        },
+        {
+          "month": "2014-06",
+          "downloads": 26,
+          "views": 145
+        },
+        {
+          "month": "2014-07",
+          "downloads": 31,
+          "views": 185
+        },
+        {
+          "month": "2014-08",
+          "downloads": 14,
+          "views": 123
+        },
+        {
+          "month": "2014-09",
+          "downloads": 23,
+          "views": 127
+        },
+        {
+          "month": "2014-10",
+          "downloads": 25,
+          "views": 134
+        },
+        {
+          "month": "2014-11",
+          "downloads": 34,
+          "views": 173
+        },
+        {
+          "month": "2014-12",
+          "downloads": 23,
+          "views": 139
+        },
+        {
+          "month": "2015-01",
+          "downloads": 40,
+          "views": 145
+        },
+        {
+          "month": "2015-02",
+          "downloads": 37,
+          "views": 136
+        },
+        {
+          "month": "2015-03",
+          "downloads": 49,
+          "views": 194
+        },
+        {
+          "month": "2015-04",
+          "downloads": 48,
+          "views": 165
+        },
+        {
+          "month": "2015-05",
+          "downloads": 33,
+          "views": 151
+        },
+        {
+          "month": "2015-06",
+          "downloads": 34,
+          "views": 129
+        },
+        {
+          "month": "2015-07",
+          "downloads": 25,
+          "views": 99
+        },
+        {
+          "month": "2015-08",
+          "downloads": 17,
+          "views": 96
+        },
+        {
+          "month": "2015-09",
+          "downloads": 44,
+          "views": 128
+        },
+        {
+          "month": "2015-10",
+          "downloads": 29,
+          "views": 133
+        },
+        {
+          "month": "2015-11",
+          "downloads": 48,
+          "views": 171
+        },
+        {
+          "month": "2015-12",
+          "downloads": 30,
+          "views": 130
+        },
+        {
+          "month": "2016-01",
+          "downloads": 29,
+          "views": 131
+        },
+        {
+          "month": "2016-02",
+          "downloads": 49,
+          "views": 150
+        },
+        {
+          "month": "2016-03",
+          "downloads": 56,
+          "views": 188
+        },
+        {
+          "month": "2016-04",
+          "downloads": 56,
+          "views": 193
+        },
+        {
+          "month": "2016-05",
+          "downloads": 37,
+          "views": 130
+        },
+        {
+          "month": "2016-06",
+          "downloads": 27,
+          "views": 109
+        },
+        {
+          "month": "2016-07",
+          "downloads": 23,
+          "views": 105
+        },
+        {
+          "month": "2016-08",
+          "downloads": 23,
+          "views": 109
+        },
+        {
+          "month": "2016-09",
+          "downloads": 21,
+          "views": 91
+        },
+        {
+          "month": "2016-10",
+          "downloads": 18,
+          "views": 112
+        },
+        {
+          "month": "2016-11",
+          "downloads": 27,
+          "views": 127
+        },
+        {
+          "month": "2016-12",
+          "downloads": 21,
+          "views": 99
+        },
+        {
+          "month": "2017-01",
+          "downloads": 22,
+          "views": 110
+        },
+        {
+          "month": "2017-02",
+          "downloads": 32,
+          "views": 122
+        },
+        {
+          "month": "2017-03",
+          "downloads": 48,
+          "views": 366
+        },
+        {
+          "month": "2017-04",
+          "downloads": 36,
+          "views": 144
+        },
+        {
+          "month": "2017-05",
+          "downloads": 24,
+          "views": 105
+        },
+        {
+          "month": "2017-06",
+          "downloads": 23,
+          "views": 111
+        },
+        {
+          "month": "2017-07",
+          "downloads": 14,
+          "views": 102
+        },
+        {
+          "month": "2017-08",
+          "downloads": 18,
+          "views": 68
+        },
+        {
+          "month": "2017-09",
+          "downloads": 21,
+          "views": 82
+        },
+        {
+          "month": "2017-10",
+          "downloads": 26,
+          "views": 123
+        },
+        {
+          "month": "2017-11",
+          "downloads": 26,
+          "views": 124
+        },
+        {
+          "month": "2017-12",
+          "downloads": 18,
+          "views": 92
+        },
+        {
+          "month": "2018-01",
+          "downloads": 19,
+          "views": 80
+        },
+        {
+          "month": "2018-02",
+          "downloads": 25,
+          "views": 123
+        },
+        {
+          "month": "2018-03",
+          "downloads": 24,
+          "views": 138
+        },
+        {
+          "month": "2018-04",
+          "downloads": 24,
+          "views": 111
+        },
+        {
+          "month": "2018-05",
+          "downloads": 22,
+          "views": 127
+        },
+        {
+          "month": "2018-06",
+          "downloads": 14,
+          "views": 80
+        },
+        {
+          "month": "2018-07",
+          "downloads": 8,
+          "views": 68
+        },
+        {
+          "month": "2018-08",
+          "downloads": 15,
+          "views": 74
+        },
+        {
+          "month": "2018-09",
+          "downloads": 18,
+          "views": 91
+        },
+        {
+          "month": "2018-10",
+          "downloads": 18,
+          "views": 89
+        },
+        {
+          "month": "2018-11",
+          "downloads": 29,
+          "views": 143
+        },
+        {
+          "month": "2018-12",
+          "downloads": 19,
+          "views": 112
+        },
+        {
+          "month": "2019-01",
+          "downloads": 21,
+          "views": 98
+        },
+        {
+          "month": "2019-02",
+          "downloads": 22,
+          "views": 114
+        },
+        {
+          "month": "2019-03",
+          "downloads": 14,
+          "views": 126
+        },
+        {
+          "month": "2019-04",
+          "downloads": 27,
+          "views": 152
+        },
+        {
+          "month": "2019-05",
+          "downloads": 14,
+          "views": 101
+        },
+        {
+          "month": "2019-06",
+          "downloads": 7,
+          "views": 84
+        },
+        {
+          "month": "2019-07",
+          "downloads": 22,
+          "views": 112
+        },
+        {
+          "month": "2019-08",
+          "downloads": 11,
+          "views": 113
+        },
+        {
+          "month": "2019-09",
+          "downloads": 12,
+          "views": 98
+        },
+        {
+          "month": "2019-10",
+          "downloads": 20,
+          "views": 135
+        },
+        {
+          "month": "2019-11",
+          "downloads": 34,
+          "views": 167
+        },
+        {
+          "month": "2019-12",
+          "downloads": 22,
+          "views": 100
+        },
+        {
+          "month": "2020-01",
+          "downloads": 20,
+          "views": 114
+        },
+        {
+          "month": "2020-02",
+          "downloads": 18,
+          "views": 142
+        },
+        {
+          "month": "2020-03",
+          "downloads": 16,
+          "views": 142
+        },
+        {
+          "month": "2020-04",
+          "downloads": 38,
+          "views": 267
+        },
+        {
+          "month": "2020-05",
+          "downloads": 15,
+          "views": 167
+        },
+        {
+          "month": "2020-06",
+          "downloads": 17,
+          "views": 116
+        },
+        {
+          "month": "2020-07",
+          "downloads": 25,
+          "views": 139
+        },
+        {
+          "month": "2020-08",
+          "downloads": 19,
+          "views": 132
+        },
+        {
+          "month": "2020-09",
+          "downloads": 19,
+          "views": 155
+        },
+        {
+          "month": "2020-10",
+          "downloads": 17,
+          "views": 188
+        },
+        {
+          "month": "2020-11",
+          "downloads": 22,
+          "views": 147
+        },
+        {
+          "month": "2020-12",
+          "downloads": 23,
+          "views": 169
+        },
+        {
+          "month": "2021-01",
+          "downloads": 24,
+          "views": 164
+        },
+        {
+          "month": "2021-02",
+          "downloads": 21,
+          "views": 176
+        },
+        {
+          "month": "2021-03",
+          "downloads": 27,
+          "views": 245
+        },
+        {
+          "month": "2021-04",
+          "downloads": 27,
+          "views": 240
+        },
+        {
+          "month": "2021-05",
+          "downloads": 49,
+          "views": 227
+        },
+        {
+          "month": "2021-06",
+          "downloads": 22,
+          "views": 181
+        },
+        {
+          "month": "2021-07",
+          "downloads": 17,
+          "views": 168
+        },
+        {
+          "month": "2021-08",
+          "downloads": 19,
+          "views": 170
+        },
+        {
+          "month": "2021-09",
+          "downloads": 29,
+          "views": 141
+        },
+        {
+          "month": "2021-10",
+          "downloads": 39,
+          "views": 165
+        },
+        {
+          "month": "2021-11",
+          "downloads": 23,
+          "views": 152
+        },
+        {
+          "month": "2021-12",
+          "downloads": 19,
+          "views": 113
+        },
+        {
+          "month": "2022-01",
+          "downloads": 18,
+          "views": 97
+        },
+        {
+          "month": "2022-02",
+          "downloads": 12,
+          "views": 105
+        },
+        {
+          "month": "2022-03",
+          "downloads": 19,
+          "views": 123
+        },
+        {
+          "month": "2022-04",
+          "downloads": 23,
+          "views": 108
+        },
+        {
+          "month": "2022-05",
+          "downloads": 16,
+          "views": 107
+        },
+        {
+          "month": "2022-06",
+          "downloads": 14,
+          "views": 88
+        },
+        {
+          "month": "2022-07",
+          "downloads": 15,
+          "views": 71
+        },
+        {
+          "month": "2022-08",
+          "downloads": 7,
+          "views": 61
+        },
+        {
+          "month": "2022-09",
+          "downloads": 14,
+          "views": 84
+        },
+        {
+          "month": "2022-10",
+          "downloads": 19,
+          "views": 90
+        },
+        {
+          "month": "2022-11",
+          "downloads": 18,
+          "views": 90
+        },
+        {
+          "month": "2022-12",
+          "downloads": 9,
+          "views": 82
+        },
+        {
+          "month": "2023-01",
+          "downloads": 11,
+          "views": 86
+        },
+        {
+          "month": "2023-02",
+          "downloads": 17,
+          "views": 85
+        },
+        {
+          "month": "2023-03",
+          "downloads": 26,
+          "views": 122
+        },
+        {
+          "month": "2023-04",
+          "downloads": 16,
+          "views": 71
+        },
+        {
+          "month": "2023-05",
+          "downloads": 20,
+          "views": 89
+        },
+        {
+          "month": "2023-06",
+          "downloads": 14,
+          "views": 55
+        },
+        {
+          "month": "2023-07",
+          "downloads": 3,
+          "views": 51
+        },
+        {
+          "month": "2023-08",
+          "downloads": 12,
+          "views": 52
+        },
+        {
+          "month": "2023-09",
+          "downloads": 12,
+          "views": 68
+        },
+        {
+          "month": "2023-10",
+          "downloads": 30,
+          "views": 155
+        },
+        {
+          "month": "2023-11",
+          "downloads": 12,
+          "views": 78
+        },
+        {
+          "month": "2023-12",
+          "downloads": 11,
+          "views": 56
+        },
+        {
+          "month": "2024-01",
+          "downloads": 9,
+          "views": 66
+        },
+        {
+          "month": "2024-02",
+          "downloads": 15,
+          "views": 76
+        },
+        {
+          "month": "2024-03",
+          "downloads": 17,
+          "views": 70
+        },
+        {
+          "month": "2024-04",
+          "downloads": 18,
+          "views": 82
+        },
+        {
+          "month": "2024-05",
+          "downloads": 14,
+          "views": 70
+        },
+        {
+          "month": "2024-06",
+          "downloads": 6,
+          "views": 52
+        },
+        {
+          "month": "2024-07",
+          "downloads": 7,
+          "views": 45
+        },
+        {
+          "month": "2024-08",
+          "downloads": 8,
+          "views": 53
+        },
+        {
+          "month": "2024-09",
+          "downloads": 14,
+          "views": 75
+        },
+        {
+          "month": "2024-10",
+          "downloads": 19,
+          "views": 69
+        },
+        {
+          "month": "2024-11",
+          "downloads": 15,
+          "views": 78
+        },
+        {
+          "month": "2024-12",
+          "downloads": 7,
+          "views": 53
+        },
+        {
+          "month": "2025-01",
+          "downloads": 15,
+          "views": 73
+        },
+        {
+          "month": "2025-02",
+          "downloads": 7,
+          "views": 62
+        },
+        {
+          "month": "2025-03",
+          "downloads": 11,
+          "views": 74
+        },
+        {
+          "month": "2025-04",
+          "downloads": 9,
+          "views": 60
+        },
+        {
+          "month": "2025-05",
+          "downloads": 12,
+          "views": 57
+        },
+        {
+          "month": "2025-06",
+          "downloads": 6,
+          "views": 33
+        },
+        {
+          "month": "2025-07",
+          "downloads": 8,
+          "views": 39
+        },
+        {
+          "month": "2025-08",
+          "downloads": 9,
+          "views": 49
+        },
+        {
+          "month": "2025-09",
+          "downloads": 6,
+          "views": 47
+        },
+        {
+          "month": "2025-10",
+          "downloads": 9,
+          "views": 53
+        },
+        {
+          "month": "2025-11",
+          "downloads": 12,
+          "views": 67
+        },
+        {
+          "month": "2025-12",
+          "downloads": 5,
+          "views": 34
+        },
+        {
+          "month": "2026-01",
+          "downloads": 8,
+          "views": 74
+        },
+        {
+          "month": "2026-02",
+          "downloads": 8,
+          "views": 71
+        }
+      ],
+      "total_downloads": 5001,
+      "total_views": 24490
+    },
+    "yaml": {
+      "handle": "repec:boc:bocode:s459607",
+      "monthly": [
+        {
+          "month": "2026-02",
+          "downloads": 0,
+          "views": 1
+        }
+      ],
+      "total_downloads": 0,
+      "total_views": 1
+    }
+  },
+  "ssc_related": {
+    "WBOPENDATA": [
+      {
+        "month": "2025-01",
+        "hits": 1468
+      },
+      {
+        "month": "2025-02",
+        "hits": 1458
+      },
+      {
+        "month": "2025-03",
+        "hits": 2300
+      },
+      {
+        "month": "2025-04",
+        "hits": 1516
+      },
+      {
+        "month": "2025-05",
+        "hits": 2499
+      },
+      {
+        "month": "2025-06",
+        "hits": 1495
+      },
+      {
+        "month": "2025-07",
+        "hits": 1519
+      },
+      {
+        "month": "2025-08",
+        "hits": 1047
+      },
+      {
+        "month": "2025-09",
+        "hits": 2170
+      },
+      {
+        "month": "2025-10",
+        "hits": 2503
+      },
+      {
+        "month": "2025-11",
+        "hits": 2960
+      },
+      {
+        "month": "2025-12",
+        "hits": 3193
+      }
+    ]
+  }
+}
+</script>
+</body>
+</html>
