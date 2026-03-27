@@ -2,6 +2,13 @@
 
 All notable changes to the unicefdata Python library will be documented in this file.
 
+## [2.4.1] - 2026-03-27
+
+### Changed
+
+- **`diagnose` parameter**: New opt-in `diagnose=True` parameter. Default behavior restored to server-side year filtering (faster). Query status codes only populated when `diagnose=True`.
+- Version alignment patch: v2.4.0 was tagged before R/Stata were ready.
+
 ## [2.4.0] - 2026-03-25
 
 ### Added

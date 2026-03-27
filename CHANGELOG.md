@@ -9,6 +9,14 @@ See language-specific detailed changelogs:
 
 ---
 
+## [2.4.1] - 2026-03-27
+
+### Patch release
+
+- Python version bump 2.4.0 → 2.4.1 (v2.4.0 tag was already published to PyPI before R/Stata were ready)
+- CITATION.cff updated to 2.4.1
+- No code changes — this is a version alignment patch
+
 ## [2.4.0] - 2026-03-26
 
 ### Cross-Language: `diagnose` Parameter
