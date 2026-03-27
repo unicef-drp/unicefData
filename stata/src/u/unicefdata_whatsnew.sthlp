@@ -1,8 +1,9 @@
 {smcl}
-{* *! version 2.3.0  18Feb2026}{...}
+{* *! version 2.4.0  26Mar2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v2.4.0" "unicefdata_whatsnew##v240"}{...}
 {viewerjumpto "v2.3.0" "unicefdata_whatsnew##v230"}{...}
 {viewerjumpto "v2.2.1" "unicefdata_whatsnew##v221"}{...}
 {viewerjumpto "v2.2.0" "unicefdata_whatsnew##v220"}{...}
@@ -23,6 +24,39 @@
 
 {pstd}
 {it:Return to {help unicefdata:main help file}}
+{p_end}
+
+
+{marker v240}{...}
+{title:What's New in v2.4.0 (26Mar2026)}
+
+{pstd}
+{bf:Query Status Codes ({cmd:diagnose} option):} New option that classifies empty results
+so callers know {it:why} a query returned no data. When {cmd:diagnose} is specified,
+year filters are applied client-side (avoids SDMX API 404 quirk on survey dataflows)
+and the following return scalars are set:
+{p_end}
+
+{phang2}{cmd:r(query_status)} — one of {cmd:ok}, {cmd:year_not_found},
+{cmd:year_beyond_range}, {cmd:country_not_found}, or {cmd:indicator_not_found}{p_end}
+{phang2}{cmd:r(available_years)} — space-separated list of years with data{p_end}
+{phang2}{cmd:r(nearest_year)} — closest available year to the requested year{p_end}
+{phang2}{cmd:r(message)} — human-readable explanation{p_end}
+
+{pstd}
+{bf:Example:}
+{p_end}
+
+{phang2}{cmd:. unicefdata, indicator(MNCH_CSEC) countries(BRA) year(2020) diagnose clear}{p_end}
+{phang2}{cmd:. return list}{p_end}
+{phang2}{it:r(query_status) = "year_beyond_range"}{p_end}
+{phang2}{it:r(available_years) = "2000 2001 ... 2019"}{p_end}
+{phang2}{it:r(nearest_year) = 2019}{p_end}
+
+{pstd}
+{bf:Cross-language parity:} All three platforms (Python, R, Stata) now support
+the {cmd:diagnose} parameter at v2.4.0 with the same 5 status codes.
+See {cmd:docs/QUERY_STATUS_CODES.md} for the full specification.
 {p_end}
 
 

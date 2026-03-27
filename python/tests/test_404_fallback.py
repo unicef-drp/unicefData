@@ -56,9 +56,9 @@ class Test404Fallback:
                 col in column_names
                 for col in ['iso3', 'ref_area', 'period', 'time_period', 'value', 'obs_value', 'dataflow']
             )
-            # If we have columns, at least one should be standard
+            # If we have columns, at least one should be a recognized SDMX column
             if len(df.columns) > 0:
-                assert has_standard_col or len(df.columns) > 0
+                assert has_standard_col, f"No standard columns found in: {column_names}"
 
     @responses.activate
     def test_valid_indicator_after_404_still_works(self, mock_sdmx_data_endpoints):

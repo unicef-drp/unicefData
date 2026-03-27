@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unicefData — Package Download Statistics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #212529;
+    --muted: #6c757d;
+    /* Wong colorblind-safe palette */
+    --cran: #0072B2;
+    --pypi: #E69F00;
+    --stata: #009E73;
+    --github: #CC79A7;
+    --accent: #56B4E9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); padding: 24px; max-width: 1200px; margin: 0 auto;
+  }
+  h1 { font-size: 1.75rem; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; text-align: center;
+  }
+  .card .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .card .value { font-size: 2rem; font-weight: 700; margin: 8px 0 4px; }
+  .card .detail { font-size: 0.85rem; color: var(--muted); }
+  .card.cran { border-top: 3px solid var(--cran); }
+  .card.pypi { border-top: 3px solid var(--pypi); }
+  .card.stata { border-top: 3px solid var(--stata); }
+  .card.github { border-top: 3px solid var(--github); }
+  .card.total { border-top: 3px solid var(--accent); }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .chart-full { margin-bottom: 32px; }
+  .chart-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
+  }
+  .chart-box h2 { font-size: 1.1rem; margin-bottom: 16px; }
+  canvas { max-height: 350px; }
+  .footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .error { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1>unicefData — Download Statistics</h1>
+<p class="subtitle">Trilingual R, Python, and Stata package for UNICEF SDMX data</p>
+
+<div id="app">
+  <div class="error" id="loading">Loading stats.json...</div>
+</div>
+
+<div class="footer">
+  Generated from <code>stats.json</code> by <code>scripts/package_stats.py</code>
+  &middot; <a href="https://github.com/unicef-drp/unicefData">GitHub</a>
+  &middot; <a href="https://pypi.org/project/unicefdata/">PyPI</a>
+  &middot; <a href="https://cran.r-project.org/package=unicefData">CRAN</a>
+</div>
+
+<script>
+// Wong colorblind-safe palette
+const COLORS = { cran: '#0072B2', pypi: '#E69F00', stata: '#009E73', github: '#CC79A7' };
+
+async function loadStats() {
+  // Try multiple paths so the dashboard works from docs/ or repo root
+  for (const path of ['stats.json', 'docs/stats.json', '../docs/stats.json']) {
+    try {
+      const r = await fetch(path);
+      if (r.ok) return await r.json();
+    } catch {}
+  }
+  return null;
+}
+
+function fmt(n) {
+  if (n == null) return '—';
+  return n.toLocaleString();
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function render(data) {
+  const { cran, pypi, ssc } = data;
+  const gh = data.github || {};
+  const app = document.getElementById('app');
+
+  const cranTotal = cran.total_since_publish || 0;
+  const pypiTotal = pypi.total_all_time || 0;
+  const sscTotal = ssc.total_period || 0;
+  const ghClones = gh.clones_unique || 0;
+  const combined = cranTotal + pypiTotal + sscTotal;
+
+  app.innerHTML = `
+    <div class="cards">
+      <div class="card total">
+        <div class="label">Combined Downloads</div>
+        <div class="value">${fmt(combined)}</div>
+        <div class="detail">CRAN + PyPI + SSC</div>
+      </div>
+      <div class="card cran">
+        <div class="label">CRAN (R)</div>
+        <div class="value">${fmt(cranTotal)}</div>
+        <div class="detail">v${esc(cran.version || '?')} &middot; ${fmt(cran.last_week)} / week</div>
+      </div>
+      <div class="card pypi">
+        <div class="label">PyPI (Python)</div>
+        <div class="value">${fmt(pypiTotal)}</div>
+        <div class="detail">v${esc(pypi.version || '?')} &middot; ${fmt(pypi.last_week)} / week</div>
+      </div>
+      <div class="card stata">
+        <div class="label">SSC (Stata)</div>
+        <div class="value">${sscTotal ? fmt(sscTotal) : '—'}</div>
+        <div class="detail">v${esc(ssc.version || '?')} &middot; ${ssc.monthly ? ssc.monthly.length + ' months' : 'No data'}</div>
+      </div>
+      <div class="card github">
+        <div class="label">GitHub (14 days)</div>
+        <div class="value">${ghClones ? fmt(ghClones) : '—'}</div>
+        <div class="detail">${fmt(gh.views_unique || 0)} unique visitors &middot; ${fmt(gh.clones_total || 0)} clones</div>
+      </div>
+    </div>
+
+    <div class="chart-full">
+      <div class="chart-box">
+        <h2>Daily Downloads — CRAN vs PyPI</h2>
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Weekly Trend (CRAN)</h2>
+        <canvas id="weeklyChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>GitHub Traffic (14 days)</h2>
+        <canvas id="githubChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Monthly Hits (SSC/Stata)</h2>
+        <canvas id="sscChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>Period Comparison — CRAN vs PyPI</h2>
+        <canvas id="periodChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>Platform Share (totals)</h2>
+        <canvas id="shareChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h2>PyPI — Python Versions</h2>
+        <canvas id="pyverChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h2>PyPI — By Operating System</h2>
+        <canvas id="osChart"></canvas>
+      </div>
+    </div>
+  `;
+
+  // --- Daily downloads line chart ---
+  const cranDaily = (cran.daily || []).map(d => ({ x: d.date, y: d.count }));
+  const pypiDaily = (pypi.daily || []).map(d => ({ x: d.date, y: d.count }));
+  // Align dates: use union of both date sets
+  const allDates = [...new Set([
+    ...cranDaily.map(d => d.x),
+    ...pypiDaily.map(d => d.x)
+  ])].sort();
+
+  const cranMap = Object.fromEntries(cranDaily.map(d => [d.x, d.y]));
+  const pypiMap = Object.fromEntries(pypiDaily.map(d => [d.x, d.y]));
+
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+      labels: allDates.map(d => d.slice(5)), // MM-DD
+      datasets: [
+        {
+          label: 'CRAN',
+          data: allDates.map(d => cranMap[d] ?? null),
+          borderColor: COLORS.cran, backgroundColor: COLORS.cran + '20',
+          tension: 0.3, fill: true, spanGaps: true,
+        },
+        {
+          label: 'PyPI',
+          data: allDates.map(d => pypiMap[d] ?? null),
+          borderColor: COLORS.pypi, backgroundColor: COLORS.pypi + '20',
+          tension: 0.3, fill: true, spanGaps: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Downloads' } } }
+    }
+  });
+
+  // --- Weekly bar chart ---
+  const weeks = (cran.weekly || []);
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: weeks.map(w => w.week),
+      datasets: [{
+        label: 'CRAN weekly',
+        data: weeks.map(w => w.count),
+        backgroundColor: COLORS.cran + '80',
+        borderColor: COLORS.cran, borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Period comparison grouped bar ---
+  new Chart(document.getElementById('periodChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Last day', 'Last 7 days', 'Last 30 days'],
+      datasets: [
+        {
+          label: 'CRAN', data: [cran.last_day || 0, cran.last_week || 0, cran.last_month || 0],
+          backgroundColor: COLORS.cran + '80', borderColor: COLORS.cran, borderWidth: 1,
+        },
+        {
+          label: 'PyPI', data: [pypi.last_day || 0, pypi.last_week || 0, pypi.last_month || 0],
+          backgroundColor: COLORS.pypi + '80', borderColor: COLORS.pypi, borderWidth: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Python version donut ---
+  const pyVer = pypi.by_python_version || {};
+  const pyLabels = Object.keys(pyVer).filter(k => k !== 'null');
+  const pyData = pyLabels.map(k => pyVer[k]);
+  // Wong-derived palette for multi-category charts
+  const pyColors = ['#0072B2', '#E69F00', '#009E73', '#CC79A7', '#56B4E9', '#D55E00', '#F0E442', '#999999'];
+
+  new Chart(document.getElementById('pyverChart'), {
+    type: 'doughnut',
+    data: {
+      labels: pyLabels.map(v => `Python ${v}`),
+      datasets: [{ data: pyData, backgroundColor: pyColors.slice(0, pyLabels.length) }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+
+  // --- GitHub traffic chart ---
+  const ghViews = (gh.views_daily || []);
+  const ghCloneDaily = (gh.clones_daily || []);
+  const ghDates = [...new Set([
+    ...ghViews.map(d => d.date),
+    ...ghCloneDaily.map(d => d.date)
+  ])].sort();
+  const ghViewMap = Object.fromEntries(ghViews.map(d => [d.date, d.unique]));
+  const ghCloneMap = Object.fromEntries(ghCloneDaily.map(d => [d.date, d.unique]));
+  new Chart(document.getElementById('githubChart'), {
+    type: 'bar',
+    data: {
+      labels: ghDates.map(d => d.slice(5)),
+      datasets: [
+        {
+          label: 'Unique visitors',
+          data: ghDates.map(d => ghViewMap[d] ?? 0),
+          backgroundColor: COLORS.github + '80',
+          borderColor: COLORS.github, borderWidth: 1,
+        },
+        {
+          label: 'Unique clones',
+          data: ghDates.map(d => ghCloneMap[d] ?? 0),
+          backgroundColor: COLORS.github + '40',
+          borderColor: COLORS.github, borderWidth: 1, borderDash: [3,3],
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- SSC monthly bar chart ---
+  const sscMonthly = ssc.monthly || [];
+  new Chart(document.getElementById('sscChart'), {
+    type: 'bar',
+    data: {
+      labels: sscMonthly.map(m => m.month),
+      datasets: [{
+        label: 'SSC monthly hits',
+        data: sscMonthly.map(m => m.hits),
+        backgroundColor: COLORS.stata + '80',
+        borderColor: COLORS.stata, borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // --- Platform share donut (totals) ---
+  const shareData = [cranTotal, pypiTotal];
+  const shareLabels = ['CRAN (R)', 'PyPI (Python)'];
+  const shareColors = [COLORS.cran, COLORS.pypi];
+  if (sscTotal > 0) {
+    shareData.push(sscTotal);
+    shareLabels.push('SSC (Stata)');
+    shareColors.push(COLORS.stata);
+  }
+  new Chart(document.getElementById('shareChart'), {
+    type: 'doughnut',
+    data: {
+      labels: shareLabels,
+      datasets: [{ data: shareData, backgroundColor: shareColors }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+
+  // --- PyPI OS donut ---
+  const osData = pypi.by_os || {};
+  const osLabels = Object.keys(osData).filter(k => k !== 'null' && k !== 'unknown');
+  const osValues = osLabels.map(k => osData[k]);
+  const osColors = ['#0072B2', '#E69F00', '#009E73', '#CC79A7'];
+  new Chart(document.getElementById('osChart'), {
+    type: 'doughnut',
+    data: {
+      labels: osLabels,
+      datasets: [{ data: osValues, backgroundColor: osColors.slice(0, osLabels.length) }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'right' } }
+    }
+  });
+}
+
+loadStats().then(data => {
+  if (data) render(data);
+  else {
+    document.getElementById('loading').innerHTML =
+      '<strong>Could not load stats.json</strong><br><br>' +
+      'Browsers block fetch() on file:// URLs. Use one of:<br><br>' +
+      '<code>cd docs && python -m http.server 8080</code> then open <a href="http://localhost:8080/dashboard.html">localhost:8080/dashboard.html</a><br>' +
+      'or: <code>python scripts/package_stats.py --json -o docs/stats.json</code> to regenerate data';
+  }
+});
+</script>
+</body>
+</html>

@@ -36,10 +36,33 @@ print(unicefdata.__version__)
 ```
 
 ```
-2.2.2
+2.4.1
 ```
 
 ---
+
+## What's New in 2.4.1
+
+- **`diagnose` parameter**: New opt-in `diagnose=True` for `unicefData()`. Default behavior restored to server-side year filtering (faster). Query status codes only populated when `diagnose=True`.
+- Version alignment: v2.4.0 was tagged before R/Stata `diagnose` landed.
+
+## What's New in 2.4.0
+
+- **Query status codes**: Empty results now tell you *why* via `df.attrs["query_status"]`:
+  - `year_not_found` — country has data, but not for the requested year (gap in time series)
+  - `year_beyond_range` — requested year is before the earliest or after the latest data point
+  - `country_not_found` — indicator exists but not for this country (includes `available_countries`)
+  - `indicator_not_found` — indicator doesn't exist in any dataflow
+- **Client-side year filtering**: Fixes 6 survey-based indicators (NUTRITION, MNCH, EDUCATION) that failed with year filters due to an SDMX API quirk
+- **Smarter fallback logic**: No longer wastes API calls trying non-existent fallback dataflows when data simply doesn't exist for the requested country/year
+
+```python
+df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020)
+# len(df) == 0
+print(df.attrs["query_status"])     # "year_not_found"
+print(df.attrs["available_years"])  # [2000, 2001, ..., 2019]
+print(df.attrs["nearest_year"])     # 2019
+```
 
 ## What's New in 2.2.2
 
@@ -797,7 +820,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citation for data used in research:**
 
-> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.2.2) on 2026-03-20. Data available at: https://sdmx.data.unicef.org/
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.4.1) on 2026-03-27. Data available at: https://sdmx.data.unicef.org/
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

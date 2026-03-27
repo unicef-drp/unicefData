@@ -9,6 +9,54 @@ See language-specific detailed changelogs:
 
 ---
 
+## [2.4.1] - 2026-03-27
+
+### Patch release
+
+- Python version bump 2.4.0 → 2.4.1 (v2.4.0 tag was already published to PyPI before R/Stata were ready)
+- CITATION.cff updated to 2.4.1
+- No code changes — this is a version alignment patch
+
+## [2.4.0] - 2026-03-26
+
+### Cross-Language: `diagnose` Parameter
+
+All three platforms now support a `diagnose` option that classifies empty results:
+
+- **Python**: `unicefData(..., diagnose=True)` → `df.attrs["query_status"]`
+- **R**: `unicefData(..., diagnose = TRUE)` → `attr(df, "query_status")`
+- **Stata**: `unicefdata, ... diagnose` → `r(query_status)`
+
+Status codes: `ok`, `indicator_not_found`, `country_not_found`, `year_not_found`, `year_beyond_range`.
+Each includes `available_years`, `nearest_year`, and a human-readable `message`.
+
+When `diagnose` is off (default), behavior is unchanged — year filters sent server-side for performance.
+
+### Python v2.4.0
+
+- **Query status codes**: `unicefData()` now classifies empty results via `df.attrs["query_status"]`.
+- **Client-side year filtering**: Avoids SDMX API 404 quirk on survey-based dataflows (NUTRITION, MNCH, EDUCATION). Fixes 6 of 11 benchmark indicators that failed with year filters.
+- **Smarter fallback logic**: Fallback dataflows only tried on real 404s, not on empty results from valid dataflows.
+- **Cross-language spec**: `docs/QUERY_STATUS_CODES.md` defines status codes for Python, R, and Stata.
+
+### R v2.4.0
+
+- **`diagnose` parameter**: Added to `unicefData()` with tibble attribute output.
+- **Bug fixes**: Missing `verbose` param, R dep floor 4.0, env parent fix, `%||%` cleanup, `\dontrun{}` examples.
+
+### Stata v2.4.0
+
+- **`diagnose` option**: Added to `unicefdata` with `r()` return scalar output.
+- **Client-side year filtering**: Same fix as Python — avoids SDMX 404 on survey dataflows.
+
+### Platform Versions
+
+| Platform | Version |
+|----------|---------|
+| R | **2.4.0** |
+| Python | **2.4.0** |
+| Stata | **2.4.0** |
+
 ## [2.3.2] - 2026-03-22
 
 ### Repository Release v2.3.2

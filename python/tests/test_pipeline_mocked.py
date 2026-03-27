@@ -152,18 +152,18 @@ class TestPipelineMulti:
         """Unknown indicator should return empty DataFrame or raise"""
         mock_pipeline_endpoints()
 
-        # This should either return empty DF or raise SDMXNotFoundError
+        # Should either return empty DF or raise a known SDMX error
+        from unicefdata.sdmx_client import SDMXNotFoundError, SDMXError
         try:
             df = unicefData(
                 indicator="NONEXISTENT_INDICATOR_XYZ",
                 countries=["ALB"],
             )
-            # If it returns, should be empty DataFrame
+            # If it returns, must be empty DataFrame
             assert isinstance(df, pd.DataFrame)
             assert len(df) == 0
-        except Exception:
-            # SDMXNotFoundError is also acceptable
-            pass
+        except (SDMXNotFoundError, SDMXError):
+            pass  # Expected: unknown indicator raises SDMX error
 
 
 class TestPipelineColumnOrder:

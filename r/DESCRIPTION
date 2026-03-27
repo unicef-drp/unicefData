@@ -1,6 +1,6 @@
 Package: unicefData
 Title: Download Indicators from UNICEF Data Warehouse
-Version: 2.3.0
+Version: 2.4.0
 Authors@R: c(
     person("Joao Pedro", "Azevedo", email = "jpazevedo@unicef.org", role = c("aut", "cre")),
     person("Lucas", "Rodrigues", role = "ctb"),
@@ -13,7 +13,7 @@ Description: An R client to fetch SDMX (Statistical Data and Metadata eXchange)
     Features include automatic pagination, caching with memoisation, country
     name lookups, metadata versioning (vintages), and comprehensive indicator
     support for SDG (Sustainable Development Goals) monitoring.
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.0.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
