@@ -42,9 +42,9 @@ unicefData-dev/
 
 | Platform | README | Changelog | Version |
 |----------|--------|-----------|---------|
-| **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.4.0 |
+| **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.4.0 ([CRAN](https://cran.r-project.org/package=unicefData)) |
 | **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.4.1 ([PyPI](https://pypi.org/project/unicefdata/)) |
-| **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.4.0 |
+| **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.4.0 ([SSC](https://ideas.repec.org/c/boc/bocode/s459598.html)) |
 
 ## Repository Documentation
 
