@@ -1,7 +1,7 @@
 # Query Status Codes
 
-**Version:** 1.0
-**Scope:** Cross-language specification for `unicefData()` (currently implemented in Python; R and Stata pending)
+**Version:** 1.1
+**Scope:** Cross-language specification for `unicefData()` — implemented in Python (v2.4.1), R (v2.4.0), and Stata (v2.4.0)
 
 ---
 
@@ -15,13 +15,13 @@ df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020, diagnose=True)
 ```
 
 ```r
-# R (planned)
+# R
 df <- unicefData("MNCH_CSEC", countries = "BRA", year = 2020, diagnose = TRUE)
 ```
 
 ```stata
-* Stata (planned)
-unicefdata MNCH_CSEC, countries(BRA) year(2020) diagnose
+* Stata
+unicefdata, indicator(MNCH_CSEC) countries(BRA) year(2020) diagnose clear
 ```
 
 When `diagnose=False` (default), year filters are sent to the API server-side (faster, no metadata). When `diagnose=True`, data is fetched without year filters and filtered client-side, enabling the status codes and metadata below.
@@ -32,7 +32,7 @@ When `diagnose=False` (default), year filters are sent to the API server-side (f
 
 When `unicefData()` returns an empty result, the caller needs to know **why** — especially MCP tools and automated pipelines that must distinguish "data doesn't exist" from "data exists but not for this query."
 
-The query status code classifies the outcome of every `unicefData()` call into one of six states. The classification is based on API responses (not bundled metadata), making it robust to metadata staleness.
+The query status code classifies the outcome of every `unicefData(..., diagnose=True)` call into one of seven states. The classification is based on API responses (not bundled metadata), making it robust to metadata staleness.
 
 ---
 
@@ -42,7 +42,7 @@ The query status code classifies the outcome of every `unicefData()` call into o
 |------|---------|---------------|
 | `ok` | Data returned successfully | Rows found matching all filters |
 | `indicator_not_found` | Indicator code does not exist in any UNICEF SDMX dataflow | All dataflows returned 404 or 0 rows (fetched without country/year filters) |
-| `country_not_found` | Indicator exists but this country has never reported data | API returned data for other countries, but 0 rows after filtering for the requested country |
+| `country_not_found` | Indicator exists but this country has never reported data | API returned data for other countries, but 0 rows after filtering for the requested country. **Note:** Currently implemented in Python only; R and Stata set `indicator_not_found` as fallback (probe fetch planned) |
 | `year_not_found` | Indicator + country exist but no data for the requested year | Country has data for other years (before and after), but not for the requested year — a gap in the time series. `available_years` lists what exists |
 | `year_beyond_range` | Requested year is outside the available data range | Year is before the earliest or after the latest data point for this country+indicator. Distinct from `year_not_found` (gap) — here the year is simply too early or too late |
 | `partial` | Some requested countries/indicators returned data, others didn't | Multi-country or multi-indicator query where at least one combination had data |
@@ -56,13 +56,13 @@ When the status is not `ok`, the following metadata is provided alongside the em
 
 | Field | Type | Present when | Description |
 |-------|------|-------------|-------------|
-| `query_status` | string | Always | One of the six codes above |
+| `query_status` | string | `diagnose=True` only | One of the seven codes above |
 | `query_indicator` | string | Always | The indicator code that was queried |
 | `query_countries` | list | Always | The country codes that were queried |
 | `query_year` | int or null | When year was specified | The year that was queried |
 | `available_countries` | list | `country_not_found` | Countries that have data for this indicator (sample, not exhaustive) |
-| `available_years` | list | `year_not_found` | Years with data for this indicator + country combination |
-| `nearest_year` | int or null | `year_not_found` | Closest available year to the requested year |
+| `available_years` | list | `year_not_found`, `year_beyond_range` | Years with data for this indicator + country combination |
+| `nearest_year` | int or null | `year_not_found`, `year_beyond_range` | Closest available year to the requested year |
 | `message` | string | Always | Human-readable explanation |
 
 ---
@@ -86,7 +86,8 @@ unicefData(indicator, countries, year, diagnose=True) called:
 2. Filter for requested country(ies):
 
    → 0 rows for requested country(ies)
-     STATUS = country_not_found
+     STATUS = country_not_found (Python)
+     STATUS = indicator_not_found (R, Stata — probe planned)
      available_countries = unique REF_AREA values from step 1 (up to 20)
      MESSAGE = "No data for {country}. Data exists for: {available_countries}..."
 
@@ -121,60 +122,57 @@ unicefData(indicator, countries, year, diagnose=True) called:
 ### Python
 
 ```python
-df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2020)
+df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2020, diagnose=True)
 # len(df) == 0  (unchanged — non-breaking)
 
 # New metadata via DataFrame.attrs:
-df.attrs["query_status"]        # "year_not_found"
+df.attrs["query_status"]        # "year_beyond_range"
 df.attrs["available_years"]     # [2015, 2016, 2017, 2018, 2019]
 df.attrs["nearest_year"]        # 2019
-df.attrs["message"]             # "No data for BRA in 2020. Available: 2015-2019. Nearest: 2019."
+df.attrs["message"]             # "Year 2020 is outside the available data range..."
 ```
 
 ### R
 
 ```r
-df <- unicefData("MNCH_CSEC", countries = "BRA", year = 2020)
+df <- unicefData("MNCH_CSEC", countries = "BRA", year = 2020, diagnose = TRUE)
 # nrow(df) == 0  (unchanged — non-breaking)
 
 # New metadata via attributes:
-attr(df, "query_status")        # "year_not_found"
+attr(df, "query_status")        # "year_beyond_range"
 attr(df, "available_years")     # c(2015, 2016, 2017, 2018, 2019)
 attr(df, "nearest_year")        # 2019
-attr(df, "message")             # "No data for BRA in 2020. ..."
-
-# Also emitted as message():
-# Note: No data for BRA in 2020. Available years: 2015-2019. Nearest: 2019.
+attr(df, "message")             # "Year 2020 is outside the available data range..."
 ```
 
 ### Stata
 
 ```stata
-unicefdata MNCH_CSEC, countries(BRA) year(2020)
+unicefdata, indicator(MNCH_CSEC) countries(BRA) year(2020) diagnose clear
 * r(N) == 0  (unchanged — non-breaking)
 
 * New return scalars:
-display r(query_status)         // "year_not_found"
+display r(query_status)         // "year_beyond_range"
 display r(available_years)      // "2015 2016 2017 2018 2019"
 display r(nearest_year)         // 2019
-display r(message)              // "No data for BRA in 2020. ..."
+display r(message)              // "Year 2020 is outside the available data range..."
 ```
 
 ---
 
 ## MCP Integration
 
-The MCP `get_data` tool should map these status codes to structured responses:
+The MCP `get_data` tool should pass `diagnose=True` and map status codes to structured responses:
 
 ```json
 {
-  "status": "year_not_found",
+  "status": "year_beyond_range",
   "indicator": "MNCH_CSEC",
   "country": "BRA",
   "year": 2020,
   "available_years": [2015, 2016, 2017, 2018, 2019],
   "nearest_year": 2019,
-  "message": "No data for BRA in 2020. Available years: 2015-2019. Nearest: 2019."
+  "message": "Year 2020 is outside the available data range for BRA. Data covers 2015-2019. Nearest: 2019."
 }
 ```
 
@@ -189,6 +187,6 @@ Instead of the current behavior (empty result → LLM interpolates or fabricates
 
 - `unicefData()` return type is unchanged (DataFrame / tibble / dataset)
 - Existing code that checks `len(df) == 0` or `nrow(df) == 0` still works
-- Status codes are opt-in metadata — callers that don't read `.attrs` / `attr()` / `r()` are unaffected
+- Status codes are **only set when `diagnose=True`** — callers that don't use `diagnose` see no change
 - No new exception types
 - No new required parameters

@@ -57,9 +57,9 @@ print(unicefdata.__version__)
 - **Smarter fallback logic**: No longer wastes API calls trying non-existent fallback dataflows when data simply doesn't exist for the requested country/year
 
 ```python
-df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020)
+df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020, diagnose=True)
 # len(df) == 0
-print(df.attrs["query_status"])     # "year_not_found"
+print(df.attrs["query_status"])     # "year_beyond_range"
 print(df.attrs["available_years"])  # [2000, 2001, ..., 2019]
 print(df.attrs["nearest_year"])     # 2019
 ```

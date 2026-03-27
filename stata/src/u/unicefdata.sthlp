@@ -629,7 +629,8 @@ Use this option to skip the metadata display.
 and applying year filtering locally. When the result is empty, the following
 return values are set:{p_end}
 {phang2}{cmd:r(query_status)} — one of {cmd:ok}, {cmd:year_not_found},
-{cmd:year_beyond_range}, {cmd:country_not_found}, or {cmd:indicator_not_found}{p_end}
+{cmd:year_beyond_range}, or {cmd:indicator_not_found}.
+({cmd:country_not_found} probe planned for a future release.){p_end}
 {phang2}{cmd:r(available_years)} — space-separated list of years with data{p_end}
 {phang2}{cmd:r(nearest_year)} — closest available year to the requested year{p_end}
 {phang2}{cmd:r(message)} — human-readable explanation{p_end}

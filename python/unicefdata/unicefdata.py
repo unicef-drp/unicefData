@@ -643,7 +643,8 @@ def _fetch_indicator_with_fallback(
                     f"Successfully fetched '{indicator_code}' using fallback "
                     f"dataflow '{df_attempt}' (primary '{dataflows_to_try[0]}' failed)"
                 )
-            df.attrs["query_status"] = "ok"
+            if diagnose:
+                df.attrs["query_status"] = "ok"
             return df
 
         except SDMXNotFoundError as e:
@@ -789,10 +790,12 @@ def _fetch_with_fallback(
 
     result = pd.concat(dfs, ignore_index=True)
     if failed_indicators:
-        result.attrs["query_status"] = "partial"
-        result.attrs["failed_indicators"] = failed_indicators
+        if diagnose:
+            result.attrs["query_status"] = "partial"
+            result.attrs["failed_indicators"] = failed_indicators
     else:
-        result.attrs["query_status"] = "ok"
+        if diagnose:
+            result.attrs["query_status"] = "ok"
     return result
 
 
