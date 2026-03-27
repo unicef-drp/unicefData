@@ -33,6 +33,8 @@ MNCH_BRA_GAP_CSV = (
     "MNCH,BRA,MNCH_CSEC,_T,2019,56.4,PCT,AVAILABLE,SURVEY\n"
 )
 
+EMPTY_CSV = "DATAFLOW,REF_AREA,INDICATOR,SEX,TIME_PERIOD,OBS_VALUE,UNIT_MEASURE,OBS_STATUS\n"
+
 MNCH_ARG_CSV = (
     "DATAFLOW,REF_AREA,INDICATOR,SEX,TIME_PERIOD,OBS_VALUE,UNIT_MEASURE,OBS_STATUS,DATA_SOURCE\n"
     "MNCH,ARG,MNCH_CSEC,_T,2020,32.1,PCT,AVAILABLE,SURVEY\n"
@@ -64,7 +66,7 @@ MNCH_PATTERN = re.compile(rf"{re.escape(BASE_URL)}/UNICEF,MNCH.*MNCH_CSEC.*")
 def test_ok():
     _reset()
     _mock(MNCH_BRA_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], dataflow="MNCH", diagnose=True)
     assert len(df) > 0
     assert df.attrs.get("query_status") == "ok"
 
@@ -73,7 +75,7 @@ def test_ok():
 def test_year_not_found_gap():
     _reset()
     _mock(MNCH_BRA_GAP_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2017, dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2017, dataflow="MNCH", diagnose=True)
     assert len(df) == 0
     assert df.attrs["query_status"] == "year_not_found"
     assert 2015 in df.attrs["available_years"]
@@ -85,7 +87,7 @@ def test_year_not_found_gap():
 def test_year_beyond_range_future():
     _reset()
     _mock(MNCH_BRA_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2025, dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2025, dataflow="MNCH", diagnose=True)
     assert len(df) == 0
     assert df.attrs["query_status"] == "year_beyond_range"
     assert df.attrs["nearest_year"] == 2019
@@ -96,7 +98,7 @@ def test_year_beyond_range_future():
 def test_year_beyond_range_past():
     _reset()
     _mock(MNCH_BRA_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2010, dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2010, dataflow="MNCH", diagnose=True)
     assert len(df) == 0
     assert df.attrs["query_status"] == "year_beyond_range"
     assert df.attrs["nearest_year"] == 2015
@@ -111,7 +113,7 @@ def test_country_not_found():
     responses.add(responses.GET, MNCH_PATTERN, body=MNCH_ARG_CSV, status=200, content_type="text/csv")
     responses.add(responses.GET, SDMX_ANY, body="Not Found", status=404)
 
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], dataflow="MNCH", diagnose=True)
     assert len(df) == 0
     assert df.attrs["query_status"] == "country_not_found"
     assert "ARG" in df.attrs.get("available_countries", [])
@@ -122,14 +124,14 @@ def test_indicator_not_found():
     _reset()
     responses.add(responses.GET, SDMX_ANY, body="Not Found", status=404)
     with pytest.raises(SDMXNotFoundError):
-        unicefData(indicator="COMPLETELY_FAKE_XYZ", countries=["BRA"])
+        unicefData(indicator="COMPLETELY_FAKE_XYZ", countries=["BRA"], diagnose=True)
 
 
 @responses.activate
 def test_attrs_survive():
     _reset()
     _mock(MNCH_BRA_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2025, dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2025, dataflow="MNCH", diagnose=True)
     for key in ["query_status", "query_indicator", "query_countries", "available_years", "nearest_year", "message"]:
         assert key in df.attrs, f"Missing attr: {key}"
     assert isinstance(df.attrs["available_years"], list)
@@ -141,7 +143,52 @@ def test_attrs_survive():
 def test_year_range_beyond():
     _reset()
     _mock(MNCH_BRA_CSV, MNCH_PATTERN)
-    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year="2025:2028", dataflow="MNCH")
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year="2025:2028", dataflow="MNCH", diagnose=True)
     assert len(df) == 0
     assert df.attrs["query_status"] == "year_beyond_range"
     assert "2025" in df.attrs["message"]
+
+
+# ---------------------------------------------------------------------------
+# diagnose=False (default) — no status attrs, server-side filter
+# ---------------------------------------------------------------------------
+
+@responses.activate
+def test_default_no_diagnose_returns_data():
+    """diagnose=False with matching data → data returned, no status attrs."""
+    _reset()
+    _mock(MNCH_BRA_CSV, MNCH_PATTERN)
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], dataflow="MNCH")
+    assert len(df) > 0
+    # No query_status attr when diagnose=False
+    assert df.attrs.get("query_status") in ("ok", None)
+
+
+@responses.activate
+def test_default_no_diagnose_empty_no_attrs():
+    """diagnose=False with empty result → empty DataFrame, no status attrs."""
+    _reset()
+    # Return empty CSV for any query
+    responses.add(responses.GET, MNCH_PATTERN, body=EMPTY_CSV, status=200, content_type="text/csv")
+    responses.add(responses.GET, SDMX_ANY, body="Not Found", status=404)
+
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2020, dataflow="MNCH")
+    assert len(df) == 0
+    # No diagnostic attrs when diagnose=False
+    assert "available_years" not in df.attrs
+    assert "nearest_year" not in df.attrs
+
+
+@responses.activate
+def test_default_404_with_year_retries_without():
+    """diagnose=False: 404 with year filter → retry without → return filtered data."""
+    _reset()
+    # First call with year filter → 404 (survey dataflow quirk)
+    responses.add(responses.GET, MNCH_PATTERN, body="Not Found", status=404)
+    # Retry without year filter → returns data
+    responses.add(responses.GET, MNCH_PATTERN, body=MNCH_BRA_CSV, status=200, content_type="text/csv")
+    responses.add(responses.GET, SDMX_ANY, body="Not Found", status=404)
+
+    df = unicefData(indicator="MNCH_CSEC", countries=["BRA"], year=2017, dataflow="MNCH")
+    # Should have data (2017 exists in MNCH_BRA_CSV)
+    assert len(df) > 0

@@ -1,5 +1,29 @@
 # unicefData (R Package) Changelog
 
+## 2.4.0 (2026-03-26)
+
+### New Features
+
+* **`diagnose` parameter**: New `diagnose = TRUE` option for `unicefData()` that
+  classifies empty results via tibble attributes:
+  - `attr(df, "query_status")`: One of `ok`, `indicator_not_found`, `country_not_found`,
+    `year_not_found`, `year_beyond_range`
+  - `attr(df, "available_years")`: Years with data for this country+indicator
+  - `attr(df, "nearest_year")`: Closest available year to the requested year
+  - `attr(df, "message")`: Human-readable explanation
+* When `diagnose = FALSE` (default), behavior is unchanged — year filters are
+  sent to the API server-side for performance.
+
+### Bug Fixes
+
+* Added missing `verbose` parameter to `get_sdmx()` (was referenced but never
+  declared; masked by `globalVariables()`)
+* Bumped minimum R version from 3.5.0 to 4.0.0 (`tools::R_user_dir()` requires R >= 4.0)
+* Fixed `.metadata_config` environment parent (now uses `emptyenv()` consistently)
+* Removed redundant `%||%` redefinitions in `flows.R` (already imported from rlang)
+* Excluded `R/README.md` from package build to avoid R CMD check NOTE
+* Switched all `\donttest{}` examples to `\dontrun{}` for deterministic CI
+
 ## 2.3.0 (2026-02-19)
 
 ### CRAN Compliance

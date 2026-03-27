@@ -125,6 +125,29 @@ df <- unicefData("NT_ANT_HAZ_NE2", wealth = c("Q1", "Q5", "_T"))
 df <- unicefData("NT_ANT_HAZ_NE2", sex = c("_T", "M", "F"), wealth = c("Q1", "Q5"))
 ```
 
+### Diagnose Empty Results (v2.4.0+)
+
+When querying specific country+year combinations, the result may be empty.
+Use `diagnose = TRUE` to find out why:
+
+```r
+# Year beyond available range
+df <- unicefData("MNCH_CSEC", countries = "BRA", year = 2020, diagnose = TRUE)
+# nrow(df) == 0
+attr(df, "query_status")     # "year_beyond_range"
+attr(df, "available_years")  # c(2015, 2016, 2017, 2018, 2019)
+attr(df, "nearest_year")     # 2019
+attr(df, "message")          # "Year 2020 is outside the available data range..."
+
+# Gap in time series
+df <- unicefData("NT_ANT_HAZ_NE2", countries = "BRA", year = 1990, diagnose = TRUE)
+attr(df, "query_status")     # "year_not_found"
+attr(df, "available_years")  # c(1989, 1996, 2007, ...)
+attr(df, "nearest_year")     # 1989
+```
+
+Without `diagnose = TRUE`, empty results are returned with no metadata (faster).
+
 ---
 
 ## Function Reference

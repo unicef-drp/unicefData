@@ -131,6 +131,30 @@ unicefdata, indicator(NT_ANT_HAZ_NE2) wealth(Q1 Q5 _T) clear
 unicefdata, indicator(NT_ANT_HAZ_NE2) sex(_T M F) wealth(Q1 Q5) clear
 ```
 
+### Diagnose Empty Results (v2.4.0+)
+
+When querying specific country+year combinations, the result may be empty.
+Use the `diagnose` option to find out why:
+
+```stata
+* Year beyond available range
+unicefdata, indicator(MNCH_CSEC) countries(BRA) year(2020) diagnose clear
+return list
+* r(query_status)    = "year_beyond_range"
+* r(available_years) = "2000 2001 2002 ... 2019"
+* r(nearest_year)    = 2019
+* r(message)         = "Year 2020 is outside the available data range..."
+
+* Gap in time series
+unicefdata, indicator(NT_ANT_HAZ_NE2) countries(BRA) year(1990) diagnose clear
+return list
+* r(query_status)    = "year_not_found"
+* r(available_years) = "1989 1996 2007 ..."
+* r(nearest_year)    = 1989
+```
+
+Without `diagnose`, empty results are returned with no metadata (faster).
+
 ---
 
 ## Command Reference

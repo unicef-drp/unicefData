@@ -1,4 +1,4 @@
-*! v 2.3.1  22Feb2026               by Joao Pedro Azevedo (UNICEF)
+*! v 2.4.0  26Mar2026               by Joao Pedro Azevedo (UNICEF)
 * =============================================================================
 * unicefdata.ado - Stata interface to UNICEF SDMX Data API
 * =============================================================================
@@ -23,7 +23,7 @@
 *  12. Output & Return Values - Display results and set r()
 *  13. Helper Programs - _linewrap, etc.
 *
-* Version: 2.3.1 (2026-02-22)
+* Version: 2.4.0 (2026-03-26)
 * Author: João Pedro Azevedo (UNICEF)
 * License: MIT
 * =============================================================================
@@ -399,6 +399,7 @@ version 14
                         SHOWORphans                 /// Include orphan indicators (not mapped to dataflows)
                         SHOWLEGacy                  /// Alias for showtier3
                         noCHAR                      /// Suppress char metadata on dataset/variables
+                        DIAGNOSE                    /// Classify empty results: fetch without year filter, set r(query_status)
                         *                           /// Legacy options
                  ]
 
@@ -924,11 +925,14 @@ version 14
                 local ind_rel_path "data/UNICEF,`ind_dataflow',`version'/`ind_key'"
                 
                 local ind_query "format=csv&labels=id"
-                if (`start_year' > 0) {
-                    local ind_query "`ind_query'&startPeriod=`start_year'"
-                }
-                if (`end_year' > 0) {
-                    local ind_query "`ind_query'&endPeriod=`end_year'"
+                * diagnose: skip server-side year filter (fetch all, filter client-side)
+                if ("`diagnose'" == "") {
+                    if (`start_year' > 0) {
+                        local ind_query "`ind_query'&startPeriod=`start_year'"
+                    }
+                    if (`end_year' > 0) {
+                        local ind_query "`ind_query'&endPeriod=`end_year'"
+                    }
                 }
                 local ind_query "`ind_query'&startIndex=0&count=`page_size'"
                 
@@ -1000,13 +1004,16 @@ version 14
                         }
 
                         * Call get_sdmx directly (filter is now built into the schema key)
+                        * diagnose: skip year filter in fallback path too
+                        local _start_yr_opt = cond("`diagnose'" == "", "`start_year'", "")
+                        local _end_yr_opt = cond("`diagnose'" == "", "`end_year'", "")
                         capture noisily get_sdmx, ///
                             indicator("`ind'") ///
                             dataflow("`ind_fallback_df'") ///
                             `countries_option' ///
                             `ind_filter_option' ///
-                            start_period("`start_year'") ///
-                            end_period("`end_year'") ///
+                            start_period("`_start_yr_opt'") ///
+                            end_period("`_end_yr_opt'") ///
                             `nofilter_option' ///
                             `labels_option' ///
                             `wide' ///
@@ -1344,9 +1351,12 @@ version 14
         local tried_dataflows ""  // Track all dataflows tried for error message
         
         * Build get_sdmx call with conditional year parameters
+        * diagnose: skip year filter in single-indicator path
         local year_opts ""
-        if (`start_year' > 0) local year_opts "`year_opts' start_period(`start_year')"
-        if (`end_year' > 0) local year_opts "`year_opts' end_period(`end_year')"
+        if ("`diagnose'" == "") {
+            if (`start_year' > 0) local year_opts "`year_opts' start_period(`start_year')"
+            if (`end_year' > 0) local year_opts "`year_opts' end_period(`end_year')"
+        }
 
         * Ensure we always have a dataflow for primary fetch
         local dataflow_for_fetch "`dataflow'"
@@ -1813,6 +1823,122 @@ version 14
                 
                 if ("`applied_filters'" != "") {
                     noi di as text "Applied filters: " as result "`applied_filters'"
+                }
+            }
+
+            * =================================================================
+            * #### 8b. Diagnose: Client-Side Year Filter & Classification ####
+            * =================================================================
+            * When diagnose is set, data was fetched without year filter.
+            * Apply year filter client-side and classify empty results.
+
+            if ("`diagnose'" != "") {
+                * --- Classify empty fetch (no year filter was applied) ---
+                if (_N == 0) {
+                    * Fetch returned nothing — classify as indicator or country not found
+                    * Probe without country filter to distinguish
+                    local query_status "indicator_not_found"
+                    local query_msg "Indicator '`indicator'' returned no data from any dataflow."
+
+                    * TODO: probe without country filter to detect country_not_found
+                    * (requires a second fetch; deferred to avoid latency)
+
+                    return local query_status "`query_status'"
+                    return local message "`query_msg'"
+                    return local indicator "`indicator'"
+                    return local dataflow "`dataflow'"
+                    return local countries "`countries'"
+                    return scalar success = 1
+                    return scalar successcode = 0
+                    return local obs_count = "0"
+                    if (`noerror_flag' == 0) {
+                        noi di as text ""
+                        noi di as text "Note: `query_msg'"
+                    }
+                    clear
+                    exit
+                }
+
+                * --- Client-side year filter ---
+                capture confirm variable period
+                if (_rc == 0 & (`start_year' > 0 | `end_year' > 0)) {
+                    * Save pre-filter count and available years (use floor for monthly periods)
+                    local pre_filter_n = _N
+                    tempvar period_year
+                    quietly gen int `period_year' = floor(period) if period < .
+                    quietly levelsof `period_year', local(all_years) clean
+
+                    * Apply year range filter client-side (using integer year)
+                    if (`start_year' > 0) {
+                        quietly drop if `period_year' < `start_year'
+                    }
+                    if (`end_year' > 0) {
+                        quietly drop if `period_year' > `end_year'
+                    }
+                    capture drop `period_year'
+
+                    if (_N == 0 & `pre_filter_n' > 0) {
+                        * Data exists for indicator+country but not for requested year(s)
+                        local avail_years "`all_years'"
+
+                        * Find min and max available years
+                        local min_yr = .
+                        local max_yr = .
+                        foreach yr of local avail_years {
+                            if (`yr' < `min_yr' | `min_yr' == .) local min_yr = `yr'
+                            if (`yr' > `max_yr' | `max_yr' == .) local max_yr = `yr'
+                        }
+
+                        * Target year for nearest calculation
+                        local target = `start_year'
+                        if (`target' <= 0) local target = `end_year'
+
+                        * Find nearest available year
+                        local nearest = .
+                        local min_dist = .
+                        foreach yr of local avail_years {
+                            local dist = abs(`yr' - `target')
+                            if (`dist' < `min_dist' | `min_dist' == .) {
+                                local min_dist = `dist'
+                                local nearest = `yr'
+                            }
+                        }
+
+                        * Classify: beyond range vs gap
+                        if (`target' > `max_yr' | `target' < `min_yr') {
+                            local query_status "year_beyond_range"
+                            local query_msg "Year `target' is outside the available data range. Data covers `min_yr'-`max_yr'. Nearest available: `nearest'."
+                        }
+                        else {
+                            local query_status "year_not_found"
+                            local query_msg "No data in `target'. Data exists for other years. Nearest available: `nearest'."
+                        }
+
+                        * Set return scalars
+                        return local query_status "`query_status'"
+                        return local available_years "`avail_years'"
+                        return scalar nearest_year = `nearest'
+                        return local message "`query_msg'"
+                        return local indicator "`indicator'"
+                        return local dataflow "`dataflow'"
+                        return local countries "`countries'"
+                        return scalar success = 1
+                        return scalar successcode = 0
+                        return local obs_count = "0"
+
+                        if (`noerror_flag' == 0) {
+                            noi di as text ""
+                            noi di as text "Note: `query_msg'"
+                        }
+
+                        clear
+                        exit
+                    }
+                }
+
+                * If we get here with data, set ok status
+                if (_N > 0) {
+                    local query_status "ok"
                 }
             }
 
@@ -3125,6 +3251,14 @@ version 14
         return local addmeta "`addmeta'"
         return local obs_count = _N
         return local url "`full_url'"
+        * Query status (diagnose mode)
+        if ("`diagnose'" != "") {
+            if ("`query_status'" == "") {
+                if (_N > 0) local query_status "ok"
+                else         local query_status "no_data"
+            }
+            return local query_status "`query_status'"
+        }
         
         *-----------------------------------------------------------------------
         * Display indicator metadata

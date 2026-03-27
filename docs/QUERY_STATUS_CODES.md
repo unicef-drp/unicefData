@@ -5,6 +5,29 @@
 
 ---
 
+## Activation
+
+Query status codes are opt-in via the `diagnose` parameter:
+
+```python
+# Python
+df = unicefData("MNCH_CSEC", countries=["BRA"], year=2020, diagnose=True)
+```
+
+```r
+# R (planned)
+df <- unicefData("MNCH_CSEC", countries = "BRA", year = 2020, diagnose = TRUE)
+```
+
+```stata
+* Stata (planned)
+unicefdata MNCH_CSEC, countries(BRA) year(2020) diagnose
+```
+
+When `diagnose=False` (default), year filters are sent to the API server-side (faster, no metadata). When `diagnose=True`, data is fetched without year filters and filtered client-side, enabling the status codes and metadata below.
+
+---
+
 ## Purpose
 
 When `unicefData()` returns an empty result, the caller needs to know **why** — especially MCP tools and automated pipelines that must distinguish "data doesn't exist" from "data exists but not for this query."
@@ -46,8 +69,10 @@ When the status is not `ok`, the following metadata is provided alongside the em
 
 ## Classification Logic
 
+Only active when `diagnose=True`. When `diagnose=False` (default), empty results have no status metadata.
+
 ```
-unicefData(indicator, countries, year) called:
+unicefData(indicator, countries, year, diagnose=True) called:
 
 1. Fetch from SDMX API WITHOUT year filter:
    GET /data/UNICEF,{dataflow},1.0/.{indicator}.?format=csv
@@ -67,7 +92,7 @@ unicefData(indicator, countries, year) called:
 
    → Rows found for country → continue to step 3
 
-3. If year was specified, filter for year:
+3. If year was specified, filter for year (client-side):
 
    → 0 rows AND year is outside data range (before min or after max)
      STATUS = year_beyond_range

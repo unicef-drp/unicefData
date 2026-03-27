@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2026-03-26 (Stata)
+
+### Added
+
+- **`diagnose` option**: New option for `unicefdata` that classifies empty results via `r()` return scalars:
+  - `r(query_status)`: One of `ok`, `year_not_found`, `year_beyond_range`, `country_not_found`, `indicator_not_found`
+  - `r(available_years)`: Space-separated list of years with data for this country+indicator
+  - `r(nearest_year)`: Closest available year to the requested year
+  - `r(message)`: Human-readable explanation
+- When `diagnose` is set, year filters are applied client-side (avoids SDMX API 404 quirk on survey dataflows: NUTRITION, MNCH, EDUCATION)
+- Cross-language parity with Python (`diagnose=True`) and R (`diagnose = TRUE`)
+
+### Changed
+
+- Without `diagnose`, behavior is unchanged — year filters are sent to the SDMX API server-side for performance
+
 ## [2.3.0] - 2026-02-18 (Stata)
 
 ### Added

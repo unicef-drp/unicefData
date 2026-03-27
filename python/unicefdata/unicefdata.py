@@ -395,6 +395,7 @@ def _fetch_indicator_with_fallback(
     max_retries: int = 3,
     tidy: bool = True,
     totals: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch indicator data with automatic dataflow fallback on 404 errors.
@@ -503,32 +504,38 @@ def _fetch_indicator_with_fallback(
             _logger.info(f"Trying fallback dataflow '{df_attempt}'...")
 
         try:
-            # Fetch WITHOUT year filter to get all available data.
-            # Year filtering is done client-side to:
-            # 1. Avoid SDMX API 404 quirk on survey dataflows (NUTRITION, MNCH, EDUCATION)
-            # 2. Enable query_status classification (country_not_found vs year_not_found)
+            # diagnose=True: fetch WITHOUT year filter, filter client-side.
+            #   Avoids SDMX API 404 quirk on survey dataflows and enables
+            #   query_status classification (available_years, nearest_year).
+            # diagnose=False: pass year filters to the API (server-side).
+            #   Faster — downloads only matching data, but no diagnostics.
+            fetch_start = start_year if not diagnose else None
+            fetch_end = end_year if not diagnose else None
             df = client.fetch_indicator(
                 indicator_code=indicator_code,
                 countries=countries,
-                start_year=None,
-                end_year=None,
+                start_year=fetch_start,
+                end_year=fetch_end,
                 dataflow=df_attempt,
                 sex_disaggregation=sex,
-                totals=False,
+                totals=totals,
                 max_retries=max_retries,
                 return_raw=not tidy,
             )
 
-            if df.empty:
-                # Dataflow returned 200 but 0 rows for these countries.
-                # Don't try fallbacks — the dataflow exists, data just
-                # isn't available for these countries.
+            if df.empty and not diagnose:
+                # Without diagnose: empty result, no classification.
+                # Don't try fallbacks if data was fetched with year filter —
+                # the dataflow may exist but not for this country+year.
+                if not (start_year or end_year):
+                    # No year filter was used, so this is a true empty
+                    continue  # try next dataflow
+                return pd.DataFrame()
+
+            if df.empty and diagnose:
+                # With diagnose: classify why the result is empty.
                 empty = pd.DataFrame()
                 all_countries = set()
-                # Probe API without country filter to discover which countries
-                # have data. This downloads the full indicator dataset (can be
-                # large for CME ~65K rows). No lighter alternative exists in
-                # the SDMX API — there is no availability/summary endpoint.
                 try:
                     df_probe = client.fetch_indicator(
                         indicator_code=indicator_code,
@@ -547,11 +554,15 @@ def _fetch_indicator_with_fallback(
                 except Exception:
                     pass
 
+                # Common attrs for all empty statuses
+                empty.attrs["query_indicator"] = indicator_code
+                empty.attrs["query_countries"] = countries or []
+                if start_year or end_year:
+                    empty.attrs["query_year"] = start_year or end_year
+
                 if all_countries:
                     sample = sorted(all_countries)[:20]
                     empty.attrs["query_status"] = "country_not_found"
-                    empty.attrs["query_indicator"] = indicator_code
-                    empty.attrs["query_countries"] = countries or []
                     empty.attrs["available_countries"] = sample
                     empty.attrs["message"] = (
                         f"No data for {countries} for indicator '{indicator_code}'. "
@@ -561,21 +572,18 @@ def _fetch_indicator_with_fallback(
                     _logger.info(empty.attrs["message"])
                 else:
                     empty.attrs["query_status"] = "indicator_not_found"
-                    empty.attrs["query_indicator"] = indicator_code
                     empty.attrs["message"] = (
                         f"Indicator '{indicator_code}' returned no data from "
                         f"dataflow '{df_attempt}'."
                     )
                 return empty
 
-            # Data found — apply year filter client-side
-            if start_year or end_year:
+            # diagnose=True: apply year filter client-side
+            if diagnose and (start_year or end_year):
                 period_col = 'period' if 'period' in df.columns else 'TIME_PERIOD'
                 if period_col in df.columns:
                     df_pre_filter = df.copy()
 
-                    # Coerce period to numeric year for robust comparison
-                    # Handles both tidy (float) and raw (string '2020' or '2020-01')
                     years = pd.to_numeric(
                         df[period_col].astype(str).str.slice(0, 4),
                         errors="coerce",
@@ -588,7 +596,6 @@ def _fetch_indicator_with_fallback(
                     df = df[mask]
 
                     if df.empty:
-                        # Country has data but not for the requested year(s)
                         years_pre = pd.to_numeric(
                             df_pre_filter[period_col].astype(str).str.slice(0, 4),
                             errors="coerce",
@@ -598,7 +605,6 @@ def _fetch_indicator_with_fallback(
                         min_year = min(avail_years) if avail_years else None
                         max_year = max(avail_years) if avail_years else None
 
-                        # Handle year range queries
                         if start_year and end_year and start_year != end_year:
                             target = (start_year + end_year) // 2
                             year_desc = f"{start_year}-{end_year}"
@@ -608,7 +614,6 @@ def _fetch_indicator_with_fallback(
 
                         nearest = min(avail_years, key=lambda y: abs(y - target)) if avail_years else None
 
-                        # Distinguish: gap year vs beyond all available data
                         if avail_years and (target > max_year or target < min_year):
                             df.attrs["query_status"] = "year_beyond_range"
                             df.attrs["message"] = (
@@ -642,6 +647,46 @@ def _fetch_indicator_with_fallback(
             return df
 
         except SDMXNotFoundError as e:
+            # diagnose=False with year filters: the SDMX API returns 404 for
+            # valid survey-based indicators when the specific country+year has
+            # no data. Retry once without year filters before giving up.
+            if not diagnose and (start_year or end_year) and fetch_start is not None:
+                _logger.info(
+                    f"404 with year filter on '{df_attempt}' — retrying without "
+                    f"period params (survey dataflow quirk)"
+                )
+                try:
+                    df = client.fetch_indicator(
+                        indicator_code=indicator_code,
+                        countries=countries,
+                        start_year=None,
+                        end_year=None,
+                        dataflow=df_attempt,
+                        sex_disaggregation=sex,
+                        totals=totals,
+                        max_retries=1,
+                        return_raw=not tidy,
+                    )
+                    if not df.empty:
+                        # Data exists — year filter was the problem.
+                        # Filter client-side and return.
+                        period_col = 'period' if 'period' in df.columns else 'TIME_PERIOD'
+                        if period_col in df.columns:
+                            years = pd.to_numeric(
+                                df[period_col].astype(str).str.slice(0, 4),
+                                errors="coerce",
+                            )
+                            mask = pd.Series(True, index=df.index)
+                            if start_year:
+                                mask &= years >= start_year
+                            if end_year:
+                                mask &= years <= end_year
+                            df = df[mask]
+                        df.attrs["query_status"] = "ok" if not df.empty else "year_not_found"
+                        return df
+                except Exception:
+                    pass  # Fall through to normal fallback logic
+
             last_error = e
             if df_attempt != dataflows_to_try[-1]:
                 _logger.debug(
@@ -684,6 +729,7 @@ def _fetch_with_fallback(
     max_retries: int = 3,
     tidy: bool = True,
     totals: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch multiple indicators using get_sdmx() with fallback logic.
@@ -723,6 +769,7 @@ def _fetch_with_fallback(
             sex=sex,
             max_retries=max_retries,
             tidy=tidy,
+            diagnose=diagnose,
         )
         if not df.empty:
             dfs.append(df)
@@ -781,6 +828,7 @@ def unicefData(
     mrv: Optional[int] = None,
     raw: bool = False,
     ignore_duplicates: bool = False,
+    diagnose: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch UNICEF indicator data from SDMX API.
@@ -845,9 +893,14 @@ def unicefData(
         mrv: Most Recent Value(s). Keep only the N most recent years per country.
             Example: mrv=1 is equivalent to latest=True, mrv=3 keeps last 3 years.
         ignore_duplicates: If False (default), raises an error when exact duplicate
-            rows are found (all column values identical). Set to True to allow 
+            rows are found (all column values identical). Set to True to allow
             automatic removal of duplicates.
-    
+        diagnose: If True, fetch all data without year filter and classify
+            empty results via df.attrs["query_status"]. Enables available_years,
+            nearest_year, and message metadata. Slower (downloads full dataset).
+            If False (default), pass year filter to API (faster, no diagnostics).
+            MCP tools should set diagnose=True for structured error reporting.
+
     Returns:
         pandas.DataFrame with columns (varies by options):
             - indicator_code: Indicator code
@@ -990,6 +1043,7 @@ def unicefData(
         totals=totals,
         max_retries=max_retries,
         tidy=not raw,
+        diagnose=diagnose,
     )
     
     print("")
