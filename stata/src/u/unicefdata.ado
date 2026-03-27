@@ -3255,7 +3255,7 @@ version 14
         if ("`diagnose'" != "") {
             if ("`query_status'" == "") {
                 if (_N > 0) local query_status "ok"
-                else         local query_status "no_data"
+                else         local query_status "indicator_not_found"
             }
             return local query_status "`query_status'"
         }
