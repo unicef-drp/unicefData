@@ -1321,20 +1321,20 @@ indicators:
     source: comprehensive_metadata
   DM_POP_URBN:
     code: DM_POP_URBN
-    name: ''
+    name: Share of urban population
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: ''
+    description: Urban population as a percentage of the total population
     dimensions: null
     source: comprehensive_metadata
   DM_POP_U_GRT:
     code: DM_POP_U_GRT
-    name: ''
+    name: Annual growth rate of urban population
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: ''
+    description: Average exponential rate of growth of the urban population over a given period
     dimensions: null
     source: comprehensive_metadata
   ECD_CHLD_24-59M_ADLT_SRC:
