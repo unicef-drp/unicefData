@@ -47,8 +47,7 @@ test_that("parse_year handles NULL", {
 # ===========================================================================
 
 test_that("DL-06: pinning fixture has no duplicates on key dims", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   key_cols <- intersect(
     c("REF_AREA", "INDICATOR", "SEX", "WEALTH_QUINTILE", "TIME_PERIOD"),
     names(df)
@@ -59,8 +58,7 @@ test_that("DL-06: pinning fixture has no duplicates on key dims", {
 })
 
 test_that("DL-06: multi-country fixture has no duplicates", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_BRA_2020.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_BRA_2020.csv")
   key_cols <- intersect(
     c("REF_AREA", "INDICATOR", "SEX", "WEALTH_QUINTILE", "TIME_PERIOD"),
     names(df)
@@ -69,8 +67,7 @@ test_that("DL-06: multi-country fixture has no duplicates", {
 })
 
 test_that("DL-06: time series fixture has no duplicates", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2015_2023.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2015_2023.csv")
   key_cols <- intersect(
     c("REF_AREA", "INDICATOR", "SEX", "WEALTH_QUINTILE", "TIME_PERIOD"),
     names(df)
@@ -88,7 +85,7 @@ test_that("DATA-01: OBS_VALUE is numeric across fixtures", {
                 "CME_multi_USA_2020.csv",
                 "IM_MCV1_USA_BRA_2015_2023.csv")
   for (f in fixtures) {
-    df <- read.csv(file.path(FIXTURES_DIR, f), stringsAsFactors = FALSE)
+    df <- read_fixture(f)
     expect_true(is.numeric(df$OBS_VALUE), info = paste(f, ": OBS_VALUE not numeric"))
   }
 })
@@ -98,7 +95,7 @@ test_that("DATA-01: TIME_PERIOD is integer years", {
                 "CME_MRY0T4_USA_2015_2023.csv",
                 "CME_MRY0T4_BRA_1990_2023.csv")
   for (f in fixtures) {
-    df <- read.csv(file.path(FIXTURES_DIR, f), stringsAsFactors = FALSE)
+    df <- read_fixture(f)
     expect_true(is.numeric(df$TIME_PERIOD), info = paste(f, ": TIME_PERIOD not numeric"))
     expect_true(all(df$TIME_PERIOD == as.integer(df$TIME_PERIOD)),
                 info = paste(f, ": TIME_PERIOD not integer"))
@@ -110,7 +107,7 @@ test_that("DATA-01: REF_AREA is 3-character ISO3", {
                 "CME_MRY0T4_USA_BRA_2020.csv",
                 "CME_MRY0T4_multi_2018_2023.csv")
   for (f in fixtures) {
-    df <- read.csv(file.path(FIXTURES_DIR, f), stringsAsFactors = FALSE)
+    df <- read_fixture(f)
     expect_true(all(nchar(df$REF_AREA) == 3),
                 info = paste(f, ": REF_AREA not 3 chars"))
   }
