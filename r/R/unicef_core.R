@@ -518,7 +518,9 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   # Shared dynamic User-Agent
   ua <- .unicefData_ua
 
-  if (verbose) message("Fetching data...")
+  if (verbose) message(sprintf("Fetching '%s' from '%s'...",
+      if (is.null(indicator)) "all" else paste(indicator, collapse = "+"),
+      dataflow))
 
   # The UNICEF SDMX CSV endpoint does not reliably support startIndex/count
   # pagination — the server ignores those parameters and always returns the
@@ -655,29 +657,6 @@ unicefData_raw <- function(
   dplyr::tibble()
 }
 
-#
-#
-#   # Build URL
-#   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-#   indicator_str <- if (!is.null(indicator)) paste0(".", paste(indicator, collapse = "+"), ".") else "."
-#   rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, ver, indicator_str)
-#   full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
-#
-#   if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
-#   if (!is.null(end_year_str)) full_url <- paste0(full_url, "&endPeriod=", end_year_str)
-#
-#   # Paging
-#   ua <- httr::user_agent("unicefData/1.0")
-#   pages <- list()
-#   page <- 0L
-#
-#   repeat {
-#     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-#     if (verbose) message(sprintf("Fetching page %d...", page + 1))
-#     # this NULL here masks 404, let's fix and make fallback possible:
-#     df <- tryCatch(
-#       readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
-#       error = function(e) {
 
 # =============================================================================
 # #### 6. Data Cleaning ####
