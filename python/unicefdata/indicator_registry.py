@@ -26,6 +26,7 @@ Usage:
 """
 
 import os
+import re
 import yaml
 import logging
 from pathlib import Path
@@ -86,6 +87,15 @@ def _get_cache_path() -> Path:
     return user_cache / CACHE_FILENAME
 
 
+_NON_LATIN = re.compile(r'[\u0600-\u06FF\u0400-\u04FF\u4E00-\u9FFF]')
+
+def _latin_only(text: str) -> str:
+    """Return text if it contains no non-Latin script characters, else empty string."""
+    if text and _NON_LATIN.search(text):
+        return ""
+    return text or ""
+
+
 def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
     """Parse SDMX codelist XML response into indicator dictionary.
     
@@ -112,17 +122,17 @@ def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
         if not code_id:
             continue
 
-        # Extract name - prefer English, fall back to first available
+        # Extract name - prefer English; discard fallback if non-Latin script
         name_elem = code_elem.find('.//common:Name[@xml:lang="en"]', namespaces)
         if name_elem is None:
             name_elem = code_elem.find('.//common:Name', namespaces)
-        name = name_elem.text if name_elem is not None else ""
+        name = _latin_only(name_elem.text if name_elem is not None else "")
 
-        # Extract description - prefer English, fall back to first available
+        # Extract description - prefer English; discard fallback if non-Latin script
         desc_elem = code_elem.find('.//common:Description[@xml:lang="en"]', namespaces)
         if desc_elem is None:
             desc_elem = code_elem.find('.//common:Description', namespaces)
-        description = desc_elem.text if desc_elem is not None else ""
+        description = _latin_only(desc_elem.text if desc_elem is not None else "")
         
         # Extract URN if available
         urn = code_elem.get('urn', '')
