@@ -100,9 +100,13 @@ _SDMX_NS = {
 
 
 def _collect_langs(parent_elem, tag: str) -> dict:
-    """Return {lang: text} for all <tag> children of parent_elem that have text."""
+    """Return {lang: text} for direct-child <tag> elements that have text.
+
+    Uses direct-child lookup (no //) so nested elements at deeper levels
+    (e.g. Code/Name inside a Codelist) don't overwrite the parent's value.
+    """
     result = {}
-    for elem in parent_elem.findall(f'.//{tag}', _SDMX_NS):
+    for elem in parent_elem.findall(tag, _SDMX_NS):
         lang = elem.get(_XML_LANG, '')
         if elem.text and elem.text.strip():
             result[lang] = elem.text.strip()

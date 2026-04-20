@@ -933,9 +933,13 @@ class MetadataSync:
         return ""
     
     def _collect_langs(self, parent_elem, tag: str) -> dict:
-        """Return {lang: text} for all <tag> children that have text."""
+        """Return {lang: text} for direct-child <tag> elements that have text.
+
+        Uses direct-child lookup (no //) to avoid picking up nested elements
+        (e.g. code labels inside a Codelist element overwriting the list name).
+        """
         result = {}
-        for elem in parent_elem.findall(f'.//{tag}', self.NAMESPACES):
+        for elem in parent_elem.findall(tag, self.NAMESPACES):
             lang = elem.get(self._XML_LANG, '')
             if elem.text and elem.text.strip():
                 result[lang] = elem.text.strip()
