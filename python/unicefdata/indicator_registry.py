@@ -351,7 +351,16 @@ def _save_cache(indicators: Dict[str, dict], coverage: dict = None) -> None:
         logger.error(f"Failed to save cache: {e}")
 
     if coverage is not None:
-        _save_language_coverage(coverage, cache_path.parent, now)
+        # Write to the canonical shared metadata/current/ directory when available
+        canonical = _canonical_metadata_dir()
+        _save_language_coverage(coverage, canonical if canonical else cache_path.parent, now)
+
+
+def _canonical_metadata_dir() -> Path:
+    """Return repo-level metadata/current/ if it exists, else None."""
+    # From python/unicefdata/ go up to the repo root and look for metadata/current/
+    candidate = Path(__file__).parent.parent.parent / 'metadata' / 'current'
+    return candidate if candidate.is_dir() else None
 
 
 def _save_language_coverage(coverage: dict, directory: Path, timestamp: str) -> None:
@@ -375,28 +384,43 @@ def _save_language_coverage(coverage: dict, directory: Path, timestamp: str) -> 
         if 'en' not in desc_langs and not any(l.startswith('en-') for l in desc_langs):
             missing_en_desc.append(code)
 
+    # Preserve any existing non-indicator sections (codelists added by metadata.py)
+    coverage_path = directory / 'unicef_language_coverage.yaml'
+    existing = {}
+    if coverage_path.exists():
+        try:
+            with open(coverage_path, encoding='utf-8') as f:
+                existing = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
     report = {
         'metadata': {
             'last_updated': timestamp,
             'source': CODELIST_URL,
             'total_indicators': len(coverage),
         },
-        'summary': {
-            'name': {
-                'by_language': dict(sorted(all_name_langs.items(), key=lambda x: -x[1])),
-                'missing_english': len(missing_en_name),
+        'indicators': {
+            'summary': {
+                'name': {
+                    'by_language': dict(sorted(all_name_langs.items(), key=lambda x: -x[1])),
+                    'missing_english': len(missing_en_name),
+                },
+                'description': {
+                    'by_language': dict(sorted(all_desc_langs.items(), key=lambda x: -x[1])),
+                    'missing_english': len(missing_en_desc),
+                },
             },
-            'description': {
-                'by_language': dict(sorted(all_desc_langs.items(), key=lambda x: -x[1])),
-                'missing_english': len(missing_en_desc),
-            },
+            'missing_english_name': missing_en_name,
+            'missing_english_description': missing_en_desc,
+            'by_code': coverage,
         },
-        'missing_english_name': missing_en_name,
-        'missing_english_description': missing_en_desc,
-        'indicators': coverage,
     }
 
-    coverage_path = directory / 'unicef_language_coverage.yaml'
+    # Merge back any codelist coverage written by metadata.py
+    if 'codelists' in existing:
+        report['codelists'] = existing['codelists']
+
     try:
         with open(coverage_path, 'w', encoding='utf-8') as f:
             yaml.dump(report, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
