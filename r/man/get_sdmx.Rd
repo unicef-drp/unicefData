@@ -21,7 +21,8 @@ get_sdmx(
   retry = 3L,
   cache = FALSE,
   sleep = 0.2,
-  post_process = NULL
+  post_process = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -59,6 +60,8 @@ if FALSE (default), use efficient pre-fetch filtering (totals only per schema).}
 \item{sleep}{Pause (in seconds) between pages; default 0.2.}
 
 \item{post_process}{Optional function to apply to raw tibble before tidy-up.}
+
+\item{verbose}{Logical; if TRUE, print the SDMX request URL for debugging; default FALSE.}
 }
 \value{
 A tibble (or list of tibbles) for data, or xml_document(s) for structure.
