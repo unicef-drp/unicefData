@@ -156,7 +156,7 @@ def _parse_codelist_xml(xml_content: str):
         name_by_lang = _collect_langs(code_elem, 'common:Name')
         desc_by_lang = _collect_langs(code_elem, 'common:Description')
 
-        name = _best_english(name_by_lang)
+        name = _best_english(name_by_lang) or code_id
         description = _best_english(desc_by_lang)
 
         urn = code_elem.get('urn', '')

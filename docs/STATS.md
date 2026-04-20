@@ -10,8 +10,8 @@
 | Platform | Package | Version | Registry |
 |----------|---------|---------|----------|
 | R | unicefData | 2.3.0 | CRAN |
-| Python | unicefdata | 2.4.1 | PyPI |
-| Stata | UNICEFDATA | 2.4.0 | SSC |
+| Python | unicefdata | 2.4.2 | PyPI |
+| Stata | UNICEFDATA | 2.4.1 | SSC |
 
 ---
 
@@ -44,6 +44,9 @@
 
 | Period | Downloads |
 |--------|-----------|
+| Last day | 17 |
+| Last 7 days | 388 |
+| Last 30 days | 1,662 |
 | Daily average | 55.4 |
 
 ### By Operating System

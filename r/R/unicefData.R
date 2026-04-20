@@ -334,6 +334,8 @@ list_unicef_codelist <- memoise::memoise(
 #'   \code{attr(df, "message")}. Slower (downloads full dataset for year classification).
 #'   If FALSE (default), passes year filter to API (faster, no diagnostics).
 #'   MCP tools should set \code{diagnose = TRUE} for structured error reporting.
+#' @param page_size Deprecated and ignored. The UNICEF SDMX CSV endpoint always
+#'   returns the full dataset regardless of this value. Will emit a warning if supplied.
 #' @return Tibble with indicator data, or xml_document if detail="structure".
 #'   The 'period' column contains decimal years (see Time Period Handling section).
 #'
@@ -432,8 +434,13 @@ unicefData <- function(
     mrv           = NULL,
     raw           = FALSE,
     ignore_duplicates = FALSE,
-    diagnose      = FALSE
+    diagnose      = FALSE,
+    page_size     = NULL
 ) {
+  if (!is.null(page_size)) {
+    warning("page_size is deprecated and ignored: the UNICEF SDMX CSV endpoint always returns the full dataset. Remove this argument from your code.")
+  }
+
   # Parse the year parameter
   year_spec <- parse_year(year)
   start_year <- year_spec$start_year
