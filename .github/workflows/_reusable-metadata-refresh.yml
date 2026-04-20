@@ -104,7 +104,7 @@ jobs:
           fields = re.compile(r'^\s+(name|description):\s*(.+)$')
           failures = []
 
-          for path in glob.glob('stata/src/_/_unicefdata_*.yaml') + glob.glob('metadata/current/_unicefdata_*.yaml'):
+          for path in glob.glob('metadata/current/_unicefdata_*.yaml'):
               with open(path, encoding='utf-8') as f:
                   for lineno, line in enumerate(f, 1):
                       m = fields.match(line)
