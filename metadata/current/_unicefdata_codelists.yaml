@@ -518,12 +518,12 @@ codelists:
       BIRTHS_1000: 1000 Births
       D: Number of deaths
       DPIA: Adjusted disability parity index
-      D_PER_1000_1: وفيات لكل 1000 طفل بعمر سنة واحدة
+      D_PER_1000_1: Deaths per 1,000 children aged 1
       D_PER_1000_10: Deaths per 1,000 children aged 10
       D_PER_1000_15: Deaths per 1,000 youths aged 15
       D_PER_1000_20: Deaths per 1,000 youths aged 20
-      D_PER_1000_5: وفيات لكل 1000 طفل بعمر 5 سنوات
-      D_PER_1000_B: وفيات لكل 1000 مولود حي
+      D_PER_1000_5: Deaths per 1,000 children aged 5
+      D_PER_1000_B: Deaths per 1,000 live births
       EUR: Euro
       GDP_CAP: As % of GDP per capita
       GDP_PERC: '% of GDP'

@@ -100,23 +100,28 @@ def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
         'message': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message',
         'structure': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure',
         'common': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common',
+        'xml': 'http://www.w3.org/XML/1998/namespace',
     }
-    
+
     root = ET.fromstring(xml_content)
     indicators = {}
-    
+
     # Find all Code elements
     for code_elem in root.findall('.//structure:Code', namespaces):
         code_id = code_elem.get('id')
         if not code_id:
             continue
-        
-        # Extract name (first available language)
-        name_elem = code_elem.find('.//common:Name', namespaces)
+
+        # Extract name - prefer English, fall back to first available
+        name_elem = code_elem.find('.//common:Name[@xml:lang="en"]', namespaces)
+        if name_elem is None:
+            name_elem = code_elem.find('.//common:Name', namespaces)
         name = name_elem.text if name_elem is not None else ""
-        
-        # Extract description
-        desc_elem = code_elem.find('.//common:Description', namespaces)
+
+        # Extract description - prefer English, fall back to first available
+        desc_elem = code_elem.find('.//common:Description[@xml:lang="en"]', namespaces)
+        if desc_elem is None:
+            desc_elem = code_elem.find('.//common:Description', namespaces)
         description = desc_elem.text if desc_elem is not None else ""
         
         # Extract URN if available

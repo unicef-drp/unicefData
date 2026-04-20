@@ -100,7 +100,7 @@ countries:
   GUF: French Guiana
   GUM: Guam
   GUY: Guyana
-  HKG: الصين، منطقة هونغ كونغ الإدارية الخاصة
+  HKG: China, Hong Kong SAR
   HND: Honduras
   HRV: Croatia
   HTI: Haiti
@@ -136,7 +136,7 @@ countries:
   LTU: Lithuania
   LUX: Luxembourg
   LVA: Latvia
-  MAC: الصين، منطقة ماكاو الإدارية الخاصة
+  MAC: China, Macao SAR
   MAF: Saint Martin (French part)
   MAR: Morocco
   MCO: Monaco
@@ -166,7 +166,7 @@ countries:
   NGA: Nigeria
   NIC: Nicaragua
   NIU: Niue
-  NLD: هولندا
+  NLD: Netherlands
   NOR: Norway
   NPL: Nepal
   NRU: Nauru
@@ -209,7 +209,7 @@ countries:
   SVN: Slovenia
   SWE: Sweden
   SWZ: Eswatini
-  SXM: سانت مارتن (الجزء الهولندي)
+  SXM: Sint Maarten (Dutch part)
   SYC: Seychelles
   SYR: Syrian Arab Republic
   TCA: Turks and Caicos Islands
@@ -223,7 +223,7 @@ countries:
   TON: Tonga
   TTO: Trinidad and Tobago
   TUN: Tunisia
-  TUR: تركيا
+  TUR: Turkiye
   TUV: Tuvalu
   TWN: Taïwan
   TZA: United Republic of Tanzania
