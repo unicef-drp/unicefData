@@ -128,7 +128,7 @@ class TestCodelistParsing:
         """SYNC-05: _parse_codelist_xml extracts all 5 test indicators."""
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_indicators.xml")
-        result = _parse_codelist_xml(xml)
+        result, _ = _parse_codelist_xml(xml)
         assert len(result) == 5
         assert "CME_MRY0T4" in result
         assert "NT_ANT_HAZ_NE2" in result
@@ -138,7 +138,7 @@ class TestCodelistParsing:
         """SYNC-06: Parsed indicators have name, description, and code."""
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_indicators.xml")
-        result = _parse_codelist_xml(xml)
+        result, _ = _parse_codelist_xml(xml)
         cme = result["CME_MRY0T4"]
         assert cme["name"] == "Under-five mortality rate"
         assert "birth" in cme["description"].lower()
@@ -148,7 +148,7 @@ class TestCodelistParsing:
         """SYNC-07: Parsed indicators have parent field from XML hierarchy."""
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_indicators.xml")
-        result = _parse_codelist_xml(xml)
+        result, _ = _parse_codelist_xml(xml)
         assert result["CME_MRY0T4"]["parent"] == "CME"
         assert result["NT_ANT_HAZ_NE2"]["parent"] == "NUTRITION"
         assert result["IM_MCV1"]["parent"] == "IMMUNISATION"
@@ -157,7 +157,7 @@ class TestCodelistParsing:
         """SYNC-08: Country codelist XML parsed correctly."""
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_countries.xml")
-        result = _parse_codelist_xml(xml)
+        result, _ = _parse_codelist_xml(xml)
         assert len(result) == 5
         assert "USA" in result
         assert "BRA" in result
@@ -167,7 +167,7 @@ class TestCodelistParsing:
         """SYNC-09: Region codelist XML parsed correctly."""
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_regions.xml")
-        result = _parse_codelist_xml(xml)
+        result, _ = _parse_codelist_xml(xml)
         assert len(result) == 3
         assert "UNDEV_002" in result
         assert result["UNDEV_002"]["name"] == "Africa"
@@ -206,7 +206,7 @@ class TestCrossFormatConsistency:
 
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_indicators.xml")
-        xml_data = _parse_codelist_xml(xml)
+        xml_data, _ = _parse_codelist_xml(xml)
 
         assert len(xml_data) == len(yaml_data), (
             f"XML has {len(xml_data)} indicators, YAML has {len(yaml_data)}"
@@ -221,7 +221,7 @@ class TestCrossFormatConsistency:
 
         from unicefdata.indicator_registry import _parse_codelist_xml
         xml = load_xml("codelist_indicators.xml")
-        xml_data = _parse_codelist_xml(xml)
+        xml_data, _ = _parse_codelist_xml(xml)
 
         for code in yaml_data:
             assert code in xml_data, f"Indicator {code} in YAML but not in XML"
