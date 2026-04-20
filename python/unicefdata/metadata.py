@@ -17,6 +17,7 @@ Usage:
 """
 
 import os
+import re
 import yaml
 import shutil
 import requests
