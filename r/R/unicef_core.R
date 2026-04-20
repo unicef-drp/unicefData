@@ -306,7 +306,9 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
 #' @return Content as text
 #' @keywords internal
 fetch_sdmx_text <- function(url, ua = .unicefData_ua, retry) {
-  resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
+  resp <- httr::RETRY("GET", url, ua,
+                      httr::add_headers(`Accept-Language` = "en"),
+                      times = retry, pause_base = 1)
   status <- httr::status_code(resp)
   # 404 error
   if (identical(status, 404L)) {

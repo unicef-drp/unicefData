@@ -1,7 +1,7 @@
 _metadata:
   platform: python
   version: 2.0.0
-  synced_at: '2026-03-25T23:23:36.168816+00:00'
+  synced_at: '2026-03-25T22:30:59.629262+00:00'
   source: unicefdata.config + SDMX API
   agency: UNICEF
   content_type: indicators

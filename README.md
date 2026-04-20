@@ -42,9 +42,9 @@ unicefData-dev/
 
 | Platform | README | Changelog | Version |
 |----------|--------|-----------|---------|
-| **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.4.0 ([CRAN](https://cran.r-project.org/package=unicefData)) |
-| **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.4.1 ([PyPI](https://pypi.org/project/unicefdata/)) |
-| **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.4.0 ([SSC](https://ideas.repec.org/c/boc/bocode/s459598.html)) |
+| **R** | [r/README.md](r/README.md) | [r/NEWS.md](r/NEWS.md) | 2.4.1 ([CRAN](https://cran.r-project.org/package=unicefData)) |
+| **Python** | [python/README.md](python/README.md) | [python/CHANGELOG.md](python/CHANGELOG.md) | 2.4.2 ([PyPI](https://pypi.org/project/unicefdata/)) |
+| **Stata** | [stata/README.md](stata/README.md) | [stata/CHANGELOG.md](stata/CHANGELOG.md) | 2.4.1 ([SSC](https://ideas.repec.org/c/boc/bocode/s459598.html)) |
 
 ## Repository Documentation
 
@@ -533,9 +533,9 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citations for data used in research:**
 
-- **R**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData R package (v2.4.0) on 2026-03-27. Data available at: https://sdmx.data.unicef.org/`
-- **Python**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.4.1) on 2026-03-27. Data available at: https://sdmx.data.unicef.org/`
-- **Stata**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.4.0) on 2026-03-27. Data available at: https://sdmx.data.unicef.org/`
+- **R**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData R package (v2.4.1) on 2026-04-20. Data available at: https://sdmx.data.unicef.org/`
+- **Python**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.4.2) on 2026-04-20. Data available at: https://sdmx.data.unicef.org/`
+- **Stata**: `Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Stata package (v2.4.1) on 2026-04-20. Data available at: https://sdmx.data.unicef.org/`
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

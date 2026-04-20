@@ -2,6 +2,18 @@
 
 All notable changes to the unicefdata Python library will be documented in this file.
 
+## [2.4.2] - 2026-04-20
+
+### Fixed
+
+- Added `Accept-Language: en` header to the shared `requests.Session` in
+  `UNICEFSDMXClient.__init__()` — prevents occasional non-English indicator names
+  returned by the UNICEF SDMX API when no locale is specified (fixes #45)
+- Updated repository metadata sync tooling (`stata/src/py/build_dataflow_metadata.py`)
+  to send `Accept-Language: en` and `User-Agent` headers via
+  `urllib.request.Request` — ensures weekly metadata refresh jobs receive
+  English descriptions consistently
+
 ## [2.4.1] - 2026-03-27
 
 ### Changed

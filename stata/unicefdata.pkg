@@ -1,4 +1,4 @@
-v 2.4.0
+v 2.4.1
 d unicefData. Download indicators from UNICEF Data Warehouse
 d
 d Author: Joao Pedro Azevedo
@@ -33,7 +33,7 @@ d   - Stata 16+ frames support for better isolation
 d
 d Requires: Stata 14.0+ (Stata 16+ recommended)
 d
-d Distribution-Date: 20260222
+d Distribution-Date: 20260420
 d
 d Quality Assurance:
 d   - 16 test families (63 tests): ENV, DL, DISC, SYNC, TRANS, EDGE, XPLAT, ERR, EXT, DET, DATA, MULTI, PERF, REGR, DOC, TIDY
