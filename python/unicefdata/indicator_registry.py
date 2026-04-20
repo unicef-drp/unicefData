@@ -282,7 +282,11 @@ def _fetch_codelist():
     logger.info(f"Fetching indicator codelist from {CODELIST_URL}")
 
     try:
-        response = requests.get(CODELIST_URL, timeout=60)
+        response = requests.get(
+            CODELIST_URL,
+            timeout=60,
+            headers={'Accept-Language': 'en', 'User-Agent': 'unicefData/metadata-sync'},
+        )
         response.raise_for_status()
 
         indicators, coverage = _parse_codelist_xml(response.text)

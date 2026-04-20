@@ -945,7 +945,7 @@ class MetadataSync:
                 result[lang] = elem.text.strip()
         return result
 
-    _NON_LATIN = __import__('re').compile(r'[\u0600-\u06FF\u0400-\u04FF\u4E00-\u9FFF]')
+    _NON_LATIN = re.compile(r'[\u0600-\u06FF\u0400-\u04FF\u4E00-\u9FFF]')
 
     def _best_english(self, by_lang: dict) -> str:
         """Select best English text: en > en-* > first Latin-script > ''."""
@@ -963,7 +963,6 @@ class MetadataSync:
 
     def _save_codelist_coverage(self, coverage_by_id: dict) -> None:
         """Merge codelist coverage data into the shared language_coverage YAML."""
-        import re
         coverage_path = self.current_dir / 'unicef_language_coverage.yaml'
         existing = {}
         if coverage_path.exists():
