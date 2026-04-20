@@ -302,7 +302,6 @@ list_unicef_codelist <- memoise::memoise(
 #' @param max_retries Number of retry attempts on failure (default: 3).
 #'   Previously called 'retry'. Both parameter names are supported.
 #' @param cache Logical; if TRUE, memoises results.
-#' @param page_size Integer rows per page (default: 100000).
 #' @param detail "data" (default) or "structure" for metadata.
 #' @param version Optional SDMX version; if NULL, auto-detected.
 #' @param labels Label format for SDMX requests: "id" (codes only, default),
@@ -418,7 +417,6 @@ unicefData <- function(
     country_names = TRUE,
     max_retries   = 3,
     cache         = FALSE,
-    page_size     = 100000,
     detail        = c("data", "structure"),
     version       = NULL,
     labels        = "id",
@@ -501,7 +499,6 @@ unicefData <- function(
         end_year = end_year,
         max_retries = max_retries,
         version = version,
-        page_size = page_size,
         verbose = FALSE
       )
     })
@@ -519,7 +516,6 @@ unicefData <- function(
       end_year = fetch_end,
       max_retries = max_retries,
       version = version,
-      page_size = page_size,
       verbose = TRUE,
       totals = totals,
       labels = labels
