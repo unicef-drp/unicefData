@@ -1,8 +1,9 @@
 {smcl}
-{* *! version 2.4.0  26Mar2026}{...}
+{* *! version 2.4.1  20Apr2026}{...}
 {vieweralsosee "unicefdata" "help unicefdata"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
 {vieweralsosee "unicefdata_examples" "help unicefdata_examples"}{...}
+{viewerjumpto "v2.4.1" "unicefdata_whatsnew##v241"}{...}
 {viewerjumpto "v2.4.0" "unicefdata_whatsnew##v240"}{...}
 {viewerjumpto "v2.3.0" "unicefdata_whatsnew##v230"}{...}
 {viewerjumpto "v2.2.1" "unicefdata_whatsnew##v221"}{...}
@@ -26,6 +27,26 @@
 {it:Return to {help unicefdata:main help file}}
 {p_end}
 
+
+{marker v241}{...}
+{title:What's New in v2.4.1 (20Apr2026)}
+
+{pstd}
+{bf:Bug fix — English indicator names enforced:} The UNICEF SDMX API returns
+descriptions in the client's requested language. Without an explicit
+{cmd:Accept-Language} header the server occasionally returned non-English
+names (e.g. Spanish for some CME indicators). The Python metadata-sync script
+({cmd:build_dataflow_metadata.py}) that generates Stata's YAML metadata now
+sets {cmd:Accept-Language: en} on all SDMX requests, ensuring Stata users
+consistently see English indicator descriptions (fixes issue #45).
+{p_end}
+
+{pstd}
+{bf:CI — weekly metadata sync stabilised:} The GitHub Actions workflow that
+refreshes YAML metadata weekly was failing every Monday with a git checkout
+conflict. This is now resolved; automated metadata updates resume from the
+next scheduled run (fixes issues #65 #66 #68 #69 #75 #80).
+{p_end}
 
 {marker v240}{...}
 {title:What's New in v2.4.0 (26Mar2026)}

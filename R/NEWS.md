@@ -1,5 +1,13 @@
 # unicefData (R Package) Changelog
 
+## 2.4.1 (2026-04-20)
+
+### Bug Fixes
+
+* Added `Accept-Language: en` header to all SDMX API requests via `httr::RETRY`
+  in `fetch_sdmx_text()` — prevents occasional non-English indicator names
+  returned by the UNICEF SDMX API when no locale is specified (fixes #45)
+
 ## 2.4.0 (2026-03-26)
 
 ### New Features

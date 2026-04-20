@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.4.0  26Mar2026}{...}
+{* *! version 2.4.1  20Apr2026}{...}
 {vieweralsosee "[R] import delimited" "help import delimited"}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "unicefdata_sync" "help unicefdata_sync"}{...}
@@ -13,7 +13,7 @@
 {viewerjumpto "Metadata" "unicefdata##metadata"}{...}
 {viewerjumpto "Author" "unicefdata##author"}{...}
 {hline}
-{cmd:help unicefdata}{right:{bf:version 2.3.1}}
+{cmd:help unicefdata}{right:{bf:version 2.4.1}}
 {hline}
 
 {title:Title}
@@ -577,7 +577,7 @@ country, indicator, and disaggregation dimensions.
 {phang2}• Better SSL/TLS and HTTPS support across platforms{p_end}
 {phang2}• Automatic proxy detection and handling{p_end}
 {phang2}• Automatic retry logic for temporary network failures{p_end}
-{phang2}• User-Agent header: "unicefdata/2.3.1 (Stata)"{p_end}
+{phang2}• User-Agent header: "unicefdata/2.4.1 (Stata)"{p_end}
 {phang2}• Automatic fallback to Stata's import delimited if curl is unavailable{p_end}
 
 {pstd}

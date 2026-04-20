@@ -9,6 +9,20 @@ See language-specific detailed changelogs:
 
 ---
 
+## [2.4.2 / 2.4.1 / 2.4.1] - 2026-04-20 (Python / R / Stata)
+
+### Fixed
+
+- **All platforms** — `Accept-Language: en` added to all SDMX API requests;
+  prevents non-English indicator names returned by the UNICEF SDMX API when
+  no locale is specified (fixes #45)
+  - Python: `UNICEFSDMXClient` session headers (`sdmx_client.py`)
+  - R: `httr::RETRY` call in `fetch_sdmx_text()` (`unicef_core.R`)
+  - Stata: `urllib.request.Request` in `build_dataflow_metadata.py`
+- **CI** — weekly metadata-sync workflow stabilised: stash guard prevents
+  recurring `git checkout` conflict; issue-creation dedup prevents repeated
+  failure tickets (fixes #65 #66 #68 #69 #75 #80)
+
 ## [2.4.1] - 2026-03-27
 
 ### Patch release
