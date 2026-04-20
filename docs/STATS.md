@@ -9,7 +9,7 @@
 
 | Platform | Package | Version | Registry |
 |----------|---------|---------|----------|
-| R | unicefData | 2.3.0 | CRAN |
+| R | unicefData | 2.4.1 | CRAN |
 | Python | unicefdata | 2.4.2 | PyPI |
 | Stata | UNICEFDATA | 2.4.1 | SSC |
 
