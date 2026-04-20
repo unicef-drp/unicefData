@@ -184,6 +184,7 @@ class UNICEFSDMXClient:
         self.session.headers.update({
             'User-Agent': ua,
             'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en',
         })
 
     def _load_indicators_metadata(self) -> Dict[str, dict]:

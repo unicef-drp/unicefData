@@ -4,9 +4,9 @@
     "registry": "CRAN",
     "version": "2.3.0",
     "published": "2026-03-03 21:20:08 UTC",
-    "last_day": 12,
-    "last_week": 100,
-    "last_month": 324,
+    "last_day": 6,
+    "last_week": 43,
+    "last_month": 367,
     "daily": [
       {
         "date": "2026-03-04",
@@ -87,11 +87,39 @@
       {
         "date": "2026-03-23",
         "count": 12
+      },
+      {
+        "date": "2026-03-24",
+        "count": 4
+      },
+      {
+        "date": "2026-03-25",
+        "count": 8
+      },
+      {
+        "date": "2026-03-26",
+        "count": 3
+      },
+      {
+        "date": "2026-03-27",
+        "count": 15
+      },
+      {
+        "date": "2026-03-28",
+        "count": 3
+      },
+      {
+        "date": "2026-03-29",
+        "count": 4
+      },
+      {
+        "date": "2026-03-30",
+        "count": 6
       }
     ],
-    "total_period": 324,
-    "daily_avg": 16.2,
-    "total_since_publish": 324,
+    "total_period": 367,
+    "daily_avg": 13.6,
+    "total_since_publish": 367,
     "weekly": [
       {
         "week": "2026-W10",
@@ -107,46 +135,22 @@
       },
       {
         "week": "2026-W13",
-        "count": 12
+        "count": 49
+      },
+      {
+        "week": "2026-W14",
+        "count": 6
       }
     ]
   },
   "pypi": {
     "package": "unicefdata",
     "registry": "PyPI",
-    "version": "2.3.2",
-    "last_day": 50,
-    "last_week": 231,
-    "last_month": 335,
+    "version": "2.4.1",
+    "last_day": 11,
+    "last_week": 584,
+    "last_month": 891,
     "daily": [
-      {
-        "date": "2026-02-23",
-        "count": 17
-      },
-      {
-        "date": "2026-02-24",
-        "count": 5
-      },
-      {
-        "date": "2026-02-25",
-        "count": 6
-      },
-      {
-        "date": "2026-02-26",
-        "count": 12
-      },
-      {
-        "date": "2026-02-27",
-        "count": 11
-      },
-      {
-        "date": "2026-02-28",
-        "count": 15
-      },
-      {
-        "date": "2026-03-01",
-        "count": 2
-      },
       {
         "date": "2026-03-02",
         "count": 4
@@ -238,183 +242,60 @@
       {
         "date": "2026-03-24",
         "count": 74
+      },
+      {
+        "date": "2026-03-25",
+        "count": 111
+      },
+      {
+        "date": "2026-03-26",
+        "count": 295
+      },
+      {
+        "date": "2026-03-27",
+        "count": 485
+      },
+      {
+        "date": "2026-03-28",
+        "count": 64
+      },
+      {
+        "date": "2026-03-29",
+        "count": 55
+      },
+      {
+        "date": "2026-03-30",
+        "count": 29
+      },
+      {
+        "date": "2026-03-31",
+        "count": 47
       }
     ],
-    "total_period": 645,
-    "daily_avg": 21.5,
-    "total_all_time": 1286,
+    "total_period": 1663,
+    "daily_avg": 55.4,
+    "total_all_time": 2372,
     "by_os": {
-      "unknown": 553
+      "unknown": 1137
     },
     "by_python_version": {
-      "null": 293,
-      "3.11": 159,
-      "3.12": 44,
-      "3.10": 27,
-      "3.13": 22,
+      "null": 470,
+      "3.11": 310,
+      "3.12": 161,
+      "3.10": 159,
+      "3.13": 27,
       "3.14": 6,
-      "3.9": 2
+      "3.9": 4
     }
   },
   "ssc": {
     "package": "UNICEFDATA",
     "registry": "SSC",
-    "version": "2.3.1",
-    "monthly": [],
-    "total_period": 0,
-    "months_fetched": 12,
-    "note": "Monthly hits from RePEc SSC archive (0 months with data, 12 fetched). See http://fmwww.bc.edu/repec/bocode/s/sscstats.html"
+    "version": "2.4.0",
+    "note": "Install pandas to fetch SSC stats automatically. Alternatively, query in Stata: ssc install ssccount; ssccount unicefdata"
   },
   "github": {
-    "repo": "unicef-drp/unicefData",
-    "clones_total": 764,
-    "clones_unique": 110,
-    "clones_daily": [
-      {
-        "date": "2026-03-10",
-        "total": 3,
-        "unique": 3
-      },
-      {
-        "date": "2026-03-11",
-        "total": 1,
-        "unique": 1
-      },
-      {
-        "date": "2026-03-12",
-        "total": 1,
-        "unique": 1
-      },
-      {
-        "date": "2026-03-13",
-        "total": 17,
-        "unique": 5
-      },
-      {
-        "date": "2026-03-14",
-        "total": 5,
-        "unique": 4
-      },
-      {
-        "date": "2026-03-15",
-        "total": 0,
-        "unique": 0
-      },
-      {
-        "date": "2026-03-16",
-        "total": 4,
-        "unique": 4
-      },
-      {
-        "date": "2026-03-17",
-        "total": 5,
-        "unique": 5
-      },
-      {
-        "date": "2026-03-18",
-        "total": 0,
-        "unique": 0
-      },
-      {
-        "date": "2026-03-19",
-        "total": 0,
-        "unique": 0
-      },
-      {
-        "date": "2026-03-20",
-        "total": 4,
-        "unique": 3
-      },
-      {
-        "date": "2026-03-21",
-        "total": 234,
-        "unique": 41
-      },
-      {
-        "date": "2026-03-22",
-        "total": 23,
-        "unique": 4
-      },
-      {
-        "date": "2026-03-23",
-        "total": 467,
-        "unique": 51
-      }
-    ],
-    "views_total": 794,
-    "views_unique": 509,
-    "views_daily": [
-      {
-        "date": "2026-03-10",
-        "total": 26,
-        "unique": 18
-      },
-      {
-        "date": "2026-03-11",
-        "total": 8,
-        "unique": 6
-      },
-      {
-        "date": "2026-03-12",
-        "total": 15,
-        "unique": 7
-      },
-      {
-        "date": "2026-03-13",
-        "total": 73,
-        "unique": 48
-      },
-      {
-        "date": "2026-03-14",
-        "total": 45,
-        "unique": 19
-      },
-      {
-        "date": "2026-03-15",
-        "total": 26,
-        "unique": 14
-      },
-      {
-        "date": "2026-03-16",
-        "total": 63,
-        "unique": 29
-      },
-      {
-        "date": "2026-03-17",
-        "total": 309,
-        "unique": 301
-      },
-      {
-        "date": "2026-03-18",
-        "total": 25,
-        "unique": 19
-      },
-      {
-        "date": "2026-03-19",
-        "total": 32,
-        "unique": 11
-      },
-      {
-        "date": "2026-03-20",
-        "total": 21,
-        "unique": 8
-      },
-      {
-        "date": "2026-03-21",
-        "total": 38,
-        "unique": 16
-      },
-      {
-        "date": "2026-03-22",
-        "total": 18,
-        "unique": 10
-      },
-      {
-        "date": "2026-03-23",
-        "total": 95,
-        "unique": 33
-      }
-    ]
+    "repo": "unicef-drp/unicefData"
   },
   "logec": {
     "unicefdata": {
@@ -1353,57 +1234,5 @@
       "total_downloads": 0,
       "total_views": 1
     }
-  },
-  "ssc_related": {
-    "WBOPENDATA": [
-      {
-        "month": "2025-01",
-        "hits": 1468
-      },
-      {
-        "month": "2025-02",
-        "hits": 1458
-      },
-      {
-        "month": "2025-03",
-        "hits": 2300
-      },
-      {
-        "month": "2025-04",
-        "hits": 1516
-      },
-      {
-        "month": "2025-05",
-        "hits": 2499
-      },
-      {
-        "month": "2025-06",
-        "hits": 1495
-      },
-      {
-        "month": "2025-07",
-        "hits": 1519
-      },
-      {
-        "month": "2025-08",
-        "hits": 1047
-      },
-      {
-        "month": "2025-09",
-        "hits": 2170
-      },
-      {
-        "month": "2025-10",
-        "hits": 2503
-      },
-      {
-        "month": "2025-11",
-        "hits": 2960
-      },
-      {
-        "month": "2025-12",
-        "hits": 3193
-      }
-    ]
   }
 }

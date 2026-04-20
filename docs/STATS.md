@@ -1,6 +1,6 @@
 # unicefData — Package Download Statistics
 
-**Generated:** 2026-03-25 02:24 UTC
+**Generated:** 2026-04-01 09:27 UTC
 **Script:** `scripts/package_stats.py`
 
 ---
@@ -10,21 +10,21 @@
 | Platform | Package | Version | Registry |
 |----------|---------|---------|----------|
 | R | unicefData | 2.3.0 | CRAN |
-| Python | unicefdata | 2.3.2 | PyPI |
-| Stata | UNICEFDATA | 2.3.1 | SSC |
+| Python | unicefdata | 2.4.1 | PyPI |
+| Stata | UNICEFDATA | 2.4.0 | SSC |
 
 ---
 
 ## CRAN (R)
 
-**Total since CRAN publish (2026-02-19):** 324 downloads
+**Total since CRAN publish (2026-02-19):** 367 downloads
 
 | Period | Downloads |
 |--------|-----------|
-| Last day | 12 |
-| Last 7 days | 100 |
-| Last 30 days | 324 |
-| Daily average | 16.2 |
+| Last day | 6 |
+| Last 7 days | 43 |
+| Last 30 days | 367 |
+| Daily average | 13.6 |
 
 ### Weekly Trend
 
@@ -33,44 +33,42 @@
 | 2026-W10 | 80 |
 | 2026-W11 | 120 |
 | 2026-W12 | 112 |
-| 2026-W13 | 12 |
+| 2026-W13 | 49 |
+| 2026-W14 | 6 |
 
 ---
 
 ## PyPI (Python)
 
-**Total over PyPIStats retention window (~last 180 days):** 1,286 downloads
+**Total over PyPIStats retention window (~last 180 days):** 2,372 downloads
 
 | Period | Downloads |
 |--------|-----------|
-| Last day | 50 |
-| Last 7 days | 231 |
-| Last 30 days | 335 |
-| Daily average | 21.5 |
+| Daily average | 55.4 |
 
 ### By Operating System
 
 | OS | Downloads |
 |----|-----------|
-| unknown | 553 |
+| unknown | 1,137 |
 
 ### By Python Version (top 8)
 
 | Version | Downloads |
 |---------|-----------|
-| null | 293 |
-| 3.11 | 159 |
-| 3.12 | 44 |
-| 3.10 | 27 |
-| 3.13 | 22 |
+| null | 470 |
+| 3.11 | 310 |
+| 3.12 | 161 |
+| 3.10 | 159 |
+| 3.13 | 27 |
 | 3.14 | 6 |
-| 3.9 | 2 |
+| 3.9 | 4 |
 
 ---
 
 ## SSC (Stata)
 
-> Monthly hits from RePEc SSC archive (0 months with data, 12 fetched). See http://fmwww.bc.edu/repec/bocode/s/sscstats.html
+> Install pandas to fetch SSC stats automatically. Alternatively, query in Stata: ssc install ssccount; ssccount unicefdata
 
 ---
 
