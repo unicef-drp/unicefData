@@ -26,6 +26,7 @@ Usage:
 """
 
 import os
+import re
 import yaml
 import logging
 from pathlib import Path
@@ -86,60 +87,93 @@ def _get_cache_path() -> Path:
     return user_cache / CACHE_FILENAME
 
 
-def _parse_codelist_xml(xml_content: str) -> Dict[str, dict]:
-    """Parse SDMX codelist XML response into indicator dictionary.
-    
-    Args:
-        xml_content: Raw XML from SDMX API
-        
-    Returns:
-        Dictionary mapping indicator codes to their metadata
+_NON_LATIN = re.compile(r'[\u0600-\u06FF\u0400-\u04FF\u4E00-\u9FFF]')
+_XML_LANG = '{http://www.w3.org/XML/1998/namespace}lang'
+
+# SDMX namespaces used in codelist XML
+_SDMX_NS = {
+    'message': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message',
+    'structure': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure',
+    'common': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common',
+    'xml': 'http://www.w3.org/XML/1998/namespace',
+}
+
+
+def _collect_langs(parent_elem, tag: str) -> dict:
+    """Return {lang: text} for direct-child <tag> elements that have text.
+
+    Uses direct-child lookup (no //) so nested elements at deeper levels
+    (e.g. Code/Name inside a Codelist) don't overwrite the parent's value.
     """
-    # Define SDMX namespaces
-    namespaces = {
-        'message': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message',
-        'structure': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure',
-        'common': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common',
-    }
-    
+    result = {}
+    for elem in parent_elem.findall(tag, _SDMX_NS):
+        lang = elem.get(_XML_LANG, '')
+        if elem.text and elem.text.strip():
+            result[lang] = elem.text.strip()
+    return result
+
+
+def _best_english(by_lang: dict) -> str:
+    """
+    Select the best English text from a {lang: text} mapping.
+
+    Priority:
+      1. Exact 'en'
+      2. Any 'en-*' variant (e.g. en-GB, en-US)
+      3. First value whose text contains no non-Latin script characters
+      4. Empty string (never return Arabic / Cyrillic / CJK as a fallback)
+    """
+    if not by_lang:
+        return ""
+    if 'en' in by_lang:
+        return by_lang['en']
+    for lang, text in by_lang.items():
+        if lang.startswith('en-'):
+            return text
+    for text in by_lang.values():
+        if not _NON_LATIN.search(text):
+            return text
+    return ""
+
+
+def _parse_codelist_xml(xml_content: str):
+    """Parse SDMX codelist XML into indicators dict and language coverage dict.
+
+    Returns:
+        (indicators, coverage) where:
+          indicators: {code: {name, description, urn, ...}}
+          coverage:   {code: {name_langs: [...], description_langs: [...]}}
+    """
     root = ET.fromstring(xml_content)
     indicators = {}
-    
-    # Find all Code elements
-    for code_elem in root.findall('.//structure:Code', namespaces):
+    coverage = {}
+
+    for code_elem in root.findall('.//structure:Code', _SDMX_NS):
         code_id = code_elem.get('id')
         if not code_id:
             continue
-        
-        # Extract name (first available language)
-        name_elem = code_elem.find('.//common:Name', namespaces)
-        name = name_elem.text if name_elem is not None else ""
-        
-        # Extract description
-        desc_elem = code_elem.find('.//common:Description', namespaces)
-        description = desc_elem.text if desc_elem is not None else ""
-        
-        # Extract URN if available
+
+        name_by_lang = _collect_langs(code_elem, 'common:Name')
+        desc_by_lang = _collect_langs(code_elem, 'common:Description')
+
+        name = _best_english(name_by_lang) or code_id
+        description = _best_english(desc_by_lang)
+
         urn = code_elem.get('urn', '')
-        
-        # Extract parent from <structure:Parent><Ref id="..."/></structure:Parent>
-        parent_elem = code_elem.find('structure:Parent/Ref', namespaces)
+        parent_elem = code_elem.find('structure:Parent/Ref', _SDMX_NS)
         parent_id = parent_elem.get('id', '') if parent_elem is not None else ""
-        
-        indicator_data = {
-            'code': code_id,
-            'name': name,
-            'description': description,
-            'urn': urn,
-        }
-        
-        # Add parent only if present
+
+        indicator_data = {'code': code_id, 'name': name, 'description': description, 'urn': urn}
         if parent_id:
             indicator_data['parent'] = parent_id
-        
         indicators[code_id] = indicator_data
-    
-    return indicators
+
+        coverage[code_id] = {
+            'name_langs': sorted(name_by_lang.keys()),
+            'description_langs': sorted(desc_by_lang.keys()),
+        }
+
+    return indicators, coverage
 
 
 def _infer_category(indicator_code: str) -> str:
@@ -234,28 +268,31 @@ def _infer_category(indicator_code: str) -> str:
 
 
 
-def _fetch_codelist() -> Dict[str, dict]:
+def _fetch_codelist():
     """Fetch the indicator codelist from UNICEF SDMX API.
-    
+
     Returns:
-        Dictionary of indicator metadata
-        
+        (indicators, coverage) tuple — see _parse_codelist_xml for structure.
+
     Raises:
         ConnectionError: If API is unreachable
-        ValueError: If response cannot be parsed
     """
     import requests
-    
+
     logger.info(f"Fetching indicator codelist from {CODELIST_URL}")
-    
+
     try:
-        response = requests.get(CODELIST_URL, timeout=60)
+        response = requests.get(
+            CODELIST_URL,
+            timeout=60,
+            headers={'Accept-Language': 'en', 'User-Agent': 'unicefData/metadata-sync'},
+        )
         response.raise_for_status()
-        
-        indicators = _parse_codelist_xml(response.text)
+
+        indicators, coverage = _parse_codelist_xml(response.text)
         logger.info(f"Successfully fetched {len(indicators)} indicators")
-        
-        return indicators
+
+        return indicators, coverage
         
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to fetch codelist: {e}")
@@ -295,37 +332,109 @@ def _load_cache() -> Tuple[Optional[Dict], Optional[datetime]]:
         return None, None
 
 
-def _save_cache(indicators: Dict[str, dict]) -> None:
-    """Save indicator metadata to cache file.
-    
-    Args:
-        indicators: Dictionary of indicator metadata
-    """
+def _save_cache(indicators: Dict[str, dict], coverage: dict = None) -> None:
+    """Save indicator metadata and language coverage to cache files."""
     cache_path = _get_cache_path()
-    
-    # Ensure directory exists
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
+    now = datetime.now().isoformat()
+
     data = {
         'metadata': {
             'version': '1.0',
             'source': 'UNICEF SDMX Codelist CL_UNICEF_INDICATOR',
             'url': CODELIST_URL,
-            'last_updated': datetime.now().isoformat(),
+            'last_updated': now,
             'description': 'Comprehensive UNICEF indicator codelist with metadata (auto-generated)',
             'indicator_count': len(indicators),
         },
         'indicators': indicators,
     }
-    
+
     try:
         with open(cache_path, 'w', encoding='utf-8') as f:
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False, width=10000)
-        
         logger.info(f"Saved {len(indicators)} indicators to {cache_path}")
-        
     except Exception as e:
         logger.error(f"Failed to save cache: {e}")
+
+    if coverage is not None:
+        # Write to the canonical shared metadata/current/ directory when available
+        canonical = _canonical_metadata_dir()
+        _save_language_coverage(coverage, canonical if canonical else cache_path.parent, now)
+
+
+def _canonical_metadata_dir() -> Path:
+    """Return repo-level metadata/current/ if it exists, else None."""
+    # From python/unicefdata/ go up to the repo root and look for metadata/current/
+    candidate = Path(__file__).parent.parent.parent / 'metadata' / 'current'
+    return candidate if candidate.is_dir() else None
+
+
+def _save_language_coverage(coverage: dict, directory: Path, timestamp: str) -> None:
+    """Build and save language coverage report alongside the indicator cache."""
+    from collections import Counter
+
+    all_name_langs = Counter()
+    all_desc_langs = Counter()
+    missing_en_name = []
+    missing_en_desc = []
+
+    for code, info in sorted(coverage.items()):
+        name_langs = info.get('name_langs', [])
+        desc_langs = info.get('description_langs', [])
+        for lang in name_langs:
+            all_name_langs[lang] += 1
+        for lang in desc_langs:
+            all_desc_langs[lang] += 1
+        if 'en' not in name_langs and not any(l.startswith('en-') for l in name_langs):
+            missing_en_name.append(code)
+        if 'en' not in desc_langs and not any(l.startswith('en-') for l in desc_langs):
+            missing_en_desc.append(code)
+
+    # Preserve any existing non-indicator sections (codelists added by metadata.py)
+    coverage_path = directory / 'unicef_language_coverage.yaml'
+    existing = {}
+    if coverage_path.exists():
+        try:
+            with open(coverage_path, encoding='utf-8') as f:
+                existing = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
+    report = {
+        'metadata': {
+            'last_updated': timestamp,
+            'source': CODELIST_URL,
+            'total_indicators': len(coverage),
+        },
+        'indicators': {
+            'summary': {
+                'name': {
+                    'by_language': dict(sorted(all_name_langs.items(), key=lambda x: -x[1])),
+                    'missing_english': len(missing_en_name),
+                },
+                'description': {
+                    'by_language': dict(sorted(all_desc_langs.items(), key=lambda x: -x[1])),
+                    'missing_english': len(missing_en_desc),
+                },
+            },
+            'missing_english_name': missing_en_name,
+            'missing_english_description': missing_en_desc,
+            'by_code': coverage,
+        },
+    }
+
+    # Merge back any codelist coverage written by metadata.py
+    if 'codelists' in existing:
+        report['codelists'] = existing['codelists']
+
+    try:
+        with open(coverage_path, 'w', encoding='utf-8') as f:
+            yaml.dump(report, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        logger.info(f"Saved language coverage to {coverage_path}")
+    except Exception as e:
+        logger.error(f"Failed to save language coverage: {e}")
 
 
 def _is_cache_stale(last_updated: Optional[datetime]) -> bool:
@@ -379,8 +488,8 @@ def _ensure_cache_loaded(force_refresh: bool = False) -> Dict[str, dict]:
     
     # Fetch fresh data from API
     try:
-        fresh_indicators = _fetch_codelist()
-        _save_cache(fresh_indicators)
+        fresh_indicators, coverage = _fetch_codelist()
+        _save_cache(fresh_indicators, coverage)
         _indicator_cache = fresh_indicators
         _cache_loaded = True
         return _indicator_cache

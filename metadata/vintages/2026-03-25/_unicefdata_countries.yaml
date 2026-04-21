@@ -1,11 +1,11 @@
 _metadata:
   platform: python
   version: 2.0.0
-  synced_at: '2026-01-21T16:10:53.270790Z'
+  synced_at: '2026-03-25T22:30:58.917786+00:00'
   source: https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/codelist/UNICEF/CL_COUNTRY/latest
   agency: UNICEF
   content_type: countries
-  total_countries: 453
+  total_countries: 457
   codelist_id: CL_COUNTRY
   codelist_name: Statistical Reference Areas
 countries:
@@ -354,7 +354,6 @@ countries:
   ZAF: South Africa
   ZMB: Zambia
   ZWE: Zimbabwe
-  AU: African Union
   AU_AFRICA: African Union
   AU_CENTRAL_AFRICA: Central Africa (African Union)
   AU_EASTERN_AFRICA: Eastern Africa (African Union)
@@ -462,3 +461,9 @@ countries:
   UNSDG_WESTERNEUROPE: Western Europe (UNSDG)
   UNSDG_MICRONESIA: Micronesia (UNSDG)
   WB_ECA: Europe and Central Asia (World Bank regions)
+  UNSDG_CAUCASUS_CENTRALASIA: Caucasus and Central Asia (UNSDG)
+  UNICEF_SP_REG_GLOBAL: UNICEF SP
+  UNICEF_SP_HIGHBURDEN: UNICEF SP High burden
+  UNICEF_SP_HUMANITARIAN: UNICEF SP Humanitarian
+  WB_MNA_AFG_PAK: Middle East, North Africa, Afghanistan and Pakistan (World Bank
+    regions)

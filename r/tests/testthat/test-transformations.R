@@ -18,8 +18,7 @@ FIXTURES_DIR <- get_fixtures_dir()
 test_that("PIPE-01: clean_unicef_data renames SDMX columns", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   expect_true("iso3" %in% names(cleaned), info = "REF_AREA -> iso3")
@@ -36,8 +35,7 @@ test_that("PIPE-01: clean_unicef_data renames SDMX columns", {
 test_that("PIPE-02: period is numeric after cleaning", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2015_2023.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2015_2023.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   expect_true(is.numeric(cleaned$period))
@@ -52,8 +50,7 @@ test_that("PIPE-02: period is numeric after cleaning", {
 test_that("PIPE-03: value is numeric after cleaning", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   expect_true(is.numeric(cleaned$value))
@@ -69,8 +66,7 @@ test_that("PIPE-03: value is numeric after cleaning", {
 test_that("PIPE-04: filter by sex=_T keeps only totals", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   # filter_unicef_data expects SDMX column names (SEX not sex)
   filtered <- unicefData:::filter_unicef_data(df, sex = "_T", verbose = FALSE)
 
@@ -82,8 +78,7 @@ test_that("PIPE-04: filter by sex=_T keeps only totals", {
 test_that("PIPE-04: filter by sex=M keeps only male", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   filtered <- unicefData:::filter_unicef_data(df, sex = "M", verbose = FALSE)
 
   expect_true(all(filtered$SEX == "M"))
@@ -97,8 +92,7 @@ test_that("PIPE-04: filter by sex=M keeps only male", {
 test_that("PIPE-05: geo_type = 0 for country codes", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   if ("geo_type" %in% names(cleaned)) {
@@ -114,8 +108,7 @@ test_that("PIPE-05: geo_type = 0 for country codes", {
 test_that("PIPE-06: standard column order after cleaning", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_BRA_2020.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_BRA_2020.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   # Core columns should all be present (order may vary due to country join)
@@ -133,8 +126,7 @@ test_that("PIPE-06: standard column order after cleaning", {
 test_that("PIPE-07: multi-country cleaning preserves all", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_multi_2018_2023.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_multi_2018_2023.csv")
   cleaned <- unicefData:::clean_unicef_data(df)
 
   expect_equal(length(unique(cleaned$iso3)), 5)
@@ -149,8 +141,7 @@ test_that("PIPE-07: multi-country cleaning preserves all", {
 test_that("PIPE-08: empty DataFrame returns 0 rows", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   empty <- df[df$REF_AREA == "NONEXISTENT", ]
   expect_equal(nrow(empty), 0)
 
@@ -163,8 +154,7 @@ test_that("PIPE-08: empty DataFrame returns 0 rows", {
 # ===========================================================================
 
 test_that("DL-08: wealth quintile values in BRA fixture", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_BRA_sex_2020.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_BRA_sex_2020.csv")
 
   wq <- unique(df$WEALTH_QUINTILE)
   expect_true("_T" %in% wq, info = "Total wealth quintile should be present")
@@ -174,8 +164,7 @@ test_that("DL-08: wealth quintile values in BRA fixture", {
 })
 
 test_that("DL-08: Q1 (poorest) > Q5 (richest) mortality", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_BRA_sex_2020.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_BRA_sex_2020.csv")
 
   q1 <- df$OBS_VALUE[df$WEALTH_QUINTILE == "Q1"]
   q5 <- df$OBS_VALUE[df$WEALTH_QUINTILE == "Q5"]
@@ -192,8 +181,7 @@ test_that("DL-08: Q1 (poorest) > Q5 (richest) mortality", {
 test_that("EDGE-02: single-row cleaning works", {
   skip_if_not_installed("unicefData")
 
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
   single <- df[df$SEX == "_T", ]
   expect_equal(nrow(single), 1)
 
@@ -207,8 +195,7 @@ test_that("EDGE-02: single-row cleaning works", {
 # ===========================================================================
 
 test_that("EDGE-03: unit of measure with comma parses correctly", {
-  df <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                 stringsAsFactors = FALSE)
+  df <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
 
   if ("Unit.of.measure" %in% names(df)) {
     unit <- df$Unit.of.measure[1]
@@ -221,10 +208,8 @@ test_that("EDGE-03: unit of measure with comma parses correctly", {
 # ===========================================================================
 
 test_that("CME vs IMMUNISATION have different column schemas", {
-  cme <- read.csv(file.path(FIXTURES_DIR, "CME_MRY0T4_USA_2020_pinning.csv"),
-                  stringsAsFactors = FALSE)
-  imm <- read.csv(file.path(FIXTURES_DIR, "IM_MCV1_USA_BRA_2015_2023.csv"),
-                  stringsAsFactors = FALSE)
+  cme <- read_fixture("CME_MRY0T4_USA_2020_pinning.csv")
+  imm <- read_fixture("IM_MCV1_USA_BRA_2015_2023.csv")
 
   # CME has WEALTH_QUINTILE, IMMUNISATION has VACCINE
   cme_only <- setdiff(names(cme), names(imm))

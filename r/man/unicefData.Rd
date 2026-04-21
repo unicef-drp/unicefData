@@ -21,7 +21,6 @@ unicefData(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
-  page_size = 1e+05,
   detail = c("data", "structure"),
   version = NULL,
   labels = "id",
@@ -36,7 +35,9 @@ unicefData(
   simplify = FALSE,
   mrv = NULL,
   raw = FALSE,
-  ignore_duplicates = FALSE
+  ignore_duplicates = FALSE,
+  diagnose = FALSE,
+  page_size = NULL
 )
 
 unicefdata(
@@ -55,7 +56,6 @@ unicefdata(
   country_names = TRUE,
   max_retries = 3,
   cache = FALSE,
-  page_size = 1e+05,
   detail = c("data", "structure"),
   version = NULL,
   labels = "id",
@@ -70,7 +70,9 @@ unicefdata(
   simplify = FALSE,
   mrv = NULL,
   raw = FALSE,
-  ignore_duplicates = FALSE
+  ignore_duplicates = FALSE,
+  diagnose = FALSE,
+  page_size = NULL
 )
 }
 \arguments{
@@ -114,8 +116,6 @@ Previously called 'retry'. Both parameter names are supported.}
 
 \item{cache}{Logical; if TRUE, memoises results.}
 
-\item{page_size}{Integer rows per page (default: 100000).}
-
 \item{detail}{"data" (default) or "structure" for metadata.}
 
 \item{version}{Optional SDMX version; if NULL, auto-detected.}
@@ -155,6 +155,16 @@ Default is FALSE (clean, standardized output matching Python package).}
 \item{ignore_duplicates}{Logical; if FALSE (default), raises an error when exact
 duplicate rows are found (all column values identical). Set to TRUE to allow
 automatic removal of duplicates.}
+
+\item{diagnose}{Logical; if TRUE, fetch all data without year filter and classify
+empty results via attributes on the returned tibble. Enables \code{attr(df, "query_status")},
+\code{attr(df, "available_years")}, \code{attr(df, "nearest_year")}, and
+\code{attr(df, "message")}. Slower (downloads full dataset for year classification).
+If FALSE (default), passes year filter to API (faster, no diagnostics).
+MCP tools should set \code{diagnose = TRUE} for structured error reporting.}
+
+\item{page_size}{Deprecated and ignored. The UNICEF SDMX CSV endpoint always
+returns the full dataset regardless of this value. Will emit a warning if supplied.}
 }
 \value{
 Tibble with indicator data, or xml_document if detail="structure".

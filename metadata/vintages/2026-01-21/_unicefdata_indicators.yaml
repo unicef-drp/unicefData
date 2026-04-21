@@ -1322,28 +1322,20 @@ indicators:
     source: comprehensive_metadata
   ECD_CHLD_24-59M_ADLT_SRC:
     code: ECD_CHLD_24-59M_ADLT_SRC
-    name: النسبة المئوية للأطفال (الذين تتراوح أعمارهم بين 36 و 59 شهرًا) الذين شارك
-      معهم أي فرد من أفراد الأسرة البالغين في 4 أنشطة أو أكثر لتوفير التحفيز المبكر
-      والرعاية المستجيبة في الأيام الثلاثة الماضية
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: النسبة المئوية للأطفال (الذين تتراوح أعمارهم بين 36 و 59 شهرًا) الذين
-      شارك معهم أي فرد من أفراد الأسرة البالغين في 4 أنشطة أو أكثر لتوفير التحفيز
-      المبكر والرعاية المستجيبة في الأيام الثلاثة الماضية
+    description: ''
     dimensions: null
     source: comprehensive_metadata
   ECD_CHLD_24-59M_FHR-SPT-LNG:
     code: ECD_CHLD_24-59M_FHR-SPT-LNG
-    name: النسبة المئوية للأطفال (الذين تتراوح أعمارهم بين 36 و 59 شهرًا) الذين شارك
-      والدهم في 4 أنشطة أو أكثر لتوفير التحفيز المبكر والرعاية سريعة الاستجابة في
-      الأيام الثلاثة الماضية
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: النسبة المئوية للأطفال (الذين تتراوح أعمارهم بين 36 و 59 شهرًا) الذين
-      شارك والدهم في 4 أنشطة أو أكثر لتوفير التحفيز المبكر والرعاية سريعة الاستجابة
-      في الأيام الثلاثة الماضية
+    description: ''
     dimensions: null
     source: comprehensive_metadata
   ECD_CHLD_36-59M_EDU-PGM:
@@ -4325,7 +4317,7 @@ indicators:
     source: comprehensive_metadata
   NT_VAS_TWODOSE:
     code: NT_VAS_TWODOSE
-    name: تغطية بجرعتين من فيتامين أ
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
@@ -6419,13 +6411,11 @@ indicators:
     source: comprehensive_metadata
   WS_PPL_W-AVA:
     code: WS_PPL_W-AVA
-    name: نسبة السكان الذين يستخدمون مصادر مياه شرب محسنة خالية من التلوث الكيماوي
-      البرازي وذات الأولوية
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: نسبة السكان الذين يستخدمون مصادر مياه شرب محسنة خالية من التلوث الكيماوي
-      البرازي وذات الأولوية
+    description: ''
     dimensions: null
     source: comprehensive_metadata
   WS_PPL_W-B:
@@ -6493,8 +6483,7 @@ indicators:
     source: comprehensive_metadata
   WS_PPL_W-QUA:
     code: WS_PPL_W-QUA
-    name: نسبة السكان الذين يستخدمون مصادر مياه شرب محسّنة خالية من البراز والتلوث
-      الكيميائي ذي الأولوية
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null

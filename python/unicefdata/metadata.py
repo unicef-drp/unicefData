@@ -17,6 +17,7 @@ Usage:
 """
 
 import os
+import re
 import yaml
 import shutil
 import requests
@@ -114,8 +115,10 @@ class MetadataSync:
     NAMESPACES = {
         'message': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message',
         'str': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure',
-        'com': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common'
+        'com': 'http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common',
+        'xml': 'http://www.w3.org/XML/1998/namespace',
     }
+    _XML_LANG = '{http://www.w3.org/XML/1998/namespace}lang'
     
     def __init__(
         self, 
@@ -410,13 +413,10 @@ class MetadataSync:
             df_id = df.get('id')
             agency = df.get('agencyID', self.agency)
             version = df.get('version', '1.0')
-            
-            name_elem = df.find('.//com:Name', self.NAMESPACES)
-            name = name_elem.text if name_elem is not None else df_id
-            
-            desc_elem = df.find('.//com:Description', self.NAMESPACES)
-            description = desc_elem.text if desc_elem is not None else None
-            
+
+            name = self._best_english(self._collect_langs(df, 'com:Name')) or df_id
+            description = self._best_english(self._collect_langs(df, 'com:Description')) or None
+
             dataflows[df_id] = DataflowMetadata(
                 id=df_id,
                 name=name,
@@ -461,11 +461,14 @@ class MetadataSync:
             print("  Fetching codelists...")
         
         codelists = {}
+        codelist_coverage = {}
         for cl_id in codelist_ids:
             try:
-                cl = self._fetch_codelist(cl_id)
+                cl, cov = self._fetch_codelist(cl_id)
                 if cl:
                     codelists[cl_id] = cl
+                if cov:
+                    codelist_coverage[cl_id] = cov
             except Exception as e:
                 if verbose:
                     print(f"    !  Could not fetch {cl_id}: {e}")
@@ -481,19 +484,20 @@ class MetadataSync:
             }
         )
         self._save_yaml(self.FILE_CODELISTS, codelists_dict)
-        
+        self._save_codelist_coverage(codelist_coverage)
+
         if verbose:
             print(f"    Found {len(codelists)} codelists")
-        
+
         return codelists
-    
+
     def sync_countries(self, verbose: bool = True) -> Dict[str, str]:
         """Sync country codes from CL_COUNTRY."""
         if verbose:
             print("  Fetching country codes...")
-        
-        cl = self._fetch_codelist('CL_COUNTRY')
-        
+
+        cl, country_coverage = self._fetch_codelist('CL_COUNTRY')
+
         countries = {}
         codelist_name = None
         if cl:
@@ -509,19 +513,21 @@ class MetadataSync:
             extra_metadata={'codelist_id': 'CL_COUNTRY', 'codelist_name': codelist_name}
         )
         self._save_yaml(self.FILE_COUNTRIES, countries_dict)
-        
+        if country_coverage:
+            self._save_codelist_coverage({'CL_COUNTRY': country_coverage})
+
         if verbose:
             print(f"    Found {len(countries)} country codes")
-        
+
         return countries
-    
+
     def sync_regions(self, verbose: bool = True) -> Dict[str, str]:
         """Sync regional/aggregate codes from CL_WORLD_REGIONS."""
         if verbose:
             print("  Fetching regional codes...")
-        
-        cl = self._fetch_codelist('CL_WORLD_REGIONS')
-        
+
+        cl, region_coverage = self._fetch_codelist('CL_WORLD_REGIONS')
+
         regions = {}
         codelist_name = None
         if cl:
@@ -537,10 +543,12 @@ class MetadataSync:
             extra_metadata={'codelist_id': 'CL_WORLD_REGIONS', 'codelist_name': codelist_name}
         )
         self._save_yaml(self.FILE_REGIONS, regions_dict)
-        
+        if region_coverage:
+            self._save_codelist_coverage({'CL_WORLD_REGIONS': region_coverage})
+
         if verbose:
             print(f"    Found {len(regions)} regional codes")
-        
+
         return regions
     
     def sync_indicators(self, verbose: bool = True) -> Tuple[Dict[str, IndicatorMetadata], Dict[str, List[str]]]:
@@ -925,39 +933,126 @@ class MetadataSync:
                 time.sleep(2 ** attempt)
         return ""
     
-    def _fetch_codelist(self, codelist_id: str) -> Optional[CodelistMetadata]:
-        """Fetch a single codelist from the API."""
+    def _collect_langs(self, parent_elem, tag: str) -> dict:
+        """Return {lang: text} for direct-child <tag> elements that have text.
+
+        Uses direct-child lookup (no //) to avoid picking up nested elements
+        (e.g. code labels inside a Codelist element overwriting the list name).
+        """
+        result = {}
+        for elem in parent_elem.findall(tag, self.NAMESPACES):
+            lang = elem.get(self._XML_LANG, '')
+            if elem.text and elem.text.strip():
+                result[lang] = elem.text.strip()
+        return result
+
+    _NON_LATIN = re.compile(r'[\u0600-\u06FF\u0400-\u04FF\u4E00-\u9FFF]')
+
+    def _best_english(self, by_lang: dict) -> str:
+        """Select best English text: en > en-* > first Latin-script > ''."""
+        if not by_lang:
+            return ""
+        if 'en' in by_lang:
+            return by_lang['en']
+        for lang, text in by_lang.items():
+            if lang.startswith('en-'):
+                return text
+        for text in by_lang.values():
+            if not self._NON_LATIN.search(text):
+                return text
+        return ""
+
+    def _save_codelist_coverage(self, coverage_by_id: dict) -> None:
+        """Merge codelist coverage data into the shared language_coverage YAML."""
+        coverage_path = self.current_dir / 'unicef_language_coverage.yaml'
+        existing = {}
+        if coverage_path.exists():
+            with open(coverage_path, encoding='utf-8') as f:
+                existing = yaml.safe_load(f) or {}
+
+        codelists_section = existing.get('codelists', {})
+        for cl_id, cov in coverage_by_id.items():
+            list_name_langs = cov.get('list_name_langs', [])
+            codes = cov.get('codes', {})
+
+            from collections import Counter
+            label_lang_counts = Counter()
+            missing_en = []
+            for code_id, code_info in codes.items():
+                langs = code_info.get('label_langs', [])
+                for lang in langs:
+                    label_lang_counts[lang] += 1
+                if 'en' not in langs and not any(l.startswith('en-') for l in langs):
+                    missing_en.append(code_id)
+
+            codelists_section[cl_id] = {
+                'list_name_langs': list_name_langs,
+                'codes': {
+                    'total': len(codes),
+                    'by_language': dict(sorted(label_lang_counts.items(), key=lambda x: -x[1])),
+                    'missing_english': len(missing_en),
+                    'missing_english_codes': missing_en[:20],
+                },
+            }
+
+        existing['codelists'] = codelists_section
+        if 'metadata' not in existing:
+            existing['metadata'] = {}
+        existing['metadata']['last_updated'] = datetime.utcnow().isoformat() + 'Z'
+
+        with open(coverage_path, 'w', encoding='utf-8') as f:
+            yaml.dump(existing, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+    def _fetch_codelist(self, codelist_id: str):
+        """Fetch a single codelist from the API.
+
+        Returns:
+            (CodelistMetadata, coverage_dict) or (None, None) on failure.
+            coverage_dict: {
+                'list_name': {lang: count, ...},
+                'codes': {code_id: {'label_langs': [...]}, ...}
+            }
+        """
         url = f"{self.base_url}/codelist/{self.agency}/{codelist_id}/latest"
-        
+
         try:
             response = self._fetch_xml(url)
             doc = ET.fromstring(response)
-            
-            # Extract codelist's own name (from Codelist element, not Code elements)
-            codelist_name = None
+
+            # Codelist-level name
+            codelist_name = ""
+            list_name_by_lang = {}
             codelist_elem = doc.find('.//str:Codelist', self.NAMESPACES)
             if codelist_elem is not None:
-                name_elem = codelist_elem.find('com:Name', self.NAMESPACES)
-                if name_elem is not None:
-                    codelist_name = name_elem.text
-            
+                list_name_by_lang = self._collect_langs(codelist_elem, 'com:Name')
+                codelist_name = self._best_english(list_name_by_lang)
+
             codes = {}
+            code_coverage = {}
             for code_elem in doc.findall('.//str:Code', self.NAMESPACES):
                 code_id = code_elem.get('id')
-                name_elem = code_elem.find('.//com:Name', self.NAMESPACES)
-                name = name_elem.text if name_elem is not None else code_id
-                codes[code_id] = name
-            
+                if not code_id:
+                    continue
+                label_by_lang = self._collect_langs(code_elem, 'com:Name')
+                codes[code_id] = self._best_english(label_by_lang) or code_id
+                code_coverage[code_id] = {'label_langs': sorted(label_by_lang.keys())}
+
+            coverage = {
+                'list_name_langs': sorted(list_name_by_lang.keys()),
+                'codes': code_coverage,
+            }
+
             return CodelistMetadata(
                 id=codelist_id,
                 agency=self.agency,
                 version='latest',
                 codes=codes,
                 last_updated=datetime.utcnow().isoformat() + 'Z',
-                name=codelist_name  # Codelist's own descriptive name
-            )
+                name=codelist_name or None,
+            ), coverage
+
         except Exception:
-            return None
+            return None, None
     
     def _save_yaml(self, filename: str, data: Dict[str, Any]) -> Path:
         """Save dictionary to YAML file in current/."""

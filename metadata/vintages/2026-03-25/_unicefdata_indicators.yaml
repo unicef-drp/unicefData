@@ -1,7 +1,7 @@
 _metadata:
   platform: python
   version: 2.0.0
-  synced_at: '2026-03-25T23:23:36.168816+00:00'
+  synced_at: '2026-03-25T22:30:59.629262+00:00'
   source: unicefdata.config + SDMX API
   agency: UNICEF
   content_type: indicators
@@ -1321,20 +1321,20 @@ indicators:
     source: comprehensive_metadata
   DM_POP_URBN:
     code: DM_POP_URBN
-    name: Share of urban population
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: Urban population as a percentage of the total population
+    description: ''
     dimensions: null
     source: comprehensive_metadata
   DM_POP_U_GRT:
     code: DM_POP_U_GRT
-    name: Annual growth rate of urban population
+    name: ''
     dataflow: GLOBAL_DATAFLOW
     sdg_target: null
     unit: null
-    description: Average exponential rate of growth of the urban population over a given period
+    description: ''
     dimensions: null
     source: comprehensive_metadata
   ECD_CHLD_24-59M_ADLT_SRC:

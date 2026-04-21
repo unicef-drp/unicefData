@@ -62,7 +62,11 @@ def fetch_url_with_retry(url, timeout=60, max_retries=MAX_RETRIES, verbose=False
     last_error = None
     for attempt in range(max_retries):
         try:
-            with urllib.request.urlopen(url, timeout=timeout) as response:
+            req = urllib.request.Request(
+                url,
+                headers={'Accept-Language': 'en', 'User-Agent': 'unicefData/metadata-sync'}
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as response:
                 return response.read()
         except urllib.error.HTTPError:
             # Don't retry HTTP errors (4xx, 5xx) - they're typically permanent

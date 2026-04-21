@@ -36,10 +36,16 @@ print(unicefdata.__version__)
 ```
 
 ```
-2.4.1
+2.4.2
 ```
 
 ---
+
+## What's New in 2.4.2
+
+- **Localization fix**: Added `Accept-Language: en` to all SDMX API requests —
+  prevents occasional non-English indicator names returned by the UNICEF API
+  when no locale is specified (fixes [#45](https://github.com/unicef-drp/unicefData/issues/45))
 
 ## What's New in 2.4.1
 
@@ -820,7 +826,7 @@ Official statistics are subject to revisions as new information becomes availabl
 
 **Example citation for data used in research:**
 
-> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.4.1) on 2026-03-27. Data available at: https://sdmx.data.unicef.org/
+> Under-5 mortality data (indicator: CME_MRY0T4) accessed from UNICEF Data Warehouse via unicefData Python package (v2.4.2) on 2026-04-20. Data available at: https://sdmx.data.unicef.org/
 
 This practice ensures that others can verify your results and understand any differences that may arise from data updates. For official UNICEF statistics in publications, always cross-reference with the current version at [data.unicef.org](https://data.unicef.org/).
 

@@ -1,5 +1,20 @@
 # unicefData (R Package) Changelog
 
+## 2.4.1 (2026-04-20)
+
+### Bug Fixes
+
+* Added `Accept-Language: en` header to all SDMX API requests via `httr::RETRY`
+  in `fetch_sdmx_text()` — prevents occasional non-English indicator names
+  returned by the UNICEF SDMX API when no locale is specified (fixes #45)
+
+### Deprecations
+
+* `page_size` parameter in `unicefData()` and `unicefData_raw()` is deprecated
+  and now ignored. The UNICEF SDMX CSV endpoint always returns the full dataset
+  regardless of pagination parameters. Passing `page_size` will emit a warning.
+  Remove it from any existing code. (fixes #81)
+
 ## 2.4.0 (2026-03-26)
 
 ### New Features

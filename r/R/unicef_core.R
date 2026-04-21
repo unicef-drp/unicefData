@@ -306,7 +306,9 @@ clear_unicef_cache <- function(reload = TRUE, verbose = TRUE) {
 #' @return Content as text
 #' @keywords internal
 fetch_sdmx_text <- function(url, ua = .unicefData_ua, retry) {
-  resp <- httr::RETRY("GET", url, ua, times = retry, pause_base = 1)
+  resp <- httr::RETRY("GET", url, ua,
+                      httr::add_headers(`Accept-Language` = "en"),
+                      times = retry, pause_base = 1)
   status <- httr::status_code(resp)
   # 404 error
   if (identical(status, 404L)) {
@@ -432,7 +434,6 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year_str Character string of end year (optional)
 #' @param max_retries Integer number of retry attempts
 #' @param version SDMX version string (default "1.0")
-#' @param page_size Integer number of rows per page
 #' @param verbose Logical for progress messages
 #' @param totals Logical for including totals
 #' @param labels Label format ("id" or "name")
@@ -446,10 +447,9 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
     end_year_str = NULL,
     max_retries = 3,
     version = "1.0",
-    page_size = 100000,
-  verbose = TRUE,
-  totals = FALSE,
-  labels = "id"
+    verbose = TRUE,
+    totals = FALSE,
+    labels = "id"
 ) {
   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
   indicator_str <- paste0(".", paste(indicator, collapse = "+"), ".")
@@ -518,42 +518,33 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
   # Shared dynamic User-Agent
   ua <- .unicefData_ua
 
-  pages <- list()
-  page <- 0L
+  if (verbose) message(sprintf("Fetching '%s' from '%s'...",
+      if (is.null(indicator)) "all" else paste(indicator, collapse = "+"),
+      dataflow))
 
-  repeat {
-    page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-    if (verbose) message(sprintf("Fetching page %d...", page + 1))
+  # The UNICEF SDMX CSV endpoint does not reliably support startIndex/count
+  # pagination — the server ignores those parameters and always returns the
+  # full result set, causing an infinite loop if the row count equals the
+  # page size.  Fetch everything in a single request instead.
+  out <- tryCatch(
+    {
+      txt <- fetch_sdmx_text(full_url, ua = ua, retry = max_retries)
+      readr::read_csv(I(txt), show_col_types = FALSE)
+    },
+    error = function(e) e
+  )
 
-    # IMPORTANT: catch 404 as a signal, not a fatal error
-    out <- tryCatch(
-      {
-        txt <- fetch_sdmx_text(page_url, ua = ua, retry = max_retries)  # 'retry' matches function signature
-        readr::read_csv(I(txt), show_col_types = FALSE)
-      },
-      error = function(e) e
-    )
-
-    if (inherits(out, "error")) {
-      if (.is_http_404(out)) {
-        # "Not in this dataflow"
-        return(list(status = "not_found", df = NULL))
-      }
-      # Any other error is still fatal (transient errors should be handled by RETRY)
-      stop(out)
+  if (inherits(out, "error")) {
+    if (.is_http_404(out)) {
+      return(list(status = "not_found", df = NULL))
     }
-
-    df <- out
-    if (is.null(df) || nrow(df) == 0) break
-
-    pages[[length(pages) + 1L]] <- df
-    if (nrow(df) < page_size) break
-
-    page <- page + 1L
-    Sys.sleep(0.2)
+    stop(out)
   }
 
-  df_all <- dplyr::bind_rows(pages)
+  df_all <- out
+  if (is.null(df_all) || nrow(df_all) == 0) {
+    return(list(status = "ok", df = data.frame()))
+  }
 
   # Filter countries (post-fetch)
   if (!is.null(countries) && nrow(df_all) > 0 && "REF_AREA" %in% names(df_all)) {
@@ -573,7 +564,6 @@ get_fallback_dataflows <- function(original_flow, indicator_code = NULL) {
 #' @param end_year Numeric or character end year (YYYY).
 #' @param max_retries Integer, number of retries for failed requests.
 #' @param version Character string of SDMX version (e.g. "1.0").
-#' @param page_size Integer, number of rows per page.
 #' @param verbose Logical, print progress messages.
 #' @param totals Logical, include total aggregations.
 #' @param labels Character, label format ("id" or "name").
@@ -587,7 +577,6 @@ unicefData_raw <- function(
     end_year = NULL,
     max_retries = 3,
     version = NULL,
-    page_size = 100000,
     verbose = TRUE,
     totals = FALSE,
     labels = "id"
@@ -639,7 +628,6 @@ unicefData_raw <- function(
       end_year_str   = end_year_str,
       max_retries = max_retries,
       version = ver,
-      page_size = page_size,
       verbose = verbose,
       totals = totals,
       labels = labels
@@ -669,29 +657,6 @@ unicefData_raw <- function(
   dplyr::tibble()
 }
 
-#
-#
-#   # Build URL
-#   base <- "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
-#   indicator_str <- if (!is.null(indicator)) paste0(".", paste(indicator, collapse = "+"), ".") else "."
-#   rel_path <- sprintf("data/UNICEF,%s,%s/%s", dataflow, ver, indicator_str)
-#   full_url <- paste0(base, "/", rel_path, "?format=csv&labels=both")
-#
-#   if (!is.null(start_year_str)) full_url <- paste0(full_url, "&startPeriod=", start_year_str)
-#   if (!is.null(end_year_str)) full_url <- paste0(full_url, "&endPeriod=", end_year_str)
-#
-#   # Paging
-#   ua <- httr::user_agent("unicefData/1.0")
-#   pages <- list()
-#   page <- 0L
-#
-#   repeat {
-#     page_url <- paste0(full_url, "&startIndex=", page * page_size, "&count=", page_size)
-#     if (verbose) message(sprintf("Fetching page %d...", page + 1))
-#     # this NULL here masks 404, let's fix and make fallback possible:
-#     df <- tryCatch(
-#       readr::read_csv(fetch_sdmx_text(page_url, ua, max_retries), show_col_types = FALSE),
-#       error = function(e) {
 
 # =============================================================================
 # #### 6. Data Cleaning ####
