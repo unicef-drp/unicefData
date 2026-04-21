@@ -54,16 +54,22 @@ jobs:
         continue-on-error: false
 
       - name: Enrich indicators with dimension values
+        id: enrich
         run: |
           cd stata/src/py
 
           if [ -f "enrich_indicators_metadata.py" ]; then
-            python enrich_indicators_metadata.py \
+            if python enrich_indicators_metadata.py \
               --indicators ../_/_unicefdata_indicators_metadata.yaml \
               --dataflows ../_/_unicefdata_dataflow_metadata.yaml \
-              --output ../_/_unicefdata_indicators_metadata.yaml
+              --output ../_/_unicefdata_indicators_metadata.yaml; then
+              echo "enriched=true" >> $GITHUB_OUTPUT
+            else
+              echo "enriched=false" >> $GITHUB_OUTPUT
+            fi
           else
             echo "⚠ enrich_indicators_metadata.py not found - skipping dimension enrichment"
+            echo "enriched=false" >> $GITHUB_OUTPUT
           fi
         continue-on-error: true
 
@@ -71,6 +77,14 @@ jobs:
         run: |
           DATE=$(date -u +"%Y-%m-%d")
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          ENRICHED="${{ steps.enrich.outputs.enriched }}"
+
+          if [ "$ENRICHED" = "true" ]; then
+            ENRICH_BLOCK="  indicator_enrichment_synced: true
+            indicator_enrichment_timestamp: '$TIMESTAMP'"
+          else
+            ENRICH_BLOCK="  indicator_enrichment_synced: false"
+          fi
 
           cat <<EOF | sed 's/^          //' > stata/src/_/_unicefdata_sync_history.yaml
           vintages:
@@ -86,8 +100,7 @@ jobs:
             dataflow_metadata_synced: true
             dataflow_metadata_timestamp: '$TIMESTAMP'
 
-            indicator_enrichment_synced: true
-            indicator_enrichment_timestamp: '$TIMESTAMP'
+          $ENRICH_BLOCK
 
             errors: []
             warnings: []

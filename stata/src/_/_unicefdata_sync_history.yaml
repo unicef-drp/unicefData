@@ -11,8 +11,7 @@ vintages:
   dataflow_metadata_synced: true
   dataflow_metadata_timestamp: '2026-04-21T02:21:27Z'
 
-  indicator_enrichment_synced: true
-  indicator_enrichment_timestamp: '2026-04-21T02:21:27Z'
+  indicator_enrichment_synced: false
 
   errors: []
   warnings: []
