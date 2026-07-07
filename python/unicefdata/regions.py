@@ -88,4 +88,4 @@ def get_regions(source_agency: str = None, aggregate_type_id: str = None, is_lat
     response = requests.get(url, params=params, auth=(user, passwd), timeout=60)
     response.raise_for_status()
     
-    return pd.read_csv(io.StringIO(response.text))
+    return pd.read_csv(io.StringIO(response.text), dtype={"country_m49": str})

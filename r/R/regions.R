@@ -128,5 +128,9 @@ get_regions <- function(source_agency = NULL, aggregate_type_id = NULL, is_lates
   httr::stop_for_status(res)
   
   csv_text <- httr::content(res, as = "text", encoding = "UTF-8")
-  readr::read_csv(csv_text, show_col_types = FALSE)
+  readr::read_csv(
+    csv_text,
+    col_types = readr::cols(country_m49 = readr::col_character()),
+    show_col_types = FALSE
+  )
 }

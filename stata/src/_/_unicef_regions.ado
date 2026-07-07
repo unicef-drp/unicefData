@@ -80,7 +80,12 @@ program define _unicef_regions, rclass
     }
     
     * Load CSV file into memory
-    import delimited using "`csv_temp'", `clear' varnames(1) encoding("utf-8")
+    if "`metadata'" != "" {
+        import delimited using "`csv_temp'", `clear' varnames(1) encoding("utf-8")
+    }
+    else {
+        import delimited using "`csv_temp'", `clear' varnames(1) stringcols(country_m49) encoding("utf-8")
+    }
     
     * Populate return values
     if "`metadata'" != "" {
