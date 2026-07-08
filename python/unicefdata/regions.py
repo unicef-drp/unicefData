@@ -70,7 +70,7 @@ def get_regions(source_agency: str = None, aggregate_type_id: str = None, is_lat
     url = "https://ss529626-pa5e13zk-westeurope-azure.searchstax.com/solr/country_regions_metadata/select"
     params = {
         "q": "*:*",
-        "rows": 20000,
+        "rows": 1000000,
         "wt": "csv"
     }
     

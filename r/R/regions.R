@@ -93,7 +93,7 @@ get_regions <- function(source_agency = NULL, aggregate_type_id = NULL, is_lates
   
   query <- list(
     q = "*:*",
-    rows = 20000,
+    rows = 1000000L,
     wt = "csv"
   )
   
