@@ -343,6 +343,13 @@ version 14
         exit
     }
 
+    * Check for REGIONS subcommand
+    if (strpos(lower(`"`0'"'), "regions") > 0) {
+        local rest = subinstr(`"`0'"', "regions", "", 1)
+        _unicef_regions `rest'
+        exit
+    }
+
     * =========================================================================
     * #### 3. Main Syntax Definition ####
     * =========================================================================

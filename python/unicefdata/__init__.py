@@ -48,6 +48,10 @@ from unicefdata.metadata import (
     compare_vintages,
     sync_metadata,
 )
+from unicefdata.regions import (
+    get_regions,
+    get_regions_metadata,
+)
 
 __all__ = [
     # Primary functions
@@ -56,6 +60,8 @@ __all__ = [
     "parse_year",  # year parameter parser
     "clear_cache",  # unified cache clearing
     "get_sdmx",
+    "get_regions",
+    "get_regions_metadata",
     # Discovery functions
     "list_dataflows",
     "dataflow_schema",
