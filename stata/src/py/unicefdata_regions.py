@@ -53,7 +53,7 @@ def run_regions(output_file, source_agency, aggregate_type_id, is_latest):
     url = "https://ss529626-pa5e13zk-westeurope-azure.searchstax.com/solr/country_regions_metadata/select"
     params = {
         "q": "*:*",
-        "rows": 20000,
+        "rows": 1000000,
         "wt": "csv"
     }
     
