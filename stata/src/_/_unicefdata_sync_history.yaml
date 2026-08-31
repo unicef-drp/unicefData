@@ -1,6 +1,6 @@
 vintages:
-- vintage_date: '2026-04-21'
-  synced_at: '2026-04-21T02:21:27Z'
+- vintage_date: '2026-08-31'
+  synced_at: '2026-08-31T02:06:22Z'
 
   dataflows: 70
   indicators: 0
@@ -9,9 +9,10 @@ vintages:
   regions: 0
 
   dataflow_metadata_synced: true
-  dataflow_metadata_timestamp: '2026-04-21T02:21:27Z'
+  dataflow_metadata_timestamp: '2026-08-31T02:06:22Z'
 
-  indicator_enrichment_synced: false
+  indicator_enrichment_synced: true
+  indicator_enrichment_timestamp: '2026-08-31T02:06:22Z'
 
   errors: []
   warnings: []
