@@ -18,11 +18,15 @@ This is the R implementation of the **unicefData** package. For other implementa
 ### From GitHub (Recommended)
 
 ```r
-# Install devtools if needed
-install.packages("devtools")
+# Install remotes if needed
+install.packages("remotes")
 
 # Install unicefData
-devtools::install_github("unicef-drp/unicefData", subdir = "R")
+remotes::install_github(
+  "unicef-drp/unicefData",
+  subdir = "r",
+  upgrade = "never"
+)
 ```
 
 ### From Source
@@ -342,7 +346,12 @@ See [tests/README.md](tests/README.md) for test documentation.
 
 ```r
 # Reinstall
-devtools::install_github("unicef-drp/unicefData", subdir = "R", force = TRUE)
+remotes::install_github(
+  "unicef-drp/unicefData",
+  subdir = "r",
+  upgrade = "never",
+  force = TRUE
+)
 
 # Check
 library(unicefData)
