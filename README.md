@@ -112,7 +112,11 @@ unicefdata, indicator(CME_MRY0T4) countries(ALB USA BRA) year(2015:2023) clear
 ### R
 
 ```r
-devtools::install_github("unicef-drp/unicefData")
+remotes::install_github(
+  "unicef-drp/unicefData",
+  subdir = "r",
+  upgrade = "never"
+)
 library(unicefData)
 ```
 
